@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -356,6 +355,32 @@ export async function findByIdsDynPage(
 }
 
 /**
+ * 根据搜索条件判断动态页面是否存在
+ */
+export async function existsDynPage(
+  search?: DynPageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPage: Query["existsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageSearch) {
+        existsDynPage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPage(
@@ -525,19 +550,26 @@ export async function findAllMenu(
   return menu_models;
 }
 
-export async function getListMenu() {
+export async function getListMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllMenu(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -571,19 +603,26 @@ export async function findAllRole(
   return role_models;
 }
 
-export async function getListRole() {
+export async function getListRole(
+  search?: RoleSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllRole(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

@@ -336,6 +336,32 @@ export async function findByIdsDictDetail(
 }
 
 /**
+ * 根据搜索条件判断系统字典明细是否存在
+ */
+export async function existsDictDetail(
+  search?: DictDetailSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDictDetail: Query["existsDictDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictDetailSearch) {
+        existsDictDetail(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDictDetail;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统字典明细, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDictDetail(
@@ -544,10 +570,6 @@ export function useDownloadImportTemplateDictDetail() {
             order_by
             rem
           }
-          findAllDict {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -593,25 +615,15 @@ export function useExportExcelDictDetail() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DictDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDictDetail(search: $search, page: $page, sort: $sort) {
               ${ dictDetailQueryField }
-            }
-            findAllDict {
-              lbl
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

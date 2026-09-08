@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 use std::sync::Arc;
 
 use futures_util::stream::SplitSink;
 use tokio::sync::Mutex;
 use tokio::sync::RwLock;
+use tokio::sync::watch;
 
 use poem::web::websocket::{Message, WebSocketStream};
 
@@ -18,6 +20,8 @@ pub type TopicClientIdsMapType = RwLock<HashMap<String, Vec<String>>>;
 static SOCKET_SINK_MAP: OnceLock<SocketSinkMapType> = OnceLock::new();
 static CLIENT_ID_TOPICS_MAP: OnceLock<ClientIdTopicsMapType> = OnceLock::new();
 static TOPIC_CLIENT_IDS_MAP: OnceLock<TopicClientIdsMapType> = OnceLock::new();
+static WEBSOCKET_SHUTDOWN_TX: OnceLock<watch::Sender<bool>> = OnceLock::new();
+static WEBSOCKET_IS_SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
 
 pub fn socket_sink_map() -> &'static SocketSinkMapType {
   SOCKET_SINK_MAP.get_or_init(|| Mutex::new(HashMap::new()))
@@ -27,5 +31,25 @@ pub fn client_id_topics_map() -> &'static ClientIdTopicsMapType {
 }
 pub fn topic_client_ids_map() -> &'static TopicClientIdsMapType {
   TOPIC_CLIENT_IDS_MAP.get_or_init(|| RwLock::new(HashMap::new()))
+}
+
+fn websocket_shutdown_tx() -> &'static watch::Sender<bool> {
+  WEBSOCKET_SHUTDOWN_TX.get_or_init(|| {
+    let (tx, _rx) = watch::channel(false);
+    tx
+  })
+}
+
+pub fn websocket_shutdown_rx() -> watch::Receiver<bool> {
+  websocket_shutdown_tx().subscribe()
+}
+
+pub fn is_websocket_shutting_down() -> bool {
+  WEBSOCKET_IS_SHUTTING_DOWN.load(Ordering::Acquire)
+}
+
+pub fn begin_websocket_shutdown() {
+  WEBSOCKET_IS_SHUTTING_DOWN.store(true, Ordering::Release);
+  let _ = websocket_shutdown_tx().send(true);
 }
 

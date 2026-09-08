@@ -43,6 +43,21 @@
         </el-form-item>
       </template>
       
+      <template v-if="(showBuildIn || builtInSearch?.channel == null)">
+        <el-form-item
+          label="发送通道"
+          prop="channel"
+        >
+          <DictSelect
+            v-model="channel_search"
+            code="message_channel"
+            placeholder="请选择 发送通道"
+            multiple
+            @change="onSearch(false)"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <template v-if="(builtInSearch?.title == null && (showBuildIn || builtInSearch?.title_like == null))">
         <el-form-item
           label="标题"
@@ -77,6 +92,7 @@
           <CustomSelect
             v-model="sender_usr_id_search"
             :method="getListUsr"
+            dirty-key="用户"
             :options-map="((item: UsrModel) => {
               return {
                 label: item.lbl,
@@ -209,7 +225,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -250,7 +268,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -351,7 +369,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -363,7 +381,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -528,7 +546,7 @@
           </template>
           
           <!-- 发送通道 -->
-          <template v-else-if="'channel_lbl' === col.prop">
+          <template v-else-if="'channel_lbl' === col.prop && (showBuildIn || builtInSearch?.channel == null)">
             <!-- @vue-generic {MessageModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -691,7 +709,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import {
@@ -723,7 +741,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -752,8 +773,11 @@ const props = defineProps<{
   isMultiple?: string; //是否多选
   id?: MessageId; // ID
   category?: string|string[]; // 分类
+  channel?: string|string[]; // 发送通道
   title?: string; // 标题
   title_like?: string; // 标题
+  content?: string; // 内容
+  content_like?: string; // 内容
   route_path?: string; // 跳转路由
   route_path_like?: string; // 跳转路由
   sender_usr_id?: string|string[]; // 发送人
@@ -773,6 +797,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   category: "string[]",
   category_lbl: "string[]",
+  channel: "string[]",
+  channel_lbl: "string[]",
   sender_usr_id: "string[]",
   sender_usr_id_lbl: "string[]",
   org_id: "string[]",
@@ -846,6 +872,20 @@ const category_search = $computed({
       search.category = undefined;
     } else {
       search.category = val;
+    }
+  },
+});
+
+// 发送通道
+const channel_search = $computed({
+  get() {
+    return search.channel || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.channel = undefined;
+    } else {
+      search.channel = val;
     }
   },
 });
@@ -1331,7 +1371,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1363,7 +1403,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1502,7 +1542,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1604,7 +1644,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1636,7 +1676,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1668,7 +1708,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }

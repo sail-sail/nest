@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl DeptGenQuery {
       .scope({
         dept_resolver::find_by_ids_dept(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断部门是否存在
+  #[graphql(name = "existsDept")]
+  async fn exists_dept(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DeptSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::exists_dept(
+          search,
           None,
         )
       }).await

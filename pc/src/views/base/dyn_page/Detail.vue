@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -160,6 +159,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getListRole"
+              dirty-key="角色"
               :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
@@ -230,7 +230,6 @@
           >
             <el-table
               ref="dyn_page_fieldRef"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="dyn_page_fieldData"
@@ -612,7 +611,7 @@
 ></AttrsDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -678,7 +677,10 @@ const pagePath = getPagePathDynPage();
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -810,11 +812,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }
+    isLocked = toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -1110,10 +1108,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

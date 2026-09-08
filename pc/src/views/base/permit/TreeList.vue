@@ -70,6 +70,9 @@
         @remove="onFindTree"
         @revert="onFindTree"
         @refresh="onFindTree"
+        @selected-ids-chg="emit('selectedIdsChg', $event)"
+        @row-enter="emit('rowEnter', $event)"
+        @row-dblclick="emit('rowDblclick', $event)"
         @before-search-reset="beforeSearchReset"
       ></List>
     </slot>
@@ -77,7 +80,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import List from "./List.vue";
 
 import {
@@ -97,9 +100,16 @@ defineOptions({
   name: "按钮权限TreeList",
 });
 
+const emit = defineEmits<{
+  selectedIdsChg: [ PermitId[] ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ PermitModel ],
+}>();
+
 const props = defineProps<{
   parent_id?: MenuId;
   showBuildIn?: string;
+  is_hidden?: (0 | 1)[];
 }>();
 
 const pagePath = getPagePathPermit();
@@ -185,6 +195,7 @@ async function onFindTree() {
   treeData = await findTreeMenu({
     is_current_tenant,
     is_enabled: [ 1 ],
+    is_hidden: props.is_hidden,
   });
   if (parent_id) {
     const node = getById(parent_id, treeData);

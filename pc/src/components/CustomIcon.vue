@@ -27,10 +27,35 @@
     un-aspect="square"
     un-p=".5"
     un-box-border
+    un-relative
     tabindex="0"
+    :style="{
+      cursor: (modelLabel || !props.readonly) ? 'pointer' : 'default',
+    }"
     @click="onIcon"
     @keydown.enter="onIcon"
   >
+    
+    <div
+      v-if="showDeleteButton"
+      un-absolute
+      un-top="-2"
+      un-right="-2"
+      un-z="2"
+      un-rounded-full
+      un-bg="hover:red"
+      un-text="red hover:white"
+      un-border-none
+      un-cursor="pointer"
+      :aria-label="ns('删除图标')"
+      @click.stop="onDelete"
+      @keydown.enter.stop.prevent="onDelete"
+    >
+      <div
+        un-i="iconfont-close"
+      ></div>
+    </div>
+    
     <div
       v-if="modelLabel && useMaskMode"
       :style="{
@@ -119,7 +144,7 @@
 </div>
 </template>
 
-<script setup lang="ts" vapor>
+<script setup lang="ts">
 import {
   useFormItem,
 } from "element-plus";
@@ -191,6 +216,10 @@ const useMaskMode = computed(() => {
   return shouldMaskSvg(modelLabel.value);
 });
 
+const showDeleteButton = computed(() => {
+  return !props.readonly && !!modelLabel.value;
+});
+
 const urlList = computed(() => {
   const list: string[] = [ ];
   if (modelLabel.value) {
@@ -212,6 +241,9 @@ const customIconSelectRef = $(useTemplateRef("customIconSelectRef"));
 async function onIcon(e: KeyboardEvent | MouseEvent) {
   e.preventDefault();
   if (e.ctrlKey || e.metaKey || e.shiftKey) {
+    return;
+  }
+  if (!modelLabel.value && props.readonly) {
     return;
   }
   if (props.readonly) {
@@ -243,10 +275,23 @@ async function onIcon(e: KeyboardEvent | MouseEvent) {
   emit("change", { id: changedId!, lbl: changedIdLbl! });
 }
 
+async function onDelete(e: KeyboardEvent | MouseEvent) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (props.readonly || !modelLabel.value) {
+    return;
+  }
+  modelLabel.value = "";
+  modelValue.value = "";
+  emit("change", { id: "", lbl: "" });
+  wrapDivRef?.focus();
+}
+
 async function initFrame() {
   await initSysI18ns([
     "(无)",
     "选择图标",
+    "删除图标",
   ]);
 }
 

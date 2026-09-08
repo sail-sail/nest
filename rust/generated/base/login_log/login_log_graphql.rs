@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl LoginLogGenQuery {
       .scope({
         login_log_resolver::find_by_ids_login_log(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断登录日志是否存在
+  #[graphql(name = "existsLoginLog")]
+  async fn exists_login_log(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<LoginLogSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::exists_login_log(
+          search,
           None,
         )
       }).await

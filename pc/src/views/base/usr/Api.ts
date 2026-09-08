@@ -30,10 +30,18 @@ export async function setLblByIdUsr(
   
   // 头像
   if (model.img) {
-    model.img_lbl = location.origin + getImgUrl({
-      id: model.img,
-      height: 100,
-    });
+    const img_lbls: string[] = [ ];
+    const imgs = model.img.split(",");
+    for (let i = 0; i < imgs.length; i++) {
+      const img = imgs[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }) || "";
+      img_lbls.push(img_lbl);
+    }
+    model.img_lbls = img_lbls;
+    model.img_lbl = img_lbls[0] || "";
   }
 }
 
@@ -66,6 +74,9 @@ export function intoInputUsr(
     // 类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 拒收消息
+    is_reject_msg: model?.is_reject_msg,
+    is_reject_msg_lbl: model?.is_reject_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -76,6 +87,9 @@ export function intoInputUsr(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 隐藏
+    is_hidden: model?.is_hidden,
+    is_hidden_lbl: model?.is_hidden_lbl,
   };
   return input;
 }
@@ -371,6 +385,32 @@ export async function findByIdsUsr(
 }
 
 /**
+ * 根据搜索条件判断用户是否存在
+ */
+export async function existsUsr(
+  search?: UsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsUsr: Query["existsUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch) {
+        existsUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkUsr(
@@ -576,8 +616,8 @@ export async function getListRole() {
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
     ],
     {
@@ -717,26 +757,10 @@ export function useDownloadImportTemplateUsr() {
             org_ids_lbl
             default_org_id_lbl
             type_lbl
+            is_reject_msg_lbl
             order_by
             rem
-          }
-          findAllRole {
-            id
-            lbl
-          }
-          findAllDept {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "usr_type",
-          ]) {
-            code
-            lbl
+            is_hidden_lbl
           }
         }
       `,
@@ -783,33 +807,15 @@ export function useExportExcelUsr() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: UsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
-            }
-            findAllRole {
-              lbl
-            }
-            findAllDept {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "usr_type",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -950,6 +956,8 @@ export async function getFieldCommentsUsr(
           default_org_id_lbl,
           type,
           type_lbl,
+          is_reject_msg,
+          is_reject_msg_lbl,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -984,9 +992,11 @@ export function getPagePathUsr() {
 export async function getDefaultInputUsr() {
   const defaultInput: UsrInput = {
     type: UsrType.Login,
+    is_reject_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    is_hidden: 0,
   };
   return defaultInput;
 }

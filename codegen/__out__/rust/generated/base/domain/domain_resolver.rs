@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -184,6 +181,27 @@ pub async fn find_by_ids_domain(
   Ok(models)
 }
 
+/// 根据搜索条件判断域名是否存在
+#[function_name::named]
+pub async fn exists_domain(
+  search: Option<DomainSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = domain_service::exists_domain(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找域名, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_domain(
@@ -235,8 +253,8 @@ pub async fn creates_domain(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("add"),
+    String::from(get_page_path_domain()),
+    String::from("add"),
   ).await?;
   
   let ids = domain_service::creates_domain(
@@ -271,8 +289,8 @@ pub async fn update_by_id_domain(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_domain()),
+    String::from("edit"),
   ).await?;
   
   let res = domain_service::update_by_id_domain(
@@ -299,8 +317,8 @@ pub async fn delete_by_ids_domain(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_domain()),
+    String::from("delete"),
   ).await?;
   
   let num = domain_service::delete_by_ids_domain(
@@ -350,8 +368,8 @@ pub async fn enable_by_ids_domain(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_domain()),
+    String::from("edit"),
   ).await?;
   
   let num = domain_service::enable_by_ids_domain(
@@ -403,8 +421,8 @@ pub async fn lock_by_ids_domain(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_domain()),
+    String::from("edit"),
   ).await?;
   
   let num = domain_service::lock_by_ids_domain(
@@ -450,8 +468,8 @@ pub async fn revert_by_ids_domain(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_domain()),
+    String::from("delete"),
   ).await?;
   
   let num = domain_service::revert_by_ids_domain(
@@ -477,8 +495,8 @@ pub async fn force_delete_by_ids_domain(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_domain()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_domain()),
+    String::from("force_delete"),
   ).await?;
   
   let num = domain_service::force_delete_by_ids_domain(

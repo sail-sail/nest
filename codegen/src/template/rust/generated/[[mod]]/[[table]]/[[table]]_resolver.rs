@@ -6,8 +6,8 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasSearchRangeMax = columns.some((column) => column.searchRangeMax && column.searchRangeMax > 0);
 const hasNoAdd = columns.some((column) => {
   const column_name = column.COLUMN_NAME;
   if (
@@ -104,9 +104,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};<#
 if (!is_with_auth_optional) {
 #>
@@ -154,6 +151,78 @@ use crate::bpm::process_inst::process_inst_model::ProcessInstId;
 use crate::bpm::task::task_model::TaskAction;
 use crate::base::usr::usr_model::UsrId;<#
 }
+#><#
+if (hasSearchRangeMax) {
+#>
+
+fn check_search_range_<#=table#>(
+  search: &<#=tableUP#>Search,
+) -> Result<()> {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column_name);
+    if (column_name === "id") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = (column.COLUMN_TYPE || "").toLowerCase();
+    const column_comment = column.COLUMN_COMMENT || column_name;
+    const searchRangeMax = Number(column.searchRangeMax || 0);
+    const searchRangeMaxMsg = column.searchRangeMaxMsg || `查询范围不能超过 ${searchRangeMax} 秒`;
+    if (!searchRangeMax || searchRangeMax <= 0) continue;
+    if (!["int", "double", "decimal", "datetime", "date"].includes(data_type)) continue;
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] && end.signed_duration_since(begin).num_seconds().abs() > <#=searchRangeMax#>i64 {
+      return Err(color_eyre::eyre::eyre!(
+        "<#=column_comment#> <#=searchRangeMaxMsg#>",
+      ));
+    }
+  }<#
+  } else if (data_type === "decimal") {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] {
+      let diff = (*end - *begin).abs();
+      if diff > rust_decimal::Decimal::from(<#=searchRangeMax#>) {
+        return Err(color_eyre::eyre::eyre!(
+          "<#=column_comment#> <#=searchRangeMaxMsg#>",
+        ));
+      }
+    }
+  }<#
+  } else {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] {
+      let diff = (*end as f64 - *begin as f64).abs();
+      if diff > <#=searchRangeMax#>f64 {
+        return Err(color_eyre::eyre::eyre!(
+          "<#=column_comment#> <#=searchRangeMaxMsg#>",
+        ));
+      }
+    }
+  }<#
+  }
+  #><#
+  }
+  #>
+
+  Ok(())
+}<#
+}
 #>
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
@@ -170,14 +239,14 @@ pub async fn find_all_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
+  if (hasSearchRangeMax) {
   #>
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -206,7 +275,7 @@ pub async fn find_all_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = SmolStr::new("");<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -220,8 +289,8 @@ pub async fn find_all_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     for model in &mut models {
       field_permit_model_<#=table#>(
@@ -249,14 +318,14 @@ pub async fn find_count_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
+  if (hasSearchRangeMax) {
   #>
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -281,14 +350,14 @@ pub async fn find_one_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
+  if (hasSearchRangeMax) {
   #>
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -316,7 +385,7 @@ pub async fn find_one_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = SmolStr::new("");<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -330,8 +399,8 @@ pub async fn find_one_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     if let Some(model) = &mut model {
@@ -361,14 +430,14 @@ pub async fn find_one_ok_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
+  if (hasSearchRangeMax) {
   #>
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -395,7 +464,7 @@ pub async fn find_one_ok_<#=table#>(
     if (isPassword) {
   #>
   // <#=column_comment#>
-  model.<#=column_name_rust#> = SmolStr::new("");<#
+  model.<#=column_name_rust#> = String::new();<#
     }
   #><#
   }
@@ -408,8 +477,8 @@ pub async fn find_one_ok_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     field_permit_model_<#=table#>(
@@ -458,7 +527,7 @@ pub async fn find_by_id_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = SmolStr::new("");<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -472,8 +541,8 @@ pub async fn find_by_id_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     if let Some(model) = &mut model {
@@ -523,7 +592,7 @@ pub async fn find_by_id_ok_<#=table#>(
     if (isPassword) {
   #>
   // <#=column_comment#>
-  model.<#=column_name_rust#> = SmolStr::new("");<#
+  model.<#=column_name_rust#> = String::new();<#
     }
   #><#
   }
@@ -536,8 +605,8 @@ pub async fn find_by_id_ok_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     field_permit_model_<#=table#>(
@@ -586,7 +655,7 @@ pub async fn find_by_ids_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = SmolStr::new("");<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -600,8 +669,8 @@ pub async fn find_by_ids_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     for model in models.iter_mut() {
@@ -616,6 +685,37 @@ pub async fn find_by_ids_<#=table#>(
   #>
   
   Ok(models)
+}
+
+/// 根据搜索条件判断<#=table_comment#>是否存在
+#[function_name::named]
+pub async fn exists_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
+  
+  let res = <#=table#>_service::exists_<#=table#>(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
 }
 
 /// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
@@ -652,7 +752,7 @@ pub async fn find_by_ids_ok_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = SmolStr::new("");<#
+    model.<#=column_name_rust#> = String::new();<#
       }
     #><#
     }
@@ -666,8 +766,8 @@ pub async fn find_by_ids_ok_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     
     for model in models.iter_mut() {
@@ -712,7 +812,7 @@ pub async fn start_process_<#=table#>(
 pub async fn complete_task_<#=table#>(
   id: <#=Table_Up#>Id,
   action: TaskAction,
-  opinion: Option<SmolStr>,
+  opinion: Option<String>,
   add_sign_usr_ids: Option<Vec<UsrId>>,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -816,8 +916,8 @@ pub async fn creates_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("add"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("add"),
   ).await?;<#
   }
   #><#
@@ -826,8 +926,8 @@ pub async fn creates_<#=table#>(
   
   let mut inputs = inputs;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     for input in &mut inputs {
       field_permit_input_<#=table#>(
@@ -854,18 +954,18 @@ pub async fn creates_<#=table#>(
     }.into(),
     None,
     None,
-    None,
+    options,
   ).await?;<#
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("新增"), None).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let method_lbl = ns(String::from("新增"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("新增");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("新增");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -882,13 +982,13 @@ pub async fn creates_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
-      module_lbl: SmolStr::new(table_comment.clone()).into(),
-      method: SmolStr::new("creates").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
+      module_lbl: table_comment.clone().into(),
+      method: String::from("creates").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      new_data: SmolStr::new(serde_json::to_string(&new_data)?).into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -962,8 +1062,8 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("edit"),
   ).await?;<#
   }
   #><#
@@ -972,8 +1072,8 @@ pub async fn update_by_id_<#=table#>(
   
   let mut input = input;
   {
-    let fields = get_field_permit_<#=table#>(
-      SmolStr::new(get_page_path_<#=table#>()),
+    let fields = get_field_permit(
+      String::from(get_page_path_<#=table#>()),
     ).await?;
     field_permit_input_<#=table#>(
       &mut input,
@@ -1008,13 +1108,13 @@ pub async fn update_by_id_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("修改"), None).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let method_lbl = ns(String::from("修改"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("修改");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("修改");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1031,14 +1131,14 @@ pub async fn update_by_id_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("updateById").into(),
+      method: String::from("updateById").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
-      new_data: SmolStr::new(serde_json::to_string(&new_data)?).into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1074,8 +1174,8 @@ pub async fn audit_submit_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_submit"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_submit"),
   ).await?;<#
   }
   #><#
@@ -1095,13 +1195,13 @@ pub async fn audit_submit_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("审核提交"), None).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let method_lbl = ns(String::from("审核提交"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("审核提交");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("审核提交");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1118,9 +1218,9 @@ pub async fn audit_submit_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
+      module: String::from(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("auditSubmit"),
+      method: String::from("auditSubmit"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1156,8 +1256,8 @@ pub async fn audit_reverse_<#=table#>(
   #>
 
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_reverse"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_reverse"),
   ).await?;<#
   }
   #><#
@@ -1177,13 +1277,13 @@ pub async fn audit_reverse_<#=table#>(
   if (isUseI18n) {
   #>
 
-  let method_lbl = ns(SmolStr::new("反审核"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("反审核"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
 
-  let method_lbl = SmolStr::new("反审核");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("反审核");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
 
@@ -1200,13 +1300,13 @@ pub async fn audit_reverse_<#=table#>(
 
   log(
     OperationRecordInput {
-      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
+      module: String::from(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("auditReverse"),
+      method: String::from("auditReverse"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1238,8 +1338,8 @@ pub async fn audit_pass_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_pass"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_pass"),
   ).await?;<#
   }
   #><#
@@ -1259,13 +1359,13 @@ pub async fn audit_pass_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("审核通过"), None).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let method_lbl = ns(String::from("审核通过"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("审核通过");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("审核通过");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1282,13 +1382,13 @@ pub async fn audit_pass_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
+      module: String::from(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("auditPass"),
+      method: String::from("auditPass"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1321,8 +1421,8 @@ pub async fn audit_reject_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_reject"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_reject"),
   ).await?;<#
   }
   #><#
@@ -1343,13 +1443,13 @@ pub async fn audit_reject_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("审核拒绝"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("审核拒绝"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("审核拒绝");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("审核拒绝");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1366,13 +1466,13 @@ pub async fn audit_reject_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
+      module: format!("<#=mod#>_<#=table#>"),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("auditReject"),
+      method: String::from("auditReject"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1406,8 +1506,8 @@ pub async fn audit_review_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_review"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_review"),
   ).await?;<#
   }
   #><#
@@ -1427,13 +1527,13 @@ pub async fn audit_review_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("复核通过"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("复核通过"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("复核通过");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("复核通过");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1450,9 +1550,9 @@ pub async fn audit_review_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: format!("<#=mod#>_<#=table#>"),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("auditReview").into(),
+      method: String::from("auditReview"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1495,8 +1595,8 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("delete"),
   ).await?;<#
   }
   #><#
@@ -1510,7 +1610,7 @@ pub async fn delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    None,
+    options,
   ).await?;<#
   }
   #>
@@ -1524,13 +1624,13 @@ pub async fn delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("删除"), None).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let method_lbl = ns(String::from("删除"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("删除");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("删除");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1547,13 +1647,13 @@ pub async fn delete_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(format!("{method_lbl}_<#=mod#>_<#=table#>")).into(),
-      module_lbl: SmolStr::new(table_comment.clone()).into(),
-      method: SmolStr::new("deleteByIds").into(),
+      module: String::from(format!("{method_lbl}_<#=mod#>_<#=table#>")),
+      module_lbl: table_comment.clone().into(),
+      method: String::from("deleteByIds"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1590,8 +1690,8 @@ pub async fn default_by_id_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("edit"),
   ).await?;<#
   }
   #><#
@@ -1611,13 +1711,13 @@ pub async fn default_by_id_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("默认"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("默认"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("默认");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("默认");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1634,9 +1734,9 @@ pub async fn default_by_id_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("defaultById").into(),
+      method: String::from("defaultById").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1701,15 +1801,15 @@ pub async fn enable_by_ids_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("edit"),
   ).await?;<#
   }
   #><#
   if (log) {
   #>
   
-  let old_data = SmolStr::new(serde_json::to_string(&ids)?);<# 
+  let old_data = String::from(serde_json::to_string(&ids)?);<# 
   }
   #>
   
@@ -1725,9 +1825,9 @@ pub async fn enable_by_ids_<#=table#>(
   
   let method_lbl = {
     if is_enabled == 0 {
-      ns(SmolStr::new("禁用"), None).await?
+      ns(String::from("禁用"), options).await?
     } else {
-      ns(SmolStr::new("启用"), None).await?
+      ns(String::from("启用"), options).await?
     }
   };<#
   } else {
@@ -1735,26 +1835,26 @@ pub async fn enable_by_ids_<#=table#>(
   
   let method_lbl = {
     if is_enabled == 0 {
-      SmolStr::new("禁用")
+      String::from("禁用")
     } else {
-      SmolStr::new("启用")
+      String::from("启用")
     }
   };<#
   }
   #>
   let method = {
     if is_enabled == 0 {
-      SmolStr::new("disableByIds")
+      String::from("disableByIds")
     } else {
-      SmolStr::new("enableByIds")
+      String::from("enableByIds")
     }
   };<#
   if (isUseI18n) {
   #>
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1771,12 +1871,12 @@ pub async fn enable_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
-      module_lbl: table_comment.clone().into(),
-      method: method.into(),
-      method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
-      old_data: old_data.into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
+      module_lbl: String::from(table_comment.clone()).into(),
+      method: String::from(method).into(),
+      method_lbl: String::from(table_comment.clone()).into(),
+      lbl: String::from(method_lbl).into(),
+      old_data: String::from(old_data).into(),
       time: time.into(),
       ..Default::default()
     },
@@ -1839,15 +1939,15 @@ pub async fn lock_by_ids_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("edit"),
   ).await?;<#
   }
   #><#
   if (log) {
   #>
   
-  let new_data = SmolStr::new(serde_json::json!({
+  let new_data = String::from(serde_json::json!({
     "ids": ids,
     "is_locked": is_locked,
   }).to_string());<#
@@ -1864,21 +1964,21 @@ pub async fn lock_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl: SmolStr = if is_locked == 0 {
-    ns(SmolStr::new("解锁"), None).await?
+  let method_lbl: String = if is_locked == 0 {
+    ns(String::from("解锁"), None).await?
   } else {
-    ns(SmolStr::new("锁定"), None).await?
+    ns(String::from("锁定"), None).await?
   };
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
-  let method_lbl: SmolStr = if is_locked == 0 {
-    SmolStr::new("解锁")
+  let method_lbl: String = if is_locked == 0 {
+    String::from("解锁")
   } else {
-    SmolStr::new("锁定")
+    String::from("锁定")
   };
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -1895,9 +1995,9 @@ pub async fn lock_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.into(),
-      method: SmolStr::new("lockByIds").into(),
+      method: String::from("lockByIds").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1957,15 +2057,15 @@ pub async fn revert_by_ids_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("delete"),
   ).await?;<#
   }
   #><#
   if (log) {
   #>
   
-  let new_data = SmolStr::new(serde_json::to_string(&ids)?);<#
+  let new_data = String::from(serde_json::to_string(&ids)?);<#
   }
   #>
   
@@ -1978,13 +2078,13 @@ pub async fn revert_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("还原"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("还原"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("还原");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("还原");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -2001,9 +2101,9 @@ pub async fn revert_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("revertByIds").into(),
+      method: String::from("revertByIds").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -2044,15 +2144,15 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("force_delete"),
   ).await?;<#
   }
   #><#
   if (log) {
   #>
   
-  let old_data = SmolStr::new(serde_json::to_string(&ids)?);<#
+  let old_data = String::from(serde_json::to_string(&ids)?);<#
   }
   #>
   
@@ -2065,13 +2165,13 @@ pub async fn force_delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(SmolStr::new("彻底删除"), options).await?;
-  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("彻底删除"), options).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = SmolStr::new("彻底删除");
-  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  let method_lbl = String::from("彻底删除");
+  let table_comment = String::from("<#=table_comment#>");<#
   }
   #>
   
@@ -2088,9 +2188,9 @@ pub async fn force_delete_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module: String::from("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: SmolStr::new("force_delete").into(),
+      method: String::from("force_delete").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -2119,7 +2219,17 @@ pub async fn find_summary_<#=table#>(
     "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
-  );
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
   
   let <#=table#>_summary = <#=table#>_service::find_summary_<#=table#>(
     search,
@@ -2144,7 +2254,17 @@ pub async fn find_last_order_by_<#=table#>(
     "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
-  );
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
   
   let order_by = <#=table#>_service::find_last_order_by_<#=table#>(
     search,

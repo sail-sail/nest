@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl OrgGenQuery {
       .scope({
         org_resolver::find_by_ids_org(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断组织是否存在
+  #[graphql(name = "existsOrg")]
+  async fn exists_org(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OrgSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::exists_org(
+          search,
           None,
         )
       }).await

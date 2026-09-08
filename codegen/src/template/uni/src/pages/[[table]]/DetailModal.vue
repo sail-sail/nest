@@ -163,18 +163,18 @@ if (right_field && !right_field_column) {
   throw new Error(`表: ${ mod }_${ table } 中配置的列表右侧显示字段 ${ right_field } 在列中不存在`);
 }
 #>
-<tm-modal
-  v-model:show="dialogVisible"
-  :closeable="true"
-  :height="height"
+<CustomDialog
+  ref="customDialogRef"
   :title="dialogTitle"
+  type="large"
   disabled-scroll
   show-close
   :show-footer="false"
   :content-padding="0"
   max-height="90%"
-  :overlay-click="true"
+  :close-on-click-modal="true"
   v-bind="$attrs"
+  @close="onClose"
 >
   
   <view
@@ -191,7 +191,7 @@ if (right_field && !right_field_column) {
       :scroll-with-animation="true"
     >
       
-      <<#=Table_Up#>Detal
+      <<#=Table_Up#>Detail
         ref="<#=table#>_detail_ref"
         un-flex="~ [1_0_0]"
         un-overflow="hidden"
@@ -206,27 +206,30 @@ if (right_field && !right_field_column) {
         :order_by="order_by"<#
         }
         #>
-      ></<#=Table_Up#>Detal>
+        :hide-fields="hideFields"
+        :has-close-btn="hasCloseBtn"
+        :close-btn-fn="onClose"
+        :drawer-disable-teleport="true"
+      ></<#=Table_Up#>Detail>
       
     </scroll-view>
     
   </view>
   
-</tm-modal>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
-import <#=Table_Up#>Detal from "./Detail.vue";
+import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
+import <#=Table_Up#>Detail from "./Detail.vue";
 
 import {
   findOne<#=Table_Up#>,
-} from "./Api";
+} from "./Api.ts";
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
-let dialogVisible = $ref(false);
-const height = $ref<string | number>("90%");
 
 let <#=table#>_id = $ref<<#=Table_Up#>Id>();<#
 if (hasOrderBy) {
@@ -237,9 +240,14 @@ let order_by = $ref<number>();<#
 
 let inited = $ref(false);
 
-const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detal>>();
+provide("not_permit", true);
+
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detail>>();
 
 let findOneModel = findOne<#=Table_Up#>;
+let hideFields = $ref<string[]>([ ]);
+let hasCloseBtn = $ref<boolean>(false);
 
 type OnCloseResolveType = {
   type: "ok";
@@ -247,8 +255,6 @@ type OnCloseResolveType = {
 } | {
   type: "cancel";
 };
-
-let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 打开对话框 */
 async function showDialog(
@@ -264,6 +270,8 @@ async function showDialog(
       #>
     };
     findOne?: typeof findOne<#=Table_Up#>;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
     action: DialogAction;
   },
 ) {
@@ -281,22 +289,39 @@ async function showDialog(
   } else {
     findOneModel = findOne<#=Table_Up#>;
   }
+  if (arg?.hideFields) {
+    hideFields = arg.hideFields;
+  } else {
+    hideFields = [ ];
+  }
+  if (arg?.hasCloseBtn != null) {
+    hasCloseBtn = arg.hasCloseBtn;
+  } else {
+    hasCloseBtn = false;
+  }
   dialogAction = action || "add";
   <#=table#>_id = model?.id;
   
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    title: dialogTitle,
+    type: "large",
+    showFooter: false,
+    showClose: true,
+    showTitle: true,
+    disabledScroll: true,
+    contentPadding: 0,
+    maxHeight: "90%",
+    closeOnClickModal: true,
+    closeResult: {
+      type: "cancel",
+    },
   });
-  
-  dialogVisible = true;
   
   await onRefresh();
   
   inited = true;
-  return await dialogPrm;
+  
+  return await dialogRes;
 }
 
 /** 刷新 */
@@ -308,7 +333,7 @@ async function onRefresh() {
 async function beforeSave(
   input: <#=Table_Up#>Input,
 ) {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "ok",
     input,
   });
@@ -316,7 +341,7 @@ async function beforeSave(
 }
 
 async function onClose() {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "cancel",
   });
 }

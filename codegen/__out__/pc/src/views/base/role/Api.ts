@@ -48,6 +48,9 @@ export function intoInputRole(
     // 字段权限
     field_permit_ids: model?.field_permit_ids,
     field_permit_ids_lbl: model?.field_permit_ids_lbl,
+    // 接收审核消息
+    is_audit_msg: model?.is_audit_msg,
+    is_audit_msg_lbl: model?.is_audit_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -350,6 +353,32 @@ export async function findByIdsRole(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search?: RoleSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsRole: Query["existsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch) {
+        existsRole(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsRole;
+  
+  return res;
 }
 
 /**
@@ -737,24 +766,9 @@ export function useDownloadImportTemplateRole() {
             permit_ids_lbl
             data_permit_ids_lbl
             field_permit_ids_lbl
+            is_audit_msg_lbl
             order_by
             rem
-          }
-          findAllMenu {
-            id
-            lbl
-          }
-          findAllPermit {
-            id
-            lbl
-          }
-          findAllDataPermit {
-            id
-            
-          }
-          findAllFieldPermit {
-            id
-            lbl
           }
         }
       `,
@@ -801,32 +815,15 @@ export function useExportExcelRole() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: RoleSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllRole(search: $search, page: $page, sort: $sort) {
               ${ roleQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            findAllPermit {
-              lbl
-            }
-            findAllFieldPermit {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -965,6 +962,8 @@ export async function getFieldCommentsRole(
           data_permit_ids_lbl,
           field_permit_ids,
           field_permit_ids_lbl,
+          is_audit_msg,
+          is_audit_msg_lbl,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -998,6 +997,7 @@ export function getPagePathRole() {
 /** 新增时的默认值 */
 export async function getDefaultInputRole() {
   const defaultInput: RoleInput = {
+    is_audit_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

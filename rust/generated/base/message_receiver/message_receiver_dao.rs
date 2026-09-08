@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -20,6 +17,8 @@ use tracing::{info, error};
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
 use crate::common::gql::model::SortOrderEnum;
+#[allow(unused_imports)]
+use crate::common::gql::NaiveDateTime;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -44,6 +43,7 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
 
@@ -57,8 +57,11 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::message_receiver_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
+#[allow(unused_imports)]
 use crate::base::message::message_model::MessageId;
+#[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
+#[allow(unused_imports)]
 use crate::base::org::org_model::OrgId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -74,36 +77,28 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 12 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<MessageReceiverId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -132,21 +127,17 @@ async fn get_where_query(
   }
   // 消息
   {
-    let message_id: Option<Vec<MessageId>> = match search {
-      Some(item) => item.message_id.clone(),
-      None => None,
-    };
-    if let Some(message_id) = message_id {
+    if let Some(message_id) = search.and_then(|item| item.message_id.as_deref()) {
       let arg = {
         if message_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(message_id.len());
           for item in message_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.message_id in (");
@@ -164,21 +155,21 @@ async fn get_where_query(
     }
   }
   {
-    let message_id_content: Option<Vec<SmolStr>> = match search {
+    let message_id_content: Option<Vec<String>> = match search {
       Some(item) => item.message_id_content.clone(),
       None => None,
     };
     if let Some(message_id_content) = message_id_content {
       let arg = {
         if message_id_content.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(message_id_content.len());
           for item in message_id_content {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and message_id_lbl.content in (");
@@ -196,23 +187,42 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&message_id_content_like)).into());
     }
   }
-  // 接收人
   {
-    let receiver_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.receiver_usr_id.clone(),
+    let channel: Option<Vec<String>> = match search {
+      Some(item) => item.channel.clone(),
       None => None,
     };
-    if let Some(receiver_usr_id) = receiver_usr_id {
+    if let Some(channel) = channel {
+      let arg = {
+        if channel.is_empty() {
+          String::from("null")
+        } else {
+          let mut items = Vec::with_capacity(channel.len());
+          for item in channel {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and message_id_lbl.channel in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 接收人
+  {
+    if let Some(receiver_usr_id) = search.and_then(|item| item.receiver_usr_id.as_deref()) {
       let arg = {
         if receiver_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(receiver_usr_id.len());
           for item in receiver_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.receiver_usr_id in (");
@@ -230,21 +240,21 @@ async fn get_where_query(
     }
   }
   {
-    let receiver_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let receiver_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.receiver_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(receiver_usr_id_lbl) = receiver_usr_id_lbl {
       let arg = {
         if receiver_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(receiver_usr_id_lbl.len());
           for item in receiver_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.receiver_usr_id_lbl in (");
@@ -273,14 +283,14 @@ async fn get_where_query(
     if let Some(is_read) = is_read {
       let arg = {
         if is_read.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_read.len());
           for item in is_read {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_read in (");
@@ -291,7 +301,7 @@ async fn get_where_query(
   // 阅读时间
   {
     let mut read_time = match search {
-      Some(item) => item.read_time.unwrap_or_default(),
+      Some(item) => item.read_time.clone().unwrap_or_default(),
       None => Default::default(),
     };
     let read_time_gt = read_time[0].take();
@@ -307,21 +317,17 @@ async fn get_where_query(
   }
   // 所属组织
   {
-    let org_id: Option<Vec<OrgId>> = match search {
-      Some(item) => item.org_id.clone(),
-      None => None,
-    };
-    if let Some(org_id) = org_id {
+    if let Some(org_id) = search.and_then(|item| item.org_id.as_deref()) {
       let arg = {
         if org_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(org_id.len());
           for item in org_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.org_id in (");
@@ -339,21 +345,21 @@ async fn get_where_query(
     }
   }
   {
-    let org_id_lbl: Option<Vec<SmolStr>> = match search {
+    let org_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.org_id_lbl.clone(),
       None => None,
     };
     if let Some(org_id_lbl) = org_id_lbl {
       let arg = {
         if org_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(org_id_lbl.len());
           for item in org_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.org_id_lbl in (");
@@ -375,21 +381,17 @@ async fn get_where_query(
   }
   // 创建人
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -407,21 +409,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -460,21 +462,17 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -492,21 +490,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -713,7 +711,7 @@ pub async fn find_all_message_receiver(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -738,7 +736,7 @@ pub async fn find_all_message_receiver(
         .iter()
         .find(|item| item.val == model.is_read.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_read.to_string().into())
+        .unwrap_or_else(|| model.is_read.to_string())
     };
     
   }
@@ -1071,7 +1069,7 @@ pub async fn find_by_id_ok_message_receiver(
   ).await?;
   
   let Some(message_receiver_model) = message_receiver_model else {
-    let err_msg = SmolStr::new("此 消息接收人 已被删除");
+    let err_msg = String::from("此 消息接收人 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1183,7 +1181,7 @@ pub async fn find_by_ids_ok_message_receiver(
   ).await?;
   
   if message_receiver_models.len() != len {
-    let err_msg = SmolStr::new("此 消息接收人 已被删除");
+    let err_msg = String::from("此 消息接收人 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1196,7 +1194,7 @@ pub async fn find_by_ids_ok_message_receiver(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 消息接收人 已经被删除");
+      let err_msg = String::from("此 消息接收人 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<MessageReceiverModel>>>()?;
@@ -1301,94 +1299,75 @@ pub async fn exists_message_receiver(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
   // 消息
-  if let Some(search) = &search && search.message_id.is_some() {
-    let len = search.message_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(message_id) = &search.message_id {
+    let len = message_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.message_id.length > {ids_limit}"));
     }
   }
   // 接收人
-  if let Some(search) = &search && search.receiver_usr_id.is_some() {
-    let len = search.receiver_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(receiver_usr_id) = &search.receiver_usr_id {
+    let len = receiver_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.receiver_usr_id.length > {ids_limit}"));
     }
   }
   // 已读
-  if let Some(search) = &search && search.is_read.is_some() {
-    let len = search.is_read.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_read) = &search.is_read {
+    let len = is_read.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_read.length > {ids_limit}"));
     }
   }
   // 所属组织
-  if let Some(search) = &search && search.org_id.is_some() {
-    let len = search.org_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(org_id) = &search.org_id {
+    let len = org_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.org_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -1398,6 +1377,10 @@ pub async fn exists_message_receiver(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
+  
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
@@ -1406,10 +1389,6 @@ pub async fn exists_message_receiver(
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
   let args = args.into();
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,
@@ -1600,9 +1579,9 @@ pub async fn set_id_by_lbl_message_receiver(
   
   // 阅读时间
   if input.read_time.is_none() && let Some(read_time_lbl) = input.read_time_lbl.as_ref().filter(|s| !s.is_empty()) {
-    input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
     if input.read_time.is_none() {
-      input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
+      input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
     }
     if input.read_time.is_none() {
       let field_comments = get_field_comments_message_receiver(
@@ -1640,7 +1619,7 @@ pub async fn set_id_by_lbl_message_receiver(
     && input.message_id.is_none()
   {
     input.message_id_content = input.message_id_content.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::message::message_dao::find_one_message(
       crate::base::message::message_model::MessageSearch {
@@ -1676,7 +1655,7 @@ pub async fn set_id_by_lbl_message_receiver(
     && input.receiver_usr_id.is_none()
   {
     input.receiver_usr_id_lbl = input.receiver_usr_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::usr::usr_dao::find_one_usr(
       crate::base::usr::usr_model::UsrSearch {
@@ -1715,7 +1694,7 @@ pub async fn set_id_by_lbl_message_receiver(
     let dict_model = is_read_dict.iter().find(|item| {
       item.lbl == input.is_read_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_read = val.parse::<u8>()?.into();
     }
@@ -1727,7 +1706,7 @@ pub async fn set_id_by_lbl_message_receiver(
     let dict_model = is_read_dict.iter().find(|item| {
       item.val == input.is_read.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_read_lbl = lbl;
   }
   
@@ -1737,7 +1716,7 @@ pub async fn set_id_by_lbl_message_receiver(
     && input.org_id.is_none()
   {
     input.org_id_lbl = input.org_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::org::org_dao::find_one_org(
       crate::base::org::org_model::OrgSearch {
@@ -1795,6 +1774,10 @@ pub async fn creates_return_message_receiver(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs.clone(),
     options,
@@ -1832,6 +1815,10 @@ pub async fn creates_message_receiver(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs,
     options,
@@ -1856,6 +1843,25 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+
+  let auth_org_id = get_auth_org_id();
+  let mut auth_org_id_lbl = String::from("");
+  if let Some(auth_org_id) = auth_org_id {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      auth_org_id,
+      options,
+    ).await?;
+    if let Some(org_model) = org_model {
+      auth_org_id_lbl = org_model.lbl;
+    }
+  }
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.org_id.is_none_or(|x| x.is_empty()) {
+      input.org_id = auth_org_id;
+      input.org_id_lbl = Some(auth_org_id_lbl.clone());
+    }
+  }
   
   let mut ids2: Vec<MessageReceiverId> = vec![];
   let mut inputs2: Vec<MessageReceiverInput> = vec![];
@@ -1936,7 +1942,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1962,7 +1968,7 @@ async fn _creates(
   sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 12 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2006,7 +2012,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2031,7 +2037,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2226,6 +2232,10 @@ pub async fn create_message_receiver(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     vec![input],
     options,
@@ -2318,7 +2328,7 @@ pub async fn sync_usr_lbl_by_usr_id_message_receiver(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -2327,22 +2337,22 @@ pub async fn sync_usr_lbl_by_usr_id_message_receiver(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");
   
@@ -2350,9 +2360,9 @@ pub async fn sync_usr_lbl_by_usr_id_message_receiver(
     sql_fields.pop();
   }
   
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
   let where_query = where_querys.join(" or ");
   
   let sql = format!("update {table} set {sql_fields} where {where_query}");
@@ -2439,8 +2449,7 @@ pub async fn update_by_id_message_receiver(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 消息接收人 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   
@@ -2486,7 +2495,7 @@ pub async fn update_by_id_message_receiver(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity((80 * 12 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2545,7 +2554,7 @@ pub async fn update_by_id_message_receiver(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2569,7 +2578,7 @@ pub async fn update_by_id_message_receiver(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2706,7 +2715,7 @@ pub async fn delete_by_ids_message_receiver(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_message_receiver(
+  let old_models = find_by_ids_message_receiver(
     ids.clone(),
     options,
   ).await?;
@@ -2728,10 +2737,10 @@ pub async fn delete_by_ids_message_receiver(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -2972,7 +2981,7 @@ pub async fn validate_option_message_receiver(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("消息接收人不存在");
+      let err_msg = String::from("消息接收人不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

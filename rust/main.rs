@@ -1,14 +1,14 @@
 #![forbid(unsafe_code)]
 #![recursion_limit="512"]
 
+#[cfg(not(target_env = "msvc"))]
 #[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
+use std::time::Duration;
 use std::time::Instant;
 
 use tracing::error;
-
-use smol_str::SmolStr;
 
 use poem::{
   handler, Response,
@@ -25,13 +25,10 @@ use generated::common::auth::auth_model::{AUTHORIZATION, AuthToken};
 use generated::common::gql::request_id::handle_request_id;
 
 use std::env;
-use async_graphql::{
-  EmptySubscription, Schema,
-};
 use poem::{
   get, post,
   listener::TcpListener,
-  middleware::{CatchPanic, TokioMetrics, Tracing},
+  middleware::{CatchPanic, /*TokioMetrics,*/ Tracing},
   EndpointExt, Route, Server,
 };
 use generated::common::gql::server_timing::{
@@ -46,6 +43,7 @@ use generated::common::oss::oss_dao;
 use generated::common::tmpfile::tmpfile_dao;
 
 const TOKIO_THREAD_STACK_SIZE: usize = 31_457_280;
+const GRACEFUL_SHUTDOWN_TIMEOUT_SECS: u64 = 5;
 
 /// 使用本地时间的每日日志滚动写入器
 /// (tracing_appender::rolling::daily 内部使用 UTC, 导致文件名日期在东八区不正确)
@@ -108,18 +106,46 @@ impl std::io::Write for LocalDailyAppender {
   }
 }
 
+async fn wait_for_shutdown_signal() {
+  #[cfg(unix)]
+  {
+    use tokio::signal::unix::{SignalKind, signal};
+
+    let mut sigterm = signal(SignalKind::terminate())
+      .expect("Failed to register SIGTERM handler");
+    tokio::select! {
+      _ = tokio::signal::ctrl_c() => {}
+      _ = sigterm.recv() => {}
+    }
+  }
+
+  #[cfg(not(unix))]
+  {
+    let _ = tokio::signal::ctrl_c().await;
+  }
+}
+
+async fn graceful_shutdown() {
+  wait_for_shutdown_signal().await;
+  info!(
+    timeout_secs = GRACEFUL_SHUTDOWN_TIMEOUT_SECS,
+    "shutdown signal received, draining websocket connections"
+  );
+  generated::common::websocket::websocket_dao::shutdown_all_connections().await;
+}
+
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct AuthTokenParam {
-  pub Authorization: Option<SmolStr>,
+  pub Authorization: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct GglParams {
-  pub query: SmolStr,
-  pub variables: Option<SmolStr>,
-  pub Authorization: Option<SmolStr>,
+  pub query: String,
+  pub variables: Option<String>,
+  pub Authorization: Option<String>,
 }
 
 #[handler]
@@ -130,7 +156,7 @@ pub async fn graphql_handler_get(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(SmolStr::new);
+    .map(|s| s.to_string());
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -139,12 +165,12 @@ pub async fn graphql_handler_get(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip.into());
+  let ip = generated::common::gql::model::Ip(ip);
   let now0 = Instant::now();
   
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
-  match req.header(AUTHORIZATION).map(SmolStr::new) {
+  match req.header(AUTHORIZATION).map(|s| s.to_string()) {
     None => {
       if let Some(auth_token) = gql_params.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);
@@ -209,7 +235,7 @@ pub async fn graphql_handler(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(SmolStr::new);
+    .map(|s| s.to_string());
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -218,11 +244,11 @@ pub async fn graphql_handler(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip.into());
+  let ip = generated::common::gql::model::Ip(ip);
   
   let now0 = Instant::now();
   let mut gql_req = data.0;
-  match req.header(AUTHORIZATION).map(SmolStr::new) {
+  match req.header(AUTHORIZATION).map(|s| s.to_string()) {
     None => {
       if let Some(auth_token) = token_param.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);
@@ -289,8 +315,74 @@ pub async fn graphql_handler(
 //   )
 // }
 
+fn get_log_retention_days() -> usize {
+  std::env::var("log_retention_days")
+    .ok()
+    .and_then(|value| value.trim().parse::<usize>().ok())
+    .unwrap_or(90)
+}
+
+fn cleanup_old_log_files(
+  directory: impl AsRef<std::path::Path>,
+  prefix: &str,
+  retention_days: usize,
+) {
+  if retention_days == 0 {
+    return;
+  }
+
+  let directory = directory.as_ref();
+  if !directory.exists() {
+    return;
+  }
+
+  let current_date = time::OffsetDateTime::now_local()
+    .unwrap_or_else(|_| time::OffsetDateTime::now_utc())
+    .date();
+  let cutoff_date = current_date - time::Duration::days(retention_days as i64);
+
+  let Ok(entries) = std::fs::read_dir(directory) else {
+    return;
+  };
+
+  for entry in entries.flatten() {
+    let path = entry.path();
+    let Some(file_name) = path.file_name().and_then(|name| name.to_str()) else {
+      continue;
+    };
+    if !file_name.starts_with(prefix) || !file_name.starts_with(&format!("{prefix}.")) {
+      continue;
+    }
+
+    let suffix = &file_name[prefix.len() + 1..];
+    let mut parts = suffix.split('-');
+    let Some(year) = parts.next().and_then(|value| value.parse::<i32>().ok()) else {
+      continue;
+    };
+    let Some(month) = parts.next().and_then(|value| value.parse::<u8>().ok()) else {
+      continue;
+    };
+    let Some(day) = parts.next().and_then(|value| value.parse::<u8>().ok()) else {
+      continue;
+    };
+    if parts.next().is_some() {
+      continue;
+    }
+
+    let Ok(month) = time::Month::try_from(month) else {
+      continue;
+    };
+    let Ok(date) = time::Date::from_calendar_date(year, month, day) else {
+      continue;
+    };
+    if date < cutoff_date {
+      let _ = std::fs::remove_file(path);
+    }
+  }
+}
+
 fn main() -> Result<(), std::io::Error> {
-  let runtime = tokio::runtime::Builder::new_multi_thread()
+  let runtime = tokio::runtime::Builder::new_current_thread()
     .enable_all()
     .thread_stack_size(TOKIO_THREAD_STACK_SIZE)
     .build()
@@ -300,9 +392,13 @@ fn main() -> Result<(), std::io::Error> {
 
 #[allow(clippy::too_many_lines)]
 async fn async_main() -> Result<(), std::io::Error> {
+  
   dotenv().ok();
+  
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();
+  let log_path = std::env::var("log_path").ok();
+  let retention_days = get_log_retention_days();
   
   #[cfg(debug_assertions)]
   let _guard = {
@@ -331,8 +427,7 @@ async fn async_main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var("log_path").ok();
-    if let Some(log_path) = log_path {
+    if let Some(log_path) = log_path.as_deref() {
       let file_appender = LocalDailyAppender::new(
         log_path,
         format!("{server_title}.log"),
@@ -381,7 +476,6 @@ async fn async_main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var("log_path").ok();
     if log_path.is_none() {
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
@@ -390,7 +484,7 @@ async fn async_main() -> Result<(), std::io::Error> {
         .init();
       None
     } else {
-      let log_path = log_path.expect("log_path is none");
+      let log_path = log_path.as_deref().expect("log_path is none");
       let file_appender = LocalDailyAppender::new(
         log_path,
         format!("{}.log", server_title),
@@ -408,6 +502,9 @@ async fn async_main() -> Result<(), std::io::Error> {
 
   if let Some(git_hash) = git_hash {
     info!("git_hash: {git_hash}");
+  }
+  if let Some(log_path) = log_path.as_deref() {
+    cleanup_old_log_files(log_path, &format!("{server_title}.log"), retention_days);
   }
   
   // oss, tmpfile
@@ -435,12 +532,11 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   }
   
-  let schema: app::QuerySchema = Schema::build(
+  let schema: app::QuerySchema = async_graphql::Schema::build(
     app::Query::default(),
     app::Mutation::default(),
-    EmptySubscription
-  )
-    .finish();
+    async_graphql::EmptySubscription,
+  ).finish();
   
   #[cfg(debug_assertions)]
   {
@@ -491,7 +587,10 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   }
   
-  let metrics_graphql = TokioMetrics::new();
+  generated::init();
+  app::init();
+  
+  // let metrics_graphql = TokioMetrics::new();
   
   let app = {
     let mut app = Route::new();
@@ -500,13 +599,13 @@ async fn async_main() -> Result<(), std::io::Error> {
     //   app = app.at("/graphiql", get(graphql_playground));
     // }
     
-    app = app.at("/metrics/graphql", metrics_graphql.exporter());
+    // app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
     app = app.at(
       "/graphql",
       post(graphql_handler)
       .get(graphql_handler_get)
-      .with(metrics_graphql)
+      // .with(metrics_graphql)
     );
     
     // 上传附件
@@ -599,13 +698,7 @@ async fn async_main() -> Result<(), std::io::Error> {
   Server::new(TcpListener::bind(format!("{server_host}:{server_port}")))
     .run_with_graceful_shutdown(
       app,
-      async {
-        let _ = tokio::signal::ctrl_c().await;
-        // let res = generated::common::browser::index::destroy_browser().await;
-        // if let Err(err) = res {
-        //   error!("destroy_browser error: {err:#?}");
-        // }
-      },
-      None,
+      graceful_shutdown(),
+      Some(Duration::from_secs(GRACEFUL_SHUTDOWN_TIMEOUT_SECS)),
     ).await
 }

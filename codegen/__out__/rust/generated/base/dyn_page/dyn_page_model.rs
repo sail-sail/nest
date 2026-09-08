@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -31,7 +28,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::dyn_page_field::dyn_page_field_model::{
@@ -44,14 +40,15 @@ use crate::base::menu::menu_model::MenuId;
 use crate::base::role::role_model::RoleId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_DYN_PAGE: [&str; 3] = [
+static CAN_SORT_IN_API_DYN_PAGE: [&str; 4] = [
+  "code",
   "order_by",
   "create_time",
   "update_time",
 ];
 
 /// 动态页面 前端允许排序的字段
-fn get_can_sort_in_api_dyn_page() -> &'static [&'static str; 3] {
+fn get_can_sort_in_api_dyn_page() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_DYN_PAGE
 }
 
@@ -69,22 +66,22 @@ pub struct DynPageModel {
   pub code_seq: u32,
   /// 路由
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 父菜单
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: MenuId,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
-  pub parent_menu_id_lbl: SmolStr,
+  pub parent_menu_id_lbl: String,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Vec<RoleId>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: Vec<SmolStr>,
+  pub role_ids_lbl: Vec<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
@@ -93,28 +90,28 @@ pub struct DynPageModel {
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
   /// 动态页面字段
   pub dyn_page_field: Vec<DynPageFieldModel>,
 }
@@ -128,44 +125,41 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
     // 编码-序列号
     let code_seq: u32 = row.try_get("code_seq")?;
     // 路由
-    let code: &str = row.try_get("code")?;
-    let code = SmolStr::new(code);
+    let code: String = row.try_get("code")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 父菜单
     let parent_menu_id: MenuId = MenuId::default();
-    let parent_menu_id_lbl = SmolStr::new("");
+    let parent_menu_id_lbl = String::new();
     // 所属角色
     let role_ids: Vec<RoleId> = vec![];
-    let role_ids_lbl: Vec<SmolStr> = vec![];
+    let role_ids_lbl: Vec<String> = vec![];
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -207,61 +201,61 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
 pub struct DynPageFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 路由
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 父菜单
   #[graphql(name = "parent_menu_id")]
-  pub parent_menu_id: SmolStr,
+  pub parent_menu_id: String,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
-  pub parent_menu_id_lbl: SmolStr,
+  pub parent_menu_id_lbl: String,
   /// 所属角色
   #[graphql(name = "role_ids")]
-  pub role_ids: SmolStr,
+  pub role_ids: String,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: SmolStr,
+  pub role_ids_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -280,16 +274,16 @@ pub struct DynPageSearch {
   pub code_seq: Option<[Option<u32>; 2]>,
   /// 路由
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 路由
   #[graphql(name = "code_like")]
-  pub code_like: Option<SmolStr>,
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 父菜单
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: Option<Vec<MenuId>>,
@@ -298,10 +292,10 @@ pub struct DynPageSearch {
   pub parent_menu_id_is_null: Option<bool>,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
-  pub parent_menu_id_lbl: Option<Vec<SmolStr>>,
+  pub parent_menu_id_lbl: Option<Vec<String>>,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl_like")]
-  pub parent_menu_id_lbl_like: Option<SmolStr>,
+  pub parent_menu_id_lbl_like: Option<String>,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
@@ -310,7 +304,7 @@ pub struct DynPageSearch {
   pub role_ids_is_null: Option<bool>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl_like")]
-  pub role_ids_lbl_like: Option<SmolStr>,
+  pub role_ids_lbl_like: Option<String>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
@@ -319,10 +313,10 @@ pub struct DynPageSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -331,10 +325,10 @@ pub struct DynPageSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -346,10 +340,10 @@ pub struct DynPageSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -460,22 +454,22 @@ pub struct DynPageInput {
   pub code_seq: Option<u32>,
   /// 路由
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 父菜单
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: Option<MenuId>,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
-  pub parent_menu_id_lbl: Option<SmolStr>,
+  pub parent_menu_id_lbl: Option<String>,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: Option<Vec<SmolStr>>,
+  pub role_ids_lbl: Option<Vec<String>>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
@@ -484,22 +478,22 @@ pub struct DynPageInput {
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -508,13 +502,13 @@ pub struct DynPageInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -673,7 +667,7 @@ impl From<DynPageInput> for DynPageSearch {
   }
 }
 
-impl_id!(DynPageId);
+crate::common::id::impl_id!(DynPageId);
 
 /// 动态页面 检测字段是否允许前端排序
 pub fn check_sort_dyn_page(
@@ -699,7 +693,7 @@ pub fn check_sort_dyn_page(
     }
     if !get_can_sort_in_api_dyn_page.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_dyn_page: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_dyn_page: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

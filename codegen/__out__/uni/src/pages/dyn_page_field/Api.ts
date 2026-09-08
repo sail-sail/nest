@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -361,6 +360,32 @@ export async function findByIdsDynPageField(
 }
 
 /**
+ * 根据搜索条件判断动态页面字段是否存在
+ */
+export async function existsDynPageField(
+  search?: DynPageFieldSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPageField: Query["existsDynPageField"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageFieldSearch) {
+        existsDynPageField(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPageField;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面字段, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPageField(
@@ -530,19 +555,26 @@ export async function findAllDynPage(
   return dyn_page_models;
 }
 
-export async function getListDynPage() {
+export async function getListDynPage(
+  search?: DynPageSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllDynPage(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

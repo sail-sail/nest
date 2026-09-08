@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl TenantGenQuery {
       .scope({
         tenant_resolver::find_by_ids_tenant(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断租户是否存在
+  #[graphql(name = "existsTenant")]
+  async fn exists_tenant(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<TenantSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::exists_tenant(
+          search,
           None,
         )
       }).await

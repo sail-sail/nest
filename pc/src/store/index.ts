@@ -2,11 +2,15 @@ import {
   ElLoading,
 } from "element-plus";
 
-import cfg from "@/utils/config"
-
 import {
   getOptionsByLbl,
-} from "./Api";
+} from "./Api.ts";
+
+import {
+  UserAgent,
+} from "@/utils/UserAgent.ts";
+
+let userAgent: UserAgent | undefined;
 
 let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 
@@ -60,6 +64,15 @@ export default function() {
       elLoading.close();
       elLoading = undefined;
     }
+  }
+  
+  function getUserAgent(): UserAgent {
+    if (userAgent) {
+      return userAgent;
+    }
+    const ua = window.navigator.userAgent;
+    userAgent = new UserAgent(ua);
+    return userAgent;
   }
   
   function reset() {
@@ -120,6 +133,7 @@ export default function() {
     initI18nVersion,
     addLoading,
     minusLoading,
+    getUserAgent,
     reset,
     logout,
   };

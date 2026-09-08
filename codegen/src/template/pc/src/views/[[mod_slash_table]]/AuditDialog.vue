@@ -147,17 +147,11 @@ if (hasAudit) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   getPagePath<#=Table_Up#>,
   auditReject<#=Table_Up#>,
 } from "./Api.ts";
-
-const pagePath = getPagePath<#=Table_Up#>();
-
-const permitStore = usePermitStore();
-
-const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 

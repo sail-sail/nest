@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -182,6 +179,27 @@ pub async fn find_by_ids_server_log(
   ).await?;
   
   Ok(models)
+}
+
+/// 根据搜索条件判断系统日志是否存在
+#[function_name::named]
+pub async fn exists_server_log(
+  search: Option<ServerLogSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = server_log_service::exists_server_log(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
 }
 
 /// 根据 ids 查找系统日志, 出现查询不到的 id 则报错

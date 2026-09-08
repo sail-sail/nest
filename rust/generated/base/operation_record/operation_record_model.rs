@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -31,7 +28,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -58,50 +54,50 @@ pub struct OperationRecordModel {
   pub id: OperationRecordId,
   /// 模块
   #[graphql(name = "module")]
-  pub module: SmolStr,
+  pub module: String,
   /// 模块名称
   #[graphql(name = "module_lbl")]
-  pub module_lbl: SmolStr,
+  pub module_lbl: String,
   /// 方法
   #[graphql(name = "method")]
-  pub method: SmolStr,
+  pub method: String,
   /// 方法名称
   #[graphql(name = "method_lbl")]
-  pub method_lbl: SmolStr,
+  pub method_lbl: String,
   /// 操作
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 耗时(毫秒)
   #[graphql(name = "time")]
   pub time: u32,
   /// 操作前数据
   #[graphql(name = "old_data")]
-  pub old_data: Option<SmolStr>,
+  pub old_data: Option<String>,
   /// 操作后数据
   #[graphql(name = "new_data")]
-  pub new_data: Option<SmolStr>,
+  pub new_data: Option<String>,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for OperationRecordModel {
@@ -111,47 +107,40 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // ID
     let id: OperationRecordId = row.try_get("id")?;
     // 模块
-    let module: &str = row.try_get("module")?;
-    let module = SmolStr::new(module);
+    let module: String = row.try_get("module")?;
     // 模块名称
-    let module_lbl: &str = row.try_get("module_lbl")?;
-    let module_lbl = SmolStr::new(module_lbl);
+    let module_lbl: String = row.try_get("module_lbl")?;
     // 方法
-    let method: &str = row.try_get("method")?;
-    let method = SmolStr::new(method);
+    let method: String = row.try_get("method")?;
     // 方法名称
-    let method_lbl: &str = row.try_get("method_lbl")?;
-    let method_lbl = SmolStr::new(method_lbl);
+    let method_lbl: String = row.try_get("method_lbl")?;
     // 操作
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 耗时(毫秒)
     let time: u32 = row.try_get("time")?;
     // 操作前数据
-    let old_data: Option<&str> = row.try_get("old_data")?;
-    let old_data = old_data.map(SmolStr::new);
+    let old_data: Option<String> = row.try_get("old_data")?;
     // 操作后数据
-    let new_data: Option<&str> = row.try_get("new_data")?;
-    let new_data = new_data.map(SmolStr::new);
+    let new_data: Option<String> = row.try_get("new_data")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -188,43 +177,43 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
 pub struct OperationRecordFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 模块
   #[graphql(name = "module")]
-  pub module: SmolStr,
+  pub module: String,
   /// 模块名称
   #[graphql(name = "module_lbl")]
-  pub module_lbl: SmolStr,
+  pub module_lbl: String,
   /// 方法
   #[graphql(name = "method")]
-  pub method: SmolStr,
+  pub method: String,
   /// 方法名称
   #[graphql(name = "method_lbl")]
-  pub method_lbl: SmolStr,
+  pub method_lbl: String,
   /// 操作
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 耗时(毫秒)
   #[graphql(name = "time")]
-  pub time: SmolStr,
+  pub time: String,
   /// 操作前数据
   #[graphql(name = "old_data")]
-  pub old_data: SmolStr,
+  pub old_data: String,
   /// 操作后数据
   #[graphql(name = "new_data")]
-  pub new_data: SmolStr,
+  pub new_data: String,
   /// 操作人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 操作人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 操作时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 操作时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -240,49 +229,49 @@ pub struct OperationRecordSearch {
   pub is_deleted: Option<u8>,
   /// 模块
   #[graphql(skip)]
-  pub module: Option<SmolStr>,
+  pub module: Option<String>,
   /// 模块
   #[graphql(skip)]
-  pub module_like: Option<SmolStr>,
+  pub module_like: Option<String>,
   /// 模块名称
   #[graphql(name = "module_lbl")]
-  pub module_lbl: Option<SmolStr>,
+  pub module_lbl: Option<String>,
   /// 模块名称
   #[graphql(name = "module_lbl_like")]
-  pub module_lbl_like: Option<SmolStr>,
+  pub module_lbl_like: Option<String>,
   /// 方法
   #[graphql(skip)]
-  pub method: Option<SmolStr>,
+  pub method: Option<String>,
   /// 方法
   #[graphql(skip)]
-  pub method_like: Option<SmolStr>,
+  pub method_like: Option<String>,
   /// 方法名称
   #[graphql(name = "method_lbl")]
-  pub method_lbl: Option<SmolStr>,
+  pub method_lbl: Option<String>,
   /// 方法名称
   #[graphql(name = "method_lbl_like")]
-  pub method_lbl_like: Option<SmolStr>,
+  pub method_lbl_like: Option<String>,
   /// 操作
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 操作
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 耗时(毫秒)
   #[graphql(skip)]
   pub time: Option<[Option<u32>; 2]>,
   /// 操作前数据
   #[graphql(skip)]
-  pub old_data: Option<SmolStr>,
+  pub old_data: Option<String>,
   /// 操作前数据
   #[graphql(skip)]
-  pub old_data_like: Option<SmolStr>,
+  pub old_data_like: Option<String>,
   /// 操作后数据
   #[graphql(skip)]
-  pub new_data: Option<SmolStr>,
+  pub new_data: Option<String>,
   /// 操作后数据
   #[graphql(skip)]
-  pub new_data_like: Option<SmolStr>,
+  pub new_data_like: Option<String>,
   /// 操作人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -291,10 +280,10 @@ pub struct OperationRecordSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 操作人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 操作人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 操作时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -306,10 +295,10 @@ pub struct OperationRecordSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -437,40 +426,40 @@ pub struct OperationRecordInput {
   pub tenant_id: Option<TenantId>,
   /// 模块
   #[graphql(name = "module")]
-  pub module: Option<SmolStr>,
+  pub module: Option<String>,
   /// 模块名称
   #[graphql(name = "module_lbl")]
-  pub module_lbl: Option<SmolStr>,
+  pub module_lbl: Option<String>,
   /// 方法
   #[graphql(name = "method")]
-  pub method: Option<SmolStr>,
+  pub method: Option<String>,
   /// 方法名称
   #[graphql(name = "method_lbl")]
-  pub method_lbl: Option<SmolStr>,
+  pub method_lbl: Option<String>,
   /// 操作
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 耗时(毫秒)
   #[graphql(name = "time")]
   pub time: Option<u32>,
   /// 操作前数据
   #[graphql(name = "old_data")]
-  pub old_data: Option<SmolStr>,
+  pub old_data: Option<String>,
   /// 操作后数据
   #[graphql(name = "new_data")]
-  pub new_data: Option<SmolStr>,
+  pub new_data: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -479,13 +468,13 @@ pub struct OperationRecordInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -632,7 +621,7 @@ impl From<OperationRecordInput> for OperationRecordSearch {
   }
 }
 
-impl_id!(OperationRecordId);
+crate::common::id::impl_id!(OperationRecordId);
 
 /// 操作记录 检测字段是否允许前端排序
 pub fn check_sort_operation_record(
@@ -658,7 +647,7 @@ pub fn check_sort_operation_record(
     }
     if !get_can_sort_in_api_operation_record.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_operation_record: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_operation_record: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

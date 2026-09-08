@@ -71,7 +71,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 const {
   ns,
 } = useI18n("/base/usr");

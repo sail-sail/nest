@@ -1,15 +1,14 @@
 <template>
-<tm-modal
-  v-model:show="dialogVisible"
-  :closeable="true"
-  height="90%"
+<CustomDialog
+  ref="customDialogRef"
   :title="dialogTitle"
+  type="large"
   disabled-scroll
   show-close
   :show-footer="false"
   :content-padding="0"
   max-height="90%"
-  :overlay-click="true"
+  :close-on-click-modal="true"
 >
   
   <view
@@ -169,7 +168,7 @@
     
   </view>
   
-</tm-modal>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
@@ -181,17 +180,18 @@ import {
   componentPropsConfig,
 } from "@/components/CustomDynComp/ComponentMap.ts";
 
+import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
 import CustomInputModal from "@/components/CustomInputModal/CustomInputModal.vue";
 
 let dialogTitle = $ref("配置属性");
-let dialogVisible = $ref(false);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let dialogModel = $ref<Record<string, any>>({});
 
 let componentType = $ref<string>("");
 
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 const formRef = $ref<InstanceType<typeof TmForm>>();
 
 // 用于选项配置的字符串（每行一个选项）
@@ -215,8 +215,6 @@ type OnCloseResolveType = {
   type: "ok" | "cancel";
   attrs?: string;
 };
-
-let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 function cloneDefaultValue<T>(value: T): T {
   if (Array.isArray(value)) {
@@ -277,17 +275,21 @@ async function showDialog(
   } else {
     optionsInputStr = "";
   }
-  
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
+
+  return await customDialogRef!.showDialog<OnCloseResolveType>({
+    title: dialogTitle,
+    type: "large",
+    showFooter: false,
+    showClose: true,
+    showTitle: true,
+    disabledScroll: true,
+    contentPadding: 0,
+    maxHeight: "90%",
+    closeOnClickModal: true,
+    closeResult: {
+      type: "cancel",
+    },
   });
-  
-  dialogVisible = true;
-  
-  return await dialogPrm;
 }
 
 function onSave() {
@@ -328,15 +330,15 @@ function onSave() {
   }
   
   const attrsStr = Object.keys(finalAttrs).length > 0 ? JSON.stringify(finalAttrs) : "";
-  
-  onCloseResolve({
+
+  customDialogRef?.resolve({
     type: "ok",
     attrs: attrsStr,
   });
 }
 
 function onClose() {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "cancel",
   });
 }

@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl JobGenQuery {
       .scope({
         job_resolver::find_by_ids_job(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断任务是否存在
+  #[graphql(name = "existsJob")]
+  async fn exists_job(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<JobSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        job_resolver::exists_job(
+          search,
           None,
         )
       }).await

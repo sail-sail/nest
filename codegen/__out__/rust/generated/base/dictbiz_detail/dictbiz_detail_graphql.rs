@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl DictbizDetailGenQuery {
       .scope({
         dictbiz_detail_resolver::find_by_ids_dictbiz_detail(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断业务字典明细是否存在
+  #[graphql(name = "existsDictbizDetail")]
+  async fn exists_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DictbizDetailSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::exists_dictbiz_detail(
+          search,
           None,
         )
       }).await

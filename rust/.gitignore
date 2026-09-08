@@ -1,6 +1,7 @@
 # 依赖目录
 node_modules/
 target/
+target-test/
 
 # 包管理和锁定文件
 package-lock.json

@@ -108,10 +108,10 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   lang,
-} from "@/locales/index";
+} from "@/locales/index.ts";
 
 import {
   User,
@@ -123,16 +123,17 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   clearCache,
   getLoginTenantByIds,
-} from "./Api";
+} from "./Api.ts";
 
 import type {
   LoginModel,
   MutationLoginArgs,
-} from "#/types";
+} from "#/types.ts";
 
 const router = useRouter();
 
 const usrStore = useUsrStore();
+const permitStore = usePermitStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 
@@ -325,6 +326,7 @@ async function onLogin() {
   usrStore.username = loginModel.username;
   usrStore.tenant_id = loginModel.tenant_id;
   usrStore.lang = loginModel.lang ?? "";
+  permitStore.clear();
   tabsStore.clearKeepAliveNames();
   await indexStore.initI18nVersion();
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -184,6 +181,27 @@ pub async fn find_by_ids_field_permit(
   Ok(models)
 }
 
+/// 根据搜索条件判断字段权限是否存在
+#[function_name::named]
+pub async fn exists_field_permit(
+  search: Option<FieldPermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = field_permit_service::exists_field_permit(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找字段权限, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_field_permit(
@@ -229,8 +247,8 @@ pub async fn update_by_id_field_permit(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_field_permit()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_field_permit()),
+    String::from("edit"),
   ).await?;
   
   let res = field_permit_service::update_by_id_field_permit(

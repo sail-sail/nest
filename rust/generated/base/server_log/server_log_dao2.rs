@@ -10,7 +10,6 @@ use std::sync::OnceLock;
 use chrono::{NaiveDate, NaiveDateTime};
 use color_eyre::eyre::{Result, eyre};
 use regex::Regex;
-use smol_str::SmolStr;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncSeekExt, BufReader};
 // use tracing::info;
 
@@ -282,11 +281,11 @@ fn raw_to_model(
   let id_str = format!("{}_{:013}", log_date.format("%Y%m%d"), line_idx);
   let id = ServerLogId::from(id_str.as_str());
   
-  let log_date_lbl = SmolStr::new(log_date.format("%Y-%m-%d").to_string());
-  let log_time_lbl = SmolStr::new(entry.timestamp.format("%Y-%m-%d %H:%M:%S%.6f").to_string());
+  let log_date_lbl = log_date.format("%Y-%m-%d").to_string();
+  let log_time_lbl = entry.timestamp.format("%Y-%m-%d %H:%M:%S%.6f").to_string();
   
   let level = ServerLogLevel::from_str(&entry.level).unwrap_or_default();
-  let level_lbl: SmolStr = level.into();
+  let level_lbl: String = level.into();
   
   ServerLogModel {
     id,
@@ -296,9 +295,9 @@ fn raw_to_model(
     log_time_lbl,
     level,
     level_lbl,
-    module: SmolStr::new(&entry.module),
-    req_id: SmolStr::new(&entry.req_id),
-    content: Some(SmolStr::new(&entry.content)),
+    module: entry.module.clone(),
+    req_id: entry.req_id.clone(),
+    content: Some(entry.content.clone()),
   }
 }
 

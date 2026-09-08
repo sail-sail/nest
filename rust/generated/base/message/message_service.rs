@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -24,8 +21,7 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 
 use crate::base::usr::usr_dao::{
-  find_by_id_usr,
-  validate_option_usr,
+  find_by_id_ok_usr,
 };
 
 use super::message_model::*;
@@ -37,17 +33,20 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
-  let usr_id = get_auth_id_ok()?;
-  let usr_model = validate_option_usr(
-    find_by_id_usr(
-      usr_id,
-      options,
-    ).await?,
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+    auth_usr_id
+  } else {
+    get_auth_id_ok()?
+  };
+  
+  let usr_model = find_by_id_ok_usr(
+    usr_id,
+    options,
   ).await?;
   
   let org_id = get_auth_org_id().unwrap_or_default();
   let mut org_ids: Vec<OrgId> = vec![];
-  if !org_id.is_empty() {
+  if search.auth_usr_id.unwrap_or_default().is_empty() && !org_id.is_empty() {
     org_ids.push(org_id);
   } else {
     org_ids.append(&mut usr_model.org_ids.clone());
@@ -191,6 +190,27 @@ pub async fn find_by_ids_message(
   ).await?;
   
   Ok(message_models)
+}
+
+/// 根据搜索条件判断消息是否存在
+pub async fn exists_message(
+  search: Option<MessageSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = message_dao::exists_message(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
 }
 
 /// 根据 ids 查找消息, 出现查询不到的 id 则报错

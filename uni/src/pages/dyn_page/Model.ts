@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DynPageInput as DynPageInputType,
   DynPageModel as DynPageModelType,

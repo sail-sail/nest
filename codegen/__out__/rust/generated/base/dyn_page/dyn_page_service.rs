@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -165,6 +162,27 @@ pub async fn find_by_ids_dyn_page(
   ).await?;
   
   Ok(dyn_page_models)
+}
+
+/// 根据搜索条件判断动态页面是否存在
+pub async fn exists_dyn_page(
+  search: Option<DynPageSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = dyn_page_dao::exists_dyn_page(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
 }
 
 /// 根据 ids 查找动态页面, 出现查询不到的 id 则报错

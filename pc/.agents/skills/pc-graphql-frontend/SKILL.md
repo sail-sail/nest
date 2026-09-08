@@ -117,3 +117,4 @@ export async function updateXxx(
 3. 命名：函数名用驼峰式，参数名用蛇形式，并与后端保持一致
 4. 变量映射：若 TS 参数使用蛇形命名、但后端 GraphQL schema 要求驼峰参数名，在 `variables` 组装时显式映射（例如 `variables: { bookingOrderId: booking_order_id }`）
 5. 字典查询优先级：业务字典 / 系统字典统一使用全局通用函数 `getDict()` / `getDictbiz()`（全局自动注入，无需手动引入）
+6. 前端调用 `Api` 接口时不需要写 `try catch`, 已被封装在 `src/utils/request.ts` 中

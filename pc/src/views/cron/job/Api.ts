@@ -336,6 +336,32 @@ export async function findByIdsJob(
 }
 
 /**
+ * 根据搜索条件判断任务是否存在
+ */
+export async function existsJob(
+  search?: JobSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsJob: Query["existsJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: JobSearch) {
+        existsJob(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsJob;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 任务, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkJob(
@@ -570,23 +596,15 @@ export function useExportExcelJob() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: JobSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: JobSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllJob(search: $search, page: $page, sort: $sort) {
               ${ jobQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

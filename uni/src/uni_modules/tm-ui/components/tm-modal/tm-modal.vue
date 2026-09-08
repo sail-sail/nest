@@ -580,7 +580,8 @@
 									</view>
 								</scroll-view>
 							</view>
-							<view v-else :style="{ height: _showTitle ? 'calc(100% - 50px)' : '100%', padding: _contentPadding }">
+							<view v-else :style="{ height: _showTitle ? 'calc(100% - 50px)' : '100%', padding: _contentPadding }"
+							  style="display: flex; flex-direction: column; overflow: hidden">
 								<!--
                 @slot 默认插槽
                 -->

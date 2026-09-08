@@ -13,15 +13,17 @@ pub struct PermitQuery;
 impl PermitQuery {
   
   /// 根据当前用户获取权限列表
+  #[graphql(name = "getUsrPermits")]
   async fn get_usr_permits(
     &self,
     ctx: &Context<'_>,
+    route_path: Option<String>,
   ) -> Result<Vec<GetUsrPermits>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        permit_resolver::get_usr_permits()
+        permit_resolver::get_usr_permits(route_path)
       }).await
   }
   

@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -167,6 +164,27 @@ pub async fn find_by_ids_dyn_page_data(
   Ok(dyn_page_data_models)
 }
 
+/// 根据搜索条件判断动态页面数据是否存在
+pub async fn exists_dyn_page_data(
+  search: Option<DynPageDataSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = dyn_page_data_dao::exists_dyn_page_data(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找动态页面数据, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_dyn_page_data(
   dyn_page_data_ids: Vec<DynPageDataId>,
@@ -271,7 +289,7 @@ pub async fn delete_by_ids_dyn_page_data(
 
 /// 获取动态页面数据字段注释
 pub async fn get_field_comments_dyn_page_data(
-  ref_code: Option<SmolStr>,
+  ref_code: Option<String>,
   options: Option<Options>,
 ) -> Result<DynPageDataFieldComment> {
   

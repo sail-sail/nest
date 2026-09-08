@@ -356,6 +356,32 @@ export async function findByIdsDynPage(
 }
 
 /**
+ * 根据搜索条件判断动态页面是否存在
+ */
+export async function existsDynPage(
+  search?: DynPageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPage: Query["existsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageSearch) {
+        existsDynPage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPage(
@@ -579,8 +605,8 @@ export async function getListRole() {
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
     ],
     {
@@ -627,14 +653,6 @@ export function useDownloadImportTemplateDynPage() {
             order_by
             rem
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          findAllRole {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -680,28 +698,15 @@ export function useExportExcelDynPage() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DynPageSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DynPageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDynPage(search: $search, page: $page, sort: $sort) {
               ${ dynPageQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            findAllRole {
-              lbl
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

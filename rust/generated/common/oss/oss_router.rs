@@ -17,13 +17,13 @@ use crate::common::context::{
   Ctx,
   get_auth_model,
   get_short_uuid,
+  id_to_string,
 };
 
 use crate::common::tmpfile::tmpfile_dao;
 
 use super::oss_service;
-use smol_str::SmolStr;
-
+  
 #[derive(Deserialize)]
 struct UploadQuery {
   db: Option<String>,
@@ -62,10 +62,10 @@ async fn _upload(
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
-  let id: SmolStr = if let Some(id) = id {
-    id.into()
+  let id: String = if let Some(id) = id {
+    id
   } else {
-    get_short_uuid()
+    id_to_string(&get_short_uuid())
   };
   let auth_model = get_auth_model();
   let tenant_id = auth_model.map(|x| x.tenant_id);
@@ -150,10 +150,10 @@ pub async fn _upload_public(
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
-  let id: SmolStr = if let Some(id) = id {
-    id.into()
+  let id: String = if let Some(id) = id {
+    id
   } else {
-    get_short_uuid()
+    id_to_string(&get_short_uuid())
   };
   let res = oss_service::put_object(
     id.as_str(), &content, &content_type, &file_name,

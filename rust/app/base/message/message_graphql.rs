@@ -2,6 +2,7 @@ use async_graphql::{Context, Object};
 use color_eyre::eyre::Result;
 
 use generated::base::message::message_model::{MessageInput, MessageModel};
+use generated::base::message_receiver::message_receiver_model::MessageReceiverId;
 use generated::common::context::Ctx;
 use generated::base::usr::usr_model::UsrId;
 
@@ -42,7 +43,22 @@ impl MessageMutation {
       .with_auth()?
       .build()
       .scope({
-        message_resolver::send_message(input, receiver_usr_ids)
+        message_resolver::send_message(input, receiver_usr_ids, None)
+      }).await
+  }
+
+  /// 标记消息接收记录为已读
+  #[graphql(name = "markMessageReceiverAsRead")]
+  async fn mark_message_receiver_as_read(
+    &self,
+    ctx: &Context<'_>,
+    id: MessageReceiverId,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        message_resolver::mark_message_receiver_as_read(id, None)
       }).await
   }
 }

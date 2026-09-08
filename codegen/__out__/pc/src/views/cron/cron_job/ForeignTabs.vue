@@ -24,10 +24,20 @@
         <template
           v-if="tabGroup === 'lbl'"
         >
-        
-          <el-tab-pane
-            :label="'任务执行日志' + (cron_job_log_total != null ? ` (${ cron_job_log_total })` : '')"
-          >
+          
+          <el-tab-pane>
+            
+            <template #label>
+              <el-badge
+                :value="cron_job_log_total"
+                :show-zero="false"
+                type="info"
+                :offset="[8, 0]"
+              >
+                任务执行日志
+              </el-badge>
+            </template>
+            
             <CronJobLogList
               :cron_job_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
@@ -36,6 +46,7 @@
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
             ></CronJobLogList>
+            
           </el-tab-pane>
           
         </template>
@@ -65,13 +76,13 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 
 import CronJobLogList from "@/views/cron/cron_job_log/List.vue";
 
 import {
   findCountCronJobLog,
-} from "@/views/cron/cron_job_log/Api";
+} from "@/views/cron/cron_job_log/Api.ts";
 
 let inited = $ref(false);
 

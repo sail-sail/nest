@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -186,6 +183,27 @@ pub async fn find_by_ids_dictbiz(
   Ok(models)
 }
 
+/// 根据搜索条件判断业务字典是否存在
+#[function_name::named]
+pub async fn exists_dictbiz(
+  search: Option<DictbizSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = dictbiz_service::exists_dictbiz(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找业务字典, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_dictbiz(
@@ -237,8 +255,8 @@ pub async fn creates_dictbiz(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("add"),
+    String::from(get_page_path_dictbiz()),
+    String::from("add"),
   ).await?;
   
   let ids = dictbiz_service::creates_dictbiz(
@@ -297,8 +315,8 @@ pub async fn update_by_id_dictbiz(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dictbiz()),
+    String::from("edit"),
   ).await?;
   
   let res = dictbiz_service::update_by_id_dictbiz(
@@ -325,8 +343,8 @@ pub async fn delete_by_ids_dictbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dictbiz()),
+    String::from("delete"),
   ).await?;
   
   let num = dictbiz_service::delete_by_ids_dictbiz(
@@ -376,8 +394,8 @@ pub async fn enable_by_ids_dictbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dictbiz()),
+    String::from("edit"),
   ).await?;
   
   let num = dictbiz_service::enable_by_ids_dictbiz(
@@ -423,8 +441,8 @@ pub async fn revert_by_ids_dictbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dictbiz()),
+    String::from("delete"),
   ).await?;
   
   let num = dictbiz_service::revert_by_ids_dictbiz(
@@ -450,8 +468,8 @@ pub async fn force_delete_by_ids_dictbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dictbiz()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_dictbiz()),
+    String::from("force_delete"),
   ).await?;
   
   let num = dictbiz_service::force_delete_by_ids_dictbiz(

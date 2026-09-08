@@ -207,7 +207,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -233,7 +233,10 @@ const pagePath = getPagePathServerLog();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -356,11 +359,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }
+    isLocked = toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());

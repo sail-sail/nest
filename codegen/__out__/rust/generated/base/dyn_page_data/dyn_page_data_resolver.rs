@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -186,6 +183,27 @@ pub async fn find_by_ids_dyn_page_data(
   Ok(models)
 }
 
+/// 根据搜索条件判断动态页面数据是否存在
+#[function_name::named]
+pub async fn exists_dyn_page_data(
+  search: Option<DynPageDataSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = dyn_page_data_service::exists_dyn_page_data(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找动态页面数据, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_dyn_page_data(
@@ -237,8 +255,8 @@ pub async fn creates_dyn_page_data(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data()),
-    SmolStr::new("add"),
+    String::from(get_page_path_dyn_page_data()),
+    String::from("add"),
   ).await?;
   
   let ids = dyn_page_data_service::creates_dyn_page_data(
@@ -297,8 +315,8 @@ pub async fn update_by_id_dyn_page_data(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dyn_page_data()),
+    String::from("edit"),
   ).await?;
   
   let res = dyn_page_data_service::update_by_id_dyn_page_data(
@@ -325,8 +343,8 @@ pub async fn delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dyn_page_data()),
+    String::from("delete"),
   ).await?;
   
   let num = dyn_page_data_service::delete_by_ids_dyn_page_data(
@@ -371,8 +389,8 @@ pub async fn revert_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dyn_page_data()),
+    String::from("delete"),
   ).await?;
   
   let num = dyn_page_data_service::revert_by_ids_dyn_page_data(
@@ -398,8 +416,8 @@ pub async fn force_delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_dyn_page_data()),
+    String::from("force_delete"),
   ).await?;
   
   let num = dyn_page_data_service::force_delete_by_ids_dyn_page_data(

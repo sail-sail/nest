@@ -1,11 +1,10 @@
 use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
 
-use smol_str::SmolStr;
-
 use crate::common::context::Ctx;
 
 use super::app_resolver;
+use crate::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct AppQuery;
@@ -18,7 +17,7 @@ impl AppQuery {
   async fn generate_id(
     &self,
     ctx: &Context<'_>,
-  ) -> Result<SmolStr> {
+  ) -> Result<String> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -46,15 +45,18 @@ impl AppQuery {
   async fn get_tenant_id_by_appid(
     &self,
     ctx: &Context<'_>,
-    platform: SmolStr,
-    appid: SmolStr,
-  ) -> Result<SmolStr> {
+    platform: String,
+    appid: String,
+    agentid: Option<String>,
+  ) -> Result<TenantId> {
     Ctx::builder(ctx)
       .build()
       .scope({
         app_resolver::get_tenant_id_by_appid(
           platform,
           appid,
+          agentid,
+          None,
         )
       }).await
   }

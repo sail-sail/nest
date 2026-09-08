@@ -38,7 +38,7 @@ description: Rust 定时任务规范.新增/修改定时任务使用
 在 `app/cron/job/job_dao.rs` 的 `run_job` 中，使用 `match code.as_str()` 静态分发：
 
 ```rust
-let exec_result: Option<Result<SmolStr>> = match code.as_str() {
+let exec_result: Option<Result<String>> = match code.as_str() {
   "test" => test(
     id,
     tenant_id,
@@ -100,11 +100,11 @@ pub async fn some_job(
   cron_job_log_id: CronJobLogId,
   tenant_id: TenantId,
   options: Option<Options>,
-) -> Result<SmolStr>
+) -> Result<String>
 ```
 
 返回值：
-- 成功时返回摘要文本 `SmolStr`
+- 成功时返回摘要文本 `String`
 - 失败时返回 `Err(...)`
 
 ### 2. 再在 `job_dao.rs` 注册分发

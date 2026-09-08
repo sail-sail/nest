@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -186,6 +183,27 @@ pub async fn find_by_ids_job(
   Ok(models)
 }
 
+/// 根据搜索条件判断任务是否存在
+#[function_name::named]
+pub async fn exists_job(
+  search: Option<JobSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = job_service::exists_job(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找任务, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_job(
@@ -237,8 +255,8 @@ pub async fn creates_job(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("add"),
+    String::from(get_page_path_job()),
+    String::from("add"),
   ).await?;
   
   let ids = job_service::creates_job(
@@ -297,8 +315,8 @@ pub async fn update_by_id_job(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_job()),
+    String::from("edit"),
   ).await?;
   
   let res = job_service::update_by_id_job(
@@ -325,8 +343,8 @@ pub async fn delete_by_ids_job(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_job()),
+    String::from("delete"),
   ).await?;
   
   let num = job_service::delete_by_ids_job(
@@ -376,8 +394,8 @@ pub async fn enable_by_ids_job(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_job()),
+    String::from("edit"),
   ).await?;
   
   let num = job_service::enable_by_ids_job(
@@ -429,8 +447,8 @@ pub async fn lock_by_ids_job(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_job()),
+    String::from("edit"),
   ).await?;
   
   let num = job_service::lock_by_ids_job(
@@ -476,8 +494,8 @@ pub async fn revert_by_ids_job(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_job()),
+    String::from("delete"),
   ).await?;
   
   let num = job_service::revert_by_ids_job(
@@ -503,8 +521,8 @@ pub async fn force_delete_by_ids_job(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_job()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_job()),
+    String::from("force_delete"),
   ).await?;
   
   let num = job_service::force_delete_by_ids_job(

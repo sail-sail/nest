@@ -130,14 +130,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
-}
-#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-import {
+#>import {
   UniqueType,
 } from "#/types.ts";<#
 }
@@ -571,15 +565,23 @@ export async function setLblById<#=Table_Up#>(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = getImgUrl({
-      id: model.<#=column_name#>,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = getImgUrl({
+        id: img,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>) || "";
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#
@@ -1208,6 +1210,34 @@ export async function auditReview<#=Table_Up#>(
 }
 #><#
 }
+#><#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+
+  const data: {
+    auditReverse<#=Table_Up2#>: Mutation["auditReverse<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReverse<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const res = data.auditReverse<#=Table_Up2#>;
+
+  return res;
+}<#
+}
 #>
 
 /**
@@ -1345,6 +1375,32 @@ export async function findByIds<#=Table_Up#>(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up#>(
+  search?: <#=searchName#>,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    exists<#=Table_Up2#>: Query["exists<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>) {
+        exists<#=Table_Up2#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.exists<#=Table_Up2#>;
+  
+  return res;
 }
 
 /**
@@ -1642,26 +1698,33 @@ export async function findAll<#=Foreign_Table_Up#>(
 }
 #>
 
-export async function getList<#=Foreign_Table_Up#>() {
+export async function getList<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
+      ...search,
       is_enabled: [ 1 ],
     },<#
     } else {
     #>
-    undefined,<#
+    search,<#
     }
     #>
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "<#=defaultSort && defaultSort.prop || ""#>",
         order: "<#=defaultSort && defaultSort.order || "ascending"#>",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -2221,9 +2284,9 @@ export async function getDefaultInput<#=Table_Up#>() {<#
         }
       } else if (data_type === "varchar" || data_type === "text") {
         if (defaultValue === "CURRENT_USR_ID") {
-          defaultValue = "usrStore.usr_id";
+          defaultValue = "usrStore.getUsrId()";
         } else if (defaultValue === "CURRENT_ORG_ID") {
-          defaultValue = "usrStore.loginInfo?.org_id";
+          defaultValue = "usrStore.getLoginInfo()?.org_id";
         } else if (defaultValue === "CURRENT_TENANT_ID") {
           defaultValue = "usrStore.tenant_id";
         } else if (defaultValue === "CURRENT_USERNAME") {

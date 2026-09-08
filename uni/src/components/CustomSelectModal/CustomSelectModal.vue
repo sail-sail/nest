@@ -165,43 +165,73 @@
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
       :style="{
-        flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+        flex: shouldUseScrollableBody ? undefined : 'none',
       }"
     >
       
       <view
-        v-if="!props.hideSearch && (options4SelectV2.length > 5 || props.height)"
-        un-p="t-2"
+        v-if="!props.hideSearch && shouldUseScrollableBody"
+        un-p="t-1"
         un-box-border
-        un-m="x-4"
-        un-flex="~"
-        un-items="center"
-        un-gap="x-2"
+        un-m="x-3"
+        un-flex="~ col"
+        un-gap="y-1"
       >
         
-        <view
-          un-flex="~ [1_0_0]"
-          un-overflow-hidden
-          un-items="center"
-        >
-          
-          <tm-input
-            v-model="searchStr"
-            width="100%"
-            placeholder="请输入关键字"
-            show-clear
-          ></tm-input>
-          
-        </view>
+        <slot
+          name="search-extra"
+          :search-str="searchStr"
+          :search-params="extraSearch"
+          :is-search-ids="isSearchIds"
+          :on-search="onSearchConfirm"
+        ></slot>
         
         <view
-          v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
+          un-flex="~"
+          un-items="center"
+          un-gap="x-2"
         >
           
-          <tm-checkbox
-            :model-value="selectedValueArr.length === options4SelectV2Computed.length"
-            @change="onSelectAll"
-          ></tm-checkbox>
+          <view
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-gap="x-2"
+          >
+            
+            <view
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-items="center"
+            >
+              <tm-input
+                v-model="searchStr"
+                width="100%"
+                placeholder="请输入关键字"
+                :show-clear="!!searchStr"
+                @confirm="onSearchConfirm"
+              ></tm-input>
+            </view>
+            
+            <view>
+              <tm-checkbox
+                v-model="isSearchIds"
+                @change="onSearchConfirm"
+              ></tm-checkbox>
+            </view>
+            
+          </view>
+          
+          <view
+            v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
+          >
+            
+            <tm-checkbox
+              :model-value="selectedValueArr.length === options4SelectV2Computed.length"
+              @change="onSelectAll"
+            ></tm-checkbox>
+            
+          </view>
           
         </view>
         
@@ -211,15 +241,17 @@
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
         :style="{
-          flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+          flex: shouldUseScrollableBody ? undefined : 'none',
         }"
         scroll-y
+        enable-flex
         refresher-enabled
         :refresher-triggered="refresherTriggered"
         :rebound="false"
         :scroll-into-view="scrollIntoViewId"
         :scroll-with-animation="true"
         @refresherrefresh="onRefresherrefresh"
+        @scrolltolower="onLoadMore"
       >
         
         <slot
@@ -231,71 +263,106 @@
         >
           
           <view
-            un-flex="~ [1_0_0] col"
-            un-overflow-hidden
+            v-for="item of options4SelectV2Computed"
+            :id="getOptionAnchorId(item.value)"
+            :key="item.value"
+            :title="item.label"
+            un-m="x-2"
+            un-p="y-3"
+            un-box-border
+            un-flex="~"
+            un-items="center"
+            un-gap="2"
+            un-b="0 b-1 solid #e6e6e6"
             :style="{
-              flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+              'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+              'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
             }"
+            @click="onSelect(item.value)"
           >
-          
-            <view
-              v-for="item of options4SelectV2Computed"
-              :id="getOptionAnchorId(item.value)"
-              :key="item.value"
-              :title="item.label"
-              un-m="x-2"
-              un-p="y-4"
-              un-box-border
-              un-flex="~"
-              un-items="center"
-              un-gap="2"
-              un-b="0 b-1 solid #e6e6e6"
-              :style="{
-                'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-                'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
-              }"
-              @click="onSelect(item.value)"
+            
+            <slot
+              name="option-label"
+              :item="item"
             >
               
               <view
-                un-flex="~ [1_0_0]"
+                un-flex="~ [1_0_0] col wrap"
                 un-overflow-hidden
-                un-items="center"
+                un-justify="center"
                 un-m="l-4"
+                un-gap="y-1"
               >
-                {{ item.label }}
-              </view>
-              
-              <view
-                style="width: 1.2rem;height: 1.2rem;"
-                un-m="r-4"
-              >
+                
+                <view>
+                  {{ item.label }}
+                </view>
+                
                 <view
-                  v-if="selectedValueArr.includes(item.value)"
-                  un-i="iconfont-check"
-                ></view>
+                  v-if="item.subLabel"
+                  un-text="[var(--color-placeholder)]"
+                  :style="{
+                    'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+                  }"
+                >
+                  {{ item.subLabel }}
+                </view>
+                
               </view>
               
-            </view>
+              
+            </slot>
             
             <view
-              v-if="inited && options4SelectV2Computed.length === 0"
-              un-flex="~"
-              un-items="center"
-              un-justify="center"
-              un-text="gray-400"
-              un-h="10"
+              style="width: 1.2rem;height: 1.2rem;"
+              un-m="r-4"
             >
-              (暂无数据)
+              <view
+                v-if="selectedValueArr.includes(item.value)"
+                un-i="iconfont-check"
+              ></view>
             </view>
             
-            <view
-              v-else-if="options4SelectV2Computed.length > 5 || props.height"
-              un-m="y-2"
+          </view>
+          
+          <view
+            v-if="(!inited || isLoading) && options4SelectV2.length === 0"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-justify="center"
+            un-min="h-20"
+            un-text="gray-500 dark:gray-400"
+          >
+            加载中...
+          </view>
+          
+          <view
+            v-else-if="inited && options4SelectV2Computed.length === 0"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-justify="center"
+            un-text="gray-500 dark:gray-400"
+            un-min="h-20"
+          >
+            (暂无数据)
+          </view>
+          
+          <view
+            v-else-if="inited && shouldUseScrollableBody"
+            un-m="y-2"
+          >
+            <CustomDivider
+              v-if="!isEnd && props.isPage"
             >
-              <CustomDivider></CustomDivider>
-            </view>
-            
+              加载更多中...
+            </CustomDivider>
+            <CustomDivider
+              v-else
+            >
+              共 {{ options4SelectV2.length }} 条
+            </CustomDivider>
           </view>
           
         </slot>
@@ -347,8 +414,13 @@ import type {
   WatchHandle,
 } from "vue";
 
+import {
+  shouldPrefetchSelectedOptions,
+} from "./prefetch.ts";
+
 type OptionType = {
   label: string;
+  subLabel?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   image?: string;
@@ -356,6 +428,14 @@ type OptionType = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SelectMethod = (...args: any[]) => Promise<any[] | MaybeRef<any[]>> | MaybeRef<any[]> | any[];
+
+type SelectPageInput = {
+  pgOffset?: number;
+  pgSize?: number;
+};
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -373,7 +453,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method?: (() => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]) | any[]; // 用于获取数据的方法
+    method?: SelectMethod | any[]; // 用于获取数据的方法. 分页模式下约定为 (search?, page?)
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -389,17 +469,23 @@ const props = withDefaults(
     readonly?: boolean | null;
     readonlyPlaceholder?: string | null;
     searchStr?: string | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    searchParams?: Record<string, any> | MaybeRef<Record<string, any>>;
     hideSearch?: boolean;
+    isPage?: boolean;
+    pageSize?: number;
+    searchKey?: string;
+    searchIds?: string;
   }>(),
   {
     method: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-      const item2 = item as { lbl: string; id: string; img_lbl?: string };
       return {
-        label: item2.lbl,
-        value: item2.id,
-        image: item2.img_lbl,
+        label: item.lbl,
+        subLabel: item.subLabel,
+        value: item.id,
+        image: item.img_lbl,
       };
     },
     modelValue: undefined,
@@ -415,11 +501,14 @@ const props = withDefaults(
     readonly: undefined,
     readonlyPlaceholder: undefined,
     searchStr: "",
+    searchParams: undefined,
     hideSearch: false,
+    isPage: false,
+    pageSize: 20,
+    searchKey: "keyword",
+    searchIds: "ids",
   },
 );
-
-const hasModelLabel = $computed(() => props.modelLabel != null);
 
 let _height = $ref(props.height || "90%");
 const _width = $ref(props.width || "90%");
@@ -441,13 +530,32 @@ const inited = ref(false);
 const data = ref<any[]>([ ]);
 const options4SelectV2 = ref<OptionType[]>([ ]);
 
+const isLoading = ref(false);
+
 const searchStr = ref(props.searchStr || "");
+const extraSearch = computed(() => {
+  if (props.searchParams == null) {
+    return { };
+  }
+  return unref(props.searchParams) || { };
+});
 
 const options4SelectV2Computed = computed(() => {
-  if (searchStr.value) {
-    return options4SelectV2.value.filter((item) => item.label.includes(searchStr.value));
+  if (props.isPage) {
+    return options4SelectV2.value;
   }
-  return options4SelectV2.value;
+  let options4SelectV2Filtered = options4SelectV2.value;
+  if (isSearchIds) {
+    options4SelectV2Filtered = options4SelectV2Filtered.filter((item) => selectedValueArr.value.includes(item.value));
+  }
+  if (searchStr.value) {
+    options4SelectV2Filtered = options4SelectV2Filtered.filter((item) => item.label.includes(searchStr.value));
+  }
+  return options4SelectV2Filtered;
+});
+
+const shouldUseScrollableBody = computed(() => {
+  return props.isPage || options4SelectV2.value.length > 5 || !!props.height;
 });
 
 const isTagExpanded = ref(false);
@@ -485,10 +593,7 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
-  if (!hasModelLabel) {
-    return false;
-  }
-  if (modelLabel == null) {
+  if (modelLabel == null || modelLabel === "") {
     return false;
   }
   return modelLabel != modelLabels.value.join(",");
@@ -525,7 +630,11 @@ function onSelect(value: string) {
       selectedValue.value = [ ...selectedValueArr.value, value ];
     }
   } else {
-    selectedValue.value = value;
+    if (selectedValue.value === value) {
+      selectedValue.value = "";
+    } else {
+      selectedValue.value = value;
+    }
   }
 }
 
@@ -548,17 +657,66 @@ const modelValueIsEmpty = computed(() => {
 });
 
 const showPicker = ref(false);
+const emptyPrefetchKeys = ref<string[]>([ ]);
+
+function getPrefetchCacheKey(modelValues: unknown[]) {
+  return modelValues
+    .map((value) => String(value))
+    .sort()
+    .join("|");
+}
 
 let refresherTriggered = $ref(false);
+let pgOffset = $ref(0);
+let isEnd = $ref(false);
+let pendingRemoteRefresh = $ref(false);
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+function clearSearchTimer() {
+  if (searchTimer == null) {
+    return;
+  }
+  clearTimeout(searchTimer);
+  searchTimer = undefined;
+}
+
+function getFallbackModelLabels() {
+  if (!props.modelLabel) {
+    return [ ];
+  }
+  if (!props.multiple) {
+    return [ props.modelLabel ];
+  }
+  return props.modelLabel
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getNormalizedModelValues() {
+  if (props.multiple) {
+    if (selectedValue.value == null || selectedValue.value === "") {
+      return [ ];
+    }
+    if (Array.isArray(selectedValue.value)) {
+      return selectedValue.value.filter((item) => item != null && item !== "");
+    }
+    return [ selectedValue.value ];
+  }
+  if (selectedValue.value == null || selectedValue.value === "") {
+    return [ ];
+  }
+  return [ selectedValue.value ];
+}
 
 const modelLabels = computed(() => {
-  if (modelValue == null) {
+  if (selectedValueArr.value.length === 0) {
     return [ ];
   }
   if (!props.multiple) {
     const model = data.value.find((item) => props.optionsMap(item).value === modelValue);
     if (!model) {
-      return [ ];
+      return getFallbackModelLabels();
     }
     return [ props.optionsMap(model).label || "" ];
   }
@@ -571,8 +729,74 @@ const modelLabels = computed(() => {
     }
     labels.push(props.optionsMap(model).label || "");
   }
+  if (labels.length === 0) {
+    return getFallbackModelLabels();
+  }
   return labels;
 });
+
+// 如果是分页模式, 没弹框之前data是空的, modelValue对应的label无法获取, 需要弹框之前单独获取
+watch(
+  () => [
+    props.modelValue,
+    props.isPage,
+    props.multiple,
+    showPicker.value,
+    props.method,
+  ],
+  async () => {
+    if (typeof props.method !== "function") {
+      return;
+    }
+    const modelValues = getNormalizedModelValues();
+    const prefetchCacheKey = getPrefetchCacheKey(modelValues);
+    if (emptyPrefetchKeys.value.includes(prefetchCacheKey)) {
+      return;
+    }
+    if (!shouldPrefetchSelectedOptions({
+      isPage: props.isPage,
+      showPicker: showPicker.value,
+      isLoading: isLoading.value,
+      modelValues,
+      dataItems: data.value,
+      optionsMap: props.optionsMap,
+    })) {
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let methodData: any = [ ];
+    try {
+      isLoading.value = true;
+      methodData = (await props.method?.(
+        {
+          [props.searchIds]: modelValues,
+        },
+        {
+          pgSize: modelValues.length,
+          pgOffset: 0,
+        },
+      )) || [ ];
+    } catch {
+      inited.value = true;
+      isLoading.value = false;
+    } finally {
+      isLoading.value = false;
+    }
+    const mergedData = [ ...data.value ];
+    for (const item of methodData) {
+      const itemValue = props.optionsMap(item).value;
+      if (!mergedData.some((existingItem) => props.optionsMap(existingItem).value === itemValue)) {
+        mergedData.push(item);
+      }
+    }
+    if (methodData.length === 0) {
+      emptyPrefetchKeys.value = [ ...emptyPrefetchKeys.value, prefetchCacheKey ];
+    }
+    data.value = mergedData;
+    emit("data", data.value);
+    options4SelectV2.value = data.value.map(props.optionsMap);
+  },
+);
 
 const scrollIntoViewId = ref("");
 
@@ -593,6 +817,12 @@ function getOptionAnchorId(
 }
 
 async function syncScrollIntoView() {
+  if (props.multiple || selectedValueArr.value.length === 0
+    || options4SelectV2Computed.value.length === 0
+    || props.isPage
+  ) {
+    return;
+  }
   scrollIntoViewId.value = "";
   await nextTick();
   scrollIntoViewId.value = getOptionAnchorId(selectedValueArr.value[0]);
@@ -611,10 +841,6 @@ async function onClick() {
 }
 
 async function onRefresherrefresh() {
-  if (!inited.value) {
-    refresherTriggered = false;
-    return;
-  }
   refresherTriggered = true;
   try {
     await onRefresh();
@@ -624,15 +850,125 @@ async function onRefresherrefresh() {
   }
 }
 
+function getPageInput(): SelectPageInput {
+  return {
+    pgSize: props.pageSize,
+    pgOffset,
+  };
+}
+
+function getRemoteSearch() {
+  const keyword = searchStr.value.trim();
+  const hasKeyword = !!keyword;
+  const hasExtraSearch = Object.entries(extraSearch.value || {}).some(([, value]) => {
+    if (value == null || value === "") {
+      return false;
+    }
+    if (Array.isArray(value)) {
+      return value.some((item) => item != null && item !== "");
+    }
+    return true;
+  });
+  if (!hasKeyword && !isSearchIds && !hasExtraSearch) {
+    return undefined;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const search: Record<string, any> = { };
+  if (hasKeyword) {
+    search[props.searchKey] = keyword;
+  }
+  if (isSearchIds) {
+    search[props.searchIds] = selectedValueArr.value;
+  }
+  for (const [key, value] of Object.entries(extraSearch.value || {})) {
+    if (value == null || value === "") {
+      continue;
+    }
+    if (Array.isArray(value) && value.every((item) => item == null || item === "")) {
+      continue;
+    }
+    search[key] = value;
+  }
+  return search;
+}
+
+function setOptionsData(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  methodData: any,
+  append = false,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nextData = (unref(methodData) || [ ]) as any[];
+  if (append) {
+    data.value = [
+      ...data.value,
+      ...nextData,
+    ];
+  } else {
+    data.value = nextData;
+  }
+  emit("data", data.value);
+  options4SelectV2.value = data.value.map(props.optionsMap);
+  return nextData.length;
+}
+
+let isSearchIds = $ref(false);
+
+async function loadPage(
+  append = false,
+) {
+  if (typeof props.method !== "function") {
+    data.value = [ ];
+    emit("data", data.value);
+    options4SelectV2.value = [ ];
+    inited.value = true;
+    isEnd = true;
+    return;
+  }
+  if (isLoading.value) {
+    if (!append) {
+      pendingRemoteRefresh = true;
+    }
+    return;
+  }
+  if (!append) {
+    pgOffset = 0;
+    isEnd = false;
+  } else if (isEnd) {
+    return;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let methodData: any = [ ];
+  try {
+    isLoading.value = true;
+    methodData = (await props.method?.(
+      getRemoteSearch(),
+      getPageInput(),
+    )) || [ ];
+  } catch {
+    inited.value = true;
+    isLoading.value = false;
+    return;
+  } finally {
+    isLoading.value = false;
+  }
+  const len = setOptionsData(methodData, append);
+  pgOffset = data.value.length;
+  isEnd = len < props.pageSize;
+  inited.value = true;
+  if (pendingRemoteRefresh) {
+    pendingRemoteRefresh = false;
+    await loadPage(false);
+  }
+}
+
 watch(
   () => showPicker.value,
   async () => {
-    if (!inited.value) {
+    if (!showPicker.value || isLoading.value) {
       return;
     }
-    if (showPicker.value) {
-      await onRefresh();
-    }
+    await onRefresh();
   },
 );
 
@@ -644,9 +980,7 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", "");
-  }
+  emit("update:modelLabel", "");
   emit("confirm");
   emit("change");
   emit("clear");
@@ -658,9 +992,7 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", modelLabel);
-  }
+  emit("update:modelLabel", modelLabel);
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
@@ -683,6 +1015,21 @@ function onCancel() {
   showPicker.value = false;
 }
 
+function onSearchConfirm() {
+  if (!props.isPage || !showPicker.value) {
+    return;
+  }
+  clearSearchTimer();
+  void onRefresh();
+}
+
+async function onLoadMore() {
+  if (!props.isPage) {
+    return;
+  }
+  await loadPage(true);
+}
+
 let methodWatchHandle: WatchHandle | null = null;
 
 async function onRefresh() {
@@ -690,12 +1037,16 @@ async function onRefresh() {
     methodWatchHandle();
     methodWatchHandle = null;
   }
+  if (props.isPage) {
+    await loadPage(false);
+    return;
+  }
   if (typeof props.method !== "function") {
     methodWatchHandle = watch(
       () => props.method,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const methodData = unref(props.method) as any[];
+        const methodData = (unref(props.method) || [ ]) as any[];
         data.value = methodData;
         emit("data", data.value);
         options4SelectV2.value = data.value.map(props.optionsMap);
@@ -705,13 +1056,20 @@ async function onRefresh() {
       },
     );
   } else {
-    const methodData = (await props.method?.()) || [ ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let methodData: any = [ ];
+    try {
+      isLoading.value = true;
+      methodData = (await props.method?.()) || [ ];
+    } finally {
+      isLoading.value = false;
+    }
     if (isRef(methodData)) {
       methodWatchHandle = watch(
         methodData,
         () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data.value = unref(methodData) as any[];
+          data.value = (unref(methodData) || [ ]) as any[];
           emit("data", data.value);
           options4SelectV2.value = data.value.map(props.optionsMap);
         },
@@ -720,7 +1078,8 @@ async function onRefresh() {
         },
       );
     } else {
-      data.value = methodData;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.value = (methodData || [ ]) as any[];
       emit("data", data.value);
       options4SelectV2.value = data.value.map(props.optionsMap);
     }
@@ -738,7 +1097,7 @@ watch(
     if (!inited.value) {
       return;
     }
-    if (options4SelectV2.value.length <= 5 && !props.height) {
+    if (!shouldUseScrollableBody.value) {
       _height = "auto";
     } else {
       _height = props.height || "90%";
@@ -746,7 +1105,39 @@ watch(
   },
 );
 
+watch(
+  () => searchStr.value,
+  () => {
+    if (!props.isPage || !showPicker.value) {
+      return;
+    }
+    clearSearchTimer();
+    searchTimer = setTimeout(() => {
+      void onRefresh();
+    }, 300);
+  },
+);
+
+watch(
+  () => props.searchParams,
+  () => {
+    if (!props.isPage || !showPicker.value) {
+      return;
+    }
+    clearSearchTimer();
+    searchTimer = setTimeout(() => {
+      void onRefresh();
+    }, 300);
+  },
+  {
+    deep: true,
+  },
+);
+
 async function initFrame() {
+  if (props.isPage) {
+    return;
+  }
   await onRefresh();
   inited.value = true;
 }
@@ -760,6 +1151,7 @@ function togglePicker() {
 }
 
 onUnmounted(() => {
+  clearSearchTimer();
   if (methodWatchHandle) {
     methodWatchHandle();
     methodWatchHandle = null;

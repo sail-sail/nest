@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use generated::cron::cron_job::cron_job_model::*;
 use super::cron_job_resolver;
 
@@ -19,7 +17,7 @@ impl CronJobMutation {
     &self,
     ctx: &Context<'_>,
     id: CronJobId,
-  ) -> Result<SmolStr> {
+  ) -> Result<String> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

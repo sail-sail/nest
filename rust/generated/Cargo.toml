@@ -15,7 +15,6 @@ tracing-attributes.workspace = true
 tokio.workspace = true
 poem.workspace = true
 async-graphql.workspace = true
-smol_str.workspace = true
 slab.workspace = true
 chrono.workspace = true
 # anyhow.workspace = true
@@ -46,7 +45,7 @@ redis.workspace = true
 bigdecimal.workspace = true
 time.workspace = true
 rust_decimal.workspace = true
-rust_decimal_macros.workspace = true
+# rust_decimal_macros.workspace = true
 # enum_dispatch.workspace = true
 # pin-project-lite.workspace = true
 # rayon.workspace = true
@@ -71,7 +70,6 @@ rand.workspace = true
 csv.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
-mimalloc.workspace = true
 
 [lib]
 path = "lib.rs"

@@ -5,6 +5,13 @@ pub mod job;
 
 use async_graphql::MergedObject;
 
+pub fn init() {
+  self::cron_job::init();
+  self::cron_job_log::init();
+  self::cron_job_log_detail::init();
+  self::job::init();
+}
+
 #[derive(MergedObject, Default)]
 pub struct CronGenQuery(
   self::cron_job::cron_job_graphql::CronJobGenQuery,

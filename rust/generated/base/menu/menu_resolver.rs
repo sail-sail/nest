@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -208,6 +205,27 @@ pub async fn find_by_ids_menu(
   Ok(models)
 }
 
+/// 根据搜索条件判断菜单是否存在
+#[function_name::named]
+pub async fn exists_menu(
+  search: Option<MenuSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = menu_service::exists_menu(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找菜单, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_menu(
@@ -259,8 +277,8 @@ pub async fn creates_menu(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("add"),
+    String::from(get_page_path_menu()),
+    String::from("add"),
   ).await?;
   
   let ids = menu_service::creates_menu(
@@ -295,8 +313,8 @@ pub async fn update_by_id_menu(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_menu()),
+    String::from("edit"),
   ).await?;
   
   let res = menu_service::update_by_id_menu(
@@ -323,8 +341,8 @@ pub async fn delete_by_ids_menu(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_menu()),
+    String::from("delete"),
   ).await?;
   
   let num = menu_service::delete_by_ids_menu(
@@ -374,8 +392,8 @@ pub async fn enable_by_ids_menu(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_menu()),
+    String::from("edit"),
   ).await?;
   
   let num = menu_service::enable_by_ids_menu(
@@ -421,8 +439,8 @@ pub async fn revert_by_ids_menu(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_menu()),
+    String::from("delete"),
   ).await?;
   
   let num = menu_service::revert_by_ids_menu(
@@ -448,8 +466,8 @@ pub async fn force_delete_by_ids_menu(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_menu()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_menu()),
+    String::from("force_delete"),
   ).await?;
   
   let num = menu_service::force_delete_by_ids_menu(

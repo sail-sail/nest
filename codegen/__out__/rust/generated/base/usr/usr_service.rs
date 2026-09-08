@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -31,6 +28,10 @@ async fn set_search_query(
   search: &mut UsrSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
+  if search.is_hidden.is_none() {
+    search.is_hidden = Some(vec![0]);
+  }
   
   Ok(())
 }
@@ -169,6 +170,27 @@ pub async fn find_by_ids_usr(
   Ok(usr_models)
 }
 
+/// 根据搜索条件判断用户是否存在
+pub async fn exists_usr(
+  search: Option<UsrSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = usr_dao::exists_usr(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找用户, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_usr(
   usr_ids: Vec<UsrId>,
@@ -228,6 +250,13 @@ pub async fn update_tenant_by_id_usr(
   Ok(num)
 }
 
+fn should_sync_usr_lbl(
+  old_lbl: &str,
+  new_lbl: Option<&str>,
+) -> bool {
+  new_lbl.is_some_and(|lbl| lbl != old_lbl)
+}
+
 /// 根据 usr_id 修改用户
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id_usr(
@@ -246,7 +275,17 @@ pub async fn update_by_id_usr(
     return Err(eyre!(err_msg));
   }
   
-  let is_sync_usr_lbl = usr_input.lbl.is_some();
+  let old_model = usr_dao::find_by_id_ok_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  let old_lbl = old_model.lbl;
+  
+  let is_sync_usr_lbl = should_sync_usr_lbl(
+    &old_lbl,
+    usr_input.lbl.as_deref(),
+  );
   
   let usr_id = usr_dao::update_by_id_usr(
     usr_id,

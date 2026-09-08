@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -31,7 +28,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -61,19 +57,19 @@ pub struct LoginLogModel {
   pub r#type: LoginLogType,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: SmolStr,
+  pub type_lbl: String,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: SmolStr,
+  pub username: String,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: u8,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: SmolStr,
+  pub is_succ_lbl: String,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: SmolStr,
+  pub ip: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -81,23 +77,23 @@ pub struct LoginLogModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for LoginLogModel {
@@ -109,35 +105,33 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
     // 类型
     let type_lbl: &str = row.try_get("type")?;
     let r#type: LoginLogType = type_lbl.try_into()?;
-    let type_lbl = SmolStr::new(type_lbl);
+    let type_lbl = String::from(type_lbl);
     // 用户名
-    let username: &str = row.try_get("username")?;
-    let username = SmolStr::new(username);
+    let username: String = row.try_get("username")?;
     // 登录成功
     let is_succ: u8 = row.try_get("is_succ")?;
-    let is_succ_lbl = SmolStr::new(is_succ.to_string());
+    let is_succ_lbl = is_succ.to_string();
     // IP
-    let ip: &str = row.try_get("ip")?;
-    let ip = SmolStr::new(ip);
+    let ip: String = row.try_get("ip")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -172,31 +166,31 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
 pub struct LoginLogFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: SmolStr,
+  pub r#type: String,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: SmolStr,
+  pub type_lbl: String,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: SmolStr,
+  pub username: String,
   /// 登录成功
   #[graphql(name = "is_succ")]
-  pub is_succ: SmolStr,
+  pub is_succ: String,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: SmolStr,
+  pub is_succ_lbl: String,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: SmolStr,
+  pub ip: String,
   /// 登录时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 登录时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -215,19 +209,19 @@ pub struct LoginLogSearch {
   pub r#type: Option<Vec<LoginLogType>>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<SmolStr>,
+  pub username: Option<String>,
   /// 用户名
   #[graphql(name = "username_like")]
-  pub username_like: Option<SmolStr>,
+  pub username_like: Option<String>,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: Option<Vec<u8>>,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: Option<SmolStr>,
+  pub ip: Option<String>,
   /// IP
   #[graphql(name = "ip_like")]
-  pub ip_like: Option<SmolStr>,
+  pub ip_like: Option<String>,
   /// 登录时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -239,10 +233,10 @@ pub struct LoginLogSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -251,10 +245,10 @@ pub struct LoginLogSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -354,31 +348,31 @@ pub struct LoginLogInput {
   pub r#type: Option<LoginLogType>,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: Option<SmolStr>,
+  pub type_lbl: Option<String>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<SmolStr>,
+  pub username: Option<String>,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: Option<u8>,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: Option<SmolStr>,
+  pub is_succ_lbl: Option<String>,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: Option<SmolStr>,
+  pub ip: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -387,13 +381,13 @@ pub struct LoginLogInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -514,7 +508,7 @@ impl From<LoginLogInput> for LoginLogSearch {
   }
 }
 
-impl_id!(LoginLogId);
+crate::common::id::impl_id!(LoginLogId);
 
 /// 登录日志类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
@@ -544,16 +538,6 @@ impl fmt::Display for LoginLogType {
   }
 }
 
-impl From<LoginLogType> for SmolStr {
-  fn from(value: LoginLogType) -> Self {
-    match value {
-      LoginLogType::Account => "account".into(),
-      LoginLogType::Wxapp => "wxapp".into(),
-      LoginLogType::Wxo => "wxo".into(),
-    }
-  }
-}
-
 impl From<LoginLogType> for String {
   fn from(value: LoginLogType) -> Self {
     match value {
@@ -566,7 +550,7 @@ impl From<LoginLogType> for String {
 
 impl From<LoginLogType> for ArgType {
   fn from(value: LoginLogType) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -588,26 +572,6 @@ impl TryFrom<&str> for LoginLogType {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "account" => Ok(Self::Account),
-      "wxapp" => Ok(Self::Wxapp),
-      "wxo" => Ok(Self::Wxo),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "type".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 类型".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for LoginLogType {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "account" => Ok(Self::Account),
       "wxapp" => Ok(Self::Wxapp),
       "wxo" => Ok(Self::Wxo),
@@ -677,7 +641,7 @@ pub fn check_sort_login_log(
     }
     if !get_can_sort_in_api_login_log.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_login_log: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_login_log: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

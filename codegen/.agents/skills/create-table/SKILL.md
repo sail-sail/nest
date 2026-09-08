@@ -13,6 +13,11 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 > 3. SQL 写完后逐项自检：字段名不能重复；同一语义不要并存两套命名；字典字段、布尔字段、外键字段必须满足本页的命名和类型规则。
 > 4. 如果需求要求本文未覆盖、且仓库里也没有先例的数据类型、默认值或索引写法，先明确指出冲突并等待确认，不要自行猜测。
 
+## 新表落库安全顺序
+
+- 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
+- 默认安全顺序是：先 `pnpm run importCsv` 导入新菜单/字典，再生成新增修改删除字段 SQL 出来给人类去数据库执行
+
 ## 表路径
 `codegen/src/tables/{mod}/{mod}.sql`
 
@@ -60,7 +65,10 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
 ```
 
-- 有 `dict:` 或 `dictbiz:` 标注的字段，若字典配置了 `is_sys=1`，则该字段必定是 `ENUM` 类型（codegen 会自动生成枚举类型）
+- 字典字段的 SQL 类型由字典配置决定，不要一律用 `varchar`，也不要一律用 `ENUM`：
+  - `is_sys=1` 且 `is_add=0`（成员冻结）：字段必须写成 `ENUM`，枚举值与字典成员逐一对应，DEFAULT 必须是其中一个成员
+  - 其余情况（`is_sys=0` 或 `is_add=1`，允许界面追加成员）：字段用 `varchar`
+- 写字典字段前先在 COMMENT 上方用行注释列出字典成员，格式：`-- 标签 val, 标签 val (is_sys=0, is_add=1)`，方便对照维护
 - 字典的详细配置规则见 [dict/SKILL.md](../dict/SKILL.md)
 
 ## 审核型表设计
@@ -87,7 +95,7 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 如果业务没有“复核”环节，可以去掉 `reviewed`，只保留：
 
 ```sql
-`audit` ENUM('unsubmited', 'unaudited', 'audited', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+`audit` ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
 ```
 
 - `audit` 字段属于系统字典字段，必须保持 `dict:audit`
@@ -102,7 +110,7 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 
 表名固定建议：`{mod}_{table}_audit`
 
-标准结构：
+标准结构（含组织、租户、软删除字段的完整示例；主表没有这些通用字段时按需裁剪）：
 
 ```sql
 CREATE TABLE if not exists `{mod}_{table}_audit` (
@@ -113,9 +121,9 @@ CREATE TABLE if not exists `{mod}_{table}_audit` (
   `audit_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '审核人',
   `audit_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '审核人',
   `audit_time` datetime DEFAULT NULL COMMENT '审核时间',
-  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
   `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -135,7 +143,7 @@ CREATE TABLE if not exists `{mod}_{table}_audit` (
 - 审核流水表的 `audit` 枚举必须和主表 `audit` 枚举保持一致
 - `{table}_id_lbl` 必须保留，供 codegen 自动写入审核对象名称
 - `audit_usr_id` / `audit_usr_id_lbl` / `audit_time` / `rem` 是标准字段，不要省略
-- 如果主表启用了租户、组织、软删除，审核流水表通常也要保持同一套通用字段
+- 审核流水表的通用字段必须和主表对齐：主表有 `org_id`/`tenant_id`/软删除，流水表就也要有；主表没有，流水表也不要加
 
 ### 必做串联
 
@@ -173,7 +181,7 @@ SQL 建好后，必须继续阅读 [table-config/SKILL.md](../table-config/SKILL
 
 - 外键命名：`{foreignTable}_id`（**不带**模块名 `{mod}_` 前缀），如 `usr_id`
 - 冗余标签命名：`{foreignTable}_id_lbl`，如 `usr_id_lbl`
-- 冗余标签字段按需添加，一般业务表都需要
+- 冗余标签字段按需添加，一般业务表都需要；长度允许大于 45（如主表 `lbl` 是 varchar(50/100) 时对齐）
 
 ## 多对多中间表
 
@@ -190,11 +198,11 @@ CREATE TABLE `base_usr_role` (
 ## 表索引
 
 ```sql
-INDEX (`tenant_id`, `is_deleted`, `lbl`),
+INDEX (`tenant_id`, `is_deleted`, `org_id`, `lbl`),
 ```
 
-- 通常有唯一性或查询过滤需求的字段才需要加索引
-- 注意不要建唯一索引，而是普通索引
+- 索引按表实际包含的通用字段组合：无 `org_id` 时去掉该项，无 `tenant_id` 时同理
+- 有唯一性或查询过滤需求的字段才加索引；唯一性约束在 `{mod}.ts` 的 `opts.uniques` 配置，不要在 SQL 里建唯一索引
 
 ## 城市地址字段
 
@@ -215,11 +223,12 @@ INDEX (`tenant_id`, `is_deleted`, `lbl`),
 ```sql
 `code_seq` int unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
 `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
--- 日期序列（可选）
-`date_seq` date NOT NULL DEFAULT (CURRENT_DATE) COMMENT '日期-序列号',
+-- 日期序列（可选，需要"前缀+日期+序号"编码时加，字段名跟随编码字段名）
+`code_date_seq` date NOT NULL DEFAULT (CURRENT_DATE) COMMENT '日期-序列号',
 ```
 
-- 如果表中已有 `lbl` 字段，序列字段命名为 `code_seq` / `code`；否则为 `lbl_seq` / `code`
+- 序列字段命名跟随编码字段：编码字段是 `code` 就用 `code_seq`/`code_date_seq`；是 `lbl` 就用 `lbl_seq`/`lbl_date_seq`
+- 编码字段（`code` 或 `lbl`）与序列字段都要在 `{mod}.ts` 的 `columns` 中写出，序列字段配 `onlyCodegenDeno: true`，并在编码字段上配 `autoCode`
 
 ## 完整示例
 

@@ -8,8 +8,6 @@ use async_graphql::{
   SimpleObject,
 };
 
-use smol_str::SmolStr;
-
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 use crate::base::usr::usr_model::UsrId;
@@ -18,9 +16,9 @@ use crate::base::usr::usr_model::UsrId;
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
   /// 用户名
-  pub username: SmolStr,
+  pub username: String,
   /// 密码
-  pub password: SmolStr,
+  pub password: String,
   /// 租户ID
   pub tenant_id: TenantId,
   /// 组织ID
@@ -31,31 +29,35 @@ pub struct LoginInput {
 #[graphql(rename_fields = "camelCase")]
 pub struct ChangePasswordInput {
   /// 旧密码
-  pub old_password: SmolStr,
+  pub old_password: String,
   /// 新密码
-  pub password: SmolStr,
+  pub password: String,
   /// 确认密码
-  pub confirm_password: SmolStr,
+  pub confirm_password: String,
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginModel {
   pub usr_id: UsrId,
-  pub username: SmolStr,
+  pub lbl: String,
+  pub username: String,
+  pub role_codes: Vec<String>,
   pub tenant_id: TenantId,
-  pub authorization: SmolStr,
+  pub authorization: String,
   pub org_id: Option<OrgId>,
-  pub lang: SmolStr,
+  pub org_id_models: Vec<GetLoginInfoorgIdModel>,
+  pub lang: String,
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfo {
-  pub lbl: SmolStr,
-  pub username: SmolStr,
-  pub role_codes: Vec<SmolStr>,
-  pub lang: Option<SmolStr>,
+  pub usr_id: UsrId,
+  pub lbl: String,
+  pub username: String,
+  pub role_codes: Vec<String>,
+  pub lang: Option<String>,
   pub tenant_id: TenantId,
   pub org_id: Option<OrgId>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
@@ -65,5 +67,5 @@ pub struct GetLoginInfo {
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
   pub id: OrgId,
-  pub lbl: SmolStr,
+  pub lbl: String,
 }

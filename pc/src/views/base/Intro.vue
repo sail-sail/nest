@@ -1016,7 +1016,7 @@
 </div>
 </template>
 
-<script setup lang="ts" vapor>
+<script setup lang="ts">
 
 const isDark = useDark();
 

@@ -83,9 +83,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -316,6 +313,33 @@ impl <#=tableUP#>GenQuery {
       .scope({
         <#=table#>_resolver::find_by_ids_<#=table#>(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断<#=table_comment#>是否存在
+  #[graphql(name = "exists<#=Table_Up#>")]
+  async fn exists_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<<#=tableUP#>Search>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
+      .build()
+      .scope({
+        <#=table#>_resolver::exists_<#=table#>(
+          search,
           None,
         )
       }).await
@@ -982,7 +1006,7 @@ impl <#=tableUP#>GenMutation {<#
     #[graphql(name = "action")]
     action: TaskAction,
     #[graphql(name = "opinion")]
-    opinion: Option<SmolStr>,
+    opinion: Option<String>,
     #[graphql(name = "add_sign_usr_ids")]
     add_sign_usr_ids: Option<Vec<UsrId>>,
   ) -> Result<bool> {

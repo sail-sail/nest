@@ -138,7 +138,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   getMenus,
 } from "./Api";
@@ -233,10 +233,21 @@ async function menuSelect(id: MenuId) {
     //   path,
     //   query,
     // });
-    await router.push({
-      path,
-      query,
-    });
+    try {
+      const err = await router.push({
+        path,
+        query,
+      });
+      if (err) {
+        return;
+      }
+    } catch (e) {
+      // if (e instanceof Error && e.message?.startsWith("Couldn't resolve component")) {
+      //   return;
+      // }
+      // throw e;
+      return;
+    }
     // if (hasTab) {
     //   const comp = route.matched[1].instances?.default as any;
     //   await comp?.refresh?.();

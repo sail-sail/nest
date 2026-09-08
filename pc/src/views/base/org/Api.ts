@@ -334,6 +334,32 @@ export async function findByIdsOrg(
 }
 
 /**
+ * 根据搜索条件判断组织是否存在
+ */
+export async function existsOrg(
+  search?: OrgSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOrg: Query["existsOrg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch) {
+        existsOrg(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOrg;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 组织, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOrg(
@@ -567,23 +593,15 @@ export function useExportExcelOrg() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: OrgSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOrg(search: $search, page: $page, sort: $sort) {
               ${ orgQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

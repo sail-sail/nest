@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -323,6 +322,32 @@ export async function findByIdsDynPageData(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断动态页面数据是否存在
+ */
+export async function existsDynPageData(
+  search?: DynPageDataSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPageData: Query["existsDynPageData"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageDataSearch) {
+        existsDynPageData(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPageData;
+  
+  return res;
 }
 
 /**

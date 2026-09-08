@@ -88,7 +88,7 @@
 </div>
 </template>
 
-<script lang="ts" setup generic="T" vapor>
+<script lang="ts" setup generic="T">
 import TableSearchStagingDialog from "./TableSearchStagingDialog.vue";
 
 const emit = defineEmits<{

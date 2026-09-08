@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl MenuGenQuery {
       .scope({
         menu_resolver::find_by_ids_menu(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断菜单是否存在
+  #[graphql(name = "existsMenu")]
+  async fn exists_menu(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<MenuSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::exists_menu(
+          search,
           None,
         )
       }).await

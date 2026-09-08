@@ -8,7 +8,7 @@ import type {
   RouteRecordRaw,
 } from "vue-router";
 
-import router0 from "./index";
+import router0 from "./index.ts";
 
 export function getRouter(path0?: string) {
   if (!path0) {

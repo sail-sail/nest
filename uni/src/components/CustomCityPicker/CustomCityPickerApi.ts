@@ -6,8 +6,35 @@ export type PcaItem = {
   children?: PcaItem[];
 };
 
-let findAllPcaCodeData: PcaItem[] | undefined;
+const findAllPcaCodeDataKey = "CustomCityPicker.findAllPcaCodeData";
+
+function loadPcaCodeDataFromStorage(): PcaItem[] | undefined {
+  const str = uni.getStorageSync(findAllPcaCodeDataKey);
+  if (typeof str !== "string" || !str) {
+    return undefined;
+  }
+  try {
+    const data = JSON.parse(str);
+    if (Array.isArray(data)) {
+      return data as PcaItem[];
+    }
+  } catch {
+    // ignore invalid cache data and refresh from server
+  }
+  uni.removeStorageSync(findAllPcaCodeDataKey);
+  return undefined;
+}
+
+let findAllPcaCodeData: PcaItem[] | undefined = loadPcaCodeDataFromStorage();
 let findAllPcaCodePrm: Promise<PcaItem[]> | undefined;
+
+function savePcaCodeDataToStorage(data: PcaItem[]): void {
+  try {
+    uni.setStorageSync(findAllPcaCodeDataKey, JSON.stringify(data));
+  } catch {
+    // ignore storage failures and use memory cache only
+  }
+}
 
 export async function findAllPcaCode(): Promise<PcaItem[]> {
   if (findAllPcaCodeData) {
@@ -28,6 +55,7 @@ export async function findAllPcaCode(): Promise<PcaItem[]> {
             return;
           }
           findAllPcaCodeData = res.data as PcaItem[];
+          savePcaCodeDataToStorage(findAllPcaCodeData);
           resolve(findAllPcaCodeData);
         },
         fail(err) {

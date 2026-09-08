@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl PermitGenQuery {
       .scope({
         permit_resolver::find_by_ids_permit(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断按钮权限是否存在
+  #[graphql(name = "existsPermit")]
+  async fn exists_permit(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<PermitSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::exists_permit(
+          search,
           None,
         )
       }).await

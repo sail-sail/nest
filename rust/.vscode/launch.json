@@ -6,14 +6,14 @@
   "configurations": [
     {
       "name": "rust",
-      "type": "cppvsdbg",
+      "type": "lldb",
       "request": "attach",
-      "processId": "${input:processId}"
+      "pid": "${input:pid}"
     }
   ],
   "inputs": [
     {
-      "id": "processId",
+      "id": "pid",
       "type": "command",
       "command": "lldb.pickProcess",
       "args": {

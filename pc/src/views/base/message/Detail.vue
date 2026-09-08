@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -169,6 +168,7 @@
               v-model="dialogModel.sender_usr_id"
               v-model:model-label="dialogModel.sender_usr_id_lbl"
               :method="getListUsr"
+              dirty-key="用户"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -222,6 +222,7 @@
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
               :method="getListOrg"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -329,7 +330,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -370,7 +371,10 @@ const pagePath = getPagePathMessage();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -451,13 +455,6 @@ watchEffect(async () => {
         message: "请选择 置顶",
       },
     ],
-    // 所属组织
-    org_id: [
-      {
-        required: true,
-        message: "请选择 所属组织",
-      },
-    ],
   };
 });
 
@@ -536,11 +533,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }
+    isLocked = toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -818,10 +811,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

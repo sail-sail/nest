@@ -1,12 +1,11 @@
 use color_eyre::eyre::Result;
 
-use smol_str::SmolStr;
-
 use super::app_service;
+use crate::common::context::Options;
+use crate::base::tenant::tenant_model::TenantId;
 
 /// 生成 id 主键
-pub async fn generate_id(
-) -> Result<SmolStr> {
+pub async fn generate_id() -> Result<String> {
   let res = app_service::generate_id().await?;
   Ok(res)
 }
@@ -20,13 +19,17 @@ pub async fn check_login(
 
 /// 根据 appid 获取租户 id
 pub async fn get_tenant_id_by_appid(
-  platform: SmolStr,
-  appid: SmolStr,
-) -> Result<SmolStr> {
+  platform: String,
+  appid: String,
+  agentid: Option<String>,
+  options: Option<Options>,
+) -> Result<TenantId> {
   
   let res = app_service::get_tenant_id_by_appid(
     platform,
     appid,
+    agentid,
+    options,
   ).await?;
   
   Ok(res)

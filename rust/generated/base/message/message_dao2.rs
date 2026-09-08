@@ -30,6 +30,7 @@ pub async fn get_current_user_unread_message_count(
   let search = Some(MessageReceiverSearch {
     receiver_usr_id: Some(vec![usr_id]),
     is_read: Some(vec![0]),
+    channel: Some(vec!["sys".into()]),
     ..Default::default()
   });
 
@@ -40,6 +41,7 @@ pub async fn get_current_user_unread_message_count(
 pub async fn send_message(
   input: MessageInput,
   receiver_usr_ids: Vec<UsrId>,
+  options: Option<Options>,
 ) -> Result<MessageModel> {
   let sender_usr_id = get_auth_id_ok()?;
   let mut receiver_inputs = Vec::with_capacity(receiver_usr_ids.len());
@@ -57,11 +59,11 @@ pub async fn send_message(
   let route_query = message_input.route_query.clone().unwrap_or_default().to_string();
   let tenant_id = message_input.tenant_id;
 
-  let message = create_return_message(message_input, None).await?;
+  let message = create_return_message(message_input, options).await?;
 
   for receiver_usr_id in &receiver_usr_ids {
     receiver_inputs.push(MessageReceiverInput {
-      message_id: Some(message.id.clone()),
+      message_id: Some(message.id),
       receiver_usr_id: Some(receiver_usr_id.clone()),
       is_read: Some(0),
       tenant_id,
@@ -70,9 +72,9 @@ pub async fn send_message(
   }
 
   if !receiver_inputs.is_empty() {
-    creates_message_receiver(receiver_inputs, None).await?;
+    creates_message_receiver(receiver_inputs, options).await?;
   }
-
+  
   let payload = json!({
     "messageId": message.id,
     "title": title,
@@ -81,7 +83,10 @@ pub async fn send_message(
     "routeQuery": route_query,
     "receiverUsrIds": receiver_usr_ids,
   });
-  publish(format!("{sender_usr_id}/message"), Some(payload)).await;
+  
+  for receiver_usr_id in &receiver_usr_ids {
+    publish(format!("{receiver_usr_id}/message"), Some(payload.clone())).await;
+  }
 
   Ok(message)
 }
@@ -113,6 +118,7 @@ mod tests {
             ..Default::default()
           },
           vec!["9LmnqhLITzKskFO/lcXRqA".into()],
+          options,
         )
         .await?;
 

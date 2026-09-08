@@ -286,7 +286,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   WatchHandle,
 } from "vue";
@@ -317,6 +317,8 @@ const {
   nsAsync,
   initSysI18ns,
 } = useI18n();
+
+const dirtyStore = useDirtyStore();
 
 let inited = $ref(false);
 
@@ -353,6 +355,7 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     readonlyCollapseTags?: boolean;
     readonlyMaxCollapseTags?: number;
+    dirtyKey?: string | string[];
   }>(),
   {
     findByValues: undefined,
@@ -382,6 +385,7 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     readonlyCollapseTags: true,
     readonlyMaxCollapseTags: 1,
+    dirtyKey: undefined,
   },
 );
 
@@ -775,8 +779,8 @@ function getSelectInputWidth() {
     return 0;
   }
   const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
-  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
-  return Math.ceil(width);
+  const width = wrapper?.getBoundingClientRect().width ?? selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width || 0);
 }
 
 // watch(
@@ -863,6 +867,42 @@ async function refreshFitInputWidth() {
 }
 
 let methodWatchHandle: WatchHandle | null = null;
+let dirtyWatchHandles: Array<() => void> = [ ];
+
+function getDirtyKeys() {
+  if (!props.dirtyKey) {
+    return [ ];
+  }
+  const dirtyKey = Array.isArray(props.dirtyKey)
+    ? props.dirtyKey
+    : [ props.dirtyKey ];
+  return dirtyKey.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+}
+
+function resetDirtyWatch() {
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
+  for (const dirtyKey of getDirtyKeys()) {
+    dirtyWatchHandles.push(
+      dirtyStore.onDirty(async () => {
+        await onRefresh();
+      }, dirtyKey, false),
+    );
+  }
+}
+
+watch(
+  () => props.dirtyKey,
+  () => {
+    resetDirtyWatch();
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 async function onRefresh() {
   if (methodWatchHandle) {
@@ -1005,6 +1045,10 @@ onUnmounted(() => {
     methodWatchHandle();
     methodWatchHandle = null;
   }
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
 });
 
 function focus() {

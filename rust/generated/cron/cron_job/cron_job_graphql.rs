@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl CronJobGenQuery {
       .scope({
         cron_job_resolver::find_by_ids_cron_job(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断定时任务是否存在
+  #[graphql(name = "existsCronJob")]
+  async fn exists_cron_job(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<CronJobSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_resolver::exists_cron_job(
+          search,
           None,
         )
       }).await

@@ -11,23 +11,22 @@
     "build-test": "node ./generated/common/script/build.js --env test",
     "publish": "node ./generated/common/script/publish.js",
     "codegen": "cd .. && npm run codegen",
-    "sql": "cd ../codegen && node --experimental-strip-types src/util/npmSql.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "7.1.3",
-    "@graphql-codegen/typescript": "6.0.2",
-    "@graphql-codegen/typescript-operations": "6.0.5",
-    "@parcel/watcher": "2.5.6",
+    "@graphql-codegen/cli": "7.4.0",
+    "@graphql-codegen/typescript": "6.1.0",
+    "@graphql-codegen/typescript-operations": "6.1.6",
+    "@parcel/watcher": "2.6.0",
     "@types/fs-extra": "11.0.4",
     "@types/minimist": "1.2.5",
-    "@types/node": "26.0.1",
+    "@types/node": "26.4.1",
     "commander": "15.0.0",
     "dotenv": "17.4.2",
-    "fs-extra": "11.3.6",
-    "graphql": "16.14.2",
+    "fs-extra": "11.4.0",
+    "graphql": "17.0.2",
     "minimist": "1.2.8",
     "ssh2-promise": "1.0.3",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

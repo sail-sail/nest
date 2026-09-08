@@ -178,7 +178,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -219,7 +221,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -352,7 +354,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -364,7 +366,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -627,6 +629,23 @@
             </el-table-column>
           </template>
           
+          <!-- 接收审核消息 -->
+          <template v-else-if="'is_audit_msg_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_audit_msg"
+                  @change="onIs_audit_msg(row.id, row.is_audit_msg)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <!-- @vue-generic {RoleModel} -->
@@ -784,6 +803,7 @@
       :tenant_ids="[ usrStore.tenant_id ]"
       :is_current_tenant="1"
       is_enabled="1"
+      :is_hidden="[0,1]"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
     ></MenuTreeList>
@@ -798,6 +818,7 @@
     <PermitTreeList
       :is_current_tenant="1"
       is_enabled="1"
+      :is_hidden="[0,1]"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
     ></PermitTreeList>
@@ -849,7 +870,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import MenuTreeList from "../menu/TreeList.vue";
@@ -893,7 +914,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1200,6 +1224,7 @@ function getTableColumns(): ColumnType[] {
       label: "编码",
       prop: "code",
       width: 100,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1254,6 +1279,15 @@ function getTableColumns(): ColumnType[] {
       prop: "field_permit_ids_lbl",
       sortBy: "field_permit_ids_lbl",
       width: 80,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "接收审核消息",
+      prop: "is_audit_msg_lbl",
+      sortBy: "is_audit_msg",
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1448,8 +1482,8 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "order_by",
-  order: "ascending",
+  prop: "code",
+  order: "descending",
 };
 
 const defaultSort: Sort = $computed(() => {
@@ -1521,7 +1555,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1553,7 +1587,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1624,6 +1658,7 @@ async function onImportExcel() {
     [ "按钮权限" ]: "permit_ids_lbl",
     [ "数据权限" ]: "data_permit_ids_lbl",
     [ "字段权限" ]: "field_permit_ids_lbl",
+    [ "接收审核消息" ]: "is_audit_msg_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1655,6 +1690,7 @@ async function onImportExcel() {
           "permit_ids_lbl": "string[]",
           "data_permit_ids_lbl": "string[]",
           "field_permit_ids_lbl": "string[]",
+          "is_audit_msg_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1686,6 +1722,30 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
+}
+
+/** 接收审核消息 */
+async function onIs_audit_msg(id: RoleId, is_audit_msg: number) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdRole(
+    id,
+    {
+      is_audit_msg,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 锁定 */
@@ -1740,7 +1800,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1842,7 +1902,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1874,7 +1934,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1906,7 +1966,7 @@ async function onEnableByIds(is_enabled: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1940,7 +2000,7 @@ async function onLockByIds(is_locked: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1960,7 +2020,7 @@ async function onLockByIds(is_locked: number) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 角色 成功`;
     } else {
-      msg = `解锋 ${ num } 角色 成功`;
+      msg = `解锁 ${ num } 角色 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1974,7 +2034,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }

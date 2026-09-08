@@ -5,7 +5,6 @@ use sqlx::encode::IsNull;
 use sqlx::error::BoxDynError;
 use sqlx::MySql;
 use sqlx::mysql::MySqlValueRef;
-use smol_str::SmolStr;
 use async_graphql;
 use crate::common::context::ArgType;
 
@@ -18,8 +17,8 @@ pub trait Id:
   Serialize + for<'de> Deserialize<'de> +
   fmt::Debug + fmt::Display +
   async_graphql::ScalarType + async_graphql::InputType +
-  From<String> + for<'a> From<&'a str> + From<SmolStr> + for<'a> From<&'a SmolStr> + From<[u8; 22]> + for<'a> From<&'a [u8; 22]> +
-  Into<String> + Into<SmolStr> + Into<[u8; 22]> + Into<ArgType> +
+  From<String> + for<'a> From<&'a str> + From<[u8; 22]> + for<'a> From<&'a [u8; 22]> +
+  Into<String> + Into<[u8; 22]> + Into<ArgType> +
   for<'q> sqlx::Encode<'q, MySql> + sqlx::Type<MySql> + for<'r> sqlx::Decode<'r, MySql> +
   PartialEq<str>
 {
@@ -239,24 +238,6 @@ macro_rules! impl_id {
       }
     }
 
-    impl From<$id_type> for smol_str::SmolStr {
-      fn from(id: $id_type) -> Self {
-        id.as_str().into()
-      }
-    }
-
-    impl From<smol_str::SmolStr> for $id_type {
-      fn from(s: smol_str::SmolStr) -> Self {
-        s.as_str().into()
-      }
-    }
-
-    impl From<&smol_str::SmolStr> for $id_type {
-      fn from(s: &smol_str::SmolStr) -> Self {
-        s.as_str().into()
-      }
-    }
-
     impl From<String> for $id_type {
       fn from(s: String) -> Self {
         s.as_str().into()
@@ -326,6 +307,7 @@ macro_rules! impl_id {
 
     impl PartialEq<str> for $id_type {
       fn eq(&self, other: &str) -> bool {
+        use $crate::common::id::Id;
         let bytes = other.as_bytes();
         *self.as_bytes() == bytes
       }

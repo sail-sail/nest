@@ -2,8 +2,6 @@ use color_eyre::eyre::Result;
 
 use generated::common::context::Options;
 
-use smol_str::SmolStr;
-
 use generated::cron::cron_job::cron_job_model::CronJobId;
 
 use generated::cron::cron_job::cron_job_dao::{
@@ -17,7 +15,7 @@ use crate::cron::job::job_dao::run_job;
 pub async fn run_cron_job(
   id: CronJobId,
   options: Option<Options>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   
   let cron_job_model = validate_option_cron_job(
     find_by_id_cron_job(

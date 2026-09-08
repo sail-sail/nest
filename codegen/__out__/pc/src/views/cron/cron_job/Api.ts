@@ -342,6 +342,32 @@ export async function findByIdsCronJob(
 }
 
 /**
+ * 根据搜索条件判断定时任务是否存在
+ */
+export async function existsCronJob(
+  search?: CronJobSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsCronJob: Query["existsCronJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: CronJobSearch) {
+        existsCronJob(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsCronJob;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 定时任务, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkCronJob(
@@ -579,16 +605,6 @@ export function useDownloadImportTemplateCronJob() {
             order_by
             rem
           }
-          findAllJob {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "cron_job_timezone",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -634,27 +650,15 @@ export function useExportExcelCronJob() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: CronJobSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllCronJob(search: $search, page: $page, sort: $sort) {
               ${ cronJobQueryField }
-            }
-            findAllJob {
-              lbl
-            }
-            getDict(codes: [
-              "cron_job_timezone",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

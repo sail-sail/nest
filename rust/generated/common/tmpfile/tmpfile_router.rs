@@ -1,15 +1,14 @@
 use color_eyre::eyre::Result;
-
 use poem::{
   handler, web::{Multipart, Path, Query, Json}, Response,
 };
 use poem::http::StatusCode;
 use serde::Deserialize;
 use serde_json::json;
-
 use crate::common::context::{
   Ctx,
   get_short_uuid,
+  id_to_string,
 };
 
 use super::tmpfile_service;
@@ -45,7 +44,7 @@ pub async fn upload(
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
-  let id = get_short_uuid();
+  let id: String = id_to_string(&get_short_uuid());
   tmpfile_service::put_object(id.as_str(), &content, &content_type, &file_name).await?;
   let mut response = Response::builder();
   response = response.header("Content-Type", "application/json");

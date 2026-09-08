@@ -1,6 +1,10 @@
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::{Arc, Mutex, OnceLock};
+
 use color_eyre::eyre::Result;
 #[allow(unused_imports)]
 use tracing::info;
@@ -13,63 +17,55 @@ use crate::common::context::{
 
 use super::usr_model::UsrId;
 
-use crate::base::role::role_dao::sync_usr_lbl_by_usr_id_role;
+pub type SyncUsrLblByUsrIdCallback = Arc<dyn Fn(UsrId, Option<Options>) -> Pin<Box<dyn Future<Output = Result<u64>> + Send>> + Send + Sync>;
 
-use crate::base::tenant::tenant_dao::sync_usr_lbl_by_usr_id_tenant;
+/// 全局同步用户标签的 DAO 函数回调
+/// add_sync_usr_lbl_by_usr_id_callback(|| async {
+/// // 这里做同步标签逻辑
+/// Ok(1)
+/// });
+static SYNC_USR_LBL_BY_USR_ID_CALLBACKS: OnceLock<Mutex<Vec<SyncUsrLblByUsrIdCallback>>> = OnceLock::new();
 
-use crate::base::domain::domain_dao::sync_usr_lbl_by_usr_id_domain;
+/// 全局同步用户标签的 DAO 函数回调
+fn sync_usr_lbl_by_usr_id_callbacks() -> &'static Mutex<Vec<SyncUsrLblByUsrIdCallback>> {
+  SYNC_USR_LBL_BY_USR_ID_CALLBACKS.get_or_init(|| Mutex::new(Vec::new()))
+}
 
-use crate::base::usr::usr_dao::sync_usr_lbl_by_usr_id_usr;
+pub fn add_sync_usr_lbl_by_usr_id_callback<F, Fut>(callback: F)
+where
+  F: Fn(
+    UsrId,
+    Option<Options>,
+  ) -> Fut + Send + Sync + 'static,
+  Fut: Future<Output = Result<u64>> + Send + 'static,
+{
+  let callbacks = sync_usr_lbl_by_usr_id_callbacks();
+  let mut callbacks = callbacks.lock().unwrap();
+  callbacks.push(Arc::new(move |usr_id, options| Box::pin(callback(usr_id, options))));
+}
 
-use crate::base::login_log::login_log_dao::sync_usr_lbl_by_usr_id_login_log;
+// pub fn clear_sync_usr_lbl_by_usr_id_callbacks() {
+//   let callbacks = sync_usr_lbl_by_usr_id_callbacks();
+//   let mut callbacks = callbacks.lock().unwrap();
+//   callbacks.clear();
+// }
 
-use crate::base::menu::menu_dao::sync_usr_lbl_by_usr_id_menu;
+async fn call_sync_usr_lbl_by_usr_id_callbacks(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let callbacks = {
+    let callbacks = sync_usr_lbl_by_usr_id_callbacks();
+    let callbacks = callbacks.lock().unwrap();
+    callbacks.clone()
+  };
 
-use crate::base::lang::lang_dao::sync_usr_lbl_by_usr_id_lang;
-
-use crate::base::i18n::i18n_dao::sync_usr_lbl_by_usr_id_i18n;
-
-use crate::base::data_permit::data_permit_dao::sync_usr_lbl_by_usr_id_data_permit;
-
-use crate::base::options::options_dao::sync_usr_lbl_by_usr_id_options;
-
-use crate::base::optbiz::optbiz_dao::sync_usr_lbl_by_usr_id_optbiz;
-
-use crate::base::operation_record::operation_record_dao::sync_usr_lbl_by_usr_id_operation_record;
-
-use crate::base::org::org_dao::sync_usr_lbl_by_usr_id_org;
-
-use crate::base::dept::dept_dao::sync_usr_lbl_by_usr_id_dept;
-
-use crate::base::dict::dict_dao::sync_usr_lbl_by_usr_id_dict;
-
-use crate::base::dict_detail::dict_detail_dao::sync_usr_lbl_by_usr_id_dict_detail;
-
-use crate::base::dictbiz::dictbiz_dao::sync_usr_lbl_by_usr_id_dictbiz;
-
-use crate::base::dictbiz_detail::dictbiz_detail_dao::sync_usr_lbl_by_usr_id_dictbiz_detail;
-
-use crate::base::icon::icon_dao::sync_usr_lbl_by_usr_id_icon;
-
-use crate::base::dyn_page::dyn_page_dao::sync_usr_lbl_by_usr_id_dyn_page;
-
-use crate::base::dyn_page_field::dyn_page_field_dao::sync_usr_lbl_by_usr_id_dyn_page_field;
-
-use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page_val;
-
-use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
-
-use crate::base::message::message_dao::sync_usr_lbl_by_usr_id_message;
-
-use crate::base::message_receiver::message_receiver_dao::sync_usr_lbl_by_usr_id_message_receiver;
-
-use crate::cron::job::job_dao::sync_usr_lbl_by_usr_id_job;
-
-use crate::cron::cron_job::cron_job_dao::sync_usr_lbl_by_usr_id_cron_job;
-
-use crate::cron::cron_job_log::cron_job_log_dao::sync_usr_lbl_by_usr_id_cron_job_log;
-
-use crate::cron::cron_job_log_detail::cron_job_log_detail_dao::sync_usr_lbl_by_usr_id_cron_job_log_detail;
+  let mut result = 0;
+  for callback in callbacks {
+    result += callback(usr_id, options).await?;
+  }
+  Ok(result)
+}
 
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
@@ -96,156 +92,9 @@ pub async fn sync_usr_lbl_by_usr_id(
     return Ok(0);
   }
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let mut num = 0;
-  
-  num += sync_usr_lbl_by_usr_id_role(
+  let num = call_sync_usr_lbl_by_usr_id_callbacks(
     usr_id,
     options,
   ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_tenant(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_domain(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_usr(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_login_log(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_menu(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_lang(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_i18n(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_data_permit(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_options(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_optbiz(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_operation_record(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_org(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dept(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dict(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dict_detail(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dictbiz(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dictbiz_detail(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_icon(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_field(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_val(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_data(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_message(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_message_receiver(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_job(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_cron_job(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_cron_job_log(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_cron_job_log_detail(
-    usr_id,
-    options,
-  ).await?;
-  
   Ok(num)
 }

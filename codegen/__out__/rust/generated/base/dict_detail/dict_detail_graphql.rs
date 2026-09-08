@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl DictDetailGenQuery {
       .scope({
         dict_detail_resolver::find_by_ids_dict_detail(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断系统字典明细是否存在
+  #[graphql(name = "existsDictDetail")]
+  async fn exists_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DictDetailSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::exists_dict_detail(
+          search,
           None,
         )
       }).await

@@ -9,7 +9,8 @@ use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
-use smol_str::SmolStr;
+use uuid::Uuid;
+use sha2::{Digest, Sha256};
 
 use std::sync::OnceLock;
 use std::sync::Arc;
@@ -20,7 +21,7 @@ use base64::{engine::general_purpose, Engine};
 use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
-use sqlx::{Pool, MySql, FromRow, Row, Transaction};
+use sqlx::{Executor, FromRow, MySql, Pool, Row, Transaction};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -82,9 +83,7 @@ fn db_pool_dw() -> Pool<MySql> {
 async fn get_transaction_conn_id(
   tran: &mut DbTransaction,
 ) -> Result<u64> {
-  let row = sqlx::query("select connection_id()")
-    .fetch_one(tran.as_mut())
-    .await?;
+  let row = tran.fetch_one("select connection_id()").await?;
   let connection_id: u64 = row.try_get(0).unwrap_or(0);
   Ok(connection_id)
 }
@@ -172,10 +171,10 @@ pub fn get_server_tokentimeout() -> i64 {
 }
 
 /// 获取当前请求id, 不保证唯一, 仅用于日志
-pub fn get_req_id() -> Arc<SmolStr> {
+pub fn get_req_id() -> Arc<String> {
   CTX.try_with(|ctx| {
     ctx.req_id.clone()
-  }).unwrap_or_else(|_| Arc::new(SmolStr::new("")))
+  }).unwrap_or_else(|_| Arc::new(String::new()))
 }
 
 /// 获取当前请求的时间点
@@ -272,7 +271,7 @@ pub fn get_auth_org_id_ok() -> Result<OrgId> {
 }
 
 /// 获取当前登录用户的语言
-pub fn get_auth_lang() -> Option<SmolStr> {
+pub fn get_auth_lang() -> Option<String> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
@@ -441,7 +440,6 @@ impl Ctx {
             );
           }
         } else if
-          err.is::<SmolStr>() || err.is::<&SmolStr>() ||
           err.is::<&str>() || err.is::<String>()
         {
           info!(
@@ -499,7 +497,6 @@ impl Ctx {
           );
         }
       } else if 
-        err.is::<SmolStr>() || err.is::<&SmolStr>() ||
         err.is::<&str>() || err.is::<String>()
       {
         info!(
@@ -612,9 +609,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.as_str());
-          }
         };
       }
       let res = {
@@ -701,9 +695,6 @@ impl Ctx {
         }
         ArgType::Json(s) => {
           query = query.bind(s);
-        }
-        ArgType::SmolStr(s) => {
-          query = query.bind(s.as_str());
         }
       };
     }
@@ -817,9 +808,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.as_str());
-          }
         };
       }
       let res = {
@@ -906,9 +894,6 @@ impl Ctx {
         }
         ArgType::Json(s) => {
           query = query.bind(s);
-        }
-        ArgType::SmolStr(s) => {
-          query = query.bind(s.as_str());
         }
       };
     }
@@ -1024,9 +1009,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::SmolStr(s) => {
-            query = query.bind(s.as_str());
-          }
         };
       }
       let res = {
@@ -1113,9 +1095,6 @@ impl Ctx {
         ArgType::Json(s) => {
           query = query.bind(s);
         }
-        ArgType::SmolStr(s) => {
-          query = query.bind(s.as_str());
-        }
       };
     }
     
@@ -1164,15 +1143,15 @@ pub struct Ctx {
   
   is_tran: bool,
   
-  req_id: Arc<SmolStr>,
+  req_id: Arc<String>,
   
   tran: Arc<Mutex<Option<DbTransaction>>>,
   
   is_resful: bool,
   
-  old_auth_token: Option<SmolStr>,
+  old_auth_token: Option<String>,
   
-  auth_token: Option<SmolStr>,
+  auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
   
@@ -1195,7 +1174,7 @@ pub struct Ctx {
 
 impl Ctx {
   
-  pub fn get_req_id(&self) -> Arc<SmolStr> {
+  pub fn get_req_id(&self) -> Arc<String> {
     self.req_id.clone()
   }
   
@@ -1397,7 +1376,6 @@ pub enum ArgType {
   DateTime(NaiveDateTime),
   Time(NaiveTime),
   Json(serde_json::Value),
-  SmolStr(SmolStr),
 }
 
 impl Serialize for ArgType {
@@ -1426,7 +1404,6 @@ impl Serialize for ArgType {
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
       ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
-      ArgType::SmolStr(value) => serializer.serialize_str(value.as_str()),
     }
   }
 }
@@ -1454,7 +1431,6 @@ impl Display for ArgType {
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
       ArgType::Json(value) => write!(f, "{value}"),
-      ArgType::SmolStr(value) => write!(f, "{value}"),
     }
   }
 }
@@ -1579,6 +1555,12 @@ impl From<&str> for ArgType {
   }
 }
 
+impl From<&String> for ArgType {
+  fn from(value: &String) -> Self {
+    ArgType::String(value.to_string())
+  }
+}
+
 impl From<Arc<str>> for ArgType {
   fn from(value: Arc<str>) -> Self {
     ArgType::ArcStr(value)
@@ -1603,6 +1585,12 @@ impl From<NaiveDateTime> for ArgType {
   }
 }
 
+impl From<crate::common::gql::NaiveDateTime> for ArgType {
+  fn from(value: crate::common::gql::NaiveDateTime) -> Self {
+    ArgType::DateTime(value.into())
+  }
+}
+
 impl From<NaiveTime> for ArgType {
   fn from(value: NaiveTime) -> Self {
     ArgType::Time(value)
@@ -1612,18 +1600,6 @@ impl From<NaiveTime> for ArgType {
 impl From<serde_json::Value> for ArgType {
   fn from(value: serde_json::Value) -> Self {
     ArgType::Json(value)
-  }
-}
-
-impl From<SmolStr> for ArgType {
-  fn from(value: SmolStr) -> Self {
-    ArgType::SmolStr(value)
-  }
-}
-
-impl From<&SmolStr> for ArgType {
-  fn from(value: &SmolStr) -> Self {
-    ArgType::SmolStr(value.clone())
   }
 }
 
@@ -1887,13 +1863,13 @@ pub struct CtxBuilder<'a> {
   
   is_tran: Option<bool>,
   
-  old_auth_token: Option<SmolStr>,
+  old_auth_token: Option<String>,
   
-  auth_token: Option<SmolStr>,
+  auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
   
-  req_id: SmolStr,
+  req_id: String,
   
   now: NaiveDateTime,
   
@@ -1913,7 +1889,7 @@ impl <'a> CtxBuilder<'a> {
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
     let now = Local::now().naive_local();
-    let req_id = now.and_utc().timestamp_millis().to_string().into();
+    let req_id = now.and_utc().timestamp_millis().to_string();
     
     let client_tenant_id = if let Some(gql_ctx) = gql_ctx {
       gql_ctx.data_opt::<super::auth::auth_model::ClientTenantId>().cloned()
@@ -1958,17 +1934,17 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 获取token, graphql跟restful的获取方式不一样
-  fn get_auth_token(&self) -> Option<SmolStr> {
+  fn get_auth_token(&self) -> Option<String> {
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.data_opt
         ::<super::auth::auth_model::AuthToken>()
-        .map(SmolStr::new)
+        .cloned()
     } else if let Some(resful_req) = self.resful_req {
       let auth_token = resful_req
         .headers()
         .get(AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
-        .map(SmolStr::new);
+        .map(|s| s.to_string());
       if auth_token.is_some()  {
         return auth_token;
       }
@@ -1978,7 +1954,6 @@ impl <'a> CtxBuilder<'a> {
           url::form_urlencoded::parse(q.as_bytes())
             .find(|(key, _)| key == AUTHORIZATION)
             .map(|(_, value)| value.into_owned())
-            .map(SmolStr::new)
         })
     } else {
       None
@@ -1986,7 +1961,7 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 设置token, graphql跟restful的设置方式不一样
-  fn set_auth_token(&mut self, auth_token: SmolStr) -> Result<()> {
+  fn set_auth_token(&mut self, auth_token: String) -> Result<()> {
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.insert_http_header(
         AUTHORIZATION.parse::<HeaderName>()?,
@@ -2176,24 +2151,42 @@ pub fn get_order_by_query(
   order_by_query
 }
 
-#[must_use]
-pub fn get_short_uuid() -> SmolStr {
-  let uuid = uuid::Uuid::new_v4();
-  let uuid = uuid.to_string();
-  let uuid = uuid.replace('-', "");
-  // base64编码
-  let uuid = general_purpose::STANDARD.encode(uuid);
-  // 切割字符串22位
-  let uuid = utf8_slice::from(&uuid, 22);
-  uuid.into()
+fn encode_short_bytes(bytes: &[u8]) -> [u8; 22] {
+  let encoded = general_purpose::STANDARD_NO_PAD.encode(bytes);
+  let mut arr: [u8; 22] = [0u8; 22];
+  let encoded_bytes = encoded.as_bytes();
+  let len = encoded_bytes.len().min(arr.len());
+  arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  arr
 }
 
 #[must_use]
-pub fn to_short_uuid(str: impl AsRef<str>) -> SmolStr {
-  let uuid = hash(str.as_ref().as_bytes());
-  // 切割字符串22位
-  let uuid = utf8_slice::from(&uuid, 22);
-  uuid.into()
+pub fn get_short_uuid() -> [u8; 22] {
+  let uuid: Uuid = Uuid::now_v7();
+  // 16字节UUID编码为22字符的短ID，避免标准Base64的填充符号导致长度不一致
+  encode_short_bytes(uuid.as_bytes())
+}
+
+#[must_use]
+pub fn get_short_uuid_v4() -> [u8; 22] {
+  let uuid: Uuid = Uuid::new_v4();
+  // 16字节UUID编码为22字符的短ID，避免标准Base64的填充符号导致长度不一致
+  encode_short_bytes(uuid.as_bytes())
+}
+
+#[must_use]
+pub fn id_to_string(id: &[u8; 22]) -> String {
+  let s = std::str::from_utf8(id).unwrap_or("");
+  s.to_string()
+}
+
+#[must_use]
+pub fn to_short_uuid(s: &[u8]) -> [u8; 22] {
+  let mut hasher = Sha256::new();
+  hasher.update(s);
+  let hash = hasher.finalize();
+  // 只取前16字节后做22字符Base64编码，保证输出长度固定且不依赖填充符号
+  encode_short_bytes(&hash[..16])
 }
 
 #[must_use]
@@ -2239,24 +2232,24 @@ pub fn get_is_creating(
 }
 
 #[must_use]
-pub fn get_auth_token() -> Option<SmolStr> {
+pub fn get_auth_token() -> Option<String> {
   let ctx = CTX.with(|ctx| ctx.clone());
   if let Some(auth_token) = ctx.old_auth_token.as_ref() {
-    return Some(auth_token.clone());
+    return Some(auth_token.to_string());
   }
   if let Some(auth_token) = ctx.auth_token.as_ref() {
-    return Some(auth_token.clone());
+    return Some(auth_token.to_string());
   }
   None
 }
 
-pub fn get_auth_token_ok() -> Result<SmolStr> {
+pub fn get_auth_token_ok() -> Result<String> {
   let ctx = CTX.with(|ctx| ctx.clone());
   if let Some(auth_token) = ctx.old_auth_token.as_ref() {
-    return Ok(auth_token.clone());
+    return Ok(auth_token.to_string());
   }
   if let Some(auth_token) = ctx.auth_token.as_ref() {
-    return Ok(auth_token.clone());
+    return Ok(auth_token.to_string());
   }
   Err(eyre!(
     ServiceException {
@@ -2280,42 +2273,46 @@ pub fn get_debug_sql(
   debug_sql
 }
 
-// #[cfg(test)]
-// mod tests {
-  
-//   use super::*;
-  
-//   #[test]
-//   fn test_get_short_uuid() {
-//     let uuid = get_short_uuid();
-//     println!("{}", uuid);
-//   }
-  
-//   #[test]
-//   fn test_escape_id() {
-//     let val = "a.b.c";
-//     let val = escape_id(val);
-//     println!("{}", val);
-//   }
-  
-//   #[test]
-//   fn test_debug_sql() {
-//     let debug_args = vec!["a", "b"];
-//     let sql = r#"
-//       select
-//         *
-//       from
-//         `a`.`b`
-//       where 
-//         a = ?
-//         and b = ?
-//     "#;
-//     let mut debug_sql = sql.to_owned();
-//     debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
-//     for arg in debug_args {
-//       debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-//     }
-//     println!("{}", debug_sql);
-//   }
-  
-// }
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn short_uuid_helpers_return_22_bytes() {
+    let id = get_short_uuid();
+    assert_eq!(id.len(), 22);
+
+    let id_v4 = get_short_uuid_v4();
+    assert_eq!(id_v4.len(), 22);
+
+    let hashed = to_short_uuid(b"hello");
+    assert_eq!(hashed.len(), 22);
+  }
+
+  #[test]
+  fn test_escape_id() {
+    let val = "a.b.c";
+    let val = escape_id(val);
+    println!("{}", val);
+  }
+
+  #[test]
+  fn test_debug_sql() {
+    let debug_args = vec!["a", "b"];
+    let sql = r#"
+      select
+        *
+      from
+        `a`.`b`
+      where 
+        a = ?
+        and b = ?
+    "#;
+    let mut debug_sql = sql.to_owned();
+    debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
+    for arg in debug_args {
+      debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
+    }
+    println!("{}", debug_sql);
+  }
+}

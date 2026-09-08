@@ -92,7 +92,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   TabInf,
 } from "@/store/tabs";

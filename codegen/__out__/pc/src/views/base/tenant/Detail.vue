@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -114,6 +113,7 @@
               v-model="dialogModel.domain_ids"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
               :method="getListDomain"
+              dirty-key="域名"
               :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {
@@ -184,6 +184,7 @@
               v-model="dialogModel.lang_id"
               v-model:model-label="dialogModel.lang_id_lbl"
               :method="getListLang"
+              dirty-key="语言"
               :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {
@@ -327,7 +328,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -372,7 +373,10 @@ const pagePath = getPagePathTenant();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 // 域名
 const domainPermit = permitStore.getPermit("/base/domain");
@@ -550,15 +554,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -876,10 +872,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

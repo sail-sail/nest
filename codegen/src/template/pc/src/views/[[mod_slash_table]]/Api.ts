@@ -569,16 +569,24 @@ export async function setLblById<#=Table_Up#>(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = location.origin + getImgUrl({
-      id: model.<#=column_name#>,
-      height: 100,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>);
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#
@@ -1372,6 +1380,32 @@ export async function findByIds<#=Table_Up#>(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up#>(
+  search?: <#=searchName#>,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    exists<#=Table_Up2#>: Query["exists<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>) {
+        exists<#=Table_Up2#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.exists<#=Table_Up2#>;
+  
+  return res;
 }
 
 /**
@@ -2321,14 +2355,13 @@ if (isUseI18n) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: <#=searchName#>, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
             findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
               ${ <#=table_Up#>QueryField }<#
               if (hasAudit && auditTable_Up) {
@@ -2643,7 +2676,7 @@ export async function completeTask<#=Table_Up#>(
     completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: String, $add_sign_usr_ids: [UsrId!]) {
         completeTask<#=Table_Up#>(
           id: $id,
           action: $action,

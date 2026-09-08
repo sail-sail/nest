@@ -2,7 +2,8 @@
 
 use aes_gcm::{
   Aes256Gcm,
-  aead::{Aead, KeyInit, Payload, generic_array::GenericArray},
+  Nonce,
+  aead::{Aead, KeyInit, Payload},
 };
 use base64::{Engine, engine};
 use serde::{Deserialize, Serialize};
@@ -65,9 +66,11 @@ pub fn decode_wx_pay(
 ) -> Result<WxPayResource> {
   let resource = params.resource;
   let key_bytes = fixed_bytes::<32>(wx_pay_apiv3, "api_v3_private_key")?;
-  let key = GenericArray::from_slice(&key_bytes);
+  let cipher = Aes256Gcm::new_from_slice(&key_bytes).map_err(|err| {
+    WxPayError::InvalidResponse(format!("invalid aes key: {err}"))
+  })?;
   let nonce_bytes = fixed_bytes::<12>(&resource.nonce, "resource.nonce")?;
-  let nonce = GenericArray::from_slice(&nonce_bytes);
+  let nonce = Nonce::from_slice(&nonce_bytes);
   let ciphertext_base = engine::general_purpose::STANDARD.decode(resource.ciphertext)?;
   let cipherdata_length = ciphertext_base
     .len()
@@ -80,7 +83,6 @@ pub fn decode_wx_pay(
     msg: ciphertext.as_slice(),
     aad: associated_data.as_slice(),
   };
-  let cipher = Aes256Gcm::new(key);
   let plaintext = cipher.decrypt(nonce, payload)?;
   let content = std::str::from_utf8(&plaintext)?;
   let data = serde_json::from_str(content)?;
@@ -133,9 +135,11 @@ pub fn decode_wx_refund(
 ) -> Result<WxRefundResource> {
   let resource = params.resource;
   let key_bytes = fixed_bytes::<32>(wx_pay_apiv3, "api_v3_private_key")?;
-  let key = GenericArray::from_slice(&key_bytes);
+  let cipher = Aes256Gcm::new_from_slice(&key_bytes).map_err(|err| {
+    WxPayError::InvalidResponse(format!("invalid aes key: {err}"))
+  })?;
   let nonce_bytes = fixed_bytes::<12>(&resource.nonce, "resource.nonce")?;
-  let nonce = GenericArray::from_slice(&nonce_bytes);
+  let nonce = Nonce::from_slice(&nonce_bytes);
   let ciphertext_base = engine::general_purpose::STANDARD.decode(resource.ciphertext)?;
   let cipherdata_length = ciphertext_base
     .len()
@@ -148,7 +152,6 @@ pub fn decode_wx_refund(
     msg: ciphertext.as_slice(),
     aad: associated_data.as_slice(),
   };
-  let cipher = Aes256Gcm::new(key);
   let plaintext = cipher.decrypt(nonce, payload)?;
   let content = std::str::from_utf8(&plaintext)?;
   let data = serde_json::from_str(content)?;

@@ -24,10 +24,20 @@
         <template
           v-if="tabGroup === 'code'"
         >
-        
-          <el-tab-pane
-            :label="'业务字典' + (dictbiz_detail_total != null ? ` (${ dictbiz_detail_total })` : '')"
-          >
+          
+          <el-tab-pane>
+            
+            <template #label>
+              <el-badge
+                :value="dictbiz_detail_total"
+                :show-zero="false"
+                type="info"
+                :offset="[8, 0]"
+              >
+                业务字典
+              </el-badge>
+            </template>
+            
             <DictbizDetailList
               :dictbiz_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
@@ -36,6 +46,7 @@
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
             ></DictbizDetailList>
+            
           </el-tab-pane>
           
         </template>
@@ -65,13 +76,13 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 
 import DictbizDetailList from "@/views/base/dictbiz_detail/List.vue";
 
 import {
   findCountDictbizDetail,
-} from "@/views/base/dictbiz_detail/Api";
+} from "@/views/base/dictbiz_detail/Api.ts";
 
 let inited = $ref(false);
 

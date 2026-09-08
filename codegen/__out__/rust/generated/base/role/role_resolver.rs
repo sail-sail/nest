@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -186,6 +183,27 @@ pub async fn find_by_ids_role(
   Ok(models)
 }
 
+/// 根据搜索条件判断角色是否存在
+#[function_name::named]
+pub async fn exists_role(
+  search: Option<RoleSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = role_service::exists_role(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找角色, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_role(
@@ -237,8 +255,8 @@ pub async fn creates_role(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("add"),
+    String::from(get_page_path_role()),
+    String::from("add"),
   ).await?;
   
   let ids = role_service::creates_role(
@@ -297,8 +315,8 @@ pub async fn update_by_id_role(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_role()),
+    String::from("edit"),
   ).await?;
   
   let res = role_service::update_by_id_role(
@@ -325,8 +343,8 @@ pub async fn delete_by_ids_role(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_role()),
+    String::from("delete"),
   ).await?;
   
   let num = role_service::delete_by_ids_role(
@@ -376,8 +394,8 @@ pub async fn enable_by_ids_role(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_role()),
+    String::from("edit"),
   ).await?;
   
   let num = role_service::enable_by_ids_role(
@@ -429,8 +447,8 @@ pub async fn lock_by_ids_role(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_role()),
+    String::from("edit"),
   ).await?;
   
   let num = role_service::lock_by_ids_role(
@@ -476,8 +494,8 @@ pub async fn revert_by_ids_role(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_role()),
+    String::from("delete"),
   ).await?;
   
   let num = role_service::revert_by_ids_role(
@@ -503,8 +521,8 @@ pub async fn force_delete_by_ids_role(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_role()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_role()),
+    String::from("force_delete"),
   ).await?;
   
   let num = role_service::force_delete_by_ids_role(
