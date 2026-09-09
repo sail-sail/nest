@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -258,8 +255,8 @@ pub async fn creates_wx_app(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("add"),
+    String::from(get_page_path_wx_app()),
+    String::from("add"),
   ).await?;
   
   let ids = wx_app_service::creates_wx_app(
@@ -318,8 +315,8 @@ pub async fn update_by_id_wx_app(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_wx_app()),
+    String::from("edit"),
   ).await?;
   
   let res = wx_app_service::update_by_id_wx_app(
@@ -346,8 +343,8 @@ pub async fn delete_by_ids_wx_app(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_wx_app()),
+    String::from("delete"),
   ).await?;
   
   let num = wx_app_service::delete_by_ids_wx_app(
@@ -397,8 +394,8 @@ pub async fn enable_by_ids_wx_app(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_wx_app()),
+    String::from("edit"),
   ).await?;
   
   let num = wx_app_service::enable_by_ids_wx_app(
@@ -450,8 +447,8 @@ pub async fn lock_by_ids_wx_app(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_wx_app()),
+    String::from("edit"),
   ).await?;
   
   let num = wx_app_service::lock_by_ids_wx_app(
@@ -497,8 +494,8 @@ pub async fn revert_by_ids_wx_app(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_wx_app()),
+    String::from("delete"),
   ).await?;
   
   let num = wx_app_service::revert_by_ids_wx_app(
@@ -524,8 +521,8 @@ pub async fn force_delete_by_ids_wx_app(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wx_app()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_wx_app()),
+    String::from("force_delete"),
   ).await?;
   
   let num = wx_app_service::force_delete_by_ids_wx_app(

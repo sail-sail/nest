@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -65,7 +62,7 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let mut where_query = String::with_capacity(80 * 26 * 2);
+  let mut where_query = String::with_capacity(80 * 26 * 6);
   
   where_query.push_str(" 1=1");
   {
@@ -78,14 +75,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -292,14 +289,14 @@ async fn get_where_query(
     if let Some(channel) = channel {
       let arg = {
         if channel.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(channel.len());
           for item in channel {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.channel in (");
@@ -352,14 +349,14 @@ async fn get_where_query(
     if let Some(status) = status {
       let arg = {
         if status.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(status.len());
           for item in status {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.status in (");
@@ -376,14 +373,14 @@ async fn get_where_query(
     if let Some(funds_account) = funds_account {
       let arg = {
         if funds_account.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(funds_account.len());
           for item in funds_account {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.funds_account in (");
@@ -502,14 +499,14 @@ async fn get_where_query(
     if let Some(amount_currency) = amount_currency {
       let arg = {
         if amount_currency.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(amount_currency.len());
           for item in amount_currency {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.amount_currency in (");
@@ -714,7 +711,7 @@ pub async fn find_all_wx_refund(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -1087,7 +1084,7 @@ pub async fn find_by_id_ok_wx_refund(
   ).await?;
   
   let Some(wx_refund_model) = wx_refund_model else {
-    let err_msg = SmolStr::new("此 微信退款申请 已被删除");
+    let err_msg = String::from("此 微信退款申请 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1199,7 +1196,7 @@ pub async fn find_by_ids_ok_wx_refund(
   ).await?;
   
   if wx_refund_models.len() != len {
-    let err_msg = SmolStr::new("此 微信退款申请 已被删除");
+    let err_msg = String::from("此 微信退款申请 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1212,7 +1209,7 @@ pub async fn find_by_ids_ok_wx_refund(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 微信退款申请 已经被删除");
+      let err_msg = String::from("此 微信退款申请 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<WxRefundModel>>>()?;
@@ -1664,7 +1661,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = channel_dict.iter().find(|item| {
       item.lbl == input.channel_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.channel = val.parse::<WxRefundChannel>()?.into();
     }
@@ -1676,7 +1673,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = channel_dict.iter().find(|item| {
       item.val == input.channel.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.channel_lbl = lbl;
   }
   
@@ -1689,7 +1686,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = status_dict.iter().find(|item| {
       item.lbl == input.status_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.status = val.parse::<WxRefundStatus>()?.into();
     }
@@ -1701,7 +1698,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = status_dict.iter().find(|item| {
       item.val == input.status.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.status_lbl = lbl;
   }
   
@@ -1714,7 +1711,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = funds_account_dict.iter().find(|item| {
       item.lbl == input.funds_account_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.funds_account = val.parse::<WxRefundFundsAccount>()?.into();
     }
@@ -1726,7 +1723,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = funds_account_dict.iter().find(|item| {
       item.val == input.funds_account.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.funds_account_lbl = lbl;
   }
   
@@ -1739,7 +1736,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = amount_currency_dict.iter().find(|item| {
       item.lbl == input.amount_currency_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.amount_currency = val.parse::<WxRefundAmountCurrency>()?.into();
     }
@@ -1751,7 +1748,7 @@ pub async fn set_id_by_lbl_wx_refund(
     let dict_model = amount_currency_dict.iter().find(|item| {
       item.val == input.amount_currency.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.amount_currency_lbl = lbl;
   }
   
@@ -1904,7 +1901,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 26 + 20);
+  let mut sql_fields = String::with_capacity(80 * 26 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1957,7 +1954,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 26 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 26 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2391,7 +2388,7 @@ pub async fn update_by_id_wx_refund(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 26 + 20);
+  let mut sql_fields = String::with_capacity((80 * 26 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2686,7 +2683,7 @@ pub async fn validate_option_wx_refund(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("微信退款申请不存在");
+      let err_msg = String::from("微信退款申请不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

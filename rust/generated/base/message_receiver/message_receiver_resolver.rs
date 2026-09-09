@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -258,8 +255,8 @@ pub async fn creates_message_receiver(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("add"),
+    String::from(get_page_path_message_receiver()),
+    String::from("add"),
   ).await?;
   
   let ids = message_receiver_service::creates_message_receiver(
@@ -318,8 +315,8 @@ pub async fn update_by_id_message_receiver(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_message_receiver()),
+    String::from("edit"),
   ).await?;
   
   let res = message_receiver_service::update_by_id_message_receiver(
@@ -346,8 +343,8 @@ pub async fn delete_by_ids_message_receiver(
   );
   
   // use_permit(
-  //   SmolStr::new(get_page_path_message_receiver()),
-  //   SmolStr::new("delete"),
+  //   String::from(get_page_path_message_receiver()),
+  //   String::from("delete"),
   // ).await?;
   
   let num = message_receiver_service::delete_by_ids_message_receiver(
@@ -392,8 +389,8 @@ pub async fn revert_by_ids_message_receiver(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_message_receiver()),
+    String::from("delete"),
   ).await?;
   
   let num = message_receiver_service::revert_by_ids_message_receiver(
@@ -419,8 +416,8 @@ pub async fn force_delete_by_ids_message_receiver(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_message_receiver()),
+    String::from("force_delete"),
   ).await?;
   
   let num = message_receiver_service::force_delete_by_ids_message_receiver(

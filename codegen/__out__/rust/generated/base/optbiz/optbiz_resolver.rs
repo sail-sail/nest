@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -258,8 +255,8 @@ pub async fn creates_optbiz(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("add"),
+    String::from(get_page_path_optbiz()),
+    String::from("add"),
   ).await?;
   
   let ids = optbiz_service::creates_optbiz(
@@ -318,8 +315,8 @@ pub async fn update_by_id_optbiz(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_optbiz()),
+    String::from("edit"),
   ).await?;
   
   let res = optbiz_service::update_by_id_optbiz(
@@ -346,8 +343,8 @@ pub async fn delete_by_ids_optbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_optbiz()),
+    String::from("delete"),
   ).await?;
   
   let num = optbiz_service::delete_by_ids_optbiz(
@@ -397,8 +394,8 @@ pub async fn enable_by_ids_optbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_optbiz()),
+    String::from("edit"),
   ).await?;
   
   let num = optbiz_service::enable_by_ids_optbiz(
@@ -450,8 +447,8 @@ pub async fn lock_by_ids_optbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_optbiz()),
+    String::from("edit"),
   ).await?;
   
   let num = optbiz_service::lock_by_ids_optbiz(
@@ -497,8 +494,8 @@ pub async fn revert_by_ids_optbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_optbiz()),
+    String::from("delete"),
   ).await?;
   
   let num = optbiz_service::revert_by_ids_optbiz(
@@ -524,8 +521,8 @@ pub async fn force_delete_by_ids_optbiz(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_optbiz()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_optbiz()),
+    String::from("force_delete"),
   ).await?;
   
   let num = optbiz_service::force_delete_by_ids_optbiz(

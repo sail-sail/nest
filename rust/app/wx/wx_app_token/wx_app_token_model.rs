@@ -5,17 +5,15 @@ use async_graphql::{
   Enum,
 };
 
-use smol_str::SmolStr;
-
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct GetAccessTokenModel {
   #[serde(default)]
-  pub access_token: SmolStr,
+  pub access_token: String,
   #[serde(default)]
   pub expires_in: u32,
   pub errcode: Option<i32>,
-  pub errmsg: Option<SmolStr>,
+  pub errmsg: Option<String>,
 }
 
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
@@ -50,22 +48,6 @@ impl TryFrom<String> for GetwxacodeunlimitEnvVersion {
   type Error = color_eyre::eyre::Report;
   
   fn try_from(value: String) -> Result<Self, Self::Error> {
-    match value.as_str() {
-      "develop" => Ok(GetwxacodeunlimitEnvVersion::Develop),
-      "trial" => Ok(GetwxacodeunlimitEnvVersion::Trial),
-      "release" => Ok(GetwxacodeunlimitEnvVersion::Release),
-      _ => Err(color_eyre::eyre::eyre!(
-        "Invalid GetwxacodeunlimitEnvVersion: {}",
-        value,
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for GetwxacodeunlimitEnvVersion {
-  type Error = color_eyre::eyre::Report;
-  
-  fn try_from(value: SmolStr) -> Result<Self, Self::Error> {
     match value.as_str() {
       "develop" => Ok(GetwxacodeunlimitEnvVersion::Develop),
       "trial" => Ok(GetwxacodeunlimitEnvVersion::Trial),

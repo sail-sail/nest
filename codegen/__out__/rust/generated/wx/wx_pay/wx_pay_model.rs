@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -58,70 +55,70 @@ pub struct WxPayModel {
   pub id: WxPayId,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: SmolStr,
+  pub mchid: String,
   /// 证书序列号
   #[graphql(name = "serial_no")]
-  pub serial_no: SmolStr,
+  pub serial_no: String,
   /// 公钥
   #[graphql(name = "public_key")]
-  pub public_key: SmolStr,
+  pub public_key: String,
   /// 私钥
   #[graphql(name = "private_key")]
-  pub private_key: SmolStr,
+  pub private_key: String,
   /// APIv3密钥
   #[graphql(name = "v3_key")]
-  pub v3_key: SmolStr,
+  pub v3_key: String,
   /// 支付终端IP
   #[graphql(name = "payer_client_ip")]
-  pub payer_client_ip: SmolStr,
+  pub payer_client_ip: String,
   /// 通知地址
   #[graphql(name = "notify_url")]
-  pub notify_url: SmolStr,
+  pub notify_url: String,
   /// 退款通知地址
   #[graphql(name = "refund_notify_url")]
-  pub refund_notify_url: SmolStr,
+  pub refund_notify_url: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxPayModel {
@@ -131,65 +128,54 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
     // ID
     let id: WxPayId = row.try_get("id")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 开发者ID
-    let appid: &str = row.try_get("appid")?;
-    let appid = SmolStr::new(appid);
+    let appid: String = row.try_get("appid")?;
     // 商户号
-    let mchid: &str = row.try_get("mchid")?;
-    let mchid = SmolStr::new(mchid);
+    let mchid: String = row.try_get("mchid")?;
     // 证书序列号
-    let serial_no: &str = row.try_get("serial_no")?;
-    let serial_no = SmolStr::new(serial_no);
+    let serial_no: String = row.try_get("serial_no")?;
     // 公钥
-    let public_key: &str = row.try_get("public_key")?;
-    let public_key = SmolStr::new(public_key);
+    let public_key: String = row.try_get("public_key")?;
     // 私钥
-    let private_key: &str = row.try_get("private_key")?;
-    let private_key = SmolStr::new(private_key);
+    let private_key: String = row.try_get("private_key")?;
     // APIv3密钥
-    let v3_key: &str = row.try_get("v3_key")?;
-    let v3_key = SmolStr::new(v3_key);
+    let v3_key: String = row.try_get("v3_key")?;
     // 支付终端IP
-    let payer_client_ip: &str = row.try_get("payer_client_ip")?;
-    let payer_client_ip = SmolStr::new(payer_client_ip);
+    let payer_client_ip: String = row.try_get("payer_client_ip")?;
     // 通知地址
-    let notify_url: &str = row.try_get("notify_url")?;
-    let notify_url = SmolStr::new(notify_url);
+    let notify_url: String = row.try_get("notify_url")?;
     // 退款通知地址
-    let refund_notify_url: &str = row.try_get("refund_notify_url")?;
-    let refund_notify_url = SmolStr::new(refund_notify_url);
+    let refund_notify_url: String = row.try_get("refund_notify_url")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl = SmolStr::new(is_locked.to_string());
+    let is_locked_lbl = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -234,79 +220,79 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
 pub struct WxPayFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: SmolStr,
+  pub mchid: String,
   /// 证书序列号
   #[graphql(name = "serial_no")]
-  pub serial_no: SmolStr,
+  pub serial_no: String,
   /// 公钥
   #[graphql(name = "public_key")]
-  pub public_key: SmolStr,
+  pub public_key: String,
   /// 私钥
   #[graphql(name = "private_key")]
-  pub private_key: SmolStr,
+  pub private_key: String,
   /// APIv3密钥
   #[graphql(name = "v3_key")]
-  pub v3_key: SmolStr,
+  pub v3_key: String,
   /// 支付终端IP
   #[graphql(name = "payer_client_ip")]
-  pub payer_client_ip: SmolStr,
+  pub payer_client_ip: String,
   /// 通知地址
   #[graphql(name = "notify_url")]
-  pub notify_url: SmolStr,
+  pub notify_url: String,
   /// 退款通知地址
   #[graphql(name = "refund_notify_url")]
-  pub refund_notify_url: SmolStr,
+  pub refund_notify_url: String,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: SmolStr,
+  pub is_locked: String,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -322,64 +308,64 @@ pub struct WxPaySearch {
   pub is_deleted: Option<u8>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid_like")]
-  pub appid_like: Option<SmolStr>,
+  pub appid_like: Option<String>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid: Option<SmolStr>,
+  pub mchid: Option<String>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid_like: Option<SmolStr>,
+  pub mchid_like: Option<String>,
   /// 证书序列号
   #[graphql(skip)]
-  pub serial_no: Option<SmolStr>,
+  pub serial_no: Option<String>,
   /// 证书序列号
   #[graphql(skip)]
-  pub serial_no_like: Option<SmolStr>,
+  pub serial_no_like: Option<String>,
   /// 公钥
   #[graphql(skip)]
-  pub public_key: Option<SmolStr>,
+  pub public_key: Option<String>,
   /// 公钥
   #[graphql(skip)]
-  pub public_key_like: Option<SmolStr>,
+  pub public_key_like: Option<String>,
   /// 私钥
   #[graphql(skip)]
-  pub private_key: Option<SmolStr>,
+  pub private_key: Option<String>,
   /// 私钥
   #[graphql(skip)]
-  pub private_key_like: Option<SmolStr>,
+  pub private_key_like: Option<String>,
   /// APIv3密钥
   #[graphql(skip)]
-  pub v3_key: Option<SmolStr>,
+  pub v3_key: Option<String>,
   /// APIv3密钥
   #[graphql(skip)]
-  pub v3_key_like: Option<SmolStr>,
+  pub v3_key_like: Option<String>,
   /// 支付终端IP
   #[graphql(skip)]
-  pub payer_client_ip: Option<SmolStr>,
+  pub payer_client_ip: Option<String>,
   /// 支付终端IP
   #[graphql(skip)]
-  pub payer_client_ip_like: Option<SmolStr>,
+  pub payer_client_ip_like: Option<String>,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url: Option<SmolStr>,
+  pub notify_url: Option<String>,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url_like: Option<SmolStr>,
+  pub notify_url_like: Option<String>,
   /// 退款通知地址
   #[graphql(skip)]
-  pub refund_notify_url: Option<SmolStr>,
+  pub refund_notify_url: Option<String>,
   /// 退款通知地址
   #[graphql(skip)]
-  pub refund_notify_url_like: Option<SmolStr>,
+  pub refund_notify_url_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -391,10 +377,10 @@ pub struct WxPaySearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -403,10 +389,10 @@ pub struct WxPaySearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -418,10 +404,10 @@ pub struct WxPaySearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -585,64 +571,64 @@ pub struct WxPayInput {
   pub tenant_id: Option<TenantId>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: Option<SmolStr>,
+  pub mchid: Option<String>,
   /// 证书序列号
   #[graphql(name = "serial_no")]
-  pub serial_no: Option<SmolStr>,
+  pub serial_no: Option<String>,
   /// 公钥
   #[graphql(name = "public_key")]
-  pub public_key: Option<SmolStr>,
+  pub public_key: Option<String>,
   /// 私钥
   #[graphql(name = "private_key")]
-  pub private_key: Option<SmolStr>,
+  pub private_key: Option<String>,
   /// APIv3密钥
   #[graphql(name = "v3_key")]
-  pub v3_key: Option<SmolStr>,
+  pub v3_key: Option<String>,
   /// 支付终端IP
   #[graphql(name = "payer_client_ip")]
-  pub payer_client_ip: Option<SmolStr>,
+  pub payer_client_ip: Option<String>,
   /// 通知地址
   #[graphql(name = "notify_url")]
-  pub notify_url: Option<SmolStr>,
+  pub notify_url: Option<String>,
   /// 退款通知地址
   #[graphql(name = "refund_notify_url")]
-  pub refund_notify_url: Option<SmolStr>,
+  pub refund_notify_url: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<SmolStr>,
+  pub is_locked_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -651,13 +637,13 @@ pub struct WxPayInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -874,7 +860,7 @@ pub fn check_sort_wx_pay(
     }
     if !get_can_sort_in_api_wx_pay.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wx_pay: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wx_pay: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

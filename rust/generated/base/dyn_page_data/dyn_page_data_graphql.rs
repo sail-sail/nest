@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -229,7 +226,7 @@ impl DynPageDataGenQuery {
   async fn get_field_comments_dyn_page_data(
     &self,
     ctx: &Context<'_>,
-    ref_code: Option<SmolStr>,
+    ref_code: Option<String>,
   ) -> Result<DynPageDataFieldComment> {
     
     Ctx::builder(ctx)

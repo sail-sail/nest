@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -59,61 +56,61 @@ pub struct WxAppModel {
   pub id: WxAppId,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: SmolStr,
+  pub appsecret: String,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: SmolStr,
+  pub default_role_codes: String,
   /// 默认角色
   #[graphql(name = "default_role_ids")]
   pub default_role_ids: Vec<RoleId>,
   /// 默认角色
   #[graphql(name = "default_role_ids_lbl")]
-  pub default_role_ids_lbl: SmolStr,
+  pub default_role_ids_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxAppModel {
@@ -123,50 +120,44 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
     // ID
     let id: WxAppId = row.try_get("id")?;
     // 原始ID
-    let code: &str = row.try_get("code")?;
-    let code = SmolStr::new(code);
+    let code: String = row.try_get("code")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 开发者ID
-    let appid: &str = row.try_get("appid")?;
-    let appid = SmolStr::new(appid);
+    let appid: String = row.try_get("appid")?;
     // 开发者密码
-    let appsecret: &str = row.try_get("appsecret")?;
-    let appsecret = SmolStr::new(appsecret);
+    let appsecret: String = row.try_get("appsecret")?;
     // 默认角色
-    let default_role_codes: &str = row.try_get("default_role_codes")?;
-    let default_role_codes = SmolStr::new(default_role_codes);
+    let default_role_codes: String = row.try_get("default_role_codes")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl = SmolStr::new(is_locked.to_string());
+    let is_locked_lbl = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -181,7 +172,7 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
       appsecret,
       default_role_codes,
       default_role_ids: vec![],
-      default_role_ids_lbl: SmolStr::new(""),
+      default_role_ids_lbl: String::new(),
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -208,64 +199,64 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
 pub struct WxAppFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: SmolStr,
+  pub appsecret: String,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: SmolStr,
+  pub default_role_codes: String,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: SmolStr,
+  pub is_locked: String,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -281,34 +272,34 @@ pub struct WxAppSearch {
   pub is_deleted: Option<u8>,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 原始ID
   #[graphql(name = "code_like")]
-  pub code_like: Option<SmolStr>,
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid_like")]
-  pub appid_like: Option<SmolStr>,
+  pub appid_like: Option<String>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret: Option<SmolStr>,
+  pub appsecret: Option<String>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret_like: Option<SmolStr>,
+  pub appsecret_like: Option<String>,
   /// 默认角色
   #[graphql(skip)]
-  pub default_role_codes: Option<SmolStr>,
+  pub default_role_codes: Option<String>,
   /// 默认角色
   #[graphql(skip)]
-  pub default_role_codes_like: Option<SmolStr>,
+  pub default_role_codes_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -320,10 +311,10 @@ pub struct WxAppSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -332,10 +323,10 @@ pub struct WxAppSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -347,10 +338,10 @@ pub struct WxAppSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -479,19 +470,19 @@ pub struct WxAppInput {
   pub tenant_id: Option<TenantId>,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: Option<SmolStr>,
+  pub appsecret: Option<String>,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: Option<SmolStr>,
+  pub default_role_codes: Option<String>,
   /// 默认角色
   #[graphql(name = "default_role_ids")]
   pub default_role_ids: Option<Vec<RoleId>>,
@@ -500,31 +491,31 @@ pub struct WxAppInput {
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<SmolStr>,
+  pub is_locked_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -533,13 +524,13 @@ pub struct WxAppInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -722,7 +713,7 @@ pub fn check_sort_wx_app(
     }
     if !get_can_sort_in_api_wx_app.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wx_app: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wx_app: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

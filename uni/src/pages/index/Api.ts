@@ -27,7 +27,7 @@ export async function getLoginTenants(
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
     query: /* GraphQL */ `
-      query($domain: SmolStr!) {
+      query($domain: String!) {
         getLoginTenants(domain: $domain) {
           id
           lbl
@@ -173,7 +173,7 @@ export async function checkClientTenantId(): Promise<boolean> {
   } = await query(
     {
       query: /* GraphQL */ `
-        query($platform: SmolStr!, $appid: SmolStr!) {
+        query($platform: String!, $appid: String!) {
           getTenantIdByAppid(platform: $platform, appid: $appid)
         }
       `,

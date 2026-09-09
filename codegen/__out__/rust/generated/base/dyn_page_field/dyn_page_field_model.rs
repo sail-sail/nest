@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -63,37 +60,37 @@ pub struct DynPageFieldModel {
   pub code_seq: u32,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: DynPageId,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl")]
-  pub dyn_page_id_lbl: SmolStr,
+  pub dyn_page_id_lbl: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: SmolStr,
+  pub r#type: String,
   /// 属性
   #[graphql(name = "attrs")]
-  pub attrs: Option<SmolStr>,
+  pub attrs: Option<String>,
   /// 计算公式
   #[graphql(name = "formula")]
-  pub formula: SmolStr,
+  pub formula: String,
   /// 必填
   #[graphql(name = "is_required")]
   pub is_required: u8,
   /// 必填
   #[graphql(name = "is_required_lbl")]
-  pub is_required_lbl: SmolStr,
+  pub is_required_lbl: String,
   /// 查询条件
   #[graphql(name = "is_search")]
   pub is_search: u8,
   /// 查询条件
   #[graphql(name = "is_search_lbl")]
-  pub is_search_lbl: SmolStr,
+  pub is_search_lbl: String,
   /// 宽度
   #[graphql(name = "width")]
   pub width: u32,
@@ -102,25 +99,25 @@ pub struct DynPageFieldModel {
   pub align: DynPageFieldAlign,
   /// 对齐方式
   #[graphql(name = "align_lbl")]
-  pub align_lbl: SmolStr,
+  pub align_lbl: String,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list")]
   pub is_mobile_list: u8,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list_lbl")]
-  pub is_mobile_list_lbl: SmolStr,
+  pub is_mobile_list_lbl: String,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search")]
   pub is_mobile_search: u8,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search_lbl")]
-  pub is_mobile_search_lbl: SmolStr,
+  pub is_mobile_search_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
@@ -131,25 +128,25 @@ pub struct DynPageFieldModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for DynPageFieldModel {
@@ -161,66 +158,61 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
     // 编码-序列号
     let code_seq: u32 = row.try_get("code_seq")?;
     // 编码
-    let code: &str = row.try_get("code")?;
-    let code = SmolStr::new(code);
+    let code: String = row.try_get("code")?;
     // 动态页面
     let dyn_page_id: DynPageId = row.try_get("dyn_page_id")?;
     let dyn_page_id_lbl: Option<&str> = row.try_get("dyn_page_id_lbl")?;
-    let dyn_page_id_lbl = SmolStr::new(dyn_page_id_lbl.unwrap_or_default());
+    let dyn_page_id_lbl = String::from(dyn_page_id_lbl.unwrap_or_default());
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 类型
-    let r#type: &str = row.try_get("type")?;
-    let r#type = SmolStr::new(r#type);
+    let r#type: String = row.try_get("type")?;
     // 属性
-    let attrs: Option<&str> = row.try_get("attrs")?;
-    let attrs = attrs.map(SmolStr::new);
+    let attrs: Option<String> = row.try_get("attrs")?;
     // 计算公式
-    let formula: &str = row.try_get("formula")?;
-    let formula = SmolStr::new(formula);
+    let formula: String = row.try_get("formula")?;
     // 必填
     let is_required: u8 = row.try_get("is_required")?;
-    let is_required_lbl = SmolStr::new(is_required.to_string());
+    let is_required_lbl = is_required.to_string();
     // 查询条件
     let is_search: u8 = row.try_get("is_search")?;
-    let is_search_lbl = SmolStr::new(is_search.to_string());
+    let is_search_lbl = is_search.to_string();
     // 宽度
     let width: u32 = row.try_get("width")?;
     // 对齐方式
     let align_lbl: &str = row.try_get("align")?;
     let align: DynPageFieldAlign = align_lbl.try_into()?;
-    let align_lbl = SmolStr::new(align_lbl);
+    let align_lbl = String::from(align_lbl);
     // 手机列表显示
     let is_mobile_list: u8 = row.try_get("is_mobile_list")?;
-    let is_mobile_list_lbl = SmolStr::new(is_mobile_list.to_string());
+    let is_mobile_list_lbl = is_mobile_list.to_string();
     // 手机列表查询
     let is_mobile_search: u8 = row.try_get("is_mobile_search")?;
-    let is_mobile_search_lbl = SmolStr::new(is_mobile_search.to_string());
+    let is_mobile_search_lbl = is_mobile_search.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -271,70 +263,70 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
 pub struct DynPageFieldFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
-  pub dyn_page_id: SmolStr,
+  pub dyn_page_id: String,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl")]
-  pub dyn_page_id_lbl: SmolStr,
+  pub dyn_page_id_lbl: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: SmolStr,
+  pub r#type: String,
   /// 属性
   #[graphql(name = "attrs")]
-  pub attrs: SmolStr,
+  pub attrs: String,
   /// 计算公式
   #[graphql(name = "formula")]
-  pub formula: SmolStr,
+  pub formula: String,
   /// 必填
   #[graphql(name = "is_required")]
-  pub is_required: SmolStr,
+  pub is_required: String,
   /// 必填
   #[graphql(name = "is_required_lbl")]
-  pub is_required_lbl: SmolStr,
+  pub is_required_lbl: String,
   /// 查询条件
   #[graphql(name = "is_search")]
-  pub is_search: SmolStr,
+  pub is_search: String,
   /// 查询条件
   #[graphql(name = "is_search_lbl")]
-  pub is_search_lbl: SmolStr,
+  pub is_search_lbl: String,
   /// 宽度
   #[graphql(name = "width")]
-  pub width: SmolStr,
+  pub width: String,
   /// 对齐方式
   #[graphql(name = "align")]
-  pub align: SmolStr,
+  pub align: String,
   /// 对齐方式
   #[graphql(name = "align_lbl")]
-  pub align_lbl: SmolStr,
+  pub align_lbl: String,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list")]
-  pub is_mobile_list: SmolStr,
+  pub is_mobile_list: String,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list_lbl")]
-  pub is_mobile_list_lbl: SmolStr,
+  pub is_mobile_list_lbl: String,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search")]
-  pub is_mobile_search: SmolStr,
+  pub is_mobile_search: String,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search_lbl")]
-  pub is_mobile_search_lbl: SmolStr,
+  pub is_mobile_search_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -353,10 +345,10 @@ pub struct DynPageFieldSearch {
   pub code_seq: Option<[Option<u32>; 2]>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 编码
   #[graphql(name = "code_like")]
-  pub code_like: Option<SmolStr>,
+  pub code_like: Option<String>,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<Vec<DynPageId>>,
@@ -365,34 +357,34 @@ pub struct DynPageFieldSearch {
   pub dyn_page_id_is_null: Option<bool>,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl")]
-  pub dyn_page_id_lbl: Option<Vec<SmolStr>>,
+  pub dyn_page_id_lbl: Option<Vec<String>>,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl_like")]
-  pub dyn_page_id_lbl_like: Option<SmolStr>,
+  pub dyn_page_id_lbl_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 类型
   #[graphql(skip)]
-  pub r#type: Option<SmolStr>,
+  pub r#type: Option<String>,
   /// 类型
   #[graphql(skip)]
-  pub type_like: Option<SmolStr>,
+  pub type_like: Option<String>,
   /// 属性
   #[graphql(skip)]
-  pub attrs: Option<SmolStr>,
+  pub attrs: Option<String>,
   /// 属性
   #[graphql(skip)]
-  pub attrs_like: Option<SmolStr>,
+  pub attrs_like: Option<String>,
   /// 计算公式
   #[graphql(skip)]
-  pub formula: Option<SmolStr>,
+  pub formula: Option<String>,
   /// 计算公式
   #[graphql(skip)]
-  pub formula_like: Option<SmolStr>,
+  pub formula_like: Option<String>,
   /// 必填
   #[graphql(skip)]
   pub is_required: Option<Vec<u8>>,
@@ -425,10 +417,10 @@ pub struct DynPageFieldSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -440,10 +432,10 @@ pub struct DynPageFieldSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -605,37 +597,37 @@ pub struct DynPageFieldInput {
   pub code_seq: Option<u32>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<DynPageId>,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl")]
-  pub dyn_page_id_lbl: Option<SmolStr>,
+  pub dyn_page_id_lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: Option<SmolStr>,
+  pub r#type: Option<String>,
   /// 属性
   #[graphql(name = "attrs")]
-  pub attrs: Option<SmolStr>,
+  pub attrs: Option<String>,
   /// 计算公式
   #[graphql(name = "formula")]
-  pub formula: Option<SmolStr>,
+  pub formula: Option<String>,
   /// 必填
   #[graphql(name = "is_required")]
   pub is_required: Option<u8>,
   /// 必填
   #[graphql(name = "is_required_lbl")]
-  pub is_required_lbl: Option<SmolStr>,
+  pub is_required_lbl: Option<String>,
   /// 查询条件
   #[graphql(name = "is_search")]
   pub is_search: Option<u8>,
   /// 查询条件
   #[graphql(name = "is_search_lbl")]
-  pub is_search_lbl: Option<SmolStr>,
+  pub is_search_lbl: Option<String>,
   /// 宽度
   #[graphql(name = "width")]
   pub width: Option<u32>,
@@ -644,25 +636,25 @@ pub struct DynPageFieldInput {
   pub align: Option<DynPageFieldAlign>,
   /// 对齐方式
   #[graphql(name = "align_lbl")]
-  pub align_lbl: Option<SmolStr>,
+  pub align_lbl: Option<String>,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list")]
   pub is_mobile_list: Option<u8>,
   /// 手机列表显示
   #[graphql(name = "is_mobile_list_lbl")]
-  pub is_mobile_list_lbl: Option<SmolStr>,
+  pub is_mobile_list_lbl: Option<String>,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search")]
   pub is_mobile_search: Option<u8>,
   /// 手机列表查询
   #[graphql(name = "is_mobile_search_lbl")]
-  pub is_mobile_search_lbl: Option<SmolStr>,
+  pub is_mobile_search_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
@@ -671,13 +663,13 @@ pub struct DynPageFieldInput {
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -686,13 +678,13 @@ pub struct DynPageFieldInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -925,16 +917,6 @@ impl fmt::Display for DynPageFieldAlign {
   }
 }
 
-impl From<DynPageFieldAlign> for SmolStr {
-  fn from(value: DynPageFieldAlign) -> Self {
-    match value {
-      DynPageFieldAlign::Left => "left".into(),
-      DynPageFieldAlign::Center => "center".into(),
-      DynPageFieldAlign::Right => "right".into(),
-    }
-  }
-}
-
 impl From<DynPageFieldAlign> for String {
   fn from(value: DynPageFieldAlign) -> Self {
     match value {
@@ -947,7 +929,7 @@ impl From<DynPageFieldAlign> for String {
 
 impl From<DynPageFieldAlign> for ArgType {
   fn from(value: DynPageFieldAlign) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -969,26 +951,6 @@ impl TryFrom<&str> for DynPageFieldAlign {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "left" => Ok(Self::Left),
-      "center" => Ok(Self::Center),
-      "right" => Ok(Self::Right),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "align".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 对齐方式".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for DynPageFieldAlign {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "left" => Ok(Self::Left),
       "center" => Ok(Self::Center),
       "right" => Ok(Self::Right),
@@ -1058,7 +1020,7 @@ pub fn check_sort_dyn_page_field(
     }
     if !get_can_sort_in_api_dyn_page_field.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_dyn_page_field: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_dyn_page_field: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

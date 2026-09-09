@@ -5,3 +5,7 @@ pub mod wx_app_token_service;
 pub mod wx_app_token_dao;
 pub mod wx_app_token_model2;
 pub mod wx_app_token_service2;
+
+pub fn init() {
+  crate::base::usr::usr_sync_dao::add_sync_usr_lbl_by_usr_id_callback(wx_app_token_dao::sync_usr_lbl_by_usr_id_wx_app_token);
+}

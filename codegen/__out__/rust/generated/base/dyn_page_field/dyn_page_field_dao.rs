@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -76,7 +73,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 22 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -90,14 +87,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -165,14 +162,14 @@ async fn get_where_query(
     if let Some(dyn_page_id) = search.and_then(|item| item.dyn_page_id.as_deref()) {
       let arg = {
         if dyn_page_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(dyn_page_id.len());
           for item in dyn_page_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.dyn_page_id in (");
@@ -190,21 +187,21 @@ async fn get_where_query(
     }
   }
   {
-    let dyn_page_id_lbl: Option<Vec<SmolStr>> = match search {
+    let dyn_page_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.dyn_page_id_lbl.clone(),
       None => None,
     };
     if let Some(dyn_page_id_lbl) = dyn_page_id_lbl {
       let arg = {
         if dyn_page_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(dyn_page_id_lbl.len());
           for item in dyn_page_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and dyn_page_id_lbl.lbl in (");
@@ -307,14 +304,14 @@ async fn get_where_query(
     if let Some(is_required) = is_required {
       let arg = {
         if is_required.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_required.len());
           for item in is_required {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_required in (");
@@ -331,14 +328,14 @@ async fn get_where_query(
     if let Some(is_search) = is_search {
       let arg = {
         if is_search.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_search.len());
           for item in is_search {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_search in (");
@@ -372,14 +369,14 @@ async fn get_where_query(
     if let Some(align) = align {
       let arg = {
         if align.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(align.len());
           for item in align {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.align in (");
@@ -396,14 +393,14 @@ async fn get_where_query(
     if let Some(is_mobile_list) = is_mobile_list {
       let arg = {
         if is_mobile_list.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_mobile_list.len());
           for item in is_mobile_list {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_mobile_list in (");
@@ -420,14 +417,14 @@ async fn get_where_query(
     if let Some(is_mobile_search) = is_mobile_search {
       let arg = {
         if is_mobile_search.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_mobile_search.len());
           for item in is_mobile_search {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_mobile_search in (");
@@ -444,14 +441,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -481,14 +478,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -506,21 +503,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -562,14 +559,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -587,21 +584,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -845,7 +842,7 @@ pub async fn find_all_dyn_page_field(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -880,7 +877,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_required.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_required.to_string().into())
+        .unwrap_or_else(|| model.is_required.to_string())
     };
     
     // 查询条件
@@ -889,7 +886,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_search.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_search.to_string().into())
+        .unwrap_or_else(|| model.is_search.to_string())
     };
     
     // 对齐方式
@@ -907,7 +904,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_mobile_list.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_mobile_list.to_string().into())
+        .unwrap_or_else(|| model.is_mobile_list.to_string())
     };
     
     // 手机列表查询
@@ -916,7 +913,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_mobile_search.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_mobile_search.to_string().into())
+        .unwrap_or_else(|| model.is_mobile_search.to_string())
     };
     
     // 启用
@@ -925,7 +922,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
   }
@@ -1303,7 +1300,7 @@ pub async fn find_by_id_ok_dyn_page_field(
   ).await?;
   
   let Some(dyn_page_field_model) = dyn_page_field_model else {
-    let err_msg = SmolStr::new("此 动态页面字段 已被删除");
+    let err_msg = String::from("此 动态页面字段 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1415,7 +1412,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
   ).await?;
   
   if dyn_page_field_models.len() != len {
-    let err_msg = SmolStr::new("此 动态页面字段 已被删除");
+    let err_msg = String::from("此 动态页面字段 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1428,7 +1425,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 动态页面字段 已经被删除");
+      let err_msg = String::from("此 动态页面字段 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DynPageFieldModel>>>()?;
@@ -2003,7 +2000,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     && input.dyn_page_id.is_none()
   {
     input.dyn_page_id_lbl = input.dyn_page_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::dyn_page::dyn_page_dao::find_one_dyn_page(
       crate::base::dyn_page::dyn_page_model::DynPageSearch {
@@ -2042,7 +2039,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_required_dict.iter().find(|item| {
       item.lbl == input.is_required_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_required = val.parse::<u8>()?.into();
     }
@@ -2054,7 +2051,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_required_dict.iter().find(|item| {
       item.val == input.is_required.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_required_lbl = lbl;
   }
   
@@ -2067,7 +2064,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_search_dict.iter().find(|item| {
       item.lbl == input.is_search_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_search = val.parse::<u8>()?.into();
     }
@@ -2079,7 +2076,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_search_dict.iter().find(|item| {
       item.val == input.is_search.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_search_lbl = lbl;
   }
   
@@ -2092,7 +2089,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = align_dict.iter().find(|item| {
       item.lbl == input.align_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.align = val.parse::<DynPageFieldAlign>()?.into();
     }
@@ -2104,7 +2101,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = align_dict.iter().find(|item| {
       item.val == input.align.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.align_lbl = lbl;
   }
   
@@ -2117,7 +2114,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_mobile_list_dict.iter().find(|item| {
       item.lbl == input.is_mobile_list_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_mobile_list = val.parse::<u8>()?.into();
     }
@@ -2129,7 +2126,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_mobile_list_dict.iter().find(|item| {
       item.val == input.is_mobile_list.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_mobile_list_lbl = lbl;
   }
   
@@ -2142,7 +2139,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_mobile_search_dict.iter().find(|item| {
       item.lbl == input.is_mobile_search_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_mobile_search = val.parse::<u8>()?.into();
     }
@@ -2154,7 +2151,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_mobile_search_dict.iter().find(|item| {
       item.val == input.is_mobile_search.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_mobile_search_lbl = lbl;
   }
   
@@ -2167,7 +2164,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -2179,7 +2176,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
   }
   
@@ -2356,7 +2353,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 22 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2398,7 +2395,7 @@ async fn _creates(
   sql_fields += ",order_by";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 22 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2442,7 +2439,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2467,7 +2464,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2659,7 +2656,7 @@ async fn _creates(
 pub async fn find_auto_code_dyn_page_field(
   num: u32,
   options: Option<Options>,
-) -> Result<Vec<(u32, SmolStr)>> {
+) -> Result<Vec<(u32, String)>> {
   
   let table = get_table_name_dyn_page_field();
   let method = "find_auto_code_dyn_page_field";
@@ -2720,7 +2717,7 @@ pub async fn find_auto_code_dyn_page_field(
   for i in 0..num {
     let code_seq_seq_i = code_seq + i;
     let code_seq = format!("fld_{code_seq_seq_i:0}");
-    code_seq_vec.push((code_seq_seq_i, SmolStr::new(&code_seq)));
+    code_seq_vec.push((code_seq_seq_i, String::from(&code_seq)));
   }
   Ok(code_seq_vec)
 }
@@ -2892,7 +2889,7 @@ pub async fn sync_usr_lbl_by_usr_id_dyn_page_field(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
@@ -3022,7 +3019,7 @@ pub async fn update_by_id_dyn_page_field(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 22 + 20);
+  let mut sql_fields = String::with_capacity((80 * 22 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -3126,7 +3123,7 @@ pub async fn update_by_id_dyn_page_field(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3150,7 +3147,7 @@ pub async fn update_by_id_dyn_page_field(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3309,10 +3306,10 @@ pub async fn delete_by_ids_dyn_page_field(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3684,7 +3681,7 @@ pub async fn validate_is_enabled_dyn_page_field(
   model: &DynPageFieldModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("动态页面字段已禁用");
+    let err_msg = String::from("动态页面字段已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3700,7 +3697,7 @@ pub async fn validate_option_dyn_page_field(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("动态页面字段不存在");
+      let err_msg = String::from("动态页面字段不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

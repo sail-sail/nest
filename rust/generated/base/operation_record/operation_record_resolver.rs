@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -267,8 +264,8 @@ pub async fn delete_by_ids_operation_record(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_operation_record()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_operation_record()),
+    String::from("delete"),
   ).await?;
   
   let num = operation_record_service::delete_by_ids_operation_record(
@@ -313,8 +310,8 @@ pub async fn revert_by_ids_operation_record(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_operation_record()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_operation_record()),
+    String::from("delete"),
   ).await?;
   
   let num = operation_record_service::revert_by_ids_operation_record(
@@ -340,8 +337,8 @@ pub async fn force_delete_by_ids_operation_record(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_operation_record()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_operation_record()),
+    String::from("force_delete"),
   ).await?;
   
   let num = operation_record_service::force_delete_by_ids_operation_record(

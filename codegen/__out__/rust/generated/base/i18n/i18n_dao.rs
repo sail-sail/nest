@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -75,7 +72,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 11 * 2);
+  let mut where_query = String::with_capacity(80 * 11 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -89,14 +86,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -109,14 +106,14 @@ async fn get_where_query(
     if let Some(lang_id) = search.and_then(|item| item.lang_id.as_deref()) {
       let arg = {
         if lang_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(lang_id.len());
           for item in lang_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.lang_id in (");
@@ -134,21 +131,21 @@ async fn get_where_query(
     }
   }
   {
-    let lang_id_lbl: Option<Vec<SmolStr>> = match search {
+    let lang_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.lang_id_lbl.clone(),
       None => None,
     };
     if let Some(lang_id_lbl) = lang_id_lbl {
       let arg = {
         if lang_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(lang_id_lbl.len());
           for item in lang_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and lang_id_lbl.lbl in (");
@@ -171,14 +168,14 @@ async fn get_where_query(
     if let Some(menu_id) = search.and_then(|item| item.menu_id.as_deref()) {
       let arg = {
         if menu_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(menu_id.len());
           for item in menu_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.menu_id in (");
@@ -196,21 +193,21 @@ async fn get_where_query(
     }
   }
   {
-    let menu_id_lbl: Option<Vec<SmolStr>> = match search {
+    let menu_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.menu_id_lbl.clone(),
       None => None,
     };
     if let Some(menu_id_lbl) = menu_id_lbl {
       let arg = {
         if menu_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(menu_id_lbl.len());
           for item in menu_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and menu_id_lbl.lbl in (");
@@ -290,14 +287,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -315,21 +312,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -371,14 +368,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -396,21 +393,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -644,7 +641,7 @@ pub async fn find_all_i18n(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -997,7 +994,7 @@ pub async fn find_by_id_ok_i18n(
   ).await?;
   
   let Some(i18n_model) = i18n_model else {
-    let err_msg = SmolStr::new("此 国际化 已被删除");
+    let err_msg = String::from("此 国际化 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1109,7 +1106,7 @@ pub async fn find_by_ids_ok_i18n(
   ).await?;
   
   if i18n_models.len() != len {
-    let err_msg = SmolStr::new("此 国际化 已被删除");
+    let err_msg = String::from("此 国际化 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1122,7 +1119,7 @@ pub async fn find_by_ids_ok_i18n(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 国际化 已经被删除");
+      let err_msg = String::from("此 国际化 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<I18nModel>>>()?;
@@ -1570,7 +1567,7 @@ pub async fn set_id_by_lbl_i18n(
     && input.lang_id.is_none()
   {
     input.lang_id_lbl = input.lang_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::lang::lang_dao::find_one_lang(
       crate::base::lang::lang_model::LangSearch {
@@ -1606,7 +1603,7 @@ pub async fn set_id_by_lbl_i18n(
     && input.menu_id.is_none()
   {
     input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::menu::menu_dao::find_one_menu(
       crate::base::menu::menu_model::MenuSearch {
@@ -1785,7 +1782,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity(80 * 11 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1806,7 +1803,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 11 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 11 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1850,7 +1847,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -1875,7 +1872,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2106,7 +2103,7 @@ pub async fn sync_usr_lbl_by_usr_id_i18n(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
@@ -2240,7 +2237,7 @@ pub async fn update_by_id_i18n(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity((80 * 11 + 20) * 3);
   
   let mut field_num: usize = 0;
   // 语言
@@ -2282,7 +2279,7 @@ pub async fn update_by_id_i18n(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2306,7 +2303,7 @@ pub async fn update_by_id_i18n(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2426,9 +2423,9 @@ pub async fn del_cache_i18n() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2506,10 +2503,10 @@ pub async fn delete_by_ids_i18n(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -2559,8 +2556,6 @@ pub async fn delete_by_ids_i18n(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  del_cache_i18n().await?;
   
   Ok(num)
 }
@@ -2762,7 +2757,7 @@ pub async fn validate_option_i18n(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("国际化不存在");
+      let err_msg = String::from("国际化不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

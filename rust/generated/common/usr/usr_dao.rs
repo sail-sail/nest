@@ -6,8 +6,6 @@ use crate::common::context::{
   get_server_tokentimeout,
 };
 
-use smol_str::SmolStr;
-
 use crate::common::auth::auth_dao::get_token_by_auth_model;
 use crate::common::auth::auth_model::AuthModel;
 
@@ -28,7 +26,7 @@ use super::usr_model::LoginModel;
 pub async fn get_token_by_usr_id(
   usr_id: UsrId,
   tenant_id: Option<TenantId>,
-  lang: Option<SmolStr>,
+  lang: Option<String>,
   org_id: Option<OrgId>,
 ) -> Result<LoginModel> {
   
@@ -47,7 +45,7 @@ pub async fn get_token_by_usr_id(
   let usr_org_ids_lbl = usr_model.org_ids_lbl.clone();
   let org_ids = usr_model.org_ids;
   let tenant_id = tenant_id.unwrap_or(usr_model.tenant_id);
-  let lang = lang.unwrap_or(SmolStr::new("zh-CN"));
+  let lang = lang.unwrap_or(String::from("zh-CN"));
   
   let mut org_id = org_id;
   if org_id.is_none() || org_id.as_ref().unwrap().is_empty() {

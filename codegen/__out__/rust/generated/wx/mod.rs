@@ -12,6 +12,20 @@ pub mod wxo_usr;
 
 use async_graphql::MergedObject;
 
+pub fn init() {
+  self::pay_transactions_jsapi::init();
+  self::wx_app::init();
+  self::wx_app_token::init();
+  self::wx_pay::init();
+  self::wx_pay_notice::init();
+  self::wx_refund::init();
+  self::wx_refund_notice::init();
+  self::wx_usr::init();
+  self::wxo_app::init();
+  self::wxo_app_token::init();
+  self::wxo_usr::init();
+}
+
 #[derive(MergedObject, Default)]
 pub struct WxGenQuery(
   self::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenQuery,

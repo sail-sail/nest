@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -286,8 +283,8 @@ pub async fn revert_by_ids_pay_transactions_jsapi(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_pay_transactions_jsapi()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("delete"),
   ).await?;
   
   let num = pay_transactions_jsapi_service::revert_by_ids_pay_transactions_jsapi(
@@ -313,8 +310,8 @@ pub async fn force_delete_by_ids_pay_transactions_jsapi(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_pay_transactions_jsapi()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("force_delete"),
   ).await?;
   
   let num = pay_transactions_jsapi_service::force_delete_by_ids_pay_transactions_jsapi(

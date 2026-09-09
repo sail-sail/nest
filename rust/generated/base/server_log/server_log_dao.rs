@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -63,7 +60,7 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let mut where_query = String::with_capacity(80 * 7 * 2);
+  let mut where_query = String::with_capacity(80 * 7 * 6);
   
   where_query.push_str(" 1=1");
   {
@@ -76,14 +73,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -134,14 +131,14 @@ async fn get_where_query(
     if let Some(level) = level {
       let arg = {
         if level.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(level.len());
           for item in level {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.level in (");
@@ -320,7 +317,7 @@ pub async fn find_all_server_log(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -599,7 +596,7 @@ pub async fn find_by_id_ok_server_log(
   ).await?;
   
   let Some(server_log_model) = server_log_model else {
-    let err_msg = SmolStr::new("此 系统日志 已被删除");
+    let err_msg = String::from("此 系统日志 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -711,7 +708,7 @@ pub async fn find_by_ids_ok_server_log(
   ).await?;
   
   if server_log_models.len() != len {
-    let err_msg = SmolStr::new("此 系统日志 已被删除");
+    let err_msg = String::from("此 系统日志 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -724,7 +721,7 @@ pub async fn find_by_ids_ok_server_log(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 系统日志 已经被删除");
+      let err_msg = String::from("此 系统日志 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<ServerLogModel>>>()?;
@@ -1115,7 +1112,7 @@ pub async fn set_id_by_lbl_server_log(
     let dict_model = level_dict.iter().find(|item| {
       item.lbl == input.level_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.level = val.parse::<ServerLogLevel>()?.into();
     }
@@ -1127,7 +1124,7 @@ pub async fn set_id_by_lbl_server_log(
     let dict_model = level_dict.iter().find(|item| {
       item.val == input.level.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.level_lbl = lbl;
   }
   
@@ -1280,7 +1277,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 7 + 20);
+  let mut sql_fields = String::with_capacity(80 * 7 * 3 + 60);
   
   sql_fields += "id";
   // 日志日期
@@ -1297,7 +1294,7 @@ async fn _creates(
   sql_fields += ",content";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 7 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 7 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1536,7 +1533,7 @@ pub async fn update_by_id_server_log(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 7 + 20);
+  let mut sql_fields = String::with_capacity((80 * 7 + 20) * 3);
   
   let mut field_num: usize = 0;
   // 日志日期
@@ -1720,7 +1717,7 @@ pub async fn validate_option_server_log(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("系统日志不存在");
+      let err_msg = String::from("系统日志不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

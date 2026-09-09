@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -56,58 +53,58 @@ pub struct WxRefundModel {
   pub id: WxRefundId,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: SmolStr,
+  pub mchid: String,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: SmolStr,
+  pub out_trade_no: String,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: SmolStr,
+  pub transaction_id: String,
   /// 商户退款单号
   #[graphql(name = "out_refund_no")]
-  pub out_refund_no: SmolStr,
+  pub out_refund_no: String,
   /// 微信退款单号
   #[graphql(name = "refund_id")]
-  pub refund_id: SmolStr,
+  pub refund_id: String,
   /// 退款原因
   #[graphql(name = "reason")]
-  pub reason: SmolStr,
+  pub reason: String,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: SmolStr,
+  pub attach2: String,
   /// 退款结果回调地址
   #[graphql(skip)]
-  pub notify_url: SmolStr,
+  pub notify_url: String,
   /// 退款渠道
   #[graphql(name = "channel")]
   pub channel: WxRefundChannel,
   /// 退款渠道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: SmolStr,
+  pub channel_lbl: String,
   /// 退款入账账户
   #[graphql(name = "user_received_account")]
-  pub user_received_account: SmolStr,
+  pub user_received_account: String,
   /// 退款成功时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 退款成功时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: SmolStr,
+  pub success_time_lbl: String,
   /// 退款状态
   #[graphql(name = "status")]
   pub status: WxRefundStatus,
   /// 退款状态
   #[graphql(name = "status_lbl")]
-  pub status_lbl: SmolStr,
+  pub status_lbl: String,
   /// 资金账户
   #[graphql(name = "funds_account")]
   pub funds_account: WxRefundFundsAccount,
   /// 资金账户
   #[graphql(name = "funds_account_lbl")]
-  pub funds_account_lbl: SmolStr,
+  pub funds_account_lbl: String,
   /// 订单金额(分)
   #[graphql(name = "amount_total")]
   pub amount_total: u32,
@@ -131,17 +128,17 @@ pub struct WxRefundModel {
   pub amount_currency: WxRefundAmountCurrency,
   /// 退款币种
   #[graphql(name = "amount_currency_lbl")]
-  pub amount_currency_lbl: SmolStr,
+  pub amount_currency_lbl: String,
   /// 手续费退款金额(分)
   #[graphql(name = "amount_refund_fee")]
   pub amount_refund_fee: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxRefundModel {
@@ -151,53 +148,43 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
     // ID
     let id: WxRefundId = row.try_get("id")?;
     // 开发者ID
-    let appid: &str = row.try_get("appid")?;
-    let appid = SmolStr::new(appid);
+    let appid: String = row.try_get("appid")?;
     // 商户号
-    let mchid: &str = row.try_get("mchid")?;
-    let mchid = SmolStr::new(mchid);
+    let mchid: String = row.try_get("mchid")?;
     // 商户订单号
-    let out_trade_no: &str = row.try_get("out_trade_no")?;
-    let out_trade_no = SmolStr::new(out_trade_no);
+    let out_trade_no: String = row.try_get("out_trade_no")?;
     // 微信支付订单号
-    let transaction_id: &str = row.try_get("transaction_id")?;
-    let transaction_id = SmolStr::new(transaction_id);
+    let transaction_id: String = row.try_get("transaction_id")?;
     // 商户退款单号
-    let out_refund_no: &str = row.try_get("out_refund_no")?;
-    let out_refund_no = SmolStr::new(out_refund_no);
+    let out_refund_no: String = row.try_get("out_refund_no")?;
     // 微信退款单号
-    let refund_id: &str = row.try_get("refund_id")?;
-    let refund_id = SmolStr::new(refund_id);
+    let refund_id: String = row.try_get("refund_id")?;
     // 退款原因
-    let reason: &str = row.try_get("reason")?;
-    let reason = SmolStr::new(reason);
+    let reason: String = row.try_get("reason")?;
     // 附加数据2
-    let attach2: &str = row.try_get("attach2")?;
-    let attach2 = SmolStr::new(attach2);
+    let attach2: String = row.try_get("attach2")?;
     // 退款结果回调地址
-    let notify_url: &str = row.try_get("notify_url")?;
-    let notify_url = SmolStr::new(notify_url);
+    let notify_url: String = row.try_get("notify_url")?;
     // 退款渠道
     let channel_lbl: &str = row.try_get("channel")?;
     let channel: WxRefundChannel = channel_lbl.try_into()?;
-    let channel_lbl = SmolStr::new(channel_lbl);
+    let channel_lbl = String::from(channel_lbl);
     // 退款入账账户
-    let user_received_account: &str = row.try_get("user_received_account")?;
-    let user_received_account = SmolStr::new(user_received_account);
+    let user_received_account: String = row.try_get("user_received_account")?;
     // 退款成功时间
     let success_time: Option<chrono::NaiveDateTime> = row.try_get("success_time")?;
-    let success_time_lbl: SmolStr = match success_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let success_time_lbl: String = match success_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_string(),
     };
     // 退款状态
     let status_lbl: &str = row.try_get("status")?;
     let status: WxRefundStatus = status_lbl.try_into()?;
-    let status_lbl = SmolStr::new(status_lbl);
+    let status_lbl = String::from(status_lbl);
     // 资金账户
     let funds_account_lbl: &str = row.try_get("funds_account")?;
     let funds_account: WxRefundFundsAccount = funds_account_lbl.try_into()?;
-    let funds_account_lbl = SmolStr::new(funds_account_lbl);
+    let funds_account_lbl = String::from(funds_account_lbl);
     // 订单金额(分)
     let amount_total: u32 = row.try_get("amount_total")?;
     // 退款金额(分)
@@ -213,17 +200,16 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
     // 退款币种
     let amount_currency_lbl: &str = row.try_get("amount_currency")?;
     let amount_currency: WxRefundAmountCurrency = amount_currency_lbl.try_into()?;
-    let amount_currency_lbl = SmolStr::new(amount_currency_lbl);
+    let amount_currency_lbl = String::from(amount_currency_lbl);
     // 手续费退款金额(分)
     let amount_refund_fee: u32 = row.try_get("amount_refund_fee")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     
     let model = Self {
@@ -271,91 +257,91 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
 pub struct WxRefundFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: SmolStr,
+  pub mchid: String,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: SmolStr,
+  pub out_trade_no: String,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: SmolStr,
+  pub transaction_id: String,
   /// 商户退款单号
   #[graphql(name = "out_refund_no")]
-  pub out_refund_no: SmolStr,
+  pub out_refund_no: String,
   /// 微信退款单号
   #[graphql(name = "refund_id")]
-  pub refund_id: SmolStr,
+  pub refund_id: String,
   /// 退款原因
   #[graphql(name = "reason")]
-  pub reason: SmolStr,
+  pub reason: String,
   /// 退款渠道
   #[graphql(name = "channel")]
-  pub channel: SmolStr,
+  pub channel: String,
   /// 退款渠道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: SmolStr,
+  pub channel_lbl: String,
   /// 退款入账账户
   #[graphql(name = "user_received_account")]
-  pub user_received_account: SmolStr,
+  pub user_received_account: String,
   /// 退款成功时间
   #[graphql(name = "success_time")]
-  pub success_time: SmolStr,
+  pub success_time: String,
   /// 退款成功时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: SmolStr,
+  pub success_time_lbl: String,
   /// 退款状态
   #[graphql(name = "status")]
-  pub status: SmolStr,
+  pub status: String,
   /// 退款状态
   #[graphql(name = "status_lbl")]
-  pub status_lbl: SmolStr,
+  pub status_lbl: String,
   /// 资金账户
   #[graphql(name = "funds_account")]
-  pub funds_account: SmolStr,
+  pub funds_account: String,
   /// 资金账户
   #[graphql(name = "funds_account_lbl")]
-  pub funds_account_lbl: SmolStr,
+  pub funds_account_lbl: String,
   /// 订单金额(分)
   #[graphql(name = "amount_total")]
-  pub amount_total: SmolStr,
+  pub amount_total: String,
   /// 退款金额(分)
   #[graphql(name = "amount_refund")]
-  pub amount_refund: SmolStr,
+  pub amount_refund: String,
   /// 用户实际支付金额(分)
   #[graphql(name = "amount_payer_total")]
-  pub amount_payer_total: SmolStr,
+  pub amount_payer_total: String,
   /// 用户退款金额(分)
   #[graphql(name = "amount_payer_refund")]
-  pub amount_payer_refund: SmolStr,
+  pub amount_payer_refund: String,
   /// 应结退款金额(分)
   #[graphql(name = "amount_settlement_refund")]
-  pub amount_settlement_refund: SmolStr,
+  pub amount_settlement_refund: String,
   /// 优惠退款金额(分)
   #[graphql(name = "amount_discount_refund")]
-  pub amount_discount_refund: SmolStr,
+  pub amount_discount_refund: String,
   /// 退款币种
   #[graphql(name = "amount_currency")]
-  pub amount_currency: SmolStr,
+  pub amount_currency: String,
   /// 退款币种
   #[graphql(name = "amount_currency_lbl")]
-  pub amount_currency_lbl: SmolStr,
+  pub amount_currency_lbl: String,
   /// 手续费退款金额(分)
   #[graphql(name = "amount_refund_fee")]
-  pub amount_refund_fee: SmolStr,
+  pub amount_refund_fee: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -370,67 +356,67 @@ pub struct WxRefundSearch {
   pub tenant_id: Option<TenantId>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid_like: Option<SmolStr>,
+  pub appid_like: Option<String>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid: Option<SmolStr>,
+  pub mchid: Option<String>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid_like: Option<SmolStr>,
+  pub mchid_like: Option<String>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no: Option<SmolStr>,
+  pub out_trade_no: Option<String>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no_like: Option<SmolStr>,
+  pub out_trade_no_like: Option<String>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<SmolStr>,
+  pub transaction_id: Option<String>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id_like")]
-  pub transaction_id_like: Option<SmolStr>,
+  pub transaction_id_like: Option<String>,
   /// 商户退款单号
   #[graphql(name = "out_refund_no")]
-  pub out_refund_no: Option<SmolStr>,
+  pub out_refund_no: Option<String>,
   /// 商户退款单号
   #[graphql(name = "out_refund_no_like")]
-  pub out_refund_no_like: Option<SmolStr>,
+  pub out_refund_no_like: Option<String>,
   /// 微信退款单号
   #[graphql(name = "refund_id")]
-  pub refund_id: Option<SmolStr>,
+  pub refund_id: Option<String>,
   /// 微信退款单号
   #[graphql(name = "refund_id_like")]
-  pub refund_id_like: Option<SmolStr>,
+  pub refund_id_like: Option<String>,
   /// 退款原因
   #[graphql(skip)]
-  pub reason: Option<SmolStr>,
+  pub reason: Option<String>,
   /// 退款原因
   #[graphql(skip)]
-  pub reason_like: Option<SmolStr>,
+  pub reason_like: Option<String>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: Option<SmolStr>,
+  pub attach2: Option<String>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2_like: Option<SmolStr>,
+  pub attach2_like: Option<String>,
   /// 退款结果回调地址
   #[graphql(skip)]
-  pub notify_url: Option<SmolStr>,
+  pub notify_url: Option<String>,
   /// 退款结果回调地址
   #[graphql(skip)]
-  pub notify_url_like: Option<SmolStr>,
+  pub notify_url_like: Option<String>,
   /// 退款渠道
   #[graphql(skip)]
   pub channel: Option<Vec<WxRefundChannel>>,
   /// 退款入账账户
   #[graphql(skip)]
-  pub user_received_account: Option<SmolStr>,
+  pub user_received_account: Option<String>,
   /// 退款入账账户
   #[graphql(skip)]
-  pub user_received_account_like: Option<SmolStr>,
+  pub user_received_account_like: Option<String>,
   /// 退款成功时间
   #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -466,10 +452,10 @@ pub struct WxRefundSearch {
   pub amount_refund_fee: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -631,46 +617,46 @@ pub struct WxRefundInput {
   pub tenant_id: Option<TenantId>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: Option<SmolStr>,
+  pub mchid: Option<String>,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: Option<SmolStr>,
+  pub out_trade_no: Option<String>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<SmolStr>,
+  pub transaction_id: Option<String>,
   /// 商户退款单号
   #[graphql(name = "out_refund_no")]
-  pub out_refund_no: Option<SmolStr>,
+  pub out_refund_no: Option<String>,
   /// 微信退款单号
   #[graphql(name = "refund_id")]
-  pub refund_id: Option<SmolStr>,
+  pub refund_id: Option<String>,
   /// 退款原因
   #[graphql(name = "reason")]
-  pub reason: Option<SmolStr>,
+  pub reason: Option<String>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: Option<SmolStr>,
+  pub attach2: Option<String>,
   /// 退款结果回调地址
   #[graphql(skip)]
-  pub notify_url: Option<SmolStr>,
+  pub notify_url: Option<String>,
   /// 退款渠道
   #[graphql(name = "channel")]
   pub channel: Option<WxRefundChannel>,
   /// 退款渠道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: Option<SmolStr>,
+  pub channel_lbl: Option<String>,
   /// 退款入账账户
   #[graphql(name = "user_received_account")]
-  pub user_received_account: Option<SmolStr>,
+  pub user_received_account: Option<String>,
   /// 退款成功时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 退款成功时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: Option<SmolStr>,
+  pub success_time_lbl: Option<String>,
   /// 退款成功时间
   #[graphql(name = "success_time_save_null")]
   pub success_time_save_null: Option<bool>,
@@ -679,13 +665,13 @@ pub struct WxRefundInput {
   pub status: Option<WxRefundStatus>,
   /// 退款状态
   #[graphql(name = "status_lbl")]
-  pub status_lbl: Option<SmolStr>,
+  pub status_lbl: Option<String>,
   /// 资金账户
   #[graphql(name = "funds_account")]
   pub funds_account: Option<WxRefundFundsAccount>,
   /// 资金账户
   #[graphql(name = "funds_account_lbl")]
-  pub funds_account_lbl: Option<SmolStr>,
+  pub funds_account_lbl: Option<String>,
   /// 订单金额(分)
   #[graphql(name = "amount_total")]
   pub amount_total: Option<u32>,
@@ -709,19 +695,19 @@ pub struct WxRefundInput {
   pub amount_currency: Option<WxRefundAmountCurrency>,
   /// 退款币种
   #[graphql(name = "amount_currency_lbl")]
-  pub amount_currency_lbl: Option<SmolStr>,
+  pub amount_currency_lbl: Option<String>,
   /// 手续费退款金额(分)
   #[graphql(name = "amount_refund_fee")]
   pub amount_refund_fee: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -972,17 +958,6 @@ impl fmt::Display for WxRefundChannel {
   }
 }
 
-impl From<WxRefundChannel> for SmolStr {
-  fn from(value: WxRefundChannel) -> Self {
-    match value {
-      WxRefundChannel::Original => "ORIGINAL".into(),
-      WxRefundChannel::Balance => "BALANCE".into(),
-      WxRefundChannel::OtherBalance => "OTHER_BALANCE".into(),
-      WxRefundChannel::OtherBankcard => "OTHER_BANKCARD".into(),
-    }
-  }
-}
-
 impl From<WxRefundChannel> for String {
   fn from(value: WxRefundChannel) -> Self {
     match value {
@@ -996,7 +971,7 @@ impl From<WxRefundChannel> for String {
 
 impl From<WxRefundChannel> for ArgType {
   fn from(value: WxRefundChannel) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -1019,27 +994,6 @@ impl TryFrom<&str> for WxRefundChannel {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "ORIGINAL" => Ok(Self::Original),
-      "BALANCE" => Ok(Self::Balance),
-      "OTHER_BALANCE" => Ok(Self::OtherBalance),
-      "OTHER_BANKCARD" => Ok(Self::OtherBankcard),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "channel".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 退款渠道".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for WxRefundChannel {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "ORIGINAL" => Ok(Self::Original),
       "BALANCE" => Ok(Self::Balance),
       "OTHER_BALANCE" => Ok(Self::OtherBalance),
@@ -1126,18 +1080,6 @@ impl fmt::Display for WxRefundStatus {
   }
 }
 
-impl From<WxRefundStatus> for SmolStr {
-  fn from(value: WxRefundStatus) -> Self {
-    match value {
-      WxRefundStatus::NoRefund => "NO_REFUND".into(),
-      WxRefundStatus::Success => "SUCCESS".into(),
-      WxRefundStatus::Closed => "CLOSED".into(),
-      WxRefundStatus::Processing => "PROCESSING".into(),
-      WxRefundStatus::Abnormal => "ABNORMAL".into(),
-    }
-  }
-}
-
 impl From<WxRefundStatus> for String {
   fn from(value: WxRefundStatus) -> Self {
     match value {
@@ -1152,7 +1094,7 @@ impl From<WxRefundStatus> for String {
 
 impl From<WxRefundStatus> for ArgType {
   fn from(value: WxRefundStatus) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -1176,28 +1118,6 @@ impl TryFrom<&str> for WxRefundStatus {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "NO_REFUND" => Ok(Self::NoRefund),
-      "SUCCESS" => Ok(Self::Success),
-      "CLOSED" => Ok(Self::Closed),
-      "PROCESSING" => Ok(Self::Processing),
-      "ABNORMAL" => Ok(Self::Abnormal),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "status".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 退款状态".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for WxRefundStatus {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "NO_REFUND" => Ok(Self::NoRefund),
       "SUCCESS" => Ok(Self::Success),
       "CLOSED" => Ok(Self::Closed),
@@ -1292,19 +1212,6 @@ impl fmt::Display for WxRefundFundsAccount {
   }
 }
 
-impl From<WxRefundFundsAccount> for SmolStr {
-  fn from(value: WxRefundFundsAccount) -> Self {
-    match value {
-      WxRefundFundsAccount::Unsettled => "UNSETTLED".into(),
-      WxRefundFundsAccount::Available => "AVAILABLE".into(),
-      WxRefundFundsAccount::Unavailable => "UNAVAILABLE".into(),
-      WxRefundFundsAccount::Operation => "OPERATION".into(),
-      WxRefundFundsAccount::Basic => "BASIC".into(),
-      WxRefundFundsAccount::EcnyBasic => "ECNY_BASIC".into(),
-    }
-  }
-}
-
 impl From<WxRefundFundsAccount> for String {
   fn from(value: WxRefundFundsAccount) -> Self {
     match value {
@@ -1320,7 +1227,7 @@ impl From<WxRefundFundsAccount> for String {
 
 impl From<WxRefundFundsAccount> for ArgType {
   fn from(value: WxRefundFundsAccount) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -1345,29 +1252,6 @@ impl TryFrom<&str> for WxRefundFundsAccount {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "UNSETTLED" => Ok(Self::Unsettled),
-      "AVAILABLE" => Ok(Self::Available),
-      "UNAVAILABLE" => Ok(Self::Unavailable),
-      "OPERATION" => Ok(Self::Operation),
-      "BASIC" => Ok(Self::Basic),
-      "ECNY_BASIC" => Ok(Self::EcnyBasic),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "funds_account".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 资金账户".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for WxRefundFundsAccount {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "UNSETTLED" => Ok(Self::Unsettled),
       "AVAILABLE" => Ok(Self::Available),
       "UNAVAILABLE" => Ok(Self::Unavailable),
@@ -1440,14 +1324,6 @@ impl fmt::Display for WxRefundAmountCurrency {
   }
 }
 
-impl From<WxRefundAmountCurrency> for SmolStr {
-  fn from(value: WxRefundAmountCurrency) -> Self {
-    match value {
-      WxRefundAmountCurrency::Cny => "CNY".into(),
-    }
-  }
-}
-
 impl From<WxRefundAmountCurrency> for String {
   fn from(value: WxRefundAmountCurrency) -> Self {
     match value {
@@ -1458,7 +1334,7 @@ impl From<WxRefundAmountCurrency> for String {
 
 impl From<WxRefundAmountCurrency> for ArgType {
   fn from(value: WxRefundAmountCurrency) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -1478,24 +1354,6 @@ impl TryFrom<&str> for WxRefundAmountCurrency {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "CNY" => Ok(Self::Cny),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "amount_currency".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 退款币种".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for WxRefundAmountCurrency {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "CNY" => Ok(Self::Cny),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
@@ -1559,7 +1417,7 @@ pub fn check_sort_wx_refund(
     }
     if !get_can_sort_in_api_wx_refund.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wx_refund: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wx_refund: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

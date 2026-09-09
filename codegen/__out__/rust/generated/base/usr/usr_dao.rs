@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -84,7 +81,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 22 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -98,14 +95,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -133,7 +130,7 @@ async fn get_where_query(
     }
   }
   {
-    let keyword: Option<SmolStr> = match search {
+    let keyword: Option<String> = match search {
       Some(item) => item.keyword.clone(),
       None => None,
     };
@@ -214,14 +211,14 @@ async fn get_where_query(
     if let Some(role_ids) = search.and_then(|item| item.role_ids.as_deref()) {
       let arg = {
         if role_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(role_ids.len());
           for item in role_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_role.id in (");
@@ -253,14 +250,14 @@ async fn get_where_query(
     if let Some(dept_ids) = search.and_then(|item| item.dept_ids.as_deref()) {
       let arg = {
         if dept_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(dept_ids.len());
           for item in dept_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_dept.id in (");
@@ -292,14 +289,14 @@ async fn get_where_query(
     if let Some(org_ids) = search.and_then(|item| item.org_ids.as_deref()) {
       let arg = {
         if org_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(org_ids.len());
           for item in org_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_org.id in (");
@@ -331,14 +328,14 @@ async fn get_where_query(
     if let Some(default_org_id) = search.and_then(|item| item.default_org_id.as_deref()) {
       let arg = {
         if default_org_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(default_org_id.len());
           for item in default_org_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.default_org_id in (");
@@ -356,21 +353,21 @@ async fn get_where_query(
     }
   }
   {
-    let default_org_id_lbl: Option<Vec<SmolStr>> = match search {
+    let default_org_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.default_org_id_lbl.clone(),
       None => None,
     };
     if let Some(default_org_id_lbl) = default_org_id_lbl {
       let arg = {
         if default_org_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(default_org_id_lbl.len());
           for item in default_org_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and default_org_id_lbl.lbl in (");
@@ -397,14 +394,14 @@ async fn get_where_query(
     if let Some(r#type) = r#type {
       let arg = {
         if r#type.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(r#type.len());
           for item in r#type {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.type in (");
@@ -421,14 +418,14 @@ async fn get_where_query(
     if let Some(is_reject_msg) = is_reject_msg {
       let arg = {
         if is_reject_msg.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_reject_msg.len());
           for item in is_reject_msg {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_reject_msg in (");
@@ -445,14 +442,14 @@ async fn get_where_query(
     if let Some(is_locked) = is_locked {
       let arg = {
         if is_locked.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_locked.len());
           for item in is_locked {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_locked in (");
@@ -469,14 +466,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -529,14 +526,14 @@ async fn get_where_query(
     if let Some(is_hidden) = is_hidden {
       let arg = {
         if is_hidden.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_hidden.len());
           for item in is_hidden {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_hidden in (");
@@ -549,14 +546,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -574,21 +571,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -630,14 +627,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -655,21 +652,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -1015,7 +1012,7 @@ pub async fn find_all_usr(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -1057,7 +1054,7 @@ pub async fn find_all_usr(
         .iter()
         .find(|item| item.val == model.is_reject_msg.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_reject_msg.to_string().into())
+        .unwrap_or_else(|| model.is_reject_msg.to_string())
     };
     
     // 锁定
@@ -1066,7 +1063,7 @@ pub async fn find_all_usr(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string().into())
+        .unwrap_or_else(|| model.is_locked.to_string())
     };
     
     // 启用
@@ -1075,7 +1072,7 @@ pub async fn find_all_usr(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
     // 隐藏
@@ -1084,7 +1081,7 @@ pub async fn find_all_usr(
         .iter()
         .find(|item| item.val == model.is_hidden.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_hidden.to_string().into())
+        .unwrap_or_else(|| model.is_hidden.to_string())
     };
     
   }
@@ -1544,7 +1541,7 @@ pub async fn find_by_id_ok_usr(
   ).await?;
   
   let Some(usr_model) = usr_model else {
-    let err_msg = SmolStr::new("此 用户 已被删除");
+    let err_msg = String::from("此 用户 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1656,7 +1653,7 @@ pub async fn find_by_ids_ok_usr(
   ).await?;
   
   if usr_models.len() != len {
-    let err_msg = SmolStr::new("此 用户 已被删除");
+    let err_msg = String::from("此 用户 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1669,7 +1666,7 @@ pub async fn find_by_ids_ok_usr(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 用户 已经被删除");
+      let err_msg = String::from("此 用户 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<UsrModel>>>()?;
@@ -2289,15 +2286,15 @@ pub async fn set_id_by_lbl_usr(
   if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
     input.role_ids_lbl = input.role_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.role_ids_lbl = input.role_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
@@ -2323,15 +2320,15 @@ pub async fn set_id_by_lbl_usr(
   if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
@@ -2357,15 +2354,15 @@ pub async fn set_id_by_lbl_usr(
   if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.org_ids_lbl = input.org_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
@@ -2393,7 +2390,7 @@ pub async fn set_id_by_lbl_usr(
     && input.default_org_id.is_none()
   {
     input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::org::org_dao::find_one_org(
       crate::base::org::org_model::OrgSearch {
@@ -2432,7 +2429,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = type_dict.iter().find(|item| {
       item.lbl == input.type_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.r#type = val.parse::<UsrType>()?.into();
     }
@@ -2444,7 +2441,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = type_dict.iter().find(|item| {
       item.val == input.r#type.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.type_lbl = lbl;
   }
   
@@ -2457,7 +2454,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_reject_msg_dict.iter().find(|item| {
       item.lbl == input.is_reject_msg_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_reject_msg = val.parse::<u8>()?.into();
     }
@@ -2469,7 +2466,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_reject_msg_dict.iter().find(|item| {
       item.val == input.is_reject_msg.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_reject_msg_lbl = lbl;
   }
   
@@ -2482,7 +2479,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_locked = val.parse::<u8>()?.into();
     }
@@ -2494,7 +2491,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_locked_lbl = lbl;
   }
   
@@ -2507,7 +2504,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -2519,7 +2516,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
   }
   
@@ -2532,7 +2529,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_hidden_dict.iter().find(|item| {
       item.lbl == input.is_hidden_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_hidden = val.parse::<u8>()?.into();
     }
@@ -2544,7 +2541,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = is_hidden_dict.iter().find(|item| {
       item.val == input.is_hidden.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_hidden_lbl = lbl;
   }
   
@@ -2697,7 +2694,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 22 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2733,7 +2730,7 @@ async fn _creates(
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 22 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2777,7 +2774,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2802,7 +2799,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -3201,7 +3198,7 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
@@ -3335,7 +3332,7 @@ pub async fn update_by_id_usr(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 22 + 20);
+  let mut sql_fields = String::with_capacity((80 * 22 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -3442,7 +3439,7 @@ pub async fn update_by_id_usr(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3466,7 +3463,7 @@ pub async fn update_by_id_usr(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3639,10 +3636,10 @@ pub async fn del_cache_usr() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])
-    .collect::<Vec<SmolStr>>();
+    .chain(vec!["dao.sql.base_menu._getMenus".to_string()])
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -3720,10 +3717,10 @@ pub async fn delete_by_ids_usr(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3865,8 +3862,6 @@ pub async fn delete_by_ids_usr(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  del_cache_usr().await?;
   
   Ok(num)
 }
@@ -4493,7 +4488,7 @@ pub async fn validate_is_enabled_usr(
   model: &UsrModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("用户已禁用");
+    let err_msg = String::from("用户已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -4509,7 +4504,7 @@ pub async fn validate_option_usr(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("用户不存在");
+      let err_msg = String::from("用户不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

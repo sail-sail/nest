@@ -1,8 +1,6 @@
 use tracing::{info, error};
 use color_eyre::eyre::{eyre, Result};
 
-use smol_str::SmolStr;
-
 use generated::common::context::{
   Options,
   get_req_id,
@@ -69,10 +67,10 @@ async fn fetch_access_token_model(
 
 #[allow(dead_code)]
 pub async fn get_access_token(
-  appid: SmolStr,
+  appid: String,
   force: bool,
   options: Option<Options>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   
   let wx_app_model = validate_option_wx_app(
     find_one_wx_app(
@@ -189,7 +187,7 @@ pub async fn get_access_token(
  */
 #[allow(dead_code)]
 pub async fn get_wxa_code_unlimit(
-  appid: SmolStr,
+  appid: String,
   input: GetwxacodeunlimitInput,
   options: Option<Options>,
 ) -> Result<Vec<u8>> {
@@ -226,7 +224,7 @@ pub async fn get_wxa_code_unlimit(
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: text.into(),
+      message: text,
       trace: true,
       ..Default::default()
     }));
@@ -244,7 +242,7 @@ pub async fn get_wxa_code_unlimit(
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: text.into(),
+      message: text,
       trace: true,
       ..Default::default()
     }));

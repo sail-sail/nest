@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::PayTransactionsJsapiModel;
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
@@ -24,7 +22,7 @@ impl PayTransactionsJsapiMutation {
   async fn get_test_pay_opt(
     &self,
     ctx: &Context<'_>,
-    appid: SmolStr,
+    appid: String,
   ) -> Result<RequestPaymentOptions> {
     Ctx::builder(ctx)
       .with_auth()?
@@ -48,7 +46,7 @@ impl PayTransactionsJsapiQuery {
     &self,
     ctx: &Context<'_>,
     #[graphql(name = "out_trade_no")]
-    out_trade_no: SmolStr,
+    out_trade_no: String,
   ) -> Result<PayTransactionsJsapiModel> {
     Ctx::builder(ctx)
       .with_auth()?

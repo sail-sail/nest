@@ -116,7 +116,7 @@ pub async fn pay_xxx_callback(
   record_id: XxxRecordId,
   amt: Decimal,
   pay_time: NaiveDateTime,
-  transaction_id: SmolStr,
+  transaction_id: String,
   options: Option<Options>,
 ) -> Result<()> {
   
@@ -144,7 +144,7 @@ pub async fn pay_xxx_callback(
   record_id: XxxRecordId,
   amt: Decimal,
   pay_time: NaiveDateTime,
-  transaction_id: SmolStr,
+  transaction_id: String,
   options: Option<Options>,
 ) -> Result<()> {
   // 更新业务记录状态
@@ -315,8 +315,6 @@ use generated::common::context::Options;
 use crate::wx::wx_refund::wx_refund_service::refund;
 use crate::wx::wx_refund_notice::wx_refund_notice_model::WX_REFUND_NOTICE_ACTION_REFUND_XXX;
 
-use smol_str::ToSmolStr;
-
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::find_one_ok_pay_transactions_jsapi;
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::PayTransactionsJsapiSearch;
 use generated::wx::wx_refund::wx_refund_model::WxRefundInput;
@@ -407,7 +405,7 @@ match action {
     refund_xxx_callback(
       record_id,
       amt,
-      SmolStr::new(&wx_refund_resource.refund_id),
+      wx_refund_resource.refund_id.clone(),
       success_time,
       options,
     ).await?;
@@ -429,7 +427,7 @@ match action {
 pub async fn refund_xxx_callback(
   record_id: XxxRecordId,
   refund_amt: Decimal,
-  refund_id: SmolStr,
+  refund_id: String,
   refund_success_time: Option<NaiveDateTime>,
   options: Option<Options>,
 ) -> Result<()> {

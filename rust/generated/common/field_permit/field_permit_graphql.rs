@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::field_permit_resolver;
 
 #[derive(Default)]
@@ -17,8 +15,8 @@ impl FieldPermitQuery {
   async fn get_field_permit(
     &self,
     ctx: &Context<'_>,
-    route_path: SmolStr,
-  ) -> Result<Option<Vec<SmolStr>>> {
+    route_path: String,
+  ) -> Result<Option<Vec<String>>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

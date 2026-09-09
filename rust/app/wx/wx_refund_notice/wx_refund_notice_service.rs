@@ -11,8 +11,6 @@ use generated::common::context::{
 use wx_pay_sdk::decode::{WxRefundNotify, WxRefundResource, decode_wx_refund};
 use wx_pay_sdk::RefundStatus;
 
-use smol_str::SmolStr;
-
 use rust_decimal::Decimal;
 
 // wx_pay
@@ -91,11 +89,11 @@ pub async fn wx_refund_notify(
   );
 
   // 提取字段
-  let refund_id = SmolStr::new(&wx_refund_resource.refund_id);
-  let out_refund_no = SmolStr::new(&wx_refund_resource.out_refund_no);
-  let out_trade_no = SmolStr::new(&wx_refund_resource.out_trade_no);
-  let transaction_id = SmolStr::new(&wx_refund_resource.transaction_id);
-  let user_received_account = SmolStr::new(&wx_refund_resource.user_received_account);
+  let refund_id = wx_refund_resource.refund_id;
+  let out_refund_no = wx_refund_resource.out_refund_no;
+  let out_trade_no = wx_refund_resource.out_trade_no;
+  let transaction_id = wx_refund_resource.transaction_id;
+  let user_received_account = wx_refund_resource.user_received_account;
 
   let success_time = wx_refund_resource.success_time
     .map(|s| chrono::NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S%z"))

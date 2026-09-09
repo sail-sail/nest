@@ -5,11 +5,9 @@ use generated::common::context::{
   Options,
   get_req_id,
   get_short_uuid,
-  id_to_smolstr,
+  id_to_string,
 };
 use wx_pay_sdk::{Refund, RefundAmount, RefundStatus, WxPay};
-
-use smol_str::SmolStr;
 
 // wx_pay
 use generated::wx::wx_pay::wx_pay_dao::{
@@ -158,7 +156,7 @@ pub async fn refund(
     }));
   }
   
-  let refund_notify_url = SmolStr::new(format!("{domain_protocol}://{domain_lbl}{refund_notify_url}"));
+  let refund_notify_url = format!("{domain_protocol}://{domain_lbl}{refund_notify_url}");
 
   // 私钥
   let private_key_str: Option<String> = {
@@ -191,7 +189,7 @@ pub async fn refund(
     notify_url: refund_notify_url.as_str(),
   };
 
-  let out_refund_no = id_to_smolstr(&get_short_uuid())
+  let out_refund_no = id_to_string(&get_short_uuid())
     .replace("+", "-")
     .replace("/", "_")
     .replace("=", "");
@@ -308,15 +306,15 @@ pub async fn refund(
   let wx_refund_input = WxRefundInput {
     appid: Some(appid),
     mchid: Some(wx_pay_model.mchid),
-    out_trade_no: Some(SmolStr::new(&refund_detail.out_trade_no)),
-    transaction_id: Some(SmolStr::new(&refund_detail.transaction_id)),
-    out_refund_no: Some(SmolStr::new(&refund_detail.out_refund_no)),
-    refund_id: refund_detail.refund_id.map(SmolStr::new),
+    out_trade_no: Some(refund_detail.out_trade_no),
+    transaction_id: Some(refund_detail.transaction_id),
+    out_refund_no: Some(refund_detail.out_refund_no),
+    refund_id: refund_detail.refund_id,
     reason: input.reason,
     attach2: input.attach2,
     notify_url: Some(refund_notify_url),
     channel: Some(channel),
-    user_received_account: Some(SmolStr::new(refund_detail.user_received_account)),
+    user_received_account: Some(refund_detail.user_received_account),
     success_time,
     status: Some(status),
     funds_account,

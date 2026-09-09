@@ -7,6 +7,7 @@
   "scripts": {
     "codegen": "node --experimental-strip-types src/bin/codegen.ts",
     "gqlgen": "cd ../rust && npm run gqlgen",
+    "check-template": "node --experimental-strip-types src/util/npmTemplateTagCheck.ts",
     "codeapply": "node --experimental-strip-types src/bin/codeapply.ts",
     "coderemove": "node --experimental-strip-types src/bin/coderemove.ts",
     "initdb": "node --experimental-strip-types src/util/npmInitDB.ts",

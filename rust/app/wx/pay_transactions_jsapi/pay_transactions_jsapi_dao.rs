@@ -2,15 +2,9 @@ use color_eyre::eyre::{Result, eyre};
 use tracing::info;
 
 use generated::common::context::{
-  Options,
-  get_req_id,
-  get_short_uuid,
-  get_auth_model_ok,
+  Options, get_auth_model_ok, get_req_id, get_short_uuid, id_to_string,
 };
 use wx_pay_sdk::{Amount, Jsapi, Payer, SceneInfo, WxPay, WxPayData};
-
-use smol_str::{SmolStr, ToSmolStr};
-use generated::common::context::id_to_smolstr;
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
 
@@ -66,7 +60,7 @@ use num_traits::ToPrimitive;
 
 /// 生成商户订单号 out_trade_no
 fn get_out_trade_no() -> String {
-  id_to_smolstr(&get_short_uuid())
+  id_to_string(&get_short_uuid())
     .replace("+", "-")
     .replace("/", "_")
     .replace("=", "")
@@ -80,8 +74,8 @@ pub async fn transactions_jsapi(
   options: Option<Options>,
 ) -> Result<RequestPaymentOptions> {
   
-  let mut appid = SmolStr::new(&transactions_jsapi_input.appid);
-  let description = SmolStr::new(&transactions_jsapi_input.description);
+  let mut appid = transactions_jsapi_input.appid.clone();
+  let description = transactions_jsapi_input.description.clone();
   let amount = transactions_jsapi_input.amount;
   
   // 当前登录用户有可能尚未绑定微信
@@ -90,7 +84,7 @@ pub async fn transactions_jsapi(
   let wx_usr_id = auth_model.wx_usr_id;
   let wxo_usr_id = auth_model.wxo_usr_id;
   
-  let mut openid: Option<SmolStr> = None;
+  let mut openid: Option<String> = None;
   let mut tenant_id: Option<TenantId> = None;
   
   if let Some(wx_usr_id) = wx_usr_id {
@@ -244,7 +238,7 @@ pub async fn transactions_jsapi(
     Some(wx_pay_model.payer_client_ip)
   };
   let scene_info: Option<SceneInfo> = payer_client_ip.map(|payer_client_ip| SceneInfo {
-    payer_client_ip: Some(payer_client_ip.into()),
+    payer_client_ip: Some(payer_client_ip),
     ..Default::default()
   });
   let notify_url = wx_pay_model.notify_url;
@@ -270,7 +264,7 @@ pub async fn transactions_jsapi(
   
   let out_trade_no = match &transactions_jsapi_input.out_trade_no {
     s if !s.is_empty() => s.clone(),
-    _ => SmolStr::new(get_out_trade_no()),
+    _ => get_out_trade_no(),
   };
   
   let amount = (amount * Decimal::from(100))
@@ -322,17 +316,17 @@ pub async fn transactions_jsapi(
   
   let request_payment_options = RequestPaymentOptions {
     out_trade_no: out_trade_no.clone(),
-    time_stamp: wx_pay_data.time_stamp.to_smolstr(),
-    nonce_str: wx_pay_data.nonce_str.into(),
-    package: wx_pay_data.package.clone().into(),
-    sign_type: wx_pay_data.sign_type.into(),
-    pay_sign: wx_pay_data.pay_sign.into(),
+    time_stamp: wx_pay_data.time_stamp.to_string(),
+    nonce_str: wx_pay_data.nonce_str,
+    package: wx_pay_data.package.clone(),
+    sign_type: wx_pay_data.sign_type,
+    pay_sign: wx_pay_data.pay_sign,
   };
   
   let profit_sharing = if transactions_jsapi_input.profit_sharing.unwrap_or_default() {
-    Some(SmolStr::new("Y"))
+    Some(String::from("Y"))
   } else {
-    Some(SmolStr::new("N"))
+    Some(String::from("N"))
   };
   
   let amount = amount as u32;
@@ -344,17 +338,17 @@ pub async fn transactions_jsapi(
       mchid: Some(mchid),
       description: Some(description.clone()),
       out_trade_no: Some(out_trade_no),
-      transaction_id: Some(SmolStr::new("")),
+      transaction_id: Some(String::from("")),
       trade_state: Some(PayTransactionsJsapiTradeState::Notpay),
-      time_expire: transactions_jsapi_input.time_expire.clone().map(SmolStr::new),
-      attach: transactions_jsapi_input.attach.clone().map(SmolStr::new),
-      attach2: Some(transactions_jsapi_input.attach2),
-      notify_url: Some(notify_url.into()),
-      receipt: transactions_jsapi_input.receipt.map(SmolStr::new),
+      time_expire: transactions_jsapi_input.time_expire.clone(),
+      attach: transactions_jsapi_input.attach.clone(),
+      attach2: transactions_jsapi_input.attach2.into(),
+      notify_url: Some(notify_url),
+      receipt: transactions_jsapi_input.receipt,
       profit_sharing,
       total_fee: Some(amount),
       openid: Some(openid),
-      prepay_id: Some(wx_pay_data.package.into()),
+      prepay_id: Some(wx_pay_data.package.clone()),
       tenant_id: Some(tenant_id),
       ..Default::default()
     },

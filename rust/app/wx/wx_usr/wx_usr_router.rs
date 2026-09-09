@@ -7,8 +7,6 @@ use poem::{
 
 use generated::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::wx_usr_model::Code2sessionInput;
 use super::wx_usr_resful;
 
@@ -20,8 +18,8 @@ pub async fn code2session(
   
   // IP地址
   let ip = match req.header("x-real-ip") {
-    Some(ip) => SmolStr::new(ip),
-    None => SmolStr::new(""),
+    Some(ip) => ip.to_string(),
+    None => "".to_string(),
   };
   
   Ctx::resful_builder(Some(req))

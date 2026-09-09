@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -56,22 +53,22 @@ pub struct WxAppTokenModel {
   pub wx_app_id: WxAppId,
   /// 小程序设置
   #[graphql(name = "wx_app_id_lbl")]
-  pub wx_app_id_lbl: SmolStr,
+  pub wx_app_id_lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: SmolStr,
+  pub appsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: SmolStr,
+  pub access_token: String,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: SmolStr,
+  pub token_time_lbl: String,
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
   pub expires_in: u32,
@@ -82,25 +79,25 @@ pub struct WxAppTokenModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxAppTokenModel {
@@ -110,43 +107,40 @@ impl FromRow<'_, MySqlRow> for WxAppTokenModel {
     // 小程序设置
     let wx_app_id: WxAppId = row.try_get("wx_app_id")?;
     let wx_app_id_lbl: Option<&str> = row.try_get("wx_app_id_lbl")?;
-    let wx_app_id_lbl = SmolStr::new(wx_app_id_lbl.unwrap_or_default());
+    let wx_app_id_lbl = String::from(wx_app_id_lbl.unwrap_or_default());
     // 开发者ID
-    let appid: &str = row.try_get("appid")?;
-    let appid = SmolStr::new(appid);
+    let appid: String = row.try_get("appid")?;
     // 开发者密码
-    let appsecret: &str = row.try_get("appsecret")?;
-    let appsecret = SmolStr::new(appsecret);
+    let appsecret: String = row.try_get("appsecret")?;
     // 令牌
-    let access_token: &str = row.try_get("access_token")?;
-    let access_token = SmolStr::new(access_token);
+    let access_token: String = row.try_get("access_token")?;
     // 令牌创建时间
     let token_time: Option<chrono::NaiveDateTime> = row.try_get("token_time")?;
-    let token_time_lbl: SmolStr = match token_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let token_time_lbl: String = match token_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_string(),
     };
     // 令牌超时时间
     let expires_in: u32 = row.try_get("expires_in")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -182,31 +176,31 @@ impl FromRow<'_, MySqlRow> for WxAppTokenModel {
 pub struct WxAppTokenFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 小程序设置
   #[graphql(name = "wx_app_id")]
-  pub wx_app_id: SmolStr,
+  pub wx_app_id: String,
   /// 小程序设置
   #[graphql(name = "wx_app_id_lbl")]
-  pub wx_app_id_lbl: SmolStr,
+  pub wx_app_id_lbl: String,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: SmolStr,
+  pub appid: String,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: SmolStr,
+  pub appsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: SmolStr,
+  pub access_token: String,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
-  pub token_time: SmolStr,
+  pub token_time: String,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: SmolStr,
+  pub token_time_lbl: String,
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
-  pub expires_in: SmolStr,
+  pub expires_in: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -226,28 +220,28 @@ pub struct WxAppTokenSearch {
   pub wx_app_id_is_null: Option<bool>,
   /// 小程序设置
   #[graphql(name = "wx_app_id_lbl")]
-  pub wx_app_id_lbl: Option<Vec<SmolStr>>,
+  pub wx_app_id_lbl: Option<Vec<String>>,
   /// 小程序设置
   #[graphql(name = "wx_app_id_lbl_like")]
-  pub wx_app_id_lbl_like: Option<SmolStr>,
+  pub wx_app_id_lbl_like: Option<String>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid_like: Option<SmolStr>,
+  pub appid_like: Option<String>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret: Option<SmolStr>,
+  pub appsecret: Option<String>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret_like: Option<SmolStr>,
+  pub appsecret_like: Option<String>,
   /// 令牌
   #[graphql(skip)]
-  pub access_token: Option<SmolStr>,
+  pub access_token: Option<String>,
   /// 令牌
   #[graphql(skip)]
-  pub access_token_like: Option<SmolStr>,
+  pub access_token_like: Option<String>,
   /// 令牌创建时间
   #[graphql(skip)]
   pub token_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -262,10 +256,10 @@ pub struct WxAppTokenSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -277,10 +271,10 @@ pub struct WxAppTokenSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -394,22 +388,22 @@ pub struct WxAppTokenInput {
   pub wx_app_id: Option<WxAppId>,
   /// 小程序设置
   #[graphql(name = "wx_app_id_lbl")]
-  pub wx_app_id_lbl: Option<SmolStr>,
+  pub wx_app_id_lbl: Option<String>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<SmolStr>,
+  pub appid: Option<String>,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: Option<SmolStr>,
+  pub appsecret: Option<String>,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: Option<SmolStr>,
+  pub access_token: Option<String>,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: Option<SmolStr>,
+  pub token_time_lbl: Option<String>,
   /// 令牌创建时间
   #[graphql(name = "token_time_save_null")]
   pub token_time_save_null: Option<bool>,
@@ -421,13 +415,13 @@ pub struct WxAppTokenInput {
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -436,13 +430,13 @@ pub struct WxAppTokenInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -598,7 +592,7 @@ pub fn check_sort_wx_app_token(
     }
     if !get_can_sort_in_api_wx_app_token.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wx_app_token: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wx_app_token: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

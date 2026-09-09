@@ -8,8 +8,6 @@ use generated::common::context::{
   get_server_tokentimeout,
 };
 
-use smol_str::SmolStr;
-
 use super::wx_usr_model::{
   Code2sessionInput,
   Code2sessionModel,
@@ -80,7 +78,7 @@ use generated::common::exceptions::service_exception::ServiceException;
 #[allow(unused_variables)]
 pub async fn code2session(
   code2session_input: Code2sessionInput,
-  ip: SmolStr,
+  ip: String,
   options: Option<Options>,
 ) -> Result<LoginModel> {
   
@@ -140,7 +138,7 @@ pub async fn code2session(
   {
     return Err(eyre!(
       ServiceException {
-        code: errcode.unwrap_or_default().to_string().into(),
+        code: errcode.unwrap_or_default().to_string(),
         message: errmsg.unwrap_or_default(),
         trace: true,
         ..Default::default()
@@ -217,7 +215,7 @@ pub async fn code2session(
         codes: if default_role_codes.is_empty() {
           None
         } else {
-          Some(default_role_codes.split(",").map(|s| s.to_string().into()).collect::<Vec<SmolStr>>())
+          Some(default_role_codes.split(",").map(|s| s.to_string()).collect::<Vec<String>>())
         },
         ..Default::default()
       }),
@@ -279,11 +277,11 @@ pub async fn code2session(
   
   let lbl = usr_model.lbl.clone();
   let username = usr_model.username.clone();
-  let default_org_id = usr_model.default_org_id.clone();
+  let default_org_id = usr_model.default_org_id;
   
   let role_codes = default_role_codes.split(",")
-    .map(|s| s.to_string().into())
-    .collect::<Vec<SmolStr>>();
+    .map(|s| s.to_string())
+    .collect::<Vec<String>>();
   
   let org_models = generated::base::org::org_dao::find_all_org(
     Some(generated::base::org::org_model::OrgSearch {
@@ -306,7 +304,7 @@ pub async fn code2session(
   let org_id: Option<OrgId> = if !default_org_id.is_empty() {
     Some(default_org_id)
   } else {
-    org_id_models.first().map(|m| m.id.clone())
+    org_id_models.first().map(|m| m.id)
   };
   
   #[cfg(not(debug_assertions))]
@@ -347,6 +345,6 @@ pub async fn code2session(
     authorization,
     org_id,
     org_id_models,
-    lang: lang.unwrap_or(SmolStr::new("zh-CN")),
+    lang: lang.unwrap_or("zh-CN".to_string()),
   })
 }
