@@ -5,7 +5,6 @@ use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use rust_decimal::Decimal;
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
-use smol_str::SmolStr;
 use tracing::info;
 use url::Url;
 
@@ -68,7 +67,7 @@ async fn tsdb_config_by_lbl(lbl: &str, tenant_id: TenantId) -> Result<TsdbConfig
 
   let model = crate::tsdb::tsdb_app::tsdb_app_service::find_one_ok_tsdb_app(
     Some(TsdbAppSearch {
-      lbl: Some(SmolStr::new(lbl)),
+      lbl: Some(String::from(lbl)),
       tenant_id: Some(tenant_id),
       ..Default::default()
     }),
@@ -122,7 +121,6 @@ impl InfluxDb3Field {
 
 #[derive(Clone, Debug)]
 pub enum InfluxDb3FieldValue {
-  SmolStr(SmolStr),
   String(String),
   I64(i64),
   U64(u64),
@@ -377,9 +375,6 @@ fn escape_string_field_value(value: &str) -> Result<String> {
 
 fn format_field_value(value: &InfluxDb3FieldValue) -> Result<String> {
   match value {
-    InfluxDb3FieldValue::SmolStr(value) => {
-      Ok(format!("\"{}\"", escape_string_field_value(value.as_str())?))
-    }
     InfluxDb3FieldValue::String(value) => {
       Ok(format!("\"{}\"", escape_string_field_value(value)?))
     }
@@ -408,18 +403,6 @@ fn build_query_sql_body(
     body.insert("params".to_owned(), Value::Object(params.clone()));
   }
   Value::Object(body)
-}
-
-impl From<SmolStr> for InfluxDb3FieldValue {
-  fn from(value: SmolStr) -> Self {
-    Self::SmolStr(value)
-  }
-}
-
-impl From<&SmolStr> for InfluxDb3FieldValue {
-  fn from(value: &SmolStr) -> Self {
-    Self::SmolStr(value.clone())
-  }
 }
 
 impl From<String> for InfluxDb3FieldValue {
