@@ -354,7 +354,7 @@ pub async fn refund_xxx(
     "payload": {
       "record_id": record_id.to_string(),
     },
-  }).to_smolstr();
+  }).to_string();
   
   update_by_id_xxx(
     record_id,
