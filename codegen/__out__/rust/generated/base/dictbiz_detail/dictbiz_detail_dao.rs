@@ -75,7 +75,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 14 * 2);
+  let mut where_query = String::with_capacity(80 * 14 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -1813,7 +1813,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 14 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1839,7 +1839,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 14 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2210,7 +2210,7 @@ pub async fn sync_usr_lbl_by_usr_id_dictbiz_detail(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
@@ -2344,7 +2344,7 @@ pub async fn update_by_id_dictbiz_detail(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity((80 * 14 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2632,7 +2632,7 @@ pub async fn delete_by_ids_dictbiz_detail(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
     let mut usr_lbl = String::from("");
@@ -2685,8 +2685,6 @@ pub async fn delete_by_ids_dictbiz_detail(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  del_cache_dictbiz_detail().await?;
   
   Ok(num)
 }
