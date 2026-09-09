@@ -302,6 +302,30 @@ async function getSchema0(
         lbl: "lbl",
       },
     });
+  } else if (hasOrgId) {
+    const orgIdColumn = tables[table_name].columns.find((item: TableColumn) => item.COLUMN_NAME === "org_id");
+    if (orgIdColumn) {
+      if (!orgIdColumn.COLUMN_DEFAULT) {
+        orgIdColumn.COLUMN_DEFAULT = "CURRENT_ORG_ID";
+      }
+      if (hasOrgIdLbl) {
+        orgIdColumn.modelLabel = "org_id_lbl";
+      }
+      if (orgIdColumn.require == null) {
+        orgIdColumn.require = true;
+      }
+      if (orgIdColumn.canSearch == null) {
+        orgIdColumn.canSearch = true;
+      }
+      if (orgIdColumn.foreignKey == null) {
+        orgIdColumn.foreignKey = {
+          mod: "base",
+          table: "org",
+          column: "id",
+          lbl: "lbl",
+        };
+      }
+    }
   }
   // 创建人
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
