@@ -12,6 +12,7 @@ declare global {
   interface UsrModel extends UsrModelType {
     /** 头像 */
     img_lbl: string;
+    img_lbls: string[];
   }
   
   /** 用户 */

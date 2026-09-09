@@ -135,7 +135,8 @@ declare global {
       } else if (column.isImg) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_lbl: string;<#
+    <#=column_name#>_lbl: string;
+    <#=column_name#>_lbls: string[];<#
       }
     #><#
     }
