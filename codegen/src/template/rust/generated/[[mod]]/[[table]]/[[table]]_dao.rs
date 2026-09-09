@@ -603,56 +603,6 @@ for (const cascadeUpdateField of cascadeUpdateFields) {
     cascadeUpdateFieldWatchColumns.push(cascadeUpdateField.watchColumn);
   }
 }
-for (const item of cascadeUpdateFieldTables) {
-  const mod = item.mod;
-  const table = item.table;
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const tableUP = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  if (
-    findAllTableUps.includes(tableUP) &&
-    updateByIdTableUps.includes(tableUP)
-  ) {
-    continue;
-  }
-  const hasFindAllTableUps = findAllTableUps.includes(tableUP);
-  if (!hasFindAllTableUps) {
-    findAllTableUps.push(tableUP);
-  }
-  const hasUpdateByIdTableUps = updateByIdTableUps.includes(tableUP);
-  if (!hasUpdateByIdTableUps) {
-    updateByIdTableUps.push(tableUP);
-  }
-  const hasSearchTableUps = searchTableUps.includes(tableUP);
-  if (!hasSearchTableUps) {
-    searchTableUps.push(tableUP);
-  }
-#>
-
-use crate::<#=mod#>::<#=table#>::<#=table#>_model::{<#
-  if (!hasSearchTableUps) {
-  #>
-  <#=tableUP#>Search,<#
-  }
-  #>
-  <#=tableUP#>Input,
-};
-
-use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
-  if (!hasFindAllTableUps) {
-  #>
-  find_all_<#=table#>,<#
-  }
-  #><#
-  if (!hasUpdateByIdTableUps) {
-  #>
-  update_by_id_<#=table#>,<#
-  }
-  #>
-};<#
-}
-#><#
 
 // 已经导入的ID列表
 const modelIds = [ ];
@@ -856,7 +806,7 @@ async fn get_where_query(
   }
   #>
   
-  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
+  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 6);<#
   if (hasIsDeleted) {
   #>
   
@@ -5198,7 +5148,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
+  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> * 3 + 60);
   
   sql_fields += "id";<#
   if (hasCreateTime) {
@@ -5320,7 +5270,7 @@ async fn _creates(
   #>
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * <#=columns.length#> + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * <#=columns.length#> + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -6359,7 +6309,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();<#
   if (hasCreateUsrId && hasCreateUsrIdLbl) {
@@ -7176,7 +7126,7 @@ pub async fn update_by_id_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
+  let mut sql_fields = String::with_capacity((80 * <#=columns.length#> + 20) * 3);
   
   let mut field_num: usize = 0;<#
   if (cascadeUpdateFields.length > 0) {
@@ -8128,40 +8078,95 @@ pub async fn update_by_id_<#=table#>(
       for (const cascadeUpdateFieldTable of cascadeUpdateFieldTables) {
         const table = cascadeUpdateFieldTable.table;
         const mod = cascadeUpdateFieldTable.mod;
-        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-        const tableUP = tableUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
-        }).join("");
+        const tableName = `${mod}_${table}`;
+        const tableSchema = optTables[tableName];
+        if (!tableSchema) {
+          throw `cascadeUpdateFieldTables 中的表: ${ tableName } 不存在`;
+          process.exit(1);
+        }
+        const hasIsDeleted = tableSchema.columns.some((item) => item.COLUMN_NAME === "is_deleted");
+        const hasCache = !!tableSchema.opts?.cache;
+        const cacheKey1s = [ `dao.sql.${tableName}` ];
+        for (const column of tableSchema.columns) {
+          if (column.ignoreCodegen) continue;
+          if (column.isVirtual) continue;
+          const column_name = column.COLUMN_NAME;
+          if (column_name === "id") continue;
+          if (column_name === "create_usr_id") continue;
+          if (column_name === "create_time") continue;
+          const foreignKey = column.foreignKey;
+          if (!foreignKey) continue;
+          const foreignTable = foreignKey.table;
+          if ([ "usr" ].includes(foreignTable) || foreignKey.modelLabel) continue;
+          const cacheKey1 = `dao.sql.${foreignKey.mod}_${foreignTable}`;
+          if (!cacheKey1s.includes(cacheKey1)) {
+            cacheKey1s.push(cacheKey1);
+          }
+        }
+        if (
+          hasCache &&
+          (
+            (mod === "base" && table === "tenant") ||
+            (mod === "base" && table === "role") ||
+            (mod === "base" && table === "menu") ||
+            (mod === "base" && table === "usr")
+          )
+        ) {
+          cacheKey1s.push("dao.sql.base_menu._getMenus");
+        }
         const cascadeUpdateFields2 = cascadeUpdateFields.filter((item) => item.mod === mod && item.table === table);
       #>
       
-      let <#=table#>_models = find_all_<#=table#>(
-        Some(<#=tableUP#>Search {
-          <#=cascadeUpdateFieldTable.idColumn#>: Some(vec![id]),
-          ..Default::default()
-        }),
-        None,
-        None,
-        options,
-      ).await?;
-      
-      for <#=table#>_model in <#=table#>_models {
-        let <#=table#>_id = <#=table#>_model.id;
-        let mut <#=table#>_input: <#=tableUP#>Input = <#=tableUP#>Input {
-          ..Default::default()
-        };<#
+      {
+        let mut cascade_args = QueryArgs::new();
+        let mut cascade_sql_fields = String::with_capacity(120<#
+        if (cascadeUpdateFields2.length > 1) {
+        #> * <#=cascadeUpdateFields2.length#><#
+        }
+        #> * 3);
+        let mut cascade_field_num: usize = 0;<#
         for (const item of cascadeUpdateFields2) {
+          const columnMysql = mysqlKeyEscape(item.column);
         #>
         if sql_set_flds.contains(&String::from("<#=item.watchColumn#>")) {
-          <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>.clone();
+          if let Some(<#=item.watchColumn#>) = sql_set_fld_input.<#=item.watchColumn#>.clone() {
+            cascade_field_num += 1;
+            cascade_sql_fields += "<#=columnMysql#>=?,";
+            cascade_args.push(<#=item.watchColumn#>.into());
+          }
         }<#
         }
         #>
-        update_by_id_<#=table#>(
-          <#=table#>_id,
-          <#=table#>_input,
-          options,
-        ).await?;
+        if cascade_field_num > 0 {
+          if cascade_sql_fields.ends_with(',') {
+            cascade_sql_fields.pop();
+          }
+          cascade_args.push(id.into());
+          let sql = format!("update <#=tableName#> set {cascade_sql_fields} where <#=mysqlKeyEscape(cascadeUpdateFieldTable.idColumn)#>=?<#
+          if (hasIsDeleted) {
+          #> and is_deleted=0<#
+          }
+          #>");
+          let affected_rows = execute(
+            sql,
+            cascade_args.into(),
+            options,
+          ).await?;<#
+          if (hasCache) {
+          #>
+          if affected_rows > 0 {
+            del_caches([
+              <#
+              for (const cacheKey1 of cacheKey1s) {
+              #>"<#=cacheKey1#>",<#
+              #><#
+              }
+              #>
+            ].as_slice()).await?;
+          }<#
+          }
+          #>
+        }
       }<#
       }
       #>
@@ -8559,7 +8564,7 @@ pub async fn delete_by_ids_<#=table#>(
     if (hasIsDeleted) {
     #>
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");<#
     if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
     #>
@@ -8894,16 +8899,6 @@ pub async fn delete_by_ids_<#=table#>(
     }
     #>
   }<#
-  if (cache) {
-  #>
-  
-  del_cache_<#=table#>().await?;<#
-  }
-  #>
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
@@ -9013,6 +9008,10 @@ pub async fn delete_by_ids_<#=table#>(
   del_cache_<#=table#>().await?;<#
   }
   #>
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }<#

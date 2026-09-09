@@ -3,6 +3,13 @@ pub mod message;
 
 use async_graphql::MergedObject;
 
+pub fn init() {
+  
+  menu::init();
+  message::init();
+  
+}
+
 #[derive(MergedObject, Default)]
 pub struct BaseAppQuery(
   self::menu::menu_graphql::MenuQuery,

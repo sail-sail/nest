@@ -29,6 +29,37 @@ pub mod usr;
 
 use async_graphql::MergedObject;
 
+pub fn init() {
+  self::data_permit::init();
+  self::dept::init();
+  self::dict::init();
+  self::dict_detail::init();
+  self::dictbiz::init();
+  self::dictbiz_detail::init();
+  self::domain::init();
+  self::dyn_page::init();
+  self::dyn_page_data::init();
+  self::dyn_page_field::init();
+  self::dyn_page_val::init();
+  self::field_permit::init();
+  self::i18n::init();
+  self::icon::init();
+  self::lang::init();
+  self::login_log::init();
+  self::menu::init();
+  self::message::init();
+  self::message_receiver::init();
+  self::operation_record::init();
+  self::optbiz::init();
+  self::options::init();
+  self::org::init();
+  self::permit::init();
+  self::role::init();
+  self::server_log::init();
+  self::tenant::init();
+  self::usr::init();
+}
+
 #[derive(MergedObject, Default)]
 pub struct BaseGenQuery(
   self::data_permit::data_permit_graphql::DataPermitGenQuery,
