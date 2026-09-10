@@ -17,7 +17,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "code",
-        width: 140,
+        width: 240,
         align: "center",
         fixed: "left",
       },
