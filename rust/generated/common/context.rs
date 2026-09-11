@@ -2153,10 +2153,13 @@ pub fn get_order_by_query(
 
 fn encode_short_bytes(bytes: &[u8]) -> [u8; 22] {
   let encoded = general_purpose::STANDARD_NO_PAD.encode(bytes);
+  let normalized = encoded.trim_end_matches('=');
   let mut arr: [u8; 22] = [0u8; 22];
-  let encoded_bytes = encoded.as_bytes();
+  let encoded_bytes = normalized.as_bytes();
   let len = encoded_bytes.len().min(arr.len());
-  arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  if len > 0 {
+    arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  }
   arr
 }
 
