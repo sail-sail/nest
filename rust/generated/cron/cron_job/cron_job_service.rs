@@ -4,8 +4,10 @@
 
 #[allow(unused_imports)]
 use std::collections::HashMap;
+use std::str::FromStr;
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
+use delay_timer::prelude::*;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -27,6 +29,21 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
+  Ok(())
+}
+
+fn validate_cron_expression(
+  cron: &str,
+) -> Result<()> {
+  let cron = cron.trim();
+  if cron.is_empty() {
+    return Ok(());
+  }
+
+  let result = cron_clock::Schedule::from_str(cron)
+    .map_err(|err| eyre!("Cron表达式错误: {err}"));
+  result?;
+
   Ok(())
 }
 
@@ -219,6 +236,12 @@ pub async fn creates_cron_job(
   options: Option<Options>,
 ) -> Result<Vec<CronJobId>> {
   
+  for cron_job_input in &cron_job_inputs {
+    if let Some(cron) = cron_job_input.cron.as_deref() {
+      validate_cron_expression(cron)?;
+    }
+  }
+  
   let cron_job_ids = cron_job_dao::creates_cron_job(
     cron_job_inputs,
     options,
@@ -251,6 +274,10 @@ pub async fn update_by_id_cron_job(
   mut cron_job_input: CronJobInput,
   options: Option<Options>,
 ) -> Result<CronJobId> {
+  
+  if let Some(cron) = cron_job_input.cron.as_deref() {
+    validate_cron_expression(cron)?;
+  }
   
   let is_locked = cron_job_dao::get_is_locked_by_id_cron_job(
     cron_job_id,
