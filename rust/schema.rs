@@ -1,6 +1,9 @@
 #![forbid(unsafe_code)]
 #![recursion_limit="512"]
 
+use aliyun_sdk as _;
+use wx_pay_sdk as _;
+
 use async_graphql::{
   EmptySubscription, Schema,
 };

@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Result, bail};
+use color_eyre::eyre::{Result, eyre};
 use tracing::error;
 
 use super::app_dao;
@@ -44,5 +44,5 @@ pub async fn get_tenant_id_by_appid(
   }
   
   error!("get_tenant_id_by_appid is not implemented, platform: {platform}, appid: {appid}, agentid: {agentid:?}, options: {options:?}",);
-  bail!("get_tenant_id_by_appid is not implemented")
+  Err(eyre!("get_tenant_id_by_appid is not implemented"))
 }
