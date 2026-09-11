@@ -3,6 +3,9 @@ name = "generated"
 version = "0.0.0"
 edition = "2024"
 
+[lints.clippy]
+needless_bool = "allow"
+
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
