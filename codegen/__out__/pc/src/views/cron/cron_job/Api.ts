@@ -34,6 +34,9 @@ export function intoInputCronJob(
     job_id_lbl: model?.job_id_lbl,
     // Cron表达式
     cron: model?.cron,
+    // 执行用户
+    exec_usr_id: model?.exec_usr_id,
+    exec_usr_id_lbl: model?.exec_usr_id_lbl,
     // 时区
     timezone: model?.timezone,
     timezone_lbl: model?.timezone_lbl,
@@ -47,6 +50,9 @@ export function intoInputCronJob(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 所属组织
+    org_id: model?.org_id,
+    org_id_lbl: model?.org_id_lbl,
   };
   return input;
 }
@@ -584,6 +590,98 @@ export async function getListJob() {
   return data;
 }
 
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: UsrModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const usr_models = data.findAllUsr;
+  return usr_models;
+}
+
+export async function getListUsr() {
+  const data = await findAllUsr(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllOrg(
+  search?: OrgSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllOrg: OrgModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const org_models = data.findAllOrg;
+  return org_models;
+}
+
+export async function getListOrg() {
+  const data = await findAllOrg(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 定时任务 导入模板
  */
@@ -601,9 +699,11 @@ export function useDownloadImportTemplateCronJob() {
             lbl
             job_id_lbl
             cron
+            exec_usr_id_lbl
             timezone_lbl
             order_by
             rem
+            org_id_lbl
           }
         }
       `,
@@ -790,6 +890,8 @@ export async function getFieldCommentsCronJob(
           job_id,
           job_id_lbl,
           cron,
+          exec_usr_id,
+          exec_usr_id_lbl,
           timezone,
           timezone_lbl,
           is_locked,
@@ -806,6 +908,8 @@ export async function getFieldCommentsCronJob(
           update_usr_id_lbl,
           update_time,
           update_time_lbl,
+          org_id,
+          org_id_lbl,
         }
       }
     `,
@@ -824,11 +928,14 @@ export function getPagePathCronJob() {
 
 /** 新增时的默认值 */
 export async function getDefaultInputCronJob() {
+  const usrStore = useUsrStore();
   const defaultInput: CronJobInput = {
+    exec_usr_id: usrStore.usr_id,
     timezone: "Asia/Shanghai",
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    org_id: usrStore.loginInfo?.org_id,
   };
   return defaultInput;
 }

@@ -6,7 +6,12 @@ use delay_timer::prelude::*;
 use generated::common::context::{
   Options,
   CtxBuilder,
+  get_server_tokentimeout,
 };
+use generated::common::auth::auth_model::AuthModel;
+use generated::base::usr::usr_model::UsrId;
+use generated::base::tenant::tenant_model::TenantId;
+use generated::base::org::org_model::OrgId;
 
 use generated::cron::cron_job::cron_job_model::CronJobModel;
 use generated::cron::cron_job::cron_job_model::{
@@ -23,6 +28,33 @@ use crate::cron::job::job_dao::run_job;
 use tracing::info;
 
 static DELAY_TIMER: OnceLock<DelayTimer> = OnceLock::new();
+
+const CRON_EXECUTOR_USR_ID: &str = "AaCUGR86d/yrGdovJ9nigQ";
+
+pub(crate) fn build_cron_auth_model(
+  tenant_id: TenantId,
+  exec_usr_id: UsrId,
+  org_id: OrgId,
+) -> AuthModel {
+  let exp = chrono::Utc::now().timestamp_millis() / 1000 + get_server_tokentimeout();
+  let id = if exec_usr_id.is_empty() {
+    UsrId::from(CRON_EXECUTOR_USR_ID)
+  } else {
+    exec_usr_id
+  };
+  let org_id = if org_id.is_empty() {
+    None
+  } else {
+    Some(org_id)
+  };
+  AuthModel {
+    id,
+    tenant_id,
+    org_id,
+    exp,
+    ..Default::default()
+  }
+}
 
 fn delay_timer() -> DelayTimer {
   DELAY_TIMER.get_or_init(init_delay_timer)
@@ -114,6 +146,11 @@ async fn new_task(
       let tenant_id = tenant_id;
       async move {
         CtxBuilder::new(None)
+          .with_auth_model(build_cron_auth_model(
+            tenant_id,
+            cron_job_model.exec_usr_id,
+            cron_job_model.org_id,
+          ))?
           .build()
           .scope({
             run_job(

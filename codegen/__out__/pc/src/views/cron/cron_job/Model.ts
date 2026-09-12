@@ -37,6 +37,9 @@ export const cronJobFields = [
   "job_id_lbl",
   // Cron表达式
   "cron",
+  // 执行用户
+  "exec_usr_id",
+  "exec_usr_id_lbl",
   // 时区
   "timezone",
   "timezone_lbl",
@@ -62,6 +65,9 @@ export const cronJobFields = [
   // 更新时间
   "update_time",
   "update_time_lbl",
+  // 所属组织
+  "org_id",
+  "org_id_lbl",
   "is_deleted",
 ];
 

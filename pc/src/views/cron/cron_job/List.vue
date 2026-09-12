@@ -577,6 +577,16 @@
             </el-table-column>
           </template>
           
+          <!-- 执行用户 -->
+          <template v-else-if="'exec_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.exec_usr_id == null)">
+            <!-- @vue-generic {CronJobModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 时区 -->
           <template v-else-if="'timezone_lbl' === col.prop">
             <!-- @vue-generic {CronJobModel} -->
@@ -690,6 +700,16 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 所属组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
             <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -842,7 +862,11 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   job_id?: string|string[]; // 任务
   job_id_lbl?: string; // 任务
+  exec_usr_id?: string|string[]; // 执行用户
+  exec_usr_id_lbl?: string; // 执行用户
   is_enabled?: string|string[]; // 启用
+  org_id?: string|string[]; // 所属组织
+  org_id_lbl?: string; // 所属组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -856,12 +880,16 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   job_id: "string[]",
   job_id_lbl: "string[]",
+  exec_usr_id: "string[]",
+  exec_usr_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
   update_usr_id_lbl: "string[]",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -1124,6 +1152,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "执行用户",
+      prop: "exec_usr_id_lbl",
+      sortBy: "exec_usr_id_lbl",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "时区",
       prop: "timezone_lbl",
       sortBy: "timezone",
@@ -1202,6 +1239,15 @@ function getTableColumns(): ColumnType[] {
       width: 160,
       sortable: "custom",
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "所属组织",
+      prop: "org_id_lbl",
+      sortBy: "org_id_lbl",
+      width: 280,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1495,11 +1541,13 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "任务" ]: "job_id_lbl",
     [ "Cron表达式" ]: "cron",
+    [ "执行用户" ]: "exec_usr_id_lbl",
     [ "时区" ]: "timezone_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
+    [ "所属组织" ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1524,11 +1572,13 @@ async function onImportExcel() {
           "lbl": "string",
           "job_id_lbl": "string",
           "cron": "string",
+          "exec_usr_id_lbl": "string",
           "timezone_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
+          "org_id_lbl": "string",
         },
       },
     );

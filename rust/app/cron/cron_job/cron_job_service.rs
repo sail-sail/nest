@@ -1,6 +1,9 @@
 use color_eyre::eyre::Result;
 
-use generated::common::context::Options;
+use generated::common::context::{
+  CtxBuilder,
+  Options,
+};
 
 use generated::cron::cron_job::cron_job_model::CronJobId;
 
@@ -9,6 +12,7 @@ use generated::cron::cron_job::cron_job_dao::{
   validate_option_cron_job,
 };
 
+use crate::cron::cron_job::cron_job_dao::build_cron_auth_model;
 use crate::cron::job::job_dao::run_job;
 
 /// 手动执行定时任务
@@ -29,20 +33,33 @@ pub async fn run_cron_job(
     job_id,
     cron,
     tenant_id,
+    exec_usr_id,
+    org_id,
   ) = (
     cron_job_model.id,
     cron_job_model.job_id,
     cron_job_model.cron,
     cron_job_model.tenant_id,
+    cron_job_model.exec_usr_id,
+    cron_job_model.org_id,
   );
   
-  let res = run_job(
-    job_id,
-    cron_job_id,
-    cron,
-    tenant_id,
-    options,
-  ).await?;
+  let res = CtxBuilder::new(None)
+    .with_auth_model(build_cron_auth_model(
+      tenant_id,
+      exec_usr_id,
+      org_id,
+    ))?
+    .build()
+    .scope({
+      run_job(
+        job_id,
+        cron_job_id,
+        cron,
+        tenant_id,
+        options,
+      )
+    }).await?;
   
   Ok(res)
 }

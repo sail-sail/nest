@@ -88,6 +88,18 @@ export default defineConfig({
         require: true,
       },
       {
+        COLUMN_NAME: "exec_usr_id",
+        modelLabel: "exec_usr_id_lbl",
+        COLUMN_DEFAULT: "CURRENT_USR_ID",
+        require: true,
+        foreignKey: {
+          mod: "base",
+          table: "usr",
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+      },
+      {
         COLUMN_NAME: "timezone",
         width: 80,
         require: true,

@@ -127,6 +127,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.exec_usr_id == null)">
+          <el-form-item
+            label="执行用户"
+            prop="exec_usr_id"
+          >
+            <SelectInputUsr
+              v-model="dialogModel.exec_usr_id"
+              v-model:model-label="dialogModel.exec_usr_id_lbl"
+              placeholder="请选择 执行用户"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></SelectInputUsr>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.timezone == null)">
           <el-form-item
             label="时区"
@@ -170,6 +185,30 @@
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+          <el-form-item
+            label="所属组织"
+            prop="org_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.org_id"
+              v-model:model-label="dialogModel.org_id_lbl"
+              :method="getListOrg"
+              dirty-key="组织"
+              :find-by-values="findByIdsOrg"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 所属组织"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -284,11 +323,18 @@ import {
 
 import {
   getListJob,
+  getListOrg,
 } from "./Api.ts";
 
 import {
   findByIdsJob,
 } from "@/views/cron/job/Api.ts";
+
+import {
+  findByIdsOrg,
+} from "@/views/base/org/Api.ts";
+
+import SelectInputUsr from "@/views/base/usr/SelectInput.vue";
 
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";
@@ -374,6 +420,13 @@ watchEffect(async () => {
         message: "Cron表达式 长度不能超过 50",
       },
     ],
+    // 执行用户
+    exec_usr_id: [
+      {
+        required: true,
+        message: "请选择 执行用户",
+      },
+    ],
     // 时区
     timezone: [
       {
@@ -386,6 +439,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请输入 排序",
+      },
+    ],
+    // 所属组织
+    org_id: [
+      {
+        required: true,
+        message: "请选择 所属组织",
       },
     ],
   };
@@ -782,7 +842,9 @@ async function nextId() {
 watch(
   () => [
     dialogModel.job_id,
+    dialogModel.exec_usr_id,
     dialogModel.timezone,
+    dialogModel.org_id,
   ],
   () => {
     if (!inited) {
@@ -791,8 +853,14 @@ watch(
     if (!dialogModel.job_id) {
       dialogModel.job_id_lbl = "";
     }
+    if (!dialogModel.exec_usr_id) {
+      dialogModel.exec_usr_id_lbl = "";
+    }
     if (!dialogModel.timezone) {
       dialogModel.timezone_lbl = "";
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );

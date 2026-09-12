@@ -31,8 +31,10 @@ use crate::common::gql::model::SortInput;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::cron::job::job_model::JobId;
+
 use crate::base::usr::usr_model::UsrId;
+use crate::cron::job::job_model::JobId;
+use crate::base::org::org_model::OrgId;
 
 static CAN_SORT_IN_API_CRON_JOB: [&str; 3] = [
   "order_by",
@@ -69,6 +71,12 @@ pub struct CronJobModel {
   /// Cron表达式
   #[graphql(name = "cron")]
   pub cron: String,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id")]
+  pub exec_usr_id: UsrId,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_lbl")]
+  pub exec_usr_id_lbl: String,
   /// 时区
   #[graphql(name = "timezone")]
   pub timezone: String,
@@ -93,6 +101,12 @@ pub struct CronJobModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
+  /// 所属组织
+  #[graphql(name = "org_id")]
+  pub org_id: OrgId,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -129,6 +143,10 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
     let job_id_lbl = String::from(job_id_lbl.unwrap_or_default());
     // Cron表达式
     let cron: String = row.try_get("cron")?;
+    // 执行用户
+    let exec_usr_id: UsrId = row.try_get("exec_usr_id")?;
+    let exec_usr_id_lbl: Option<&str> = row.try_get("exec_usr_id_lbl")?;
+    let exec_usr_id_lbl = String::from(exec_usr_id_lbl.unwrap_or_default());
     // 时区
     let timezone: &str = row.try_get("timezone")?;
     let timezone = timezone.to_string();
@@ -143,6 +161,10 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 所属组织
+    let org_id: OrgId = row.try_get("org_id")?;
+    let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
+    let org_id_lbl = String::from(org_id_lbl.unwrap_or_default());
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -175,6 +197,8 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
       job_id,
       job_id_lbl,
       cron,
+      exec_usr_id,
+      exec_usr_id_lbl,
       timezone,
       timezone_lbl,
       is_locked,
@@ -183,6 +207,8 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
       is_enabled_lbl,
       order_by,
       rem,
+      org_id,
+      org_id_lbl,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -216,6 +242,12 @@ pub struct CronJobFieldComment {
   /// Cron表达式
   #[graphql(name = "cron")]
   pub cron: String,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id")]
+  pub exec_usr_id: String,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_lbl")]
+  pub exec_usr_id_lbl: String,
   /// 时区
   #[graphql(name = "timezone")]
   pub timezone: String,
@@ -264,12 +296,20 @@ pub struct CronJobFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 所属组织
+  #[graphql(name = "org_id")]
+  pub org_id: String,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CronJobSearch")]
 #[allow(dead_code)]
 pub struct CronJobSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<CronJobId>,
   /// ID列表
@@ -304,6 +344,18 @@ pub struct CronJobSearch {
   /// Cron表达式
   #[graphql(skip)]
   pub cron_like: Option<String>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id")]
+  pub exec_usr_id: Option<Vec<UsrId>>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_is_null")]
+  pub exec_usr_id_is_null: Option<bool>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_lbl")]
+  pub exec_usr_id_lbl: Option<Vec<String>>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_lbl_like")]
+  pub exec_usr_id_lbl_like: Option<String>,
   /// 时区
   #[graphql(skip)]
   pub timezone: Option<Vec<String>>,
@@ -352,6 +404,18 @@ pub struct CronJobSearch {
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  /// 所属组织
+  #[graphql(name = "org_id")]
+  pub org_id: Option<Vec<OrgId>>,
+  /// 所属组织
+  #[graphql(name = "org_id_is_null")]
+  pub org_id_is_null: Option<bool>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<Vec<String>>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl_like")]
+  pub org_id_lbl_like: Option<String>,
 }
 
 impl std::fmt::Debug for CronJobSearch {
@@ -401,6 +465,19 @@ impl std::fmt::Debug for CronJobSearch {
     }
     if let Some(ref cron_like) = self.cron_like {
       item = item.field("cron_like", cron_like);
+    }
+    // 执行用户
+    if let Some(ref exec_usr_id) = self.exec_usr_id {
+      item = item.field("exec_usr_id", exec_usr_id);
+    }
+    if let Some(ref exec_usr_id_lbl) = self.exec_usr_id_lbl {
+      item = item.field("exec_usr_id_lbl", exec_usr_id_lbl);
+    }
+    if let Some(ref exec_usr_id_lbl_like) = self.exec_usr_id_lbl_like {
+      item = item.field("exec_usr_id_lbl_like", exec_usr_id_lbl_like);
+    }
+    if let Some(ref exec_usr_id_is_null) = self.exec_usr_id_is_null {
+      item = item.field("exec_usr_id_is_null", exec_usr_id_is_null);
     }
     // 时区
     if let Some(ref timezone) = self.timezone {
@@ -459,6 +536,19 @@ impl std::fmt::Debug for CronJobSearch {
     if let Some(ref update_time) = self.update_time {
       item = item.field("update_time", update_time);
     }
+    // 所属组织
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
+    if let Some(ref org_id_lbl_like) = self.org_id_lbl_like {
+      item = item.field("org_id_lbl_like", org_id_lbl_like);
+    }
+    if let Some(ref org_id_is_null) = self.org_id_is_null {
+      item = item.field("org_id_is_null", org_id_is_null);
+    }
     item.finish()
   }
 }
@@ -490,6 +580,12 @@ pub struct CronJobInput {
   /// Cron表达式
   #[graphql(name = "cron")]
   pub cron: Option<String>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id")]
+  pub exec_usr_id: Option<UsrId>,
+  /// 执行用户
+  #[graphql(name = "exec_usr_id_lbl")]
+  pub exec_usr_id_lbl: Option<String>,
   /// 时区
   #[graphql(name = "timezone")]
   pub timezone: Option<String>,
@@ -514,6 +610,12 @@ pub struct CronJobInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
+  /// 所属组织
+  #[graphql(name = "org_id")]
+  pub org_id: Option<OrgId>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -572,6 +674,12 @@ impl std::fmt::Debug for CronJobInput {
     if let Some(ref cron) = self.cron {
       item = item.field("cron", cron);
     }
+    if let Some(ref exec_usr_id) = self.exec_usr_id {
+      item = item.field("exec_usr_id", exec_usr_id);
+    }
+    if let Some(ref exec_usr_id_lbl) = self.exec_usr_id_lbl {
+      item = item.field("exec_usr_id_lbl", exec_usr_id_lbl);
+    }
     if let Some(ref timezone) = self.timezone {
       item = item.field("timezone", timezone);
     }
@@ -605,6 +713,12 @@ impl std::fmt::Debug for CronJobInput {
     if let Some(ref update_time) = self.update_time {
       item = item.field("update_time", update_time);
     }
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
     item.finish()
   }
 }
@@ -624,6 +738,9 @@ impl From<CronJobModel> for CronJobInput {
       job_id_lbl: model.job_id_lbl.into(),
       // Cron表达式
       cron: model.cron.into(),
+      // 执行用户
+      exec_usr_id: model.exec_usr_id.into(),
+      exec_usr_id_lbl: model.exec_usr_id_lbl.into(),
       // 时区
       timezone: model.timezone.into(),
       timezone_lbl: model.timezone_lbl.into(),
@@ -637,6 +754,9 @@ impl From<CronJobModel> for CronJobInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
+      // 所属组织
+      org_id: model.org_id.into(),
+      org_id_lbl: model.org_id_lbl.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -671,6 +791,10 @@ impl From<CronJobInput> for CronJobSearch {
       job_id: input.job_id.map(|x| vec![x]),
       // Cron表达式
       cron: input.cron,
+      // 执行用户
+      exec_usr_id: input.exec_usr_id.map(|x| vec![x]),
+      // 执行用户
+      exec_usr_id_lbl: input.exec_usr_id_lbl.map(|x| vec![x]),
       // 时区
       timezone: input.timezone.map(|x| vec![x]),
       // 锁定
@@ -693,6 +817,10 @@ impl From<CronJobInput> for CronJobSearch {
       update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
+      // 所属组织
+      org_id: input.org_id.map(|x| vec![x]),
+      // 所属组织
+      org_id_lbl: input.org_id_lbl.map(|x| vec![x]),
       ..Default::default()
     }
   }

@@ -18,6 +18,12 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
 
+use crate::base::org::org_model::OrgId;
+
+use crate::base::usr::usr_dao::{
+  find_by_id_ok_usr,
+};
+
 use super::cron_job_model::*;
 use super::cron_job_dao;
 
@@ -26,6 +32,28 @@ async fn set_search_query(
   search: &mut CronJobSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+    auth_usr_id
+  } else {
+    get_auth_id_ok()?
+  };
+  
+  let usr_model = find_by_id_ok_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  let org_id = get_auth_org_id().unwrap_or_default();
+  let mut org_ids: Vec<OrgId> = vec![];
+  if search.auth_usr_id.unwrap_or_default().is_empty() && !org_id.is_empty() {
+    org_ids.push(org_id);
+  } else {
+    org_ids.append(&mut usr_model.org_ids.clone());
+    org_ids.push(OrgId::default());
+  }
+  
+  search.org_id = Some(org_ids);
   
   Ok(())
 }

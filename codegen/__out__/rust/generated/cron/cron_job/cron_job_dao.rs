@@ -44,6 +44,7 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
 
@@ -61,6 +62,8 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::cron::job::job_model::JobId;
 #[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
+#[allow(unused_imports)]
+use crate::base::org::org_model::OrgId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
 
@@ -75,7 +78,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 16 * 6);
+  let mut where_query = String::with_capacity(80 * 18 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -238,6 +241,70 @@ async fn get_where_query(
     if let Some(cron_like) = cron_like && !cron_like.is_empty() {
       where_query.push_str(" and t.cron like ?");
       args.push(format!("%{}%", sql_like(&cron_like)).into());
+    }
+  }
+  // 执行用户
+  {
+    if let Some(exec_usr_id) = search.and_then(|item| item.exec_usr_id.as_deref()) {
+      let arg = {
+        if exec_usr_id.is_empty() {
+          String::from("''")
+        } else {
+          let mut items = Vec::with_capacity(exec_usr_id.len());
+          for item in exec_usr_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.exec_usr_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let exec_usr_id_is_null: bool = match search {
+      Some(item) => item.exec_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if exec_usr_id_is_null {
+      where_query.push_str(" and t.exec_usr_id is null");
+    }
+  }
+  {
+    let exec_usr_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.exec_usr_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(exec_usr_id_lbl) = exec_usr_id_lbl {
+      let arg = {
+        if exec_usr_id_lbl.is_empty() {
+          String::from("''")
+        } else {
+          let mut items = Vec::with_capacity(exec_usr_id_lbl.len());
+          for item in exec_usr_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.exec_usr_id_lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+    {
+      let exec_usr_id_lbl_like = match search {
+        Some(item) => item.exec_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(exec_usr_id_lbl_like) = exec_usr_id_lbl_like {
+        if !exec_usr_id_lbl_like.is_empty() {
+          where_query.push_str(" and exec_usr_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&exec_usr_id_lbl_like)).into());
+        }
+      }
     }
   }
   // 时区
@@ -510,6 +577,70 @@ async fn get_where_query(
       args.push(update_time_lt.into());
     }
   }
+  // 所属组织
+  {
+    if let Some(org_id) = search.and_then(|item| item.org_id.as_deref()) {
+      let arg = {
+        if org_id.is_empty() {
+          String::from("''")
+        } else {
+          let mut items = Vec::with_capacity(org_id.len());
+          for item in org_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.org_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let org_id_is_null: bool = match search {
+      Some(item) => item.org_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if org_id_is_null {
+      where_query.push_str(" and t.org_id is null");
+    }
+  }
+  {
+    let org_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.org_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(org_id_lbl) = org_id_lbl {
+      let arg = {
+        if org_id_lbl.is_empty() {
+          String::from("''")
+        } else {
+          let mut items = Vec::with_capacity(org_id_lbl.len());
+          for item in org_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.org_id_lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+    {
+      let org_id_lbl_like = match search {
+        Some(item) => item.org_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(org_id_lbl_like) = org_id_lbl_like {
+        if !org_id_lbl_like.is_empty() {
+          where_query.push_str(" and org_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+        }
+      }
+    }
+  }
   Ok(where_query)
 }
 
@@ -583,6 +714,16 @@ pub async fn find_all_cron_job(
       return Err(eyre!("search.job_id.length > {ids_limit}"));
     }
   }
+  // 执行用户
+  if let Some(search) = &search && let Some(exec_usr_id) = &search.exec_usr_id {
+    let len = exec_usr_id.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.exec_usr_id.length > {ids_limit}"));
+    }
+  }
   // 时区
   if let Some(search) = &search && let Some(timezone) = &search.timezone {
     let len = timezone.len();
@@ -631,6 +772,16 @@ pub async fn find_all_cron_job(
     }
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+    }
+  }
+  // 所属组织
+  if let Some(search) = &search && let Some(org_id) = &search.org_id {
+    let len = org_id.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.org_id.length > {ids_limit}"));
     }
   }
   
@@ -835,6 +986,20 @@ pub async fn find_count_cron_job(
       return Err(eyre!("search.job_id.length > {ids_limit}"));
     }
   }
+  // 执行用户
+  if let Some(search) = &search && search.exec_usr_id.is_some() {
+    let len = search.exec_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.exec_usr_id.length > {ids_limit}"));
+    }
+  }
   // 时区
   if let Some(search) = &search && search.timezone.is_some() {
     let len = search.timezone.as_ref().unwrap().len();
@@ -903,6 +1068,20 @@ pub async fn find_count_cron_job(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+    }
+  }
+  // 所属组织
+  if let Some(search) = &search && search.org_id.is_some() {
+    let len = search.org_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.org_id.length > {ids_limit}"));
     }
   }
   
@@ -997,6 +1176,8 @@ pub async fn get_field_comments_cron_job(
     job_id: "任务".into(),
     job_id_lbl: "任务".into(),
     cron: "Cron表达式".into(),
+    exec_usr_id: "执行用户".into(),
+    exec_usr_id_lbl: "执行用户".into(),
     timezone: "时区".into(),
     timezone_lbl: "时区".into(),
     is_locked: "锁定".into(),
@@ -1013,6 +1194,8 @@ pub async fn get_field_comments_cron_job(
     update_usr_id_lbl: "更新人".into(),
     update_time: "更新时间".into(),
     update_time_lbl: "更新时间".into(),
+    org_id: "所属组织".into(),
+    org_id_lbl: "所属组织".into(),
   };
   Ok(field_comments)
 }
@@ -1411,6 +1594,16 @@ pub async fn exists_cron_job(
       return Err(eyre!("search.job_id.length > {ids_limit}"));
     }
   }
+  // 执行用户
+  if let Some(search) = &search && let Some(exec_usr_id) = &search.exec_usr_id {
+    let len = exec_usr_id.len();
+    if len == 0 {
+      return Ok(false);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.exec_usr_id.length > {ids_limit}"));
+    }
+  }
   // 时区
   if let Some(search) = &search && let Some(timezone) = &search.timezone {
     let len = timezone.len();
@@ -1459,6 +1652,16 @@ pub async fn exists_cron_job(
     }
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+    }
+  }
+  // 所属组织
+  if let Some(search) = &search && let Some(org_id) = &search.org_id {
+    let len = org_id.len();
+    if len == 0 {
+      return Ok(false);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.org_id.length > {ids_limit}"));
     }
   }
   
@@ -1830,6 +2033,42 @@ pub async fn set_id_by_lbl_cron_job(
     }
   }
   
+  // 执行用户
+  if input.exec_usr_id_lbl.is_some()
+    && !input.exec_usr_id_lbl.as_ref().unwrap().is_empty()
+    && input.exec_usr_id.is_none()
+  {
+    input.exec_usr_id_lbl = input.exec_usr_id_lbl.map(|item| 
+      String::from(item.trim())
+    );
+    let model = crate::base::usr::usr_dao::find_one_usr(
+      crate::base::usr::usr_model::UsrSearch {
+        lbl: input.exec_usr_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(model) = model {
+      input.exec_usr_id = model.id.into();
+    }
+  } else if
+    (input.exec_usr_id_lbl.is_none() || input.exec_usr_id_lbl.as_ref().unwrap().is_empty())
+    && input.exec_usr_id.is_some()
+  {
+    let usr_model = crate::base::usr::usr_dao::find_one_usr(
+      crate::base::usr::usr_model::UsrSearch {
+        id: input.exec_usr_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(usr_model) = usr_model {
+      input.exec_usr_id_lbl = usr_model.lbl.into();
+    }
+  }
+  
   // 时区
   if
     input.timezone_lbl.is_some() && !input.timezone_lbl.as_ref().unwrap().is_empty()
@@ -1903,6 +2142,42 @@ pub async fn set_id_by_lbl_cron_job(
     });
     let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
+  }
+  
+  // 所属组织
+  if input.org_id_lbl.is_some()
+    && !input.org_id_lbl.as_ref().unwrap().is_empty()
+    && input.org_id.is_none()
+  {
+    input.org_id_lbl = input.org_id_lbl.map(|item| 
+      String::from(item.trim())
+    );
+    let model = crate::base::org::org_dao::find_one_org(
+      crate::base::org::org_model::OrgSearch {
+        lbl: input.org_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(model) = model {
+      input.org_id = model.id.into();
+    }
+  } else if
+    (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+  {
+    let org_model = crate::base::org::org_dao::find_one_org(
+      crate::base::org::org_model::OrgSearch {
+        id: input.org_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
+    }
   }
   
   Ok(input)
@@ -2002,6 +2277,25 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+
+  let auth_org_id = get_auth_org_id();
+  let mut auth_org_id_lbl = String::from("");
+  if let Some(auth_org_id) = auth_org_id {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      auth_org_id,
+      options,
+    ).await?;
+    if let Some(org_model) = org_model {
+      auth_org_id_lbl = org_model.lbl;
+    }
+  }
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.org_id.is_none_or(|x| x.is_empty()) {
+      input.org_id = auth_org_id;
+      input.org_id_lbl = Some(auth_org_id_lbl.clone());
+    }
+  }
   
   let mut ids2: Vec<CronJobId> = vec![];
   let mut inputs2: Vec<CronJobInput> = vec![];
@@ -2013,6 +2307,34 @@ async fn _creates(
     }
 
     let mut input = input;
+
+    // 执行用户
+    if (input.exec_usr_id_lbl.is_none() || input.exec_usr_id_lbl.as_ref().unwrap().is_empty())
+      && input.exec_usr_id.is_some()
+      && !input.exec_usr_id.as_ref().unwrap().is_empty()
+    {
+      let usr_model = crate::base::usr::usr_dao::find_by_id_usr(
+        input.exec_usr_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        input.exec_usr_id_lbl = usr_model.lbl.into();
+      }
+    }
+
+    // 所属组织
+    if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+      && input.org_id.is_some()
+      && !input.org_id.as_ref().unwrap().is_empty()
+    {
+      let org_model = crate::base::org::org_dao::find_by_id_org(
+        input.org_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(org_model) = org_model {
+        input.org_id_lbl = org_model.lbl.into();
+      }
+    }
     let input = input;
     
     let old_models = find_by_unique_cron_job(
@@ -2054,7 +2376,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 16 * 3 + 60);
+  let mut sql_fields = String::with_capacity(80 * 18 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2072,6 +2394,10 @@ async fn _creates(
   sql_fields += ",job_id";
   // Cron表达式
   sql_fields += ",cron";
+  // 执行用户
+  sql_fields += ",exec_usr_id_lbl";
+  // 执行用户
+  sql_fields += ",exec_usr_id";
   // 时区
   sql_fields += ",timezone";
   // 锁定
@@ -2082,9 +2408,13 @@ async fn _creates(
   sql_fields += ",order_by";
   // 备注
   sql_fields += ",rem";
+  // 所属组织
+  sql_fields += ",org_id_lbl";
+  // 所属组织
+  sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity(((2 * 16 + 3) * inputs2_len) * 3);
+  let mut sql_values = String::with_capacity(((2 * 18 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2238,6 +2568,20 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 执行用户
+    if let Some(exec_usr_id_lbl) = input.exec_usr_id_lbl {
+      sql_values += ",?";
+      args.push(exec_usr_id_lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 执行用户
+    if let Some(exec_usr_id) = input.exec_usr_id {
+      sql_values += ",?";
+      args.push(exec_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
     // 时区
     if let Some(timezone) = input.timezone {
       sql_values += ",?";
@@ -2270,6 +2614,20 @@ async fn _creates(
     if let Some(rem) = input.rem {
       sql_values += ",?";
       args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 所属组织
+    if let Some(org_id_lbl) = input.org_id_lbl {
+      sql_values += ",?";
+      args.push(org_id_lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 所属组织
+    if let Some(org_id) = input.org_id {
+      sql_values += ",?";
+      args.push(org_id.into());
     } else {
       sql_values += ",default";
     }
@@ -2548,6 +2906,34 @@ pub async fn update_by_id_cron_job(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+
+  // 执行用户
+  if (input.exec_usr_id_lbl.is_none() || input.exec_usr_id_lbl.as_ref().unwrap().is_empty())
+    && input.exec_usr_id.is_some()
+    && !input.exec_usr_id.as_ref().unwrap().is_empty()
+  {
+    let usr_model = crate::base::usr::usr_dao::find_by_id_usr(
+      input.exec_usr_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(usr_model) = usr_model {
+      input.exec_usr_id_lbl = usr_model.lbl.into();
+    }
+  }
+
+  // 所属组织
+  if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+    && !input.org_id.as_ref().unwrap().is_empty()
+  {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      input.org_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_cron_job(
     id,
@@ -2603,7 +2989,7 @@ pub async fn update_by_id_cron_job(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity((80 * 16 + 20) * 3);
+  let mut sql_fields = String::with_capacity((80 * 18 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2636,6 +3022,18 @@ pub async fn update_by_id_cron_job(
     sql_fields += "cron=?,";
     args.push(cron.into());
   }
+  // 执行用户
+  if let Some(exec_usr_id_lbl) = input.exec_usr_id_lbl {
+    field_num += 1;
+    sql_fields += "exec_usr_id_lbl=?,";
+    args.push(exec_usr_id_lbl.into());
+  }
+  // 执行用户
+  if let Some(exec_usr_id) = input.exec_usr_id {
+    field_num += 1;
+    sql_fields += "exec_usr_id=?,";
+    args.push(exec_usr_id.into());
+  }
   // 时区
   if let Some(timezone) = input.timezone.clone() {
     field_num += 1;
@@ -2665,6 +3063,18 @@ pub async fn update_by_id_cron_job(
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
+  }
+  // 所属组织
+  if let Some(org_id_lbl) = input.org_id_lbl {
+    field_num += 1;
+    sql_fields += "org_id_lbl=?,";
+    args.push(org_id_lbl.into());
+  }
+  // 所属组织
+  if let Some(org_id) = input.org_id {
+    field_num += 1;
+    sql_fields += "org_id=?,";
+    args.push(org_id.into());
   }
   
   if field_num > 0 {
@@ -2805,6 +3215,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   vec![
     table,
     "cron_job",
+    "base_org",
   ]
 }
 
