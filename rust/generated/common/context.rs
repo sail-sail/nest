@@ -1726,49 +1726,41 @@ impl Options {
     options.unwrap_or_default()
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_is_debug(&self) -> Option<bool> {
     self.is_debug
   }
   
-  #[inline]
   pub fn set_is_debug(self, is_debug: Option<bool>) -> Self {
     let mut self_ = self;
     self_.is_debug = is_debug;
     self_
   }
   
-  #[inline]
   pub fn get_is_sql_debug(&self) -> Option<bool> {
     self.is_sql_debug
   }
   
-  #[inline]
   pub fn set_is_sql_debug(self, is_sql_debug: Option<bool>) -> Self {
     let mut self_ = self;
     self_.is_sql_debug = is_sql_debug;
     self_
   }
   
-  #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
     self.is_tran
   }
   
-  #[inline]
   pub fn set_unique_type(self, unique_type: UniqueType) -> Self {
     let mut self_ = self;
     self_.unique_type = Some(unique_type);
     self_
   }
   
-  #[inline]
   pub fn get_unique_type(&self) -> Option<UniqueType> {
     self.unique_type
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn set_is_encrypt(self, is_encrypt: bool) -> Self {
     let mut self_ = self;
@@ -1776,13 +1768,11 @@ impl Options {
     self_
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_is_encrypt(&self) -> Option<bool> {
     self.is_encrypt
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn set_has_data_permit(self, has_data_permit: bool) -> Self {
     let mut self_ = self;
@@ -1790,18 +1780,21 @@ impl Options {
     self_
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_has_data_permit(&self) -> Option<bool> {
     self.has_data_permit
   }
   
-  #[inline]
   pub fn get_ids_limit(&self) -> Option<usize> {
     self.ids_limit
   }
   
-  #[inline]
+  pub fn set_ids_limit(self, ids_limit: Option<usize>) -> Self {
+    let mut self_ = self;
+    self_.ids_limit = ids_limit;
+    self_
+  }
+  
   #[allow(dead_code)]
   pub fn set_is_silent_mode(self, is_silent_mode: Option<bool>) -> Self {
     let mut self_ = self;
@@ -1809,13 +1802,11 @@ impl Options {
     self_
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_is_silent_mode(&self) -> Option<bool> {
     self.is_silent_mode
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn set_is_creating(self, is_creating: Option<bool>) -> Self {
     let mut self_ = self;
@@ -1823,13 +1814,11 @@ impl Options {
     self_
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_is_creating(&self) -> Option<bool> {
     self.is_creating
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn set_is_for_update(self, is_for_update: Option<bool>) -> Self {
     let mut self_ = self;
@@ -1837,7 +1826,6 @@ impl Options {
     self_
   }
   
-  #[inline]
   #[allow(dead_code)]
   pub fn get_is_for_update(&self) -> Option<bool> {
     self.is_for_update
@@ -2007,6 +1995,14 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  pub fn with_auth_model(mut self, auth_model: AuthModel) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(eyre!("auth_model_not_none"));
+    }
+    self.auth_model = Some(auth_model);
+    Ok(self)
+  }
+  
   /// 如果auth_model能获取, 则获取, 否则不抛出异常
   #[allow(dead_code)]
   pub fn with_auth_optional(mut self) -> Result<CtxBuilder<'a>> {
@@ -2156,7 +2152,9 @@ fn encode_short_bytes(bytes: &[u8]) -> [u8; 22] {
   let mut arr: [u8; 22] = [0u8; 22];
   let encoded_bytes = encoded.as_bytes();
   let len = encoded_bytes.len().min(arr.len());
-  arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  if len > 0 {
+    arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  }
   arr
 }
 

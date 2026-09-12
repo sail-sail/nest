@@ -42,7 +42,6 @@ deadpool.workspace = true
 deadpool-redis.workspace = true
 redis.workspace = true
 # pin-project.workspace = true
-bigdecimal.workspace = true
 time.workspace = true
 rust_decimal.workspace = true
 # rust_decimal_macros.workspace = true

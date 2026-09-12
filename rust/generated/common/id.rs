@@ -11,6 +11,28 @@ use crate::common::context::ArgType;
 /// 空ID的字节数组常量
 pub const EMPTY_ID_BYTES: [u8; 22] = [0u8; 22];
 
+/// 兼容旧数据：如果尾部 '=' 被去掉后长度恰好为 22，则该 22 字节值是合法的短 ID。
+pub fn normalize_short_id_bytes(bytes: &[u8]) -> Option<[u8; 22]> {
+  let normalized = if bytes.len() == 22 {
+    bytes
+  } else if bytes.len() == 24 {
+    match bytes.strip_suffix(b"==") {
+      Some(s) => s,
+      None => bytes.strip_suffix(b"=")?,
+    }
+  } else {
+    return None;
+  };
+
+  if normalized.len() != 22 {
+    return None;
+  }
+
+  let mut arr = EMPTY_ID_BYTES;
+  arr.copy_from_slice(normalized);
+  Some(arr)
+}
+
 /// 通用ID trait，为22字节的ID类型提供统一接口
 pub trait Id: 
   Default + Clone + Copy + PartialEq + Eq + Hash + Send + Sync + 
@@ -107,13 +129,16 @@ pub fn parse_id<T: Id>(value: async_graphql::Value) -> async_graphql::InputValue
       if bytes.is_empty() {
         return Ok(T::from_bytes(crate::common::id::EMPTY_ID_BYTES));
       }
-      if bytes.len() != 22 {
+      if !(bytes.len() == 22 || bytes.len() == 24) {
         return Err(async_graphql::InputValueError::custom(
-          format!("{} must be 22 bytes string or empty", T::TYPE_NAME)
+          format!("{} must be 22 bytes string, 24 bytes padded short id, or empty", T::TYPE_NAME)
         ));
       }
-      let mut arr = crate::common::id::EMPTY_ID_BYTES;
-      arr.copy_from_slice(bytes);
+      let arr = crate::common::id::normalize_short_id_bytes(bytes).ok_or_else(|| {
+        async_graphql::InputValueError::custom(
+          format!("{} must be 22 bytes string or 24 bytes padded short id", T::TYPE_NAME)
+        )
+      })?;
       Ok(T::from_bytes(arr))
     },
     _ => Err(async_graphql::InputValueError::expected_type(value)),
@@ -140,10 +165,17 @@ pub fn encode_id<T: Id>(id: &T, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDy
 pub fn decode_id<T: Id>(value: MySqlValueRef<'_>) -> Result<T, BoxDynError> {
   let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
   let mut arr = EMPTY_ID_BYTES;
+  if bytes.is_empty() {
+    return Ok(T::from_bytes(arr));
+  }
   if bytes.len() == 22 {
     arr.copy_from_slice(bytes);
-  } else if bytes.len() > 22 {
-    return Err(format!("{} must be 22 bytes", T::TYPE_NAME).into());
+  } else if bytes.len() == 24 {
+    arr = normalize_short_id_bytes(bytes).ok_or_else(|| {
+      format!("{} must be 22 bytes or legacy 24-byte padded short id", T::TYPE_NAME)
+    })?;
+  } else {
+    return Err(format!("{} must be 22 bytes or legacy 24-byte padded short id", T::TYPE_NAME).into());
   }
   Ok(T::from_bytes(arr))
 }
@@ -271,10 +303,20 @@ macro_rules! impl_id {
     impl From<&str> for $id_type {
       fn from(s: &str) -> Self {
         let bytes = s.as_bytes();
-        let mut arr = $crate::common::id::EMPTY_ID_BYTES;
-        if bytes.len() == 22 {
+        let arr = if bytes.is_empty() {
+          $crate::common::id::EMPTY_ID_BYTES
+        } else if bytes.len() == 22 {
+          let mut arr = $crate::common::id::EMPTY_ID_BYTES;
           arr.copy_from_slice(bytes);
-        }
+          arr
+        } else if bytes.len() == 24 {
+          match $crate::common::id::normalize_short_id_bytes(bytes) {
+            Some(arr) => arr,
+            None => $crate::common::id::EMPTY_ID_BYTES,
+          }
+        } else {
+          $crate::common::id::EMPTY_ID_BYTES
+        };
         Self(arr)
       }
     }

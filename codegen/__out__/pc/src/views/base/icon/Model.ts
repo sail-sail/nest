@@ -12,6 +12,7 @@ declare global {
   interface IconModel extends IconModelType {
     /** 图标 */
     img_lbl: string;
+    img_lbls: string[];
   }
   
   /** 图标库 */

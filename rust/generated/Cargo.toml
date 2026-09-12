@@ -3,6 +3,9 @@ name = "generated"
 version = "0.0.0"
 edition = "2024"
 
+[lints.clippy]
+needless_bool = "allow"
+
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
@@ -42,7 +45,6 @@ deadpool.workspace = true
 deadpool-redis.workspace = true
 redis.workspace = true
 # pin-project.workspace = true
-bigdecimal.workspace = true
 time.workspace = true
 rust_decimal.workspace = true
 # rust_decimal_macros.workspace = true
