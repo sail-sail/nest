@@ -1,4 +1,4 @@
--- ---------------------------------------------------------------------- 任务
+-- 任务
 drop table if exists `cron_job`;
 CREATE TABLE if not exists `cron_job` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -25,7 +25,7 @@ CREATE TABLE if not exists `cron_job` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='任务';
 
--- ---------------------------------------------------------------------- 定时任务
+-- 定时任务
 drop table if exists `cron_cron_job`;
 CREATE TABLE if not exists `cron_cron_job` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -58,7 +58,7 @@ CREATE TABLE if not exists `cron_cron_job` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='定时任务';
 
--- ---------------------------------------------------------------------- 定时任务日志
+-- 定时任务日志
 drop table if exists `cron_cron_job_log`;
 CREATE TABLE if not exists `cron_cron_job_log` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -83,7 +83,7 @@ CREATE TABLE if not exists `cron_cron_job_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='定时任务日志';
 
--- ---------------------------------------------------------------------- 定时任务日志明细
+-- 定时任务日志明细
 drop table if exists `cron_cron_job_log_detail`;
 CREATE TABLE if not exists `cron_cron_job_log_detail` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
