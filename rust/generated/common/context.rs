@@ -1995,6 +1995,14 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  pub fn with_auth_model(mut self, auth_model: AuthModel) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(eyre!("auth_model_not_none"));
+    }
+    self.auth_model = Some(auth_model);
+    Ok(self)
+  }
+  
   /// 如果auth_model能获取, 则获取, 否则不抛出异常
   #[allow(dead_code)]
   pub fn with_auth_optional(mut self) -> Result<CtxBuilder<'a>> {
