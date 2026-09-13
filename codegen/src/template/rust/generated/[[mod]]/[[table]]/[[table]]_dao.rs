@@ -2368,6 +2368,10 @@ pub async fn find_all_<#=table#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=inlineForeignTab.label#>
@@ -4515,7 +4519,7 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>.unwrap_or_default()<#
         if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
-      #>.as_str()<#
+      #>.to_string()<#
         }
       #>
     });
@@ -5007,15 +5011,13 @@ async fn _creates(
       const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
     #>
     
-    input.<#=inline_column_name#>.iter_mut().for_each(|items| {
-      for item in items {
-        item.org_id = org_id;<#
-        if (hasOrgIdLbl) {
-        #>
-        item.org_id_lbl = org_id_lbl.clone();<#
-        }
-        #>
+    input.<#=inline_column_name#>.iter_mut().for_each(|item| {
+      item.org_id = org_id;<#
+      if (hasOrgIdLbl) {
+      #>
+      item.org_id_lbl = org_id_lbl.clone();<#
       }
+      #>
     });<#
     }
     #>
@@ -8900,6 +8902,10 @@ pub async fn delete_by_ids_<#=table#>(
     #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
@@ -8907,6 +8913,7 @@ pub async fn delete_by_ids_<#=table#>(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=inlineForeignTab.label#>
@@ -8961,13 +8968,18 @@ pub async fn delete_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9539,8 +9551,16 @@ pub async fn revert_by_ids_<#=table#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    const inlineMany2manySchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineMany2manySchema) {
+      throw `inline many2many 中的表: ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #><#
     if (inline_foreign_type === "one2many") {
+  #><#
+    if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
@@ -9566,7 +9586,11 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+    }
+  #><#
     } else if (inline_foreign_type === "one2one") {
+  #><#
+    if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
@@ -9593,6 +9617,8 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+    }
+  #><#
     }
   #><#
   }
@@ -9625,13 +9651,20 @@ pub async fn revert_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
+  #><#
+  if (hasIsDeleted) {
   #>
   
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9646,6 +9679,8 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<_>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   if (cache) {
@@ -9884,18 +9919,29 @@ pub async fn force_delete_by_ids_<#=table#>(
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
+  #><#
+  if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=inlineForeignTab.column#>: ids.clone().into(),
-      is_deleted: 0.into(),
+      <#=inlineForeignTab.column#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 0.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9909,6 +9955,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -9939,12 +9987,17 @@ pub async fn force_delete_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 0.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 0.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9958,12 +10011,18 @@ pub async fn force_delete_by_ids_<#=table#>(
       .map(|item| item.id)
       .collect::<Vec<_>>(),
     options,
-  ).await?;
+  ).await?;<#
+  if (hasIsDeleted) {
+  #>
   
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9978,6 +10037,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       .collect::<Vec<_>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   if (cache) {
