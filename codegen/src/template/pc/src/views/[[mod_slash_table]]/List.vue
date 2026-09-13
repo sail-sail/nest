@@ -2304,7 +2304,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById<#=Table_Up#>(
@@ -2433,7 +2437,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
@@ -2447,7 +2455,11 @@ if (searchByKeyword) {
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
