@@ -37,6 +37,8 @@ metadata:
 </el-button>
 ```
 
+- UnoCSS attributify 中同名属性不能静态+动态同时写（un-text="xs" 与 :un-text 会报 TS1117），需合并成一个动态绑定 :un-text="`xs ${...}`"
+
 ### 自引用前缀 `~`
 当属性名与值相同时使用：
 

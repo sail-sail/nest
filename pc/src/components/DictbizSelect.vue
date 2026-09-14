@@ -262,8 +262,6 @@ import {
 
 export type DictbizModel = GetDictbiz;
 
-const t = getCurrentInstance();
-
 const emit = defineEmits<{
   (e: "data", value: DictbizModel[]): void;
   // oxlint-disable-next-line @typescript-eslint/no-explicit-any
@@ -330,6 +328,19 @@ const props = withDefaults(
   },
 );
 
+function isEmptySelectValue(value: unknown): boolean {
+  if (value == null) {
+    return true;
+  }
+  if (typeof value === "string") {
+    return value === "";
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  return false;
+}
+
 async function copyModelLabel() {
   const text = modelLabels.join(",");
   if (!text) {
@@ -382,7 +393,7 @@ const selectDivRef = $ref<HTMLDivElement>();
 
 const isSelectAll = $computed({
   get() {
-    if (!modelValue) {
+    if (isEmptySelectValue(modelValue)) {
       return false;
     }
     if (!Array.isArray(modelValue)) {
@@ -418,7 +429,7 @@ const isSelectAll = $computed({
 });
 
 const isIndeterminate = $computed(() => {
-  if (!modelValue) {
+  if (isEmptySelectValue(modelValue)) {
     return false;
   }
   if (!Array.isArray(modelValue)) {
@@ -443,7 +454,7 @@ const modelValueComputed = $computed(() => {
     return modelValue;
   }
   if (!props.multiple) {
-    if (modelValue == null || modelValue === "") {
+    if (isEmptySelectValue(modelValue)) {
       return modelLabel;
     }
     const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
@@ -480,9 +491,9 @@ const isShowModelLabel = $computed(() => {
 
 const shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
-    return modelValue == null || modelValue.length === 0;
+    return isEmptySelectValue(modelValue);
   }
-  return modelValue == null || modelValue === "";
+  return isEmptySelectValue(modelValue);
 });
 
 function modelValueUpdate(value?: string | string[] | null) {
@@ -633,7 +644,7 @@ const {
 const dirtyStore = useDirtyStore();
 
 const modelLabels: string[] = $computed(() => {
-  if (!modelValue) {
+  if (isEmptySelectValue(modelValue) && modelValue !== 0) {
     return [ "" ];
   }
   if (!props.multiple) {
