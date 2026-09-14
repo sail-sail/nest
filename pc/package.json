@@ -50,6 +50,7 @@
     "expr-eval": "2.0.2",
     "file-saver": "2.0.5",
     "filesize": "11.0.23",
+    "gcoord": "1.0.7",
     "graphql": "17.0.2",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.2",
