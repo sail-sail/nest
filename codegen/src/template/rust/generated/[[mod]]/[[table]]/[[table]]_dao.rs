@@ -5009,16 +5009,33 @@ async fn _creates(
       const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
       const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
       const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+    #><#
+    if (inline_foreign_type === "one2many") {
+    #>
+    
+    input.<#=inline_column_name#>.iter_mut().for_each(|items| {
+      for item in items {
+        item.org_id = org_id;<#
+        if (inlineForeignHasOrgIdLbl) {
+        #>
+        item.org_id_lbl = org_id_lbl.clone();<#
+        }
+        #>
+      }
+    });<#
+    } else if (inline_foreign_type === "one2one") {
     #>
     
     input.<#=inline_column_name#>.iter_mut().for_each(|item| {
       item.org_id = org_id;<#
-      if (hasOrgIdLbl) {
+      if (inlineForeignHasOrgIdLbl) {
       #>
       item.org_id_lbl = org_id_lbl.clone();<#
       }
       #>
     });<#
+    }
+    #><#
     }
     #>
     
