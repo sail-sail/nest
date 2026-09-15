@@ -103,7 +103,7 @@ defineOptions({
 const emit = defineEmits<{
   selectedIdsChg: [ I18nId[] ],
   rowEnter: [ KeyboardEvent? ],
-  rowDblclick: [ I18nmodel ],
+  rowDblclick: [ I18nModel ],
 }>();
 
 const props = defineProps<{
