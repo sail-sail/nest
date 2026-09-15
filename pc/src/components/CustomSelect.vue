@@ -1080,8 +1080,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;
@@ -1116,8 +1116,8 @@ defineExpose({
 .custom_select_readonly {
   min-height: 32px;
   :deep(.el-tag) {
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     height: auto;
     .el-tag__content {

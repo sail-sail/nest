@@ -874,8 +874,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;
