@@ -1,4 +1,4 @@
--- ---------------------------------------------------------------------- 小程序设置
+-- 小程序设置
 drop table if exists `wx_wx_app`;
 CREATE TABLE `wx_wx_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -7,8 +7,8 @@ CREATE TABLE `wx_wx_app` (
   `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
   `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT '开发者密码',
   `default_role_codes` varchar(500) NOT NULL DEFAULT '' COMMENT '默认角色',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
@@ -18,7 +18,7 @@ CREATE TABLE `wx_wx_app` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -28,7 +28,7 @@ CREATE TABLE `wx_wx_app` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序设置';
 
--- ---------------------------------------------------------------------- 小程序接口凭据
+-- 小程序接口凭据
 drop table if exists `wx_wx_app_token`;
 CREATE TABLE `wx_wx_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -44,7 +44,7 @@ CREATE TABLE `wx_wx_app_token` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -52,7 +52,7 @@ CREATE TABLE `wx_wx_app_token` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
--- ---------------------------------------------------------------------- 小程序用户
+-- 小程序用户
 drop table if exists `wx_wx_usr`;
 CREATE TABLE if not exists `wx_wx_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -77,7 +77,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -85,7 +85,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序用户';
 
--- ---------------------------------------------------------------------- 公众号设置
+-- 公众号设置
 drop table if exists `wx_wxo_app`;
 CREATE TABLE `wx_wxo_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -99,8 +99,8 @@ CREATE TABLE `wx_wxo_app` (
   `scope` ENUM('snsapi_base', 'snsapi_userinfo') NOT NULL DEFAULT 'snsapi_base' COMMENT '授权作用域,dict:wxo_app_scope',
   `domain_id` varchar(22) NOT NULL DEFAULT '' COMMENT '网页授权域名',
   `default_role_codes` varchar(500) NOT NULL DEFAULT '' COMMENT '默认角色',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
@@ -110,7 +110,7 @@ CREATE TABLE `wx_wxo_app` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -120,7 +120,7 @@ CREATE TABLE `wx_wxo_app` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号设置';
 
--- ---------------------------------------------------------------------- 公众号用户
+-- 公众号用户
 drop table if exists `wx_wxo_usr`;
 CREATE TABLE if not exists `wx_wxo_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -143,7 +143,7 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -152,7 +152,7 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号用户';
 
--- ---------------------------------------------------------------------- 公众号接口凭据
+-- 公众号接口凭据
 drop table if exists `wx_wxo_app_token`;
 CREATE TABLE `wx_wxo_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -168,7 +168,7 @@ CREATE TABLE `wx_wxo_app_token` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -176,7 +176,7 @@ CREATE TABLE `wx_wxo_app_token` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
--- ---------------------------------------------------------------------- 微信支付设置
+-- 微信支付设置
 drop table if exists `wx_wx_pay`;
 CREATE TABLE `wx_wx_pay` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -190,8 +190,8 @@ CREATE TABLE `wx_wx_pay` (
   `payer_client_ip` varchar(45) NOT NULL DEFAULT '' COMMENT '支付终端IP',
   `notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_pay_notify' COMMENT '通知地址',
   `refund_notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_refund_notice' COMMENT '退款通知地址',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
@@ -201,7 +201,7 @@ CREATE TABLE `wx_wx_pay` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -211,7 +211,7 @@ CREATE TABLE `wx_wx_pay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付设置';
 
--- ---------------------------------------------------------------------- 微信JSAPI下单
+-- 微信JSAPI下单
 drop table if exists `wx_pay_transactions_jsapi`;
 CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -240,7 +240,7 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
@@ -248,7 +248,7 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信JSAPI下单';
 
--- ---------------------------------------------------------------------- 微信支付通知
+-- 微信支付通知
 drop table if exists `wx_wx_pay_notice`;
 CREATE TABLE if not exists `wx_wx_pay_notice` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -275,7 +275,7 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付通知';
 
--- ---------------------------------------------------------------------- 微信退款申请
+-- 微信退款申请
 drop table if exists `wx_wx_refund`;
 CREATE TABLE if not exists `wx_wx_refund` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -310,7 +310,7 @@ CREATE TABLE if not exists `wx_wx_refund` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信退款申请';
 
--- ---------------------------------------------------------------------- 微信退款通知
+-- 微信退款通知
 drop table if exists `wx_wx_refund_notice`;
 CREATE TABLE if not exists `wx_wx_refund_notice` (
   `id` varchar(22) NOT NULL COMMENT 'ID',

@@ -797,7 +797,7 @@ export async function getDefaultInputWxPay() {
   const defaultInput: WxPayInput = {
     notify_url: "/api/wx_pay/wx_pay_notify",
     refund_notify_url: "/api/wx_pay/wx_refund_notice",
-    is_locked: 1,
+    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };
