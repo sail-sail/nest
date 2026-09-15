@@ -161,7 +161,7 @@
                 trigger="click"
               >
                 <span
-                  un-text="white hover:[var(--el-color-primary)]"
+                  un-text="hover:[var(--el-color-primary)]"
                   un-cursor-pointer
                   un-whitespace-nowrap
                 >
