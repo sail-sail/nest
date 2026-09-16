@@ -501,8 +501,12 @@ async function changeLoginView() {
   tooltipVisible = true;
 }
 
-onMounted(() => {
+onMounted(async () => {
   loginRef?.focus();
+  // 临时测试用, 自动登录
+  // model.username = "admin";
+  // model.password = "a";
+  // await onLogin();
 });
 </script>
 

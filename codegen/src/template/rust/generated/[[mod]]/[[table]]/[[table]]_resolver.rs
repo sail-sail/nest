@@ -1218,9 +1218,9 @@ pub async fn audit_submit_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: String::from(format!("<#=mod#>_<#=table#>")),
+      module: format!("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("auditSubmit"),
+      method: String::from("auditSubmit").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1300,9 +1300,9 @@ pub async fn audit_reverse_<#=table#>(
 
   log(
     OperationRecordInput {
-      module: String::from(format!("<#=mod#>_<#=table#>")),
+      module: format!("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("auditReverse"),
+      method: String::from("auditReverse").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1382,9 +1382,9 @@ pub async fn audit_pass_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: String::from(format!("<#=mod#>_<#=table#>")),
+      module: format!("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("auditPass"),
+      method: String::from("auditPass").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1466,9 +1466,9 @@ pub async fn audit_reject_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: format!("<#=mod#>_<#=table#>"),
+      module: format!("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("auditReject"),
+      method: String::from("auditReject").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1550,11 +1550,11 @@ pub async fn audit_review_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: format!("<#=mod#>_<#=table#>"),
+      module: format!("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("auditReview"),
+      method: String::from("auditReview").into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
       old_data: old_data.into(),
       ..Default::default()
@@ -1647,9 +1647,9 @@ pub async fn delete_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: String::from(format!("{method_lbl}_<#=mod#>_<#=table#>")),
+      module: format!("{method_lbl}_<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: String::from("deleteByIds"),
+      method: String::from("deleteByIds").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.clone().into(),
       time: time.into(),
@@ -1809,7 +1809,7 @@ pub async fn enable_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let old_data = String::from(serde_json::to_string(&ids)?);<# 
+  let old_data = serde_json::to_string(&ids)?;<# 
   }
   #>
   
@@ -1872,11 +1872,11 @@ pub async fn enable_by_ids_<#=table#>(
   log(
     OperationRecordInput {
       module: String::from("<#=mod#>_<#=table#>").into(),
-      module_lbl: String::from(table_comment.clone()).into(),
-      method: String::from(method).into(),
-      method_lbl: String::from(table_comment.clone()).into(),
-      lbl: String::from(method_lbl).into(),
-      old_data: String::from(old_data).into(),
+      module_lbl: table_comment.clone().into(),
+      method: method.into(),
+      method_lbl: table_comment.clone().into(),
+      lbl: method_lbl.into(),
+      old_data: old_data.into(),
       time: time.into(),
       ..Default::default()
     },
@@ -2065,7 +2065,7 @@ pub async fn revert_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let new_data = String::from(serde_json::to_string(&ids)?);<#
+  let new_data = serde_json::to_string(&ids)?;<#
   }
   #>
   
@@ -2152,7 +2152,7 @@ pub async fn force_delete_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let old_data = String::from(serde_json::to_string(&ids)?);<#
+  let old_data = serde_json::to_string(&ids)?;<#
   }
   #>
   
