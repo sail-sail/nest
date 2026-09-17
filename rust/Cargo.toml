@@ -22,8 +22,9 @@ sqlx = { version = "0.9.0", features = ["runtime-tokio", "mysql", "mysql-rsa", "
 dotenv = "0.15.0"
 rust-s3 = { version = "0.37.2", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
-jsonwebtoken = { version = "11.0.0", default-features = false, features = ["aws_lc_rs"] }
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
 sha2 = "0.11.0"
+md-5 = "0.11.0"
 hmac = "0.13.0"
 hex-literal = "1.1.0"
 hex = "0.4.3"
