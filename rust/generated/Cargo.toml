@@ -27,6 +27,7 @@ rust-s3.workspace = true
 imstr.workspace = true
 jsonwebtoken.workspace = true
 sha2.workspace = true
+md-5.workspace = true
 hmac.workspace = true
 # protobuf.workspace = true
 hex-literal.workspace = true
@@ -72,6 +73,7 @@ rand.workspace = true
 csv.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
+rumqttc-v5-next.workspace = true
 
 [lib]
 path = "lib.rs"
