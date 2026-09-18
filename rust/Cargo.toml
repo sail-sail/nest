@@ -78,6 +78,7 @@ percent-encoding = "2.3.2"
 qrcode = { version = "0.14.1", default-features = false }
 calamine = { version = "0.36.1", features = ["chrono", "picture"] }
 wecom-crypto = "0.1.9"
+rumqttc-v5-next = { version = "0.34.0", features = ["use-rustls"] }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -107,6 +108,7 @@ imstr.workspace = true
 jsonwebtoken.workspace = true
 sha2.workspace = true
 hmac.workspace = true
+md-5.workspace = true
 # protobuf.workspace = true
 hex-literal.workspace = true
 hex.workspace = true
@@ -161,6 +163,7 @@ qrcode.workspace = true
 calamine.workspace = true
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
+rumqttc-v5-next.workspace = true
 
 generated = { path = "./generated" }
 app = { path = "./app" }
