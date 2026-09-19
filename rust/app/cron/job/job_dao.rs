@@ -78,16 +78,19 @@ pub async fn run_job(
     let Err(exec_result) = &exec_result
   {
     let exec_result = exec_result.to_string();
-    update_by_id_cron_job_log(
-      id,
-      CronJobLogInput {
-        exec_state: Some(CronJobLogExecState::Fail),
-        exec_result: Some(exec_result.clone()),
-        end_time: Some(end_time),
-        ..Default::default()
-      },
-      options,
-    ).await?;
+    
+    if !exec_result.is_empty() {
+      update_by_id_cron_job_log(
+        id,
+        CronJobLogInput {
+          exec_state: Some(CronJobLogExecState::Fail),
+          exec_result: Some(exec_result.clone()),
+          end_time: Some(end_time),
+          ..Default::default()
+        },
+        options,
+      ).await?;
+    }
     
     return Err(eyre!(exec_result));
   }

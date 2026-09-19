@@ -145,7 +145,7 @@ async function showDialog(
   inited = false;
   const title = arg?.title || "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "default",
+    type: "medium",
     title,
     pointerPierce: true,
   });

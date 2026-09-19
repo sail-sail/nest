@@ -17,13 +17,14 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "code",
-        width: 240,
-        align: "center",
-        fixed: "left",
+        width: 340,
+        align: "left",
+        fixed: false,
       },
       {
         COLUMN_NAME: "lbl",
         width: 320,
+        fixed: false,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -75,7 +76,7 @@ export default defineConfig({
             column: "cron_job_id",
           },
         ],
-        foreignTabsDialogType: "default",
+        foreignTabsDialogType: "medium",
       },
       {
         COLUMN_NAME: "job_id",

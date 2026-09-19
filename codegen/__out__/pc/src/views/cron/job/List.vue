@@ -1007,11 +1007,10 @@ function getTableColumns(): ColumnType[] {
     {
       label: "编码",
       prop: "code",
-      width: 240,
-      align: "center",
+      width: 340,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "名称",
@@ -1020,7 +1019,6 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "锁定",

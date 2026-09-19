@@ -169,7 +169,7 @@ X9mC4rTb7qL2nHs6Pw8YdE,1,1688自动刷新Token,V2X8nQ4mLp7sKd3rTy6HzA,0 0 */2 * 
 修改完两个 CSV 后，需要执行：
 
 ```bash
-npm run importCsv -- {mod}/cron_job.{mod},{mod}/cron_cron_job.{mod}
+npm run importCsv {mod}/cron_job.{mod},{mod}/cron_cron_job.{mod}
 ```
 
 工作目录：
@@ -188,5 +188,5 @@ npm run importCsv -- {mod}/cron_job.{mod},{mod}/cron_cron_job.{mod}
 4. `cron_cron_job.cron.sql.csv` 是否已新增调度定义
 5. `job.code` 和代码分支字符串是否完全一致
 6. cron 是否是 6 段表达式
-7. 是否已执行 `npm run importCsv -- {mod}/cron_job.{mod},{mod}/cron_cron_job.{mod}`
+7. 是否已执行 `npm run importCsv {mod}/cron_job.{mod},{mod}/cron_cron_job.{mod}`
 8. 是否写了足够的 `cron_job_log_detail` 明细日志
