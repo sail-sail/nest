@@ -293,6 +293,16 @@ export async function usePermit(
     undefined,
     options,
   );
+  const menu_id: MenuId = menuModel.id;
+  if (code === "find") {
+    const has_menu_permission = roleModels.some((roleModel) => {
+      const menu_ids = roleModel.menu_ids ?? [ ];
+      return menu_ids.includes(menu_id as MenuId);
+    });
+    if (has_menu_permission) {
+      return;
+    }
+  }
   const permit_ids: PermitId[] = [ ];
   for (const roleModel of roleModels) {
     const permit_ids2 = roleModel.permit_ids;
@@ -327,5 +337,21 @@ export async function usePermit(
       return;
     }
   }
-  throw await ns("{0} {1} 无权限", menuModel.lbl, code);
+
+  let permit_lbl = code;
+  if (code === "find") {
+    permit_lbl = await ns("查看");
+  } else {
+    const permitModel = await findOnePermit(
+      {
+        menu_id: [ menuModel.id ],
+        code,
+      },
+      undefined,
+      options,
+    );
+    permit_lbl = permitModel?.lbl || code;
+  }
+
+  throw await ns("{0} {1} 无权限", menuModel.lbl, permit_lbl);
 }

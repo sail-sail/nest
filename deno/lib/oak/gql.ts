@@ -39,10 +39,6 @@ import {
 
 const gqlRouter = new Router();
 
-declare global {
-  type String = string;
-}
-
 const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
 scalar JSONObject

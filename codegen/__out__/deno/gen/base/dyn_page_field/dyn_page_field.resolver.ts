@@ -29,6 +29,15 @@ export async function findCountDynPageField(
     findCountDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
+  
   const num = await findCountDynPageField(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDynPageField(
   const {
     findAllDynPageField,
   } = await import("./dyn_page_field.service.ts");
+  
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
   
   checkSortDynPageField(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDynPageField(
     findOneDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
+  
   checkSortDynPageField(sort);
   
   const model = await findOneDynPageField(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDynPageField(
     findOneOkDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
+  
   checkSortDynPageField(sort);
   
   const model = await findOneOkDynPageField(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDynPageField(
     findByIdDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
+  
   const model = await findByIdDynPageField(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDynPageField(
   const {
     findByIdOkDynPageField,
   } = await import("./dyn_page_field.service.ts");
+  
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
   
   const model = await findByIdOkDynPageField(id);
   
@@ -149,6 +203,15 @@ export async function findByIdsDynPageField(
     findByIdsDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
+  
   const models = await findByIdsDynPageField(ids);
   
   return models;
@@ -164,6 +227,15 @@ export async function findByIdsOkDynPageField(
   const {
     findByIdsOkDynPageField,
   } = await import("./dyn_page_field.service.ts");
+  
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageField(),
+    "find",
+  );
   
   const models = await findByIdsOkDynPageField(ids);
   

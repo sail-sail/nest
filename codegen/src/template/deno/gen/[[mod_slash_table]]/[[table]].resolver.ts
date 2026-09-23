@@ -107,11 +107,15 @@ import {
   <#=Table_Up2#>Summary,
 } from "/gen/types.ts";<#
 }
+#><#
+if (!is_with_auth_optional) {
 #>
 
 import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -185,11 +189,22 @@ export async function findCount<#=Table_Up2#>(
   
   const {
     findCount<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #><#
   if (hasSearchRangeMax) {
@@ -215,11 +230,22 @@ export async function findAll<#=Table_Up2#>(
   
   const {
     findAll<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #><#
   if (hasSearchRangeMax) {
@@ -296,11 +322,22 @@ export async function findSummary<#=Table_Up2#>(
   
   const {
     findSummary<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -321,11 +358,22 @@ export async function findOne<#=Table_Up2#>(
   
   const {
     findOne<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -371,11 +419,22 @@ export async function findOneOk<#=Table_Up2#>(
   
   const {
     findOneOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -418,11 +477,22 @@ export async function findById<#=Table_Up2#>(
   
   const {
     findById<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -465,11 +535,22 @@ export async function findByIdOk<#=Table_Up2#>(
   
   const {
     findByIdOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -510,11 +591,22 @@ export async function findByIds<#=Table_Up2#>(
   
   const {
     findByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -561,11 +653,22 @@ export async function findByIdsOk<#=Table_Up2#>(
   
   const {
     findByIdsOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
   }
   #>
   
@@ -630,12 +733,16 @@ export async function creates<#=Table_Up2#>(
   #>
   
   set_is_tran(true);
-  set_is_creating(true);
+  set_is_creating(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "add",
   );<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   
@@ -720,12 +827,16 @@ export async function updateById<#=Table_Up2#>(
   
   await setIdByLbl<#=Table_Up2#>(input);
   
-  await validate<#=Table_Up2#>(input);
+  await validate<#=Table_Up2#>(input);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "edit",
   );<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   
@@ -790,12 +901,16 @@ export async function auditSubmit<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "audit_submit",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -847,12 +962,16 @@ export async function auditPass<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "audit_pass",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -905,12 +1024,16 @@ export async function auditReject<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "audit_reject",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -964,12 +1087,16 @@ export async function auditReverse<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "audit_reverse",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1025,12 +1152,16 @@ export async function auditReview<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit<#=Table_Up2#>(
     getPagePath<#=Table_Up#>(),
     "audit_review",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1090,12 +1221,16 @@ export async function deleteByIds<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "delete",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1157,12 +1292,16 @@ export async function defaultById<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "edit",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1224,12 +1363,16 @@ export async function enableByIds<#=Table_Up2#>(
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "edit",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1298,12 +1441,16 @@ export async function lockByIds<#=Table_Up2#>(
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "edit",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1361,12 +1508,16 @@ export async function revertByIds<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "delete",
   );<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1424,12 +1575,16 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   }
   #>
   
-  set_is_tran(true);
+  set_is_tran(true);<#
+  if (!is_with_auth_optional) {
+  #>
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
     "force_delete",
   );<#
+  }
+  #><#
   if (log) {
   #>
   

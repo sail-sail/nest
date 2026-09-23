@@ -53,6 +53,15 @@ export async function findCountMessage(
     findCountMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   checkSearchRangeMessage(search);
   
   const num = await findCountMessage(search);
@@ -73,7 +82,17 @@ export async function findAllMessage(
     findAllMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   checkSearchRangeMessage(search);
+  
   checkSortMessage(sort);
   
   const models = await findAllMessage(search, page, sort);
@@ -107,7 +126,17 @@ export async function findOneMessage(
     findOneMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   checkSearchRangeMessage(search);
+  
   checkSortMessage(sort);
   
   const model = await findOneMessage(search, sort);
@@ -127,7 +156,17 @@ export async function findOneOkMessage(
     findOneOkMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   checkSearchRangeMessage(search);
+  
   checkSortMessage(sort);
   
   const model = await findOneOkMessage(search, sort);
@@ -146,6 +185,15 @@ export async function findByIdMessage(
     findByIdMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   const model = await findByIdMessage(id);
   
   return model;
@@ -161,6 +209,15 @@ export async function findByIdOkMessage(
   const {
     findByIdOkMessage,
   } = await import("./message.service.ts");
+  
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
   
   const model = await findByIdOkMessage(id);
   
@@ -178,6 +235,15 @@ export async function findByIdsMessage(
     findByIdsMessage,
   } = await import("./message.service.ts");
   
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+  
   const models = await findByIdsMessage(ids);
   
   return models;
@@ -193,6 +259,15 @@ export async function findByIdsOkMessage(
   const {
     findByIdsOkMessage,
   } = await import("./message.service.ts");
+  
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
   
   const models = await findByIdsOkMessage(ids);
   

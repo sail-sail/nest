@@ -29,6 +29,15 @@ export async function findCountLang(
     findCountLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+  
   const num = await findCountLang(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllLang(
   const {
     findAllLang,
   } = await import("./lang.service.ts");
+  
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
   
   checkSortLang(sort);
   
@@ -80,6 +98,15 @@ export async function findOneLang(
     findOneLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+  
   checkSortLang(sort);
   
   const model = await findOneLang(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkLang(
     findOneOkLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+  
   checkSortLang(sort);
   
   const model = await findOneOkLang(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdLang(
     findByIdLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+  
   const model = await findByIdLang(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkLang(
   const {
     findByIdOkLang,
   } = await import("./lang.service.ts");
+  
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
   
   const model = await findByIdOkLang(id);
   
@@ -149,6 +203,15 @@ export async function findByIdsLang(
     findByIdsLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+  
   const models = await findByIdsLang(ids);
   
   return models;
@@ -164,6 +227,15 @@ export async function findByIdsOkLang(
   const {
     findByIdsOkLang,
   } = await import("./lang.service.ts");
+  
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
   
   const models = await findByIdsOkLang(ids);
   
