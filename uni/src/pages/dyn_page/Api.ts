@@ -670,50 +670,6 @@ export async function findLastOrderByDynPage(
   return order_by;
 }
 
-/**
- * 获取 动态页面 字段注释
- */
-export async function getFieldCommentsDynPage(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsDynPage: Query["getFieldCommentsDynPage"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsDynPage {
-          id,
-          code,
-          lbl,
-          parent_menu_id,
-          parent_menu_id_lbl,
-          role_ids,
-          role_ids_lbl,
-          order_by,
-          is_enabled,
-          is_enabled_lbl,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsDynPage as DynPageFieldComment;
-  
-  return field_comments;
-}
-
 export function getPagePathDynPage() {
   return "/base/dyn_page";
 }

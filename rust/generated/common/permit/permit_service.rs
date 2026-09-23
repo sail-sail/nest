@@ -379,14 +379,26 @@ pub async fn use_permit(
     options,
   ).await?;
   
+  let menu_id = menu_model.id;
+
+  if code == "find" {
+    let has_menu_permission = role_models
+      .iter()
+      .any(|role_model| role_model.menu_ids.contains(&menu_id));
+
+    if has_menu_permission {
+      return Ok(());
+    }
+  }
+  
   // 过滤掉重复的 permit_ids
   let mut permit_ids = Vec::<PermitId>::new();
-  for role_model in role_models.into_iter() {
-    for permit_id in role_model.permit_ids.into_iter() {
-      if permit_ids.contains(&permit_id) {
+  for role_model in role_models.iter() {
+    for permit_id in role_model.permit_ids.iter() {
+      if permit_ids.contains(permit_id) {
         continue;
       }
-      permit_ids.push(permit_id);
+      permit_ids.push(*permit_id);
     }
   }
   let permit_ids = permit_ids;
@@ -405,7 +417,6 @@ pub async fn use_permit(
     let permit_ids = permit_ids[start..end].to_vec();
     permit_ids_arr.push(permit_ids);
   }
-  let menu_id = menu_model.id;
   for permit_ids in permit_ids_arr.into_iter() {
   
     let permit_exists = exists_permit(
@@ -423,19 +434,30 @@ pub async fn use_permit(
     }
   }
   
-  let permit_model = find_one_permit(
-    PermitSearch {
-      menu_id: vec![menu_id].into(),
-      code: code.clone().into(),
-      ..Default::default()
-    }.into(),
-    None,
-    options,
-  ).await?;
-  
-  let permit_lbl = permit_model
-    .map(|item| item.lbl)
-    .unwrap_or(code);
+  let permit_lbl: String = {
+    
+    if code == "find" {
+      ns(
+        "查看".to_owned(),
+        None,
+      ).await?
+    } else {
+      
+      let permit_model = find_one_permit(
+        PermitSearch {
+          menu_id: vec![menu_id].into(),
+          code: code.clone().into(),
+          ..Default::default()
+        }.into(),
+        None,
+        options,
+      ).await?;
+      
+      permit_model
+        .map(|item| item.lbl)
+        .unwrap_or(code)
+    }
+  };
   
   let mut map: HashMap<String, String> = HashMap::with_capacity(2);
   map.insert("0".to_owned(), menu_model.lbl);

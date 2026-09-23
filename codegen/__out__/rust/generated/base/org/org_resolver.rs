@@ -37,6 +37,11 @@ pub async fn find_all_org(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_org(sort.as_deref())?;
   
   let models = org_service::find_all_org(
@@ -62,6 +67,11 @@ pub async fn find_count_org(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
+  
   let num = org_service::find_count_org(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   check_sort_org(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   check_sort_org(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   let res = org_service::exists_org(
     search,
