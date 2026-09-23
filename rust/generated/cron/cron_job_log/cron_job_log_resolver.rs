@@ -37,6 +37,11 @@ pub async fn find_all_cron_job_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_cron_job_log()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_cron_job_log(sort.as_deref())?;
   
   let models = cron_job_log_service::find_all_cron_job_log(
@@ -62,6 +67,11 @@ pub async fn find_count_cron_job_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_cron_job_log()),
+    String::from("find"),
+  ).await?;
+  
   let num = cron_job_log_service::find_count_cron_job_log(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_cron_job_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_cron_job_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_cron_job_log(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_cron_job_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_cron_job_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_cron_job_log(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_cron_job_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_cron_job_log()),
+    String::from("find"),
+  ).await?;
   
   let res = cron_job_log_service::exists_cron_job_log(
     search,
