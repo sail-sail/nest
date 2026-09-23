@@ -37,6 +37,11 @@ pub async fn find_all_wx_refund(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wx_refund()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_wx_refund(sort.as_deref())?;
   
   let models = wx_refund_service::find_all_wx_refund(
@@ -62,6 +67,11 @@ pub async fn find_count_wx_refund(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wx_refund()),
+    String::from("find"),
+  ).await?;
+  
   let num = wx_refund_service::find_count_wx_refund(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_wx_refund(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_refund()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wx_refund(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_wx_refund(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_refund()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wx_refund(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_wx_refund(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_refund()),
+    String::from("find"),
+  ).await?;
   
   let res = wx_refund_service::exists_wx_refund(
     search,

@@ -37,6 +37,11 @@ pub async fn find_all_wx_pay(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wx_pay()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_wx_pay(sort.as_deref())?;
   
   let models = wx_pay_service::find_all_wx_pay(
@@ -62,6 +67,11 @@ pub async fn find_count_wx_pay(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wx_pay()),
+    String::from("find"),
+  ).await?;
+  
   let num = wx_pay_service::find_count_wx_pay(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_wx_pay(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_pay()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wx_pay(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_wx_pay(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_pay()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wx_pay(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_wx_pay(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wx_pay()),
+    String::from("find"),
+  ).await?;
   
   let res = wx_pay_service::exists_wx_pay(
     search,

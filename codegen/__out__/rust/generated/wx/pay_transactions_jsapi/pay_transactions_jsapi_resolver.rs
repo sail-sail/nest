@@ -37,6 +37,11 @@ pub async fn find_all_pay_transactions_jsapi(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_pay_transactions_jsapi(sort.as_deref())?;
   
   let models = pay_transactions_jsapi_service::find_all_pay_transactions_jsapi(
@@ -62,6 +67,11 @@ pub async fn find_count_pay_transactions_jsapi(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("find"),
+  ).await?;
+  
   let num = pay_transactions_jsapi_service::find_count_pay_transactions_jsapi(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_pay_transactions_jsapi(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("find"),
+  ).await?;
   
   check_sort_pay_transactions_jsapi(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_pay_transactions_jsapi(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("find"),
+  ).await?;
   
   check_sort_pay_transactions_jsapi(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_pay_transactions_jsapi(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_pay_transactions_jsapi()),
+    String::from("find"),
+  ).await?;
   
   let res = pay_transactions_jsapi_service::exists_pay_transactions_jsapi(
     search,
