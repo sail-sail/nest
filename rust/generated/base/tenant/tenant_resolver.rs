@@ -36,6 +36,11 @@ pub async fn find_all_tenant(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_tenant(sort.as_deref())?;
   
   let models = tenant_service::find_all_tenant(
@@ -61,6 +66,11 @@ pub async fn find_count_tenant(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
+  
   let num = tenant_service::find_count_tenant(
     search,
     options,
@@ -82,6 +92,11 @@ pub async fn find_one_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   check_sort_tenant(sort.as_deref())?;
   
@@ -107,6 +122,11 @@ pub async fn find_one_ok_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   check_sort_tenant(sort.as_deref())?;
   
@@ -194,6 +214,11 @@ pub async fn exists_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   let res = tenant_service::exists_tenant(
     search,

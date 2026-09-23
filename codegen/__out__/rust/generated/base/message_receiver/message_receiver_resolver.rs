@@ -37,6 +37,11 @@ pub async fn find_all_message_receiver(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_message_receiver(sort.as_deref())?;
   
   let models = message_receiver_service::find_all_message_receiver(
@@ -62,6 +67,11 @@ pub async fn find_count_message_receiver(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
+  
   let num = message_receiver_service::find_count_message_receiver(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   check_sort_message_receiver(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   check_sort_message_receiver(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   let res = message_receiver_service::exists_message_receiver(
     search,

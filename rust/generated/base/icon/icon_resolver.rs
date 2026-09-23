@@ -35,6 +35,11 @@ pub async fn find_all_icon(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_icon()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_icon(sort.as_deref())?;
   
   let models = icon_service::find_all_icon(
@@ -60,6 +65,11 @@ pub async fn find_count_icon(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_icon()),
+    String::from("find"),
+  ).await?;
+  
   let num = icon_service::find_count_icon(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_icon(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_icon()),
+    String::from("find"),
+  ).await?;
   
   check_sort_icon(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_icon(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_icon()),
+    String::from("find"),
+  ).await?;
   
   check_sort_icon(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_icon(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_icon()),
+    String::from("find"),
+  ).await?;
   
   let res = icon_service::exists_icon(
     search,
