@@ -35,6 +35,11 @@ pub async fn find_all_server_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_server_log()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_server_log(sort.as_deref())?;
   
   let models = server_log_service::find_all_server_log(
@@ -60,6 +65,11 @@ pub async fn find_count_server_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_server_log()),
+    String::from("find"),
+  ).await?;
+  
   let num = server_log_service::find_count_server_log(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_server_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_server_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_server_log(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_server_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_server_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_server_log(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_server_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_server_log()),
+    String::from("find"),
+  ).await?;
   
   let res = server_log_service::exists_server_log(
     search,

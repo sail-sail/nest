@@ -239,6 +239,15 @@ pub async fn find_all_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
+  if (!is_with_auth_optional) {
+  #>
+  
+  use_permit(
+    String::from(get_page_path_<#=table#>()),
+    String::from("find"),
+  ).await?;<#
+  }
+  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -318,6 +327,15 @@ pub async fn find_count_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
+  if (!is_with_auth_optional) {
+  #>
+  
+  use_permit(
+    String::from(get_page_path_<#=table#>()),
+    String::from("find"),
+  ).await?;<#
+  }
+  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -350,6 +368,15 @@ pub async fn find_one_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
+  if (!is_with_auth_optional) {
+  #>
+  
+  use_permit(
+    String::from(get_page_path_<#=table#>()),
+    String::from("find"),
+  ).await?;<#
+  }
+  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -430,6 +457,15 @@ pub async fn find_one_ok_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
+  if (!is_with_auth_optional) {
+  #>
+  
+  use_permit(
+    String::from(get_page_path_<#=table#>()),
+    String::from("find"),
+  ).await?;<#
+  }
+  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -699,6 +735,15 @@ pub async fn exists_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
+  if (!is_with_auth_optional) {
+  #>
+  
+  use_permit(
+    String::from(get_page_path_<#=table#>()),
+    String::from("find"),
+  ).await?;<#
+  }
+  #><#
   if (hasSearchRangeMax) {
   #>
   

@@ -35,6 +35,11 @@ pub async fn find_all_menu(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_menu()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_menu(sort.as_deref())?;
   
   let models = menu_service::find_all_menu(
@@ -60,6 +65,11 @@ pub async fn find_count_menu(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_menu()),
+    String::from("find"),
+  ).await?;
+  
   let num = menu_service::find_count_menu(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_menu(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_menu()),
+    String::from("find"),
+  ).await?;
   
   check_sort_menu(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_menu(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_menu()),
+    String::from("find"),
+  ).await?;
   
   check_sort_menu(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_menu(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_menu()),
+    String::from("find"),
+  ).await?;
   
   let res = menu_service::exists_menu(
     search,

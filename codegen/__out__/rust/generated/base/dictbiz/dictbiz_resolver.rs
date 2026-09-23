@@ -37,6 +37,11 @@ pub async fn find_all_dictbiz(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dictbiz()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_dictbiz(sort.as_deref())?;
   
   let models = dictbiz_service::find_all_dictbiz(
@@ -62,6 +67,11 @@ pub async fn find_count_dictbiz(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dictbiz()),
+    String::from("find"),
+  ).await?;
+  
   let num = dictbiz_service::find_count_dictbiz(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_dictbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dictbiz()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dictbiz(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_dictbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dictbiz()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dictbiz(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_dictbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dictbiz()),
+    String::from("find"),
+  ).await?;
   
   let res = dictbiz_service::exists_dictbiz(
     search,

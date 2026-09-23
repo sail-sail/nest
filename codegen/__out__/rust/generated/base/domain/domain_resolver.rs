@@ -35,6 +35,11 @@ pub async fn find_all_domain(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_domain()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_domain(sort.as_deref())?;
   
   let models = domain_service::find_all_domain(
@@ -60,6 +65,11 @@ pub async fn find_count_domain(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_domain()),
+    String::from("find"),
+  ).await?;
+  
   let num = domain_service::find_count_domain(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_domain(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_domain()),
+    String::from("find"),
+  ).await?;
   
   check_sort_domain(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_domain(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_domain()),
+    String::from("find"),
+  ).await?;
   
   check_sort_domain(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_domain(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_domain()),
+    String::from("find"),
+  ).await?;
   
   let res = domain_service::exists_domain(
     search,
