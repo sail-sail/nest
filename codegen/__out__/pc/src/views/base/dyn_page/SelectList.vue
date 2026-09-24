@@ -60,7 +60,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -154,6 +154,9 @@ function selectedIdsChg(value: DynPageId[]) {
 async function getModelsByIds(ids: DynPageId[]) {
   const dyn_page_models = await findByIdsDynPage(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return dyn_page_models;
 }

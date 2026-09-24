@@ -365,6 +365,32 @@ export async function findByIdsDept(
 }
 
 /**
+ * 根据搜索条件判断部门是否存在
+ */
+export async function existsDept(
+  search?: DeptSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDept: Query["existsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DeptSearch) {
+        existsDept(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDept;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 部门, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDept(
@@ -681,18 +707,6 @@ export function useDownloadImportTemplateDept() {
             org_id_lbl
             rem
           }
-          findAllDept {
-            id
-            lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -738,29 +752,15 @@ export function useExportExcelDept() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DeptSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

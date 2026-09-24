@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -66,8 +63,11 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
+#[allow(unused_imports)]
 use crate::base::role::role_model::RoleId;
+#[allow(unused_imports)]
 use crate::base::dept::dept_model::DeptId;
+#[allow(unused_imports)]
 use crate::base::org::org_model::OrgId;
 
 #[allow(unused_variables)]
@@ -81,36 +81,28 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 21 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<UsrId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -138,7 +130,7 @@ async fn get_where_query(
     }
   }
   {
-    let keyword: Option<SmolStr> = match search {
+    let keyword: Option<String> = match search {
       Some(item) => item.keyword.clone(),
       None => None,
     };
@@ -216,21 +208,17 @@ async fn get_where_query(
   }
   // 所属角色
   {
-    let role_ids: Option<Vec<RoleId>> = match search {
-      Some(item) => item.role_ids.clone(),
-      None => None,
-    };
-    if let Some(role_ids) = role_ids {
+    if let Some(role_ids) = search.and_then(|item| item.role_ids.as_deref()) {
       let arg = {
         if role_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(role_ids.len());
           for item in role_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_role.id in (");
@@ -259,21 +247,21 @@ async fn get_where_query(
   }
   // role_codes
   {
-    let role_codes: Option<Vec<SmolStr>> = match search {
+    let role_codes: Option<Vec<String>> = match search {
       Some(item) => item.role_codes.clone(),
       None => None,
     };
     if let Some(role_codes) = role_codes {
       let arg = {
         if role_codes.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(role_codes.len());
           for item in role_codes {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_role.code in (");
@@ -283,21 +271,17 @@ async fn get_where_query(
   }
   // 所属部门
   {
-    let dept_ids: Option<Vec<DeptId>> = match search {
-      Some(item) => item.dept_ids.clone(),
-      None => None,
-    };
-    if let Some(dept_ids) = dept_ids {
+    if let Some(dept_ids) = search.and_then(|item| item.dept_ids.as_deref()) {
       let arg = {
         if dept_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(dept_ids.len());
           for item in dept_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_dept.id in (");
@@ -326,21 +310,17 @@ async fn get_where_query(
   }
   // 所属组织
   {
-    let org_ids: Option<Vec<OrgId>> = match search {
-      Some(item) => item.org_ids.clone(),
-      None => None,
-    };
-    if let Some(org_ids) = org_ids {
+    if let Some(org_ids) = search.and_then(|item| item.org_ids.as_deref()) {
       let arg = {
         if org_ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(org_ids.len());
           for item in org_ids {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and base_org.id in (");
@@ -369,21 +349,17 @@ async fn get_where_query(
   }
   // 默认组织
   {
-    let default_org_id: Option<Vec<OrgId>> = match search {
-      Some(item) => item.default_org_id.clone(),
-      None => None,
-    };
-    if let Some(default_org_id) = default_org_id {
+    if let Some(default_org_id) = search.and_then(|item| item.default_org_id.as_deref()) {
       let arg = {
         if default_org_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(default_org_id.len());
           for item in default_org_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.default_org_id in (");
@@ -401,21 +377,21 @@ async fn get_where_query(
     }
   }
   {
-    let default_org_id_lbl: Option<Vec<SmolStr>> = match search {
+    let default_org_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.default_org_id_lbl.clone(),
       None => None,
     };
     if let Some(default_org_id_lbl) = default_org_id_lbl {
       let arg = {
         if default_org_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(default_org_id_lbl.len());
           for item in default_org_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and default_org_id_lbl.lbl in (");
@@ -442,17 +418,41 @@ async fn get_where_query(
     if let Some(r#type) = r#type {
       let arg = {
         if r#type.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(r#type.len());
           for item in r#type {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.type in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 拒收消息
+  {
+    let is_reject_msg: Option<Vec<u8>> = match search {
+      Some(item) => item.is_reject_msg.clone(),
+      None => None,
+    };
+    if let Some(is_reject_msg) = is_reject_msg {
+      let arg = {
+        if is_reject_msg.is_empty() {
+          String::from("null")
+        } else {
+          let mut items = Vec::with_capacity(is_reject_msg.len());
+          for item in is_reject_msg {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_reject_msg in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -466,14 +466,14 @@ async fn get_where_query(
     if let Some(is_locked) = is_locked {
       let arg = {
         if is_locked.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_locked.len());
           for item in is_locked {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_locked in (");
@@ -490,14 +490,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -541,23 +541,43 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
-  // 创建人
+  // 隐藏
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
+    let is_hidden: Option<Vec<u8>> = match search {
+      Some(item) => item.is_hidden.clone(),
       None => None,
     };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(is_hidden) = is_hidden {
+      let arg = {
+        if is_hidden.is_empty() {
+          String::from("null")
+        } else {
+          let mut items = Vec::with_capacity(is_hidden.len());
+          for item in is_hidden {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_hidden in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 创建人
+  {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -575,21 +595,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -628,21 +648,17 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -660,21 +676,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -720,14 +736,14 @@ async fn get_where_query(
     if let Some(is_hidden) = is_hidden {
       let arg = {
         if is_hidden.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_hidden.len());
           for item in is_hidden {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_hidden in (");
@@ -879,6 +895,16 @@ pub async fn find_all_usr(
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
+  // 拒收消息
+  if let Some(search) = &search && let Some(is_reject_msg) = &search.is_reject_msg {
+    let len = is_reject_msg.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
     let len = is_locked.len();
@@ -897,6 +923,16 @@ pub async fn find_all_usr(
     }
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+    }
+  }
+  // 隐藏
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -1034,7 +1070,7 @@ pub async fn find_all_usr(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -1043,14 +1079,18 @@ pub async fn find_all_usr(
   
   let dict_vec = get_dict(&[
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]).await?;
   let [
     type_dict,
+    is_reject_msg_dict,
     is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+    is_hidden_dict,
+  ]: [Vec<_>; 5] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -1066,13 +1106,22 @@ pub async fn find_all_usr(
         .unwrap_or_else(|| model.r#type.clone().into())
     };
     
+    // 拒收消息
+    model.is_reject_msg_lbl = {
+      is_reject_msg_dict
+        .iter()
+        .find(|item| item.val == model.is_reject_msg.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_reject_msg.to_string())
+    };
+    
     // 锁定
     model.is_locked_lbl = {
       is_locked_dict
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string().into())
+        .unwrap_or_else(|| model.is_locked.to_string())
     };
     
     // 启用
@@ -1081,7 +1130,16 @@ pub async fn find_all_usr(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 隐藏
+    model.is_hidden_lbl = {
+      is_hidden_dict
+        .iter()
+        .find(|item| item.val == model.is_hidden.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_hidden.to_string())
     };
     
   }
@@ -1193,6 +1251,20 @@ pub async fn find_count_usr(
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
+  // 拒收消息
+  if let Some(search) = &search && search.is_reject_msg.is_some() {
+    let len = search.is_reject_msg.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && search.is_locked.is_some() {
     let len = search.is_locked.as_ref().unwrap().len();
@@ -1219,6 +1291,20 @@ pub async fn find_count_usr(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+    }
+  }
+  // 隐藏
+  if let Some(search) = &search && search.is_hidden.is_some() {
+    let len = search.is_hidden.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -1364,12 +1450,16 @@ pub async fn get_field_comments_usr(
     default_org_id_lbl: "默认组织".into(),
     r#type: "类型".into(),
     type_lbl: "类型".into(),
+    is_reject_msg: "拒收消息".into(),
+    is_reject_msg_lbl: "拒收消息".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
+    is_hidden: "隐藏".into(),
+    is_hidden_lbl: "隐藏".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1523,7 +1613,7 @@ pub async fn find_by_id_ok_usr(
   ).await?;
   
   let Some(usr_model) = usr_model else {
-    let err_msg = SmolStr::new("此 用户 已被删除");
+    let err_msg = String::from("此 用户 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1635,7 +1725,7 @@ pub async fn find_by_ids_ok_usr(
   ).await?;
   
   if usr_models.len() != len {
-    let err_msg = SmolStr::new("此 用户 已被删除");
+    let err_msg = String::from("此 用户 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1648,7 +1738,7 @@ pub async fn find_by_ids_ok_usr(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 用户 已经被删除");
+      let err_msg = String::from("此 用户 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<UsrModel>>>()?;
@@ -1753,136 +1843,125 @@ pub async fn exists_usr(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
   // 所属角色
-  if let Some(search) = &search && search.role_ids.is_some() {
-    let len = search.role_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(role_ids) = &search.role_ids {
+    let len = role_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.role_ids.length > {ids_limit}"));
     }
   }
   // 所属部门
-  if let Some(search) = &search && search.dept_ids.is_some() {
-    let len = search.dept_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(dept_ids) = &search.dept_ids {
+    let len = dept_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.dept_ids.length > {ids_limit}"));
     }
   }
   // 所属组织
-  if let Some(search) = &search && search.org_ids.is_some() {
-    let len = search.org_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(org_ids) = &search.org_ids {
+    let len = org_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.org_ids.length > {ids_limit}"));
     }
   }
   // 默认组织
-  if let Some(search) = &search && search.default_org_id.is_some() {
-    let len = search.default_org_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(default_org_id) = &search.default_org_id {
+    let len = default_org_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.default_org_id.length > {ids_limit}"));
     }
   }
   // 类型
-  if let Some(search) = &search && search.r#type.is_some() {
-    let len = search.r#type.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(r#type) = &search.r#type {
+    let len = r#type.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  // 拒收消息
+  if let Some(search) = &search && let Some(is_reject_msg) = &search.is_reject_msg {
+    let len = is_reject_msg.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
+    }
+  }
+  // 锁定
+  if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
+    let len = is_locked.len();
+    if len == 0 {
+      return Ok(false);
+    }
     if len > ids_limit {
       return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
-  // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  // 隐藏
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
+    }
+  }
+  // 创建人
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
+    if len == 0 {
+      return Ok(false);
+    }
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -1905,6 +1984,10 @@ pub async fn exists_usr(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
@@ -1954,10 +2037,6 @@ pub async fn exists_usr(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,
@@ -2208,8 +2287,10 @@ pub async fn set_id_by_lbl_usr(
   
   let dict_vec = get_dict(&[
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]).await?;
   
   // 类型
@@ -2227,9 +2308,24 @@ pub async fn set_id_by_lbl_usr(
     }
   }
   
+  // 拒收消息
+  if input.is_reject_msg.is_none() {
+    let is_reject_msg_dict = &dict_vec[1];
+    if let Some(is_reject_msg_lbl) = input.is_reject_msg_lbl.clone() {
+      input.is_reject_msg = is_reject_msg_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_reject_msg_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 锁定
   if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
       input.is_locked = is_locked_dict
         .iter()
@@ -2244,7 +2340,7 @@ pub async fn set_id_by_lbl_usr(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -2257,19 +2353,34 @@ pub async fn set_id_by_lbl_usr(
     }
   }
   
+  // 隐藏
+  if input.is_hidden.is_none() {
+    let is_hidden_dict = &dict_vec[4];
+    if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
+      input.is_hidden = is_hidden_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_hidden_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 所属角色
   if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
     input.role_ids_lbl = input.role_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.role_ids_lbl = input.role_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
@@ -2295,15 +2406,15 @@ pub async fn set_id_by_lbl_usr(
   if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.dept_ids_lbl = input.dept_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
@@ -2329,15 +2440,15 @@ pub async fn set_id_by_lbl_usr(
   if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
     input.org_ids_lbl = input.org_ids_lbl.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.org_ids_lbl = input.org_ids_lbl.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
@@ -2365,7 +2476,7 @@ pub async fn set_id_by_lbl_usr(
     && input.default_org_id.is_none()
   {
     input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::org::org_dao::find_one_org(
       crate::base::org::org_model::OrgSearch {
@@ -2404,7 +2515,7 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = type_dict.iter().find(|item| {
       item.lbl == input.type_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.r#type = val.parse::<UsrType>()?.into();
     }
@@ -2416,8 +2527,33 @@ pub async fn set_id_by_lbl_usr(
     let dict_model = type_dict.iter().find(|item| {
       item.val == input.r#type.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.type_lbl = lbl;
+  }
+  
+  // 拒收消息
+  if
+    input.is_reject_msg_lbl.is_some() && !input.is_reject_msg_lbl.as_ref().unwrap().is_empty()
+    && input.is_reject_msg.is_none()
+  {
+    let is_reject_msg_dict = &dict_vec[1];
+    let dict_model = is_reject_msg_dict.iter().find(|item| {
+      item.lbl == input.is_reject_msg_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_reject_msg = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_reject_msg_lbl.is_none() || input.is_reject_msg_lbl.as_ref().unwrap().is_empty())
+    && input.is_reject_msg.is_some()
+  {
+    let is_reject_msg_dict = &dict_vec[1];
+    let dict_model = is_reject_msg_dict.iter().find(|item| {
+      item.val == input.is_reject_msg.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_reject_msg_lbl = lbl;
   }
   
   // 锁定
@@ -2425,11 +2561,11 @@ pub async fn set_id_by_lbl_usr(
     input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
     && input.is_locked.is_none()
   {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_locked = val.parse::<u8>()?.into();
     }
@@ -2437,11 +2573,11 @@ pub async fn set_id_by_lbl_usr(
     (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
     && input.is_locked.is_some()
   {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_locked_lbl = lbl;
   }
   
@@ -2450,11 +2586,11 @@ pub async fn set_id_by_lbl_usr(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -2462,12 +2598,37 @@ pub async fn set_id_by_lbl_usr(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
+  }
+  
+  // 隐藏
+  if
+    input.is_hidden_lbl.is_some() && !input.is_hidden_lbl.as_ref().unwrap().is_empty()
+    && input.is_hidden.is_none()
+  {
+    let is_hidden_dict = &dict_vec[4];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.lbl == input.is_hidden_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_hidden = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_hidden_lbl.is_none() || input.is_hidden_lbl.as_ref().unwrap().is_empty())
+    && input.is_hidden.is_some()
+  {
+    let is_hidden_dict = &dict_vec[4];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.val == input.is_hidden.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_hidden_lbl = lbl;
   }
   
   Ok(input)
@@ -2619,7 +2780,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2641,6 +2802,8 @@ async fn _creates(
   sql_fields += ",default_org_id";
   // 类型
   sql_fields += ",type";
+  // 拒收消息
+  sql_fields += ",is_reject_msg";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -2653,7 +2816,7 @@ async fn _creates(
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 22 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2697,7 +2860,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2722,7 +2885,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2822,6 +2985,13 @@ async fn _creates(
     if let Some(r#type) = input.r#type {
       sql_values += ",?";
       args.push(r#type.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 拒收消息
+    if let Some(is_reject_msg) = input.is_reject_msg {
+      sql_values += ",?";
+      args.push(is_reject_msg.into());
     } else {
       sql_values += ",default";
     }
@@ -3105,7 +3275,7 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -3114,22 +3284,22 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");
   
@@ -3137,9 +3307,9 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
     sql_fields.pop();
   }
   
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
   let where_query = where_querys.join(" or ");
   
   let sql = format!("update {table} set {sql_fields} where {where_query}");
@@ -3202,8 +3372,7 @@ pub async fn update_by_id_usr(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 用户 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   
@@ -3249,7 +3418,7 @@ pub async fn update_by_id_usr(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity((80 * 22 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -3295,6 +3464,12 @@ pub async fn update_by_id_usr(
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
+  }
+  // 拒收消息
+  if let Some(is_reject_msg) = input.is_reject_msg {
+    field_num += 1;
+    sql_fields += "is_reject_msg=?,";
+    args.push(is_reject_msg.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -3350,7 +3525,7 @@ pub async fn update_by_id_usr(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3374,7 +3549,7 @@ pub async fn update_by_id_usr(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -3493,20 +3668,6 @@ pub async fn update_by_id_usr(
     ).await?;
   }
   
-  // 头像
-  if let Some(img) = input.img.as_ref() && img != &old_model.img {
-    let res = crate::common::oss::oss_dao::delete_object(
-      old_model.img.as_str(),
-    ).await;
-    if let Err(err) = res {
-      info!(
-        "{} {table}.{method}: 删除对象失败, img: {}, err: {err}",
-        get_req_id(),
-        old_model.img,
-      );
-    }
-  }
-  
   Ok(id)
 }
 
@@ -3561,10 +3722,10 @@ pub async fn del_cache_usr() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])
-    .collect::<Vec<SmolStr>>();
+    .chain(vec!["dao.sql.base_menu._getMenus".to_string()])
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -3620,7 +3781,7 @@ pub async fn delete_by_ids_usr(
   
   del_cache_usr().await?;
   
-  let old_models = find_by_ids_ok_usr(
+  let old_models = find_by_ids_usr(
     ids.clone(),
     options,
   ).await?;
@@ -3642,10 +3803,10 @@ pub async fn delete_by_ids_usr(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3787,8 +3948,6 @@ pub async fn delete_by_ids_usr(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  del_cache_usr().await?;
   
   Ok(num)
 }
@@ -4306,11 +4465,6 @@ pub async fn force_delete_by_ids_usr(
         options,
       ).await?;
     }
-    
-    // 头像
-    crate::common::oss::oss_dao::delete_object(
-      old_model.img.as_str(),
-    ).await?;
   }
   
   del_cache_usr().await?;
@@ -4420,7 +4574,7 @@ pub async fn validate_is_enabled_usr(
   model: &UsrModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("用户已禁用");
+    let err_msg = String::from("用户已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -4436,7 +4590,7 @@ pub async fn validate_option_usr(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("用户不存在");
+      let err_msg = String::from("用户不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

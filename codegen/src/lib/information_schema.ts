@@ -280,7 +280,7 @@ async function getSchema0(
       COLUMN_NAME: "is_hidden",
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
-      COLUMN_COMMENT: "隐藏记录",
+      COLUMN_COMMENT: "隐藏",
       onlyCodegenDeno: true,
     });
   }
@@ -302,6 +302,30 @@ async function getSchema0(
         lbl: "lbl",
       },
     });
+  } else if (hasOrgId) {
+    const orgIdColumn = tables[table_name].columns.find((item: TableColumn) => item.COLUMN_NAME === "org_id");
+    if (orgIdColumn) {
+      if (!orgIdColumn.COLUMN_DEFAULT) {
+        orgIdColumn.COLUMN_DEFAULT = "CURRENT_ORG_ID";
+      }
+      if (hasOrgIdLbl) {
+        orgIdColumn.modelLabel = "org_id_lbl";
+      }
+      if (orgIdColumn.require == null) {
+        orgIdColumn.require = true;
+      }
+      if (orgIdColumn.canSearch == null) {
+        orgIdColumn.canSearch = true;
+      }
+      if (orgIdColumn.foreignKey == null) {
+        orgIdColumn.foreignKey = {
+          mod: "base",
+          table: "org",
+          column: "id",
+          lbl: "lbl",
+        };
+      }
+    }
   }
   // 创建人
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
@@ -354,11 +378,6 @@ async function getSchema0(
       item.canSearch = true;
     }
     const record = records2.find((item: TableColumn) => item.COLUMN_NAME === column_name);
-    if (column_name === "is_hidden") {
-      if (item.onlyCodegenDeno != null) {
-        item.onlyCodegenDeno = true;
-      }
-    }
     if (column_name === "org_id") {
       if (!item.COLUMN_DEFAULT) {
         item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
@@ -522,6 +541,20 @@ async function getSchema0(
         item.noDetail = true;
       }
     }
+    if (column_name === "is_hidden") {
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.onlyCodegenDeno == null) {
+        item.onlyCodegenDeno = true;
+      }
+      if (item.onlyCodegenDenoButApi == null) {
+        item.onlyCodegenDenoButApi = true;
+      }
+      if (item.dict == null) {
+        item.dict = "yes_no";
+      }
+    }
     if (column_name.startsWith("is_")
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint(1) unsigned"
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint unsigned"
@@ -654,11 +687,8 @@ async function getSchema0(
         item.sortable = true;
       }
     }
-    // 是否不显示导入导出中的下拉框, 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-    if (
-      (item.COLUMN_NAME === "create_usr_id" || item.COLUMN_NAME === "update_usr_id") &&
-      item.notImportExportList == null
-    ) {
+    // 是否不显示导入导出中的下拉框, 默认为 true
+    if (item.notImportExportList == null) {
       item.notImportExportList = true;
     }
     if (record && record.DATA_TYPE === "date") {
@@ -1569,6 +1599,9 @@ export async function getSchema(
   // 审核
   if (tables[table_name].opts.audit) {
     const audit = tables[table_name].opts.audit;
+    if (audit.sendAuditMessage == null) {
+      audit.sendAuditMessage = true;
+    }
     if (audit.auditTable) {
       const auditMod = audit.auditMod || mod;
       const auditTable = audit.auditTable;

@@ -22,22 +22,38 @@ export async function setLblByIdSeo(
   
   // 图标
   if (model.ico) {
-    model.ico_lbl = location.origin + getImgUrl({
-      id: model.ico,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
+    const ico_lbls: string[] = [ ];
+    const icos = model.ico.split(",");
+    for (let i = 0; i < icos.length; i++) {
+      const img = icos[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }, {
+        notAuthorization: true,
+      }) || "";
+      ico_lbls.push(img_lbl);
+    }
+    model.ico_lbls = ico_lbls;
+    model.ico_lbl = ico_lbls[0] || "";
   }
   
   // 分享图片
   if (model.og_image) {
-    model.og_image_lbl = location.origin + getImgUrl({
-      id: model.og_image,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
+    const og_image_lbls: string[] = [ ];
+    const og_images = model.og_image.split(",");
+    for (let i = 0; i < og_images.length; i++) {
+      const img = og_images[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }, {
+        notAuthorization: true,
+      }) || "";
+      og_image_lbls.push(img_lbl);
+    }
+    model.og_image_lbls = og_image_lbls;
+    model.og_image_lbl = og_image_lbls[0] || "";
   }
 }
 
@@ -360,6 +376,32 @@ export async function findByIdsSeo(
 }
 
 /**
+ * 根据搜索条件判断SEO优化是否存在
+ */
+export async function existsSeo(
+  search?: SeoSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsSeo: Query["existsSeo"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: SeoSearch) {
+        existsSeo(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsSeo;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 SEO优化, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkSeo(
@@ -543,14 +585,13 @@ export function useExportExcelSeo() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: SeoSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: SeoSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllSeo(search: $search, page: $page, sort: $sort) {
               ${ seoQueryField }
             }

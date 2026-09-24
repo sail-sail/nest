@@ -338,6 +338,32 @@ export async function findByIdsI18n(
 }
 
 /**
+ * 根据搜索条件判断国际化是否存在
+ */
+export async function existsI18n(
+  search?: I18nSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsI18n: Query["existsI18n"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: I18nSearch) {
+        existsI18n(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsI18n;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 国际化, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkI18n(
@@ -582,14 +608,6 @@ export function useDownloadImportTemplateI18n() {
             lbl
             rem
           }
-          findAllLang {
-            id
-            lbl
-          }
-          findAllMenu {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -635,22 +653,15 @@ export function useExportExcelI18n() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: I18nSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllI18n(search: $search, page: $page, sort: $sort) {
               ${ i18nQueryField }
-            }
-            findAllLang {
-              lbl
-            }
-            findAllMenu {
-              lbl
             }
           }
         `,

@@ -13,7 +13,7 @@
     'custom_select_isShowModelLabel': isShowModelLabel && inited,
   }"
   node-key="id"
-  vaule-key="id"
+  value-key="id"
   :props="props.props"
   :multiple="props.multiple"
   :data="data"
@@ -140,7 +140,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   TreeNode,
 } from "element-plus";
@@ -495,21 +495,10 @@ function onNodeClick(data: any, node: TreeNode) {
     return;
   }
   if (props.multiple) {
-    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
-    const modelValueArr: any = Array.isArray(modelValue) ? modelValue : [ modelValue ];
-    if (modelValueArr.includes(data.id)) {
-      modelValue = modelValueArr.filter((id: string) => id !== data.id);
-      emit("update:modelValue", modelValue);
-      nextTick(() => {
-        modelLabel = undefined;
-      });
-      const models = getModelsByValue();
-      emit("change", models);
-      emit("update:modelLabel", modelLabels.filter((item) => item).join(","));
-      return;
-    }
-    if (modelValueArr.includes(data.id)) {
-      modelValueArr.splice(modelValueArr.indexOf(data.id), 1);
+    const modelValueArr: string[] = Array.isArray(modelValue) ? [ ...modelValue ] : [ ];
+    const index = modelValueArr.indexOf(data.id);
+    if (index >= 0) {
+      modelValueArr.splice(index, 1);
     } else {
       modelValueArr.push(data.id);
     }
@@ -521,20 +510,20 @@ function onNodeClick(data: any, node: TreeNode) {
     const models = getModelsByValue();
     emit("change", models);
     emit("update:modelLabel", modelLabels.filter((item) => item).join(","));
-  } else {
-    if (modelValue === data.id) {
-      modelValue = "";
-    } else {
-      modelValue = data.id;
-    }
-    emit("update:modelValue", modelValue);
-    nextTick(() => {
-      modelLabel = undefined;
-    });
-    const models = getModelsByValue();
-    emit("change", models);
-    emit("update:modelLabel", modelLabels[0]);
+    return;
   }
+  if (modelValue === data.id) {
+    modelValue = "";
+  } else {
+    modelValue = data.id;
+  }
+  emit("update:modelValue", modelValue);
+  nextTick(() => {
+    modelLabel = undefined;
+  });
+  const models = getModelsByValue();
+  emit("change", models);
+  emit("update:modelLabel", modelLabels[0]);
 }
 
 function onCheck() {

@@ -352,6 +352,32 @@ export async function findByIdsTenant(
 }
 
 /**
+ * 根据搜索条件判断租户是否存在
+ */
+export async function existsTenant(
+  search?: TenantSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsTenant: Query["existsTenant"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: TenantSearch) {
+        existsTenant(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsTenant;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 租户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkTenant(
@@ -720,56 +746,6 @@ export async function findLastOrderByTenant(
   const order_by = data.findLastOrderByTenant;
   
   return order_by;
-}
-
-/**
- * 获取 租户 字段注释
- */
-export async function getFieldCommentsTenant(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsTenant: Query["getFieldCommentsTenant"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsTenant {
-          id,
-          code,
-          lbl,
-          domain_ids,
-          domain_ids_lbl,
-          menu_ids,
-          menu_ids_lbl,
-          title,
-          info,
-          lang_id,
-          lang_id_lbl,
-          is_locked,
-          is_locked_lbl,
-          is_enabled,
-          is_enabled_lbl,
-          order_by,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsTenant as TenantFieldComment;
-  
-  return field_comments;
 }
 
 export function getPagePathTenant() {

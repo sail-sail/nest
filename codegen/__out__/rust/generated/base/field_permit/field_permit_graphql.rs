@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl FieldPermitGenQuery {
       .scope({
         field_permit_resolver::find_by_ids_field_permit(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断字段权限是否存在
+  #[graphql(name = "existsFieldPermit")]
+  async fn exists_field_permit(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<FieldPermitSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        field_permit_resolver::exists_field_permit(
+          search,
           None,
         )
       }).await

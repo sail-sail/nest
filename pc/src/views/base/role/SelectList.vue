@@ -60,7 +60,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -154,6 +154,9 @@ function selectedIdsChg(value: RoleId[]) {
 async function getModelsByIds(ids: RoleId[]) {
   const role_models = await findByIdsRole(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return role_models;
 }

@@ -1,8 +1,6 @@
 use color_eyre::eyre::Result;
 // use crate::common::context::get_auth_tenant_id;
 
-use smol_str::SmolStr;
-
 use crate::base::tenant::tenant_dao::{
   find_all_tenant,
   del_cache_tenant,
@@ -77,7 +75,7 @@ use super::tenant_model::SetTenantAdminPwdInput;
 
 /// 根据 当前网址的域名+端口 获取 租户列表
 pub async fn get_login_tenants(
-  domain: SmolStr,
+  domain: String,
 ) -> Result<Vec<GetLoginTenants>> {
   
   let mut domain_models: Vec<DomainModel> = find_all_domain(
@@ -165,7 +163,7 @@ pub async fn get_login_tenants(
     
     let lang = lang_model
       .map(|x| x.code)
-      .unwrap_or_else(|| SmolStr::new("zh-CN"));
+      .unwrap_or_else(|| String::from("zh-CN"));
     
     res.push(GetLoginTenants {
       id: tenant_model.id,
@@ -207,7 +205,7 @@ pub async fn get_login_tenant_by_ids(
     
     let lang = lang_model
       .map(|x| x.code)
-      .unwrap_or_else(|| SmolStr::new("zh-CN"));
+      .unwrap_or_else(|| String::from("zh-CN"));
     
     res.push(GetLoginTenants {
       id: tenant_model.id,
@@ -238,7 +236,7 @@ pub async fn set_tenant_admin_pwd(
   
   let usr_model = find_one_usr(
     UsrSearch {
-      username: SmolStr::new("admin").into(),
+      username: String::from("admin").into(),
       tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
@@ -258,7 +256,7 @@ pub async fn set_tenant_admin_pwd(
   } else {
     create_usr(
       UsrInput {
-        username: SmolStr::new("admin").into(),
+        username: String::from("admin").into(),
         password: pwd.clone().into(),
         tenant_id: tenant_id.into(),
         ..Default::default()

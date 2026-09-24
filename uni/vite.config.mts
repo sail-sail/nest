@@ -113,6 +113,9 @@ export default defineConfig({
           "@/store/permit.ts": [
             [ "default", "usePermitStore" ],
           ],
+          "@/store/field_permit.ts": [
+            [ "default", "useFieldPermitStore" ],
+          ],
           "@/store/index.ts": [
             [ "default", "useIndexStore" ],
           ],
@@ -198,6 +201,11 @@ export default defineConfig({
         secure: false,
       },
       "/img": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/pca-code.json": {
         target: "http://localhost:4000",
         changeOrigin: true,
         secure: false,

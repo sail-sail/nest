@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -58,6 +55,7 @@ use crate::common::gql::model::{
 use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::menu_model::*;
+#[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -73,36 +71,28 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 16 * 2);
+  let mut where_query = String::with_capacity(80 * 16 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<MenuId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -112,21 +102,17 @@ async fn get_where_query(
   }
   // 父菜单
   {
-    let parent_id: Option<Vec<MenuId>> = match search {
-      Some(item) => item.parent_id.clone(),
-      None => None,
-    };
-    if let Some(parent_id) = parent_id {
+    if let Some(parent_id) = search.and_then(|item| item.parent_id.as_deref()) {
       let arg = {
         if parent_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(parent_id.len());
           for item in parent_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.parent_id in (");
@@ -144,21 +130,21 @@ async fn get_where_query(
     }
   }
   {
-    let parent_id_lbl: Option<Vec<SmolStr>> = match search {
+    let parent_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.parent_id_lbl.clone(),
       None => None,
     };
     if let Some(parent_id_lbl) = parent_id_lbl {
       let arg = {
         if parent_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(parent_id_lbl.len());
           for item in parent_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and parent_id_lbl.lbl in (");
@@ -242,14 +228,14 @@ async fn get_where_query(
     if let Some(is_home_hide) = is_home_hide {
       let arg = {
         if is_home_hide.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_home_hide.len());
           for item in is_home_hide {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_home_hide in (");
@@ -266,14 +252,14 @@ async fn get_where_query(
     if let Some(is_dyn_page) = is_dyn_page {
       let arg = {
         if is_dyn_page.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_dyn_page.len());
           for item in is_dyn_page {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_dyn_page in (");
@@ -290,14 +276,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -355,23 +341,43 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
-  // 创建人
+  // 隐藏
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
+    let is_hidden: Option<Vec<u8>> = match search {
+      Some(item) => item.is_hidden.clone(),
       None => None,
     };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(is_hidden) = is_hidden {
+      let arg = {
+        if is_hidden.is_empty() {
+          String::from("null")
+        } else {
+          let mut items = Vec::with_capacity(is_hidden.len());
+          for item in is_hidden {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_hidden in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 创建人
+  {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -389,21 +395,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -442,21 +448,17 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -474,21 +476,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -534,14 +536,14 @@ async fn get_where_query(
     if let Some(is_hidden) = is_hidden {
       let arg = {
         if is_hidden.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_hidden.len());
           for item in is_hidden {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_hidden in (");
@@ -652,6 +654,16 @@ pub async fn find_all_menu(
     }
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+    }
+  }
+  // 隐藏
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -783,7 +795,7 @@ pub async fn find_all_menu(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -794,12 +806,14 @@ pub async fn find_all_menu(
     "yes_no",
     "yes_no",
     "is_enabled",
+    "yes_no",
   ]).await?;
   let [
     is_home_hide_dict,
     is_dyn_page_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+    is_hidden_dict,
+  ]: [Vec<_>; 4] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -812,7 +826,7 @@ pub async fn find_all_menu(
         .iter()
         .find(|item| item.val == model.is_home_hide.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_home_hide.to_string().into())
+        .unwrap_or_else(|| model.is_home_hide.to_string())
     };
     
     // 动态页面
@@ -821,7 +835,7 @@ pub async fn find_all_menu(
         .iter()
         .find(|item| item.val == model.is_dyn_page.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_dyn_page.to_string().into())
+        .unwrap_or_else(|| model.is_dyn_page.to_string())
     };
     
     // 启用
@@ -830,7 +844,16 @@ pub async fn find_all_menu(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 隐藏
+    model.is_hidden_lbl = {
+      is_hidden_dict
+        .iter()
+        .find(|item| item.val == model.is_hidden.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_hidden.to_string())
     };
     
   }
@@ -926,6 +949,20 @@ pub async fn find_count_menu(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+    }
+  }
+  // 隐藏
+  if let Some(search) = &search && search.is_hidden.is_some() {
+    let len = search.is_hidden.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -1071,6 +1108,8 @@ pub async fn get_field_comments_menu(
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
+    is_hidden: "隐藏".into(),
+    is_hidden_lbl: "隐藏".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1224,7 +1263,7 @@ pub async fn find_by_id_ok_menu(
   ).await?;
   
   let Some(menu_model) = menu_model else {
-    let err_msg = SmolStr::new("此 菜单 已被删除");
+    let err_msg = String::from("此 菜单 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1336,7 +1375,7 @@ pub async fn find_by_ids_ok_menu(
   ).await?;
   
   if menu_models.len() != len {
-    let err_msg = SmolStr::new("此 菜单 已被删除");
+    let err_msg = String::from("此 菜单 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1349,7 +1388,7 @@ pub async fn find_by_ids_ok_menu(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 菜单 已经被删除");
+      let err_msg = String::from("此 菜单 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<MenuModel>>>()?;
@@ -1454,94 +1493,85 @@ pub async fn exists_menu(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
   // 父菜单
-  if let Some(search) = &search && search.parent_id.is_some() {
-    let len = search.parent_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(parent_id) = &search.parent_id {
+    let len = parent_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.parent_id.length > {ids_limit}"));
     }
   }
   // 首页隐藏
-  if let Some(search) = &search && search.is_home_hide.is_some() {
-    let len = search.is_home_hide.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_home_hide) = &search.is_home_hide {
+    let len = is_home_hide.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
   // 动态页面
-  if let Some(search) = &search && search.is_dyn_page.is_some() {
-    let len = search.is_dyn_page.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_dyn_page) = &search.is_dyn_page {
+    let len = is_dyn_page.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
-  // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  // 隐藏
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
+    }
+  }
+  // 创建人
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
+    if len == 0 {
+      return Ok(false);
+    }
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -1564,6 +1594,10 @@ pub async fn exists_menu(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
@@ -1613,10 +1647,6 @@ pub async fn exists_menu(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,
@@ -1845,6 +1875,7 @@ pub async fn set_id_by_lbl_menu(
     "yes_no",
     "yes_no",
     "is_enabled",
+    "yes_no",
   ]).await?;
   
   // 首页隐藏
@@ -1892,13 +1923,28 @@ pub async fn set_id_by_lbl_menu(
     }
   }
   
+  // 隐藏
+  if input.is_hidden.is_none() {
+    let is_hidden_dict = &dict_vec[3];
+    if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
+      input.is_hidden = is_hidden_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_hidden_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 父菜单
   if input.parent_id_lbl.is_some()
     && !input.parent_id_lbl.as_ref().unwrap().is_empty()
     && input.parent_id.is_none()
   {
     input.parent_id_lbl = input.parent_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = find_one_menu(
       MenuSearch {
@@ -1937,7 +1983,7 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_home_hide_dict.iter().find(|item| {
       item.lbl == input.is_home_hide_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_home_hide = val.parse::<u8>()?.into();
     }
@@ -1949,7 +1995,7 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_home_hide_dict.iter().find(|item| {
       item.val == input.is_home_hide.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_home_hide_lbl = lbl;
   }
   
@@ -1962,7 +2008,7 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_dyn_page_dict.iter().find(|item| {
       item.lbl == input.is_dyn_page_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_dyn_page = val.parse::<u8>()?.into();
     }
@@ -1974,7 +2020,7 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_dyn_page_dict.iter().find(|item| {
       item.val == input.is_dyn_page.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_dyn_page_lbl = lbl;
   }
   
@@ -1987,7 +2033,7 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1999,8 +2045,33 @@ pub async fn set_id_by_lbl_menu(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
+  }
+  
+  // 隐藏
+  if
+    input.is_hidden_lbl.is_some() && !input.is_hidden_lbl.as_ref().unwrap().is_empty()
+    && input.is_hidden.is_none()
+  {
+    let is_hidden_dict = &dict_vec[3];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.lbl == input.is_hidden_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_hidden = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_hidden_lbl.is_none() || input.is_hidden_lbl.as_ref().unwrap().is_empty())
+    && input.is_hidden.is_some()
+  {
+    let is_hidden_dict = &dict_vec[3];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.val == input.is_hidden.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_hidden_lbl = lbl;
   }
   
   Ok(input)
@@ -2152,7 +2223,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2183,7 +2254,7 @@ async fn _creates(
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 16 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2227,7 +2298,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2252,7 +2323,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2509,7 +2580,7 @@ pub async fn sync_usr_lbl_by_usr_id_menu(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -2518,22 +2589,22 @@ pub async fn sync_usr_lbl_by_usr_id_menu(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");
   
@@ -2541,9 +2612,9 @@ pub async fn sync_usr_lbl_by_usr_id_menu(
     sql_fields.pop();
   }
   
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
   let where_query = where_querys.join(" or ");
   
   let sql = format!("update {table} set {sql_fields} where {where_query}");
@@ -2606,8 +2677,7 @@ pub async fn update_by_id_menu(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 菜单 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   
@@ -2653,7 +2723,7 @@ pub async fn update_by_id_menu(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity((80 * 16 + 20) * 3);
   
   let mut field_num: usize = 0;
   // 父菜单
@@ -2725,7 +2795,7 @@ pub async fn update_by_id_menu(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2749,7 +2819,7 @@ pub async fn update_by_id_menu(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2868,10 +2938,10 @@ pub async fn del_cache_menu() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])
-    .collect::<Vec<SmolStr>>();
+    .chain(vec!["dao.sql.base_menu._getMenus".to_string()])
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2927,7 +2997,7 @@ pub async fn delete_by_ids_menu(
   
   del_cache_menu().await?;
   
-  let old_models = find_by_ids_ok_menu(
+  let old_models = find_by_ids_menu(
     ids.clone(),
     options,
   ).await?;
@@ -2949,10 +3019,10 @@ pub async fn delete_by_ids_menu(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3024,8 +3094,6 @@ pub async fn delete_by_ids_menu(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  del_cache_menu().await?;
   
   Ok(num)
 }
@@ -3428,7 +3496,7 @@ pub async fn validate_is_enabled_menu(
   model: &MenuModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("菜单已禁用");
+    let err_msg = String::from("菜单已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3444,7 +3512,7 @@ pub async fn validate_option_menu(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("菜单不存在");
+      let err_msg = String::from("菜单不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

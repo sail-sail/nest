@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::i18n_resolver;
 
 #[derive(Default)]
@@ -16,10 +14,10 @@ impl I18nQuery {
   async fn n(
     &self,
     ctx: &Context<'_>,
-    lang_code: SmolStr,
-    route_path: Option<SmolStr>,
-    code: SmolStr,
-  ) -> Result<SmolStr> {
+    lang_code: String,
+    route_path: Option<String>,
+    code: String,
+  ) -> Result<String> {
     Ctx::builder(ctx)
       .build()
       .scope({

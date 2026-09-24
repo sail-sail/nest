@@ -15,15 +15,7 @@ const config: CodegenConfig = {
       "config": {
         "useTypeImports": true,
         "scalars": {
-          "SmolStr": {
-            "input": "string",
-            "output": "string",
-          },
           "Decimal": {
-            "input": "InstanceType<typeof import(\"decimal.js\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js\").default>"
-          },
-          "BigDecimal": {
             "input": "InstanceType<typeof import(\"decimal.js\").default>",
             "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },
@@ -119,15 +111,7 @@ const config: CodegenConfig = {
       "config": {
         "useTypeImports": true,
         "scalars": {
-          "SmolStr": {
-            "input": "string",
-            "output": "string",
-          },
           "Decimal": {
-            "input": "InstanceType<typeof import(\"decimal.js\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js\").default>"
-          },
-          "BigDecimal": {
             "input": "InstanceType<typeof import(\"decimal.js\").default>",
             "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },

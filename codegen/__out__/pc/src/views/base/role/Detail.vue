@@ -116,6 +116,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_audit_msg == null)">
+          <el-form-item
+            label="接收审核消息"
+            prop="is_audit_msg"
+          >
+            <DictSelect
+              v-model="dialogModel.is_audit_msg"
+              :set="dialogModel.is_audit_msg = dialogModel.is_audit_msg ?? undefined"
+              code="yes_no"
+              placeholder="请选择 接收审核消息"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -240,7 +255,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -320,6 +335,13 @@ watchEffect(async () => {
         type: "string",
         max: 45,
         message: "名称 长度不能超过 45",
+      },
+    ],
+    // 接收审核消息
+    is_audit_msg: [
+      {
+        required: true,
+        message: "请选择 接收审核消息",
       },
     ],
     // 排序
@@ -407,15 +429,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -703,6 +717,7 @@ watch(
     dialogModel.permit_ids,
     dialogModel.data_permit_ids,
     dialogModel.field_permit_ids,
+    dialogModel.is_audit_msg,
   ],
   () => {
     if (!inited) {
@@ -716,6 +731,9 @@ watch(
     }
     if (!dialogModel.field_permit_ids || dialogModel.field_permit_ids.length === 0) {
       dialogModel.field_permit_ids_lbl = [ ];
+    }
+    if (!dialogModel.is_audit_msg) {
+      dialogModel.is_audit_msg_lbl = "";
     }
   },
 );

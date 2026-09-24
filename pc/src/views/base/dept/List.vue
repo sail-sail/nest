@@ -159,7 +159,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -709,7 +711,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import {
@@ -1759,7 +1761,7 @@ async function onLockByIds(is_locked: number) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 部门 成功`;
     } else {
-      msg = `解锋 ${ num } 部门 成功`;
+      msg = `解锁 ${ num } 部门 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);

@@ -330,7 +330,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -455,13 +455,6 @@ watchEffect(async () => {
         message: "请选择 置顶",
       },
     ],
-    // 所属组织
-    org_id: [
-      {
-        required: true,
-        message: "请选择 所属组织",
-      },
-    ],
   };
 });
 
@@ -540,11 +533,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }
+    isLocked = toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());

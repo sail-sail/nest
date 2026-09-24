@@ -23,6 +23,7 @@ const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
 const tabsStore = useTabsStore();
 
 const permitsStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 export default function() {
   
@@ -41,6 +42,7 @@ export default function() {
   function logout() {
     authorization.value = "";
     permitsStore.clear();
+    fieldPermitStore.clear();
   }
   
   function setLang(lang0: string) {

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -37,6 +34,11 @@ pub async fn find_all_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_options()),
+    String::from("find"),
+  ).await?;
   
   check_sort_options(sort.as_deref())?;
   
@@ -63,6 +65,11 @@ pub async fn find_count_options(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_options()),
+    String::from("find"),
+  ).await?;
+  
   let num = options_service::find_count_options(
     search,
     options,
@@ -84,6 +91,11 @@ pub async fn find_one_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_options()),
+    String::from("find"),
+  ).await?;
   
   check_sort_options(sort.as_deref())?;
   
@@ -109,6 +121,11 @@ pub async fn find_one_ok_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_options()),
+    String::from("find"),
+  ).await?;
   
   check_sort_options(sort.as_deref())?;
   
@@ -184,6 +201,32 @@ pub async fn find_by_ids_options(
   Ok(models)
 }
 
+/// 根据搜索条件判断系统选项是否存在
+#[function_name::named]
+pub async fn exists_options(
+  search: Option<OptionsSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_options()),
+    String::from("find"),
+  ).await?;
+  
+  let res = options_service::exists_options(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找系统选项, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_options(
@@ -235,8 +278,8 @@ pub async fn creates_options(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("add"),
+    String::from(get_page_path_options()),
+    String::from("add"),
   ).await?;
   
   let ids = options_service::creates_options(
@@ -271,8 +314,8 @@ pub async fn update_by_id_options(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_options()),
+    String::from("edit"),
   ).await?;
   
   let res = options_service::update_by_id_options(
@@ -299,8 +342,8 @@ pub async fn delete_by_ids_options(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_options()),
+    String::from("delete"),
   ).await?;
   
   let num = options_service::delete_by_ids_options(
@@ -350,8 +393,8 @@ pub async fn enable_by_ids_options(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_options()),
+    String::from("edit"),
   ).await?;
   
   let num = options_service::enable_by_ids_options(
@@ -403,8 +446,8 @@ pub async fn lock_by_ids_options(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_options()),
+    String::from("edit"),
   ).await?;
   
   let num = options_service::lock_by_ids_options(
@@ -450,8 +493,8 @@ pub async fn revert_by_ids_options(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_options()),
+    String::from("delete"),
   ).await?;
   
   let num = options_service::revert_by_ids_options(
@@ -477,8 +520,8 @@ pub async fn force_delete_by_ids_options(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_options()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_options()),
+    String::from("force_delete"),
   ).await?;
   
   let num = options_service::force_delete_by_ids_options(

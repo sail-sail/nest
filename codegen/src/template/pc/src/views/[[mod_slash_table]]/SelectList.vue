@@ -65,7 +65,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       v-bind="$attrs"
       ref="listRef"
       :selected-ids="selectedIds"
+      is-list-select-dialog="1"
       @selected-ids-chg="selectedIdsChg"
+      @row-enter="onRowEnter"
+      @row-dblclick="onRowDblclick"
       :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
@@ -117,7 +120,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -228,6 +231,9 @@ function selectedIdsChg(value: <#=Table_Up#>Id[]) {
 async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return <#=table#>_models;
 }

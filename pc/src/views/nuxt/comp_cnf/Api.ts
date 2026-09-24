@@ -335,6 +335,32 @@ export async function findByIdsCompCnf(
 }
 
 /**
+ * 根据搜索条件判断组件配置是否存在
+ */
+export async function existsCompCnf(
+  search?: CompCnfSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsCompCnf: Query["existsCompCnf"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: CompCnfSearch) {
+        existsCompCnf(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsCompCnf;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 组件配置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkCompCnf(

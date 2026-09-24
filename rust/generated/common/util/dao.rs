@@ -3,7 +3,6 @@ use std::sync::OnceLock;
 use tracing::error;
 use color_eyre::eyre::{Result, eyre};
 use serde::{Serialize, Deserialize};
-use smol_str::SmolStr;
 use sqlx::FromRow;
 
 use aes::cipher::{
@@ -167,8 +166,8 @@ struct ManyModel {
 }
 
 pub async fn many2many_update(
-  id: SmolStr,
-  foreign_ids: Vec<SmolStr>,
+  id: String,
+  foreign_ids: Vec<String>,
   many_opts: ManyOpts,
 ) -> Result<bool> {
   let tenant_id = get_auth_tenant_id();
@@ -266,7 +265,7 @@ pub async fn many2many_update(
   let foreign_ids2 = foreign_ids.clone().into_iter()
     .filter(|column2_id| {
       models.iter().all(|model| model.column2_id != *column2_id)
-    }).collect::<Vec<SmolStr>>();
+    }).collect::<Vec<String>>();
   
   for foreign_id in foreign_ids2 {
     let mut args = QueryArgs::new();

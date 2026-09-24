@@ -12,8 +12,10 @@ declare global {
   interface SeoModel extends SeoModelType {
     /** 图标 */
     ico_lbl: string;
+    ico_lbls: string[];
     /** 分享图片 */
     og_image_lbl: string;
+    og_image_lbls: string[];
   }
   
   /** SEO优化 */

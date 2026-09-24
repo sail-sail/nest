@@ -191,7 +191,7 @@ if (right_field && !right_field_column) {
       :scroll-with-animation="true"
     >
       
-      <<#=Table_Up#>Detal
+      <<#=Table_Up#>Detail
         ref="<#=table#>_detail_ref"
         un-flex="~ [1_0_0]"
         un-overflow="hidden"
@@ -206,7 +206,11 @@ if (right_field && !right_field_column) {
         :order_by="order_by"<#
         }
         #>
-      ></<#=Table_Up#>Detal>
+        :hide-fields="hideFields"
+        :has-close-btn="hasCloseBtn"
+        :close-btn-fn="onClose"
+        :drawer-disable-teleport="true"
+      ></<#=Table_Up#>Detail>
       
     </scroll-view>
     
@@ -217,11 +221,11 @@ if (right_field && !right_field_column) {
 
 <script lang="ts" setup>
 import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
-import <#=Table_Up#>Detal from "./Detail.vue";
+import <#=Table_Up#>Detail from "./Detail.vue";
 
 import {
   findOne<#=Table_Up#>,
-} from "./Api";
+} from "./Api.ts";
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
@@ -236,10 +240,14 @@ let order_by = $ref<number>();<#
 
 let inited = $ref(false);
 
+provide("not_permit", true);
+
 const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
-const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detal>>();
+const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detail>>();
 
 let findOneModel = findOne<#=Table_Up#>;
+let hideFields = $ref<string[]>([ ]);
+let hasCloseBtn = $ref<boolean>(false);
 
 type OnCloseResolveType = {
   type: "ok";
@@ -247,8 +255,6 @@ type OnCloseResolveType = {
 } | {
   type: "cancel";
 };
-
-let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 打开对话框 */
 async function showDialog(
@@ -264,6 +270,8 @@ async function showDialog(
       #>
     };
     findOne?: typeof findOne<#=Table_Up#>;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
     action: DialogAction;
   },
 ) {
@@ -281,14 +289,20 @@ async function showDialog(
   } else {
     findOneModel = findOne<#=Table_Up#>;
   }
+  if (arg?.hideFields) {
+    hideFields = arg.hideFields;
+  } else {
+    hideFields = [ ];
+  }
+  if (arg?.hasCloseBtn != null) {
+    hasCloseBtn = arg.hasCloseBtn;
+  } else {
+    hasCloseBtn = false;
+  }
   dialogAction = action || "add";
   <#=table#>_id = model?.id;
   
-  await onRefresh();
-  
-  inited = true;
-  
-  return await customDialogRef!.showDialog<OnCloseResolveType>({
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     title: dialogTitle,
     type: "large",
     showFooter: false,
@@ -302,6 +316,12 @@ async function showDialog(
       type: "cancel",
     },
   });
+  
+  await onRefresh();
+  
+  inited = true;
+  
+  return await dialogRes;
 }
 
 /** 刷新 */

@@ -342,6 +342,32 @@ export async function findByIdsDataPermit(
 }
 
 /**
+ * 根据搜索条件判断数据权限是否存在
+ */
+export async function existsDataPermit(
+  search?: DataPermitSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDataPermit: Query["existsDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DataPermitSearch) {
+        existsDataPermit(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDataPermit;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 数据权限, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDataPermit(
@@ -539,17 +565,6 @@ export function useDownloadImportTemplateDataPermit() {
             type_lbl
             rem
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "data_permit_scope",
-            "data_permit_type",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -595,26 +610,15 @@ export function useExportExcelDataPermit() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DataPermitSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDataPermit(search: $search, page: $page, sort: $sort) {
               ${ dataPermitQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            getDict(codes: [
-              "data_permit_scope",
-              "data_permit_type",
-            ]) {
-              code
-              lbl
             }
           }
         `,

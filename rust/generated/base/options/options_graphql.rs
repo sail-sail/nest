@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl OptionsGenQuery {
       .scope({
         options_resolver::find_by_ids_options(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断系统选项是否存在
+  #[graphql(name = "existsOptions")]
+  async fn exists_options(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OptionsSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::exists_options(
+          search,
           None,
         )
       }).await

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -39,6 +36,11 @@ pub async fn find_all_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   check_sort_message_receiver(sort.as_deref())?;
   
@@ -65,6 +67,11 @@ pub async fn find_count_message_receiver(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
+  
   let num = message_receiver_service::find_count_message_receiver(
     search,
     options,
@@ -86,6 +93,11 @@ pub async fn find_one_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   check_sort_message_receiver(sort.as_deref())?;
   
@@ -111,6 +123,11 @@ pub async fn find_one_ok_message_receiver(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
   
   check_sort_message_receiver(sort.as_deref())?;
   
@@ -186,6 +203,32 @@ pub async fn find_by_ids_message_receiver(
   Ok(models)
 }
 
+/// 根据搜索条件判断消息接收人是否存在
+#[function_name::named]
+pub async fn exists_message_receiver(
+  search: Option<MessageReceiverSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_message_receiver()),
+    String::from("find"),
+  ).await?;
+  
+  let res = message_receiver_service::exists_message_receiver(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找消息接收人, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_message_receiver(
@@ -237,8 +280,8 @@ pub async fn creates_message_receiver(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("add"),
+    String::from(get_page_path_message_receiver()),
+    String::from("add"),
   ).await?;
   
   let ids = message_receiver_service::creates_message_receiver(
@@ -297,8 +340,8 @@ pub async fn update_by_id_message_receiver(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_message_receiver()),
+    String::from("edit"),
   ).await?;
   
   let res = message_receiver_service::update_by_id_message_receiver(
@@ -325,8 +368,8 @@ pub async fn delete_by_ids_message_receiver(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_message_receiver()),
+    String::from("delete"),
   ).await?;
   
   let num = message_receiver_service::delete_by_ids_message_receiver(
@@ -371,8 +414,8 @@ pub async fn revert_by_ids_message_receiver(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_message_receiver()),
+    String::from("delete"),
   ).await?;
   
   let num = message_receiver_service::revert_by_ids_message_receiver(
@@ -398,8 +441,8 @@ pub async fn force_delete_by_ids_message_receiver(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_message_receiver()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_message_receiver()),
+    String::from("force_delete"),
   ).await?;
   
   let num = message_receiver_service::force_delete_by_ids_message_receiver(

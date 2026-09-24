@@ -240,6 +240,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_reject_msg == null)">
+          <el-form-item
+            label="拒收消息"
+            prop="is_reject_msg"
+          >
+            <DictSelect
+              v-model="dialogModel.is_reject_msg"
+              :set="dialogModel.is_reject_msg = dialogModel.is_reject_msg ?? undefined"
+              code="yes_no"
+              placeholder="请选择 拒收消息"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -364,7 +379,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -481,6 +496,13 @@ watchEffect(async () => {
         message: "请选择 类型",
       },
     ],
+    // 拒收消息
+    is_reject_msg: [
+      {
+        required: true,
+        message: "请选择 拒收消息",
+      },
+    ],
     // 排序
     order_by: [
       {
@@ -566,15 +588,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -860,6 +874,7 @@ watch(
     dialogModel.org_ids,
     dialogModel.default_org_id,
     dialogModel.type,
+    dialogModel.is_reject_msg,
   ],
   () => {
     if (!inited) {
@@ -879,6 +894,9 @@ watch(
     }
     if (!dialogModel.type) {
       dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.is_reject_msg) {
+      dialogModel.is_reject_msg_lbl = "";
     }
   },
 );

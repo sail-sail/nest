@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl OptbizGenQuery {
       .scope({
         optbiz_resolver::find_by_ids_optbiz(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断业务选项是否存在
+  #[graphql(name = "existsOptbiz")]
+  async fn exists_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OptbizSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::exists_optbiz(
+          search,
           None,
         )
       }).await

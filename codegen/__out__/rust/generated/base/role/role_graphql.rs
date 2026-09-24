@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl RoleGenQuery {
       .scope({
         role_resolver::find_by_ids_role(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断角色是否存在
+  #[graphql(name = "existsRole")]
+  async fn exists_role(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<RoleSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::exists_role(
+          search,
           None,
         )
       }).await

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::comp_cnf_model::*;
@@ -182,6 +179,27 @@ pub async fn find_by_ids_comp_cnf(
   ).await?;
   
   Ok(models)
+}
+
+/// 根据搜索条件判断组件配置是否存在
+#[function_name::named]
+pub async fn exists_comp_cnf(
+  search: Option<CompCnfSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = comp_cnf_service::exists_comp_cnf(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
 }
 
 /// 根据 ids 查找组件配置, 出现查询不到的 id 则报错

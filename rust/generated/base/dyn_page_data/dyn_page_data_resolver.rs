@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -39,6 +36,11 @@ pub async fn find_all_dyn_page_data(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    get_page_path_dyn_page_data(None),
+    String::from("find"),
+  ).await?;
   
   check_sort_dyn_page_data(sort.as_deref())?;
   
@@ -65,6 +67,11 @@ pub async fn find_count_dyn_page_data(
     function_name = function_name!(),
   );
   
+  use_permit(
+    get_page_path_dyn_page_data(None),
+    String::from("find"),
+  ).await?;
+  
   let num = dyn_page_data_service::find_count_dyn_page_data(
     search,
     options,
@@ -86,6 +93,11 @@ pub async fn find_one_dyn_page_data(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    get_page_path_dyn_page_data(None),
+    String::from("find"),
+  ).await?;
   
   check_sort_dyn_page_data(sort.as_deref())?;
   
@@ -111,6 +123,11 @@ pub async fn find_one_ok_dyn_page_data(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    get_page_path_dyn_page_data(None),
+    String::from("find"),
+  ).await?;
   
   check_sort_dyn_page_data(sort.as_deref())?;
   
@@ -186,6 +203,32 @@ pub async fn find_by_ids_dyn_page_data(
   Ok(models)
 }
 
+/// 根据搜索条件判断动态页面数据是否存在
+#[function_name::named]
+pub async fn exists_dyn_page_data(
+  search: Option<DynPageDataSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    get_page_path_dyn_page_data(None),
+    String::from("find"),
+  ).await?;
+  
+  let res = dyn_page_data_service::exists_dyn_page_data(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找动态页面数据, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_dyn_page_data(
@@ -237,8 +280,8 @@ pub async fn creates_dyn_page_data(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data(None)),
-    SmolStr::new("add"),
+    get_page_path_dyn_page_data(None),
+    String::from("add"),
   ).await?;
   
   let ids = dyn_page_data_service::creates_dyn_page_data(
@@ -297,8 +340,8 @@ pub async fn update_by_id_dyn_page_data(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data(None)),
-    SmolStr::new("edit"),
+    get_page_path_dyn_page_data(None),
+    String::from("edit"),
   ).await?;
   
   let res = dyn_page_data_service::update_by_id_dyn_page_data(
@@ -325,8 +368,8 @@ pub async fn delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data(None)),
-    SmolStr::new("delete"),
+    get_page_path_dyn_page_data(None),
+    String::from("delete"),
   ).await?;
   
   let num = dyn_page_data_service::delete_by_ids_dyn_page_data(
@@ -340,7 +383,7 @@ pub async fn delete_by_ids_dyn_page_data(
 /// 获取动态页面数据字段注释
 #[function_name::named]
 pub async fn get_field_comments_dyn_page_data(
-  ref_code: Option<SmolStr>,
+  ref_code: Option<String>,
   options: Option<Options>,
 ) -> Result<DynPageDataFieldComment> {
   
@@ -373,8 +416,8 @@ pub async fn revert_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data(None)),
-    SmolStr::new("delete"),
+    get_page_path_dyn_page_data(None),
+    String::from("delete"),
   ).await?;
   
   let num = dyn_page_data_service::revert_by_ids_dyn_page_data(
@@ -400,8 +443,8 @@ pub async fn force_delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dyn_page_data(None)),
-    SmolStr::new("force_delete"),
+    get_page_path_dyn_page_data(None),
+    String::from("force_delete"),
   ).await?;
   
   let num = dyn_page_data_service::force_delete_by_ids_dyn_page_data(

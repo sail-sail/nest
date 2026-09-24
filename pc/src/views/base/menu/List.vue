@@ -202,7 +202,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -734,7 +736,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import {
@@ -806,6 +808,7 @@ const props = defineProps<{
   route_path?: string; // 路由
   route_path_like?: string; // 路由
   is_enabled?: string|string[]; // 启用
+  is_hidden?: string|string[]; // 隐藏
   is_current_tenant?: number; // 仅当前租户
 }>();
 

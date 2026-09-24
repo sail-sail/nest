@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl MessageGenQuery {
       .scope({
         message_resolver::find_by_ids_message(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断消息是否存在
+  #[graphql(name = "existsMessage")]
+  async fn exists_message(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<MessageSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        message_resolver::exists_message(
+          search,
           None,
         )
       }).await

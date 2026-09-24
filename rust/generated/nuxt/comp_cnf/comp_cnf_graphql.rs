@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl CompCnfGenQuery {
       .scope({
         comp_cnf_resolver::find_by_ids_comp_cnf(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断组件配置是否存在
+  #[graphql(name = "existsCompCnf")]
+  async fn exists_comp_cnf(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<CompCnfSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth_optional()?
+      .build()
+      .scope({
+        comp_cnf_resolver::exists_comp_cnf(
+          search,
           None,
         )
       }).await

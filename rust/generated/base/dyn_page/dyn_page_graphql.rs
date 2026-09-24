@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl DynPageGenQuery {
       .scope({
         dyn_page_resolver::find_by_ids_dyn_page(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断动态页面是否存在
+  #[graphql(name = "existsDynPage")]
+  async fn exists_dyn_page(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DynPageSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dyn_page_resolver::exists_dyn_page(
+          search,
           None,
         )
       }).await

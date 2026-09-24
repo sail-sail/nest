@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -38,6 +35,11 @@ pub async fn find_all_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   check_sort_tenant(sort.as_deref())?;
   
@@ -64,6 +66,11 @@ pub async fn find_count_tenant(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
+  
   let num = tenant_service::find_count_tenant(
     search,
     options,
@@ -85,6 +92,11 @@ pub async fn find_one_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   check_sort_tenant(sort.as_deref())?;
   
@@ -110,6 +122,11 @@ pub async fn find_one_ok_tenant(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
   
   check_sort_tenant(sort.as_deref())?;
   
@@ -185,6 +202,32 @@ pub async fn find_by_ids_tenant(
   Ok(models)
 }
 
+/// 根据搜索条件判断租户是否存在
+#[function_name::named]
+pub async fn exists_tenant(
+  search: Option<TenantSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_tenant()),
+    String::from("find"),
+  ).await?;
+  
+  let res = tenant_service::exists_tenant(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找租户, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_tenant(
@@ -236,8 +279,8 @@ pub async fn creates_tenant(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("add"),
+    String::from(get_page_path_tenant()),
+    String::from("add"),
   ).await?;
   
   let ids = tenant_service2::creates_tenant(
@@ -272,8 +315,8 @@ pub async fn update_by_id_tenant(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_tenant()),
+    String::from("edit"),
   ).await?;
   
   let res = tenant_service::update_by_id_tenant(
@@ -300,8 +343,8 @@ pub async fn delete_by_ids_tenant(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_tenant()),
+    String::from("delete"),
   ).await?;
   
   let num = tenant_service2::delete_by_ids_tenant(
@@ -351,8 +394,8 @@ pub async fn enable_by_ids_tenant(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_tenant()),
+    String::from("edit"),
   ).await?;
   
   let num = tenant_service::enable_by_ids_tenant(
@@ -404,8 +447,8 @@ pub async fn lock_by_ids_tenant(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_tenant()),
+    String::from("edit"),
   ).await?;
   
   let num = tenant_service::lock_by_ids_tenant(
@@ -451,8 +494,8 @@ pub async fn revert_by_ids_tenant(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_tenant()),
+    String::from("delete"),
   ).await?;
   
   let num = tenant_service::revert_by_ids_tenant(
@@ -478,8 +521,8 @@ pub async fn force_delete_by_ids_tenant(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_tenant()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_tenant()),
+    String::from("force_delete"),
   ).await?;
   
   let num = tenant_service::force_delete_by_ids_tenant(

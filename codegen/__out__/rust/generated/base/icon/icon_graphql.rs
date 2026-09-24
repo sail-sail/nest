@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl IconGenQuery {
       .scope({
         icon_resolver::find_by_ids_icon(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断图标库是否存在
+  #[graphql(name = "existsIcon")]
+  async fn exists_icon(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<IconSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::exists_icon(
+          search,
           None,
         )
       }).await

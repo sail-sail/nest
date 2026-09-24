@@ -361,7 +361,7 @@ for (let i = 0; i < columns.length; i++) {
           if (fieldPermit || !isVirtual || vIfStr) {
         #> v-if="<#
           if (fieldPermit) {
-        #>field_permit('<#=column_name#>') && <#
+        #>fieldPermit('<#=column_name#>') && <#
           }
         #><#
           if (!isVirtual) {
@@ -1459,7 +1459,6 @@ for (let i = 0; i < columns.length; i++) {
           >
             <el-table
               ref="<#=inline_column_name#>Ref"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="<#=inline_column_name#>Data"
@@ -1486,7 +1485,6 @@ for (let i = 0; i < columns.length; i++) {
                 if (column.ignoreCodegen) continue;
                 if (column.onlyCodegenDeno) continue;
                 if (column.noDetail) continue;
-                if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
                 if (column_name === "is_deleted") continue;
@@ -1562,7 +1560,26 @@ for (let i = 0; i < columns.length; i++) {
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
-                    if (column.isImg) {
+                    if (column.isIcon) {
+                    #>
+                    <CustomIcon
+                      v-model="row.<#=column_name#>"
+                      v-model:model-label="row.<#=column_name#>_lbl"<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #>
+                      :page-inited="inited"
+                    ></CustomIcon><#
+                    } else if (column.isImg) {
                     #>
                     <UploadImage
                       v-model="row.<#=column_name#>"
@@ -1597,7 +1614,7 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly<#
                         if (hasIsSys && opts.sys_fields?.includes(column_name)) {
-                        #> || !!dialogModel.is_sys<#
+                        #> || !!row.is_sys<#
                         }
                         #>"<#
                       }
@@ -1606,6 +1623,43 @@ for (let i = 0; i < columns.length; i++) {
                       :item-height="48"
                       un-justify="center"
                     ></UploadImage><#
+                    } else if (column.isAtt) {
+                    #>
+                    <LinkAtt
+                      v-model="row.<#=column_name#>"<#
+                      if (column.attMaxSize > 1) {
+                      #>
+                      :max-size="<#=column.attMaxSize#>"<#
+                      }
+                      #><#
+                      if (column.maxFileSize) {
+                      #>
+                      :maxFileSize="<#=column.maxFileSize#>"<#
+                      }
+                      #><#
+                      if (column.attAccept) {
+                      #>
+                      accept="<#=column.attAccept#>"<#
+                      }
+                      #><#
+                      if (column.isPublicAtt) {
+                      #>
+                      :is-public="true"<#
+                      } else {
+                      #>
+                      :is-public="false"<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #>
+                      un-m="l-1"
+                    ></LinkAtt><#
                     } else if (
                       foreignKey
                       && (foreignKey.selectType === "select" || foreignKey.selectType == null)
@@ -2366,6 +2420,7 @@ for (let i = 0; i < columns.length; i++) {
                   if (column_name === "is_deleted") continue;
                   if (column_name === "version") continue;
                   if (column_name === "tenant_id") continue;
+                  if (column_name === "org_id") continue;
                   const data_type = column.DATA_TYPE;
                   const column_type = column.COLUMN_TYPE || "";
                   const column_comment = column.COLUMN_COMMENT || "";
@@ -4277,7 +4332,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -4555,7 +4610,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4820,7 +4875,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
-    if (!foreignSchema.opts?.list_tree) {
+    if (foreignSchema.opts?.list_tree !== true) {
       continue;
     }
     if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4996,7 +5051,10 @@ const {
 } = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+const {
+  fieldPermit,
+  fieldPermitAsync,
+} = fieldPermitStore.getFieldPermit(pagePath);<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -5859,26 +5917,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    oldIsLocked = toValue(arg?.isLocked) ?? false;
-    <#
+    oldIsLocked = toValue(arg?.isLocked) ?? false;<#
     if (hasLocked) {
     #>
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }<#
+    
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;<#
     } else {
     #>
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }<#
+    
+    isLocked = toValue(arg?.isLocked) ?? isLocked;<#
     }
     #>
   });
@@ -8595,7 +8642,9 @@ if (hasBpm) {
 watch(
   () => dialogModel.<#=bpmStatusField#>,
   (val) => {
-    if (val === "draft") {
+    if (!val) {
+      isLocked = false;
+    } else if (val === "draft") {
       isLocked = false;
     } else {
       isLocked = true;

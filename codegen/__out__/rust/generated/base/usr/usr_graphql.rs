@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl UsrGenQuery {
       .scope({
         usr_resolver::find_by_ids_usr(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断用户是否存在
+  #[graphql(name = "existsUsr")]
+  async fn exists_usr(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<UsrSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::exists_usr(
+          search,
           None,
         )
       }).await

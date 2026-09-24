@@ -343,8 +343,14 @@ const props = withDefaults(
 );
 
 const searchKey = "/pages/dyn_page/List:search";
-const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
-});
+
+function initSearch() {
+  const search: SearchType = {
+  };
+  return search;
+}
+
+let search = $ref<SearchType>(uni.getStorageSync(searchKey) || initSearch());
 
 type DynPageModelComputed = {
   id: DynPageId;
@@ -428,8 +434,7 @@ async function onAddDynPage() {
 }
 
 async function onReset() {
-  search.lbl = undefined;
-  search.code = undefined;
+  search = initSearch();
   pgOffset = 0;
   await onSearch();
 }

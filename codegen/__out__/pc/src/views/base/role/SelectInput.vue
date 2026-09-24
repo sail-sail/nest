@@ -105,15 +105,16 @@
       label_readonly_1: props.labelReadonly,
       label_readonly_0: !props.labelReadonly,
       'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
+      'custom_select_placeholder': showReadonlyPlaceholder,
     }"
     v-bind="$attrs"
   >
-    {{ hasModelLabel ? modelLabel : inputValue }}
+    {{ !showReadonlyPlaceholder ? (hasModelLabel ? modelLabel : inputValue) : props.readonlyPlaceholder }}
   </div>
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   useFormItem,
 } from "element-plus";
@@ -143,6 +144,7 @@ const props = withDefaults(
     placeholder?: string;
     disabled?: boolean;
     readonly?: boolean;
+    readonlyPlaceholder?: string;
     labelReadonly?: boolean;
     selectListReadonly?: boolean;
     validateEvent?: boolean;
@@ -156,6 +158,7 @@ const props = withDefaults(
     placeholder: undefined,
     disabled: false,
     readonly: false,
+    readonlyPlaceholder: undefined,
     labelReadonly: true,
     selectListReadonly: true,
     validateEvent: undefined,
@@ -176,6 +179,10 @@ let hasModelLabel = $ref(false);
 let modelLabelRefreshing = $ref(false);
 
 let isInputChanging = false;
+
+const showReadonlyPlaceholder = $computed(() => {
+  return props.readonly && !(hasModelLabel ? modelLabel : inputValue);
+});
 
 watch(
   () => props.modelLabel,
@@ -261,6 +268,9 @@ async function getModelsByIds(ids: RoleId[]) {
   }
   const role_models = await findByIdsRole(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return role_models;
 }

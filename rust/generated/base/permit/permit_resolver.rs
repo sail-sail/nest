@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -37,6 +34,11 @@ pub async fn find_all_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   check_sort_permit(sort.as_deref())?;
   
@@ -63,6 +65,11 @@ pub async fn find_count_permit(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
+  
   let num = permit_service::find_count_permit(
     search,
     options,
@@ -84,6 +91,11 @@ pub async fn find_one_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   check_sort_permit(sort.as_deref())?;
   
@@ -109,6 +121,11 @@ pub async fn find_one_ok_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   check_sort_permit(sort.as_deref())?;
   
@@ -184,6 +201,32 @@ pub async fn find_by_ids_permit(
   Ok(models)
 }
 
+/// 根据搜索条件判断按钮权限是否存在
+#[function_name::named]
+pub async fn exists_permit(
+  search: Option<PermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
+  
+  let res = permit_service::exists_permit(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_permit(
@@ -229,8 +272,8 @@ pub async fn update_by_id_permit(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_permit()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_permit()),
+    String::from("edit"),
   ).await?;
   
   let res = permit_service::update_by_id_permit(

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -37,6 +34,11 @@ pub async fn find_all_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dict(sort.as_deref())?;
   
@@ -63,6 +65,11 @@ pub async fn find_count_dict(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dict()),
+    String::from("find"),
+  ).await?;
+  
   let num = dict_service::find_count_dict(
     search,
     options,
@@ -84,6 +91,11 @@ pub async fn find_one_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dict(sort.as_deref())?;
   
@@ -109,6 +121,11 @@ pub async fn find_one_ok_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dict(sort.as_deref())?;
   
@@ -184,6 +201,32 @@ pub async fn find_by_ids_dict(
   Ok(models)
 }
 
+/// 根据搜索条件判断系统字典是否存在
+#[function_name::named]
+pub async fn exists_dict(
+  search: Option<DictSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_dict()),
+    String::from("find"),
+  ).await?;
+  
+  let res = dict_service::exists_dict(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找系统字典, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_dict(
@@ -235,8 +278,8 @@ pub async fn creates_dict(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("add"),
+    String::from(get_page_path_dict()),
+    String::from("add"),
   ).await?;
   
   let ids = dict_service::creates_dict(
@@ -271,8 +314,8 @@ pub async fn update_by_id_dict(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dict()),
+    String::from("edit"),
   ).await?;
   
   let res = dict_service::update_by_id_dict(
@@ -299,8 +342,8 @@ pub async fn delete_by_ids_dict(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dict()),
+    String::from("delete"),
   ).await?;
   
   let num = dict_service::delete_by_ids_dict(
@@ -350,8 +393,8 @@ pub async fn enable_by_ids_dict(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dict()),
+    String::from("edit"),
   ).await?;
   
   let num = dict_service::enable_by_ids_dict(
@@ -397,8 +440,8 @@ pub async fn revert_by_ids_dict(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dict()),
+    String::from("delete"),
   ).await?;
   
   let num = dict_service::revert_by_ids_dict(
@@ -424,8 +467,8 @@ pub async fn force_delete_by_ids_dict(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_dict()),
+    String::from("force_delete"),
   ).await?;
   
   let num = dict_service::force_delete_by_ids_dict(

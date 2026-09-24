@@ -84,13 +84,14 @@ console.log(publishPath);
       } else {
         num++;
         await sftp.fastPut(`${ buildPath }/${ dir }/${ file }`, `${ publishPathTmp }/${ dir }/${ file }`);
-        if (num % 20 === 0) {
+        if (num % 100 === 0) {
           console.log(num);
         }
       }
     }
   };
   await treeDir("");
+  console.log(`上传完成, 共 ${ num } 个文件`);
   
   if (commands.length === 0) {
     try {

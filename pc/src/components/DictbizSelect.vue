@@ -207,7 +207,6 @@
       <span
         class="dictbiz_select_placeholder"
         un-relative
-        un-top="-0.25"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -219,7 +218,6 @@
         v-if="isShowModelLabel"
         class="dictbiz_select_readonly"
         un-relative
-        un-top="-0.25"
       >
         {{ props.modelLabel || "" }}
       </span>
@@ -227,7 +225,6 @@
         v-else
         class="dictbiz_select_readonly"
         un-relative
-        un-top="-0.25"
       >
         {{ modelLabels[0] || "" }}
       </span>
@@ -240,7 +237,7 @@
 ></DictbizDetailDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   GetDictbiz,
 } from "@/typings/types";
@@ -264,8 +261,6 @@ import {
 } from "@/views/base/dictbiz_detail/Api.ts";
 
 export type DictbizModel = GetDictbiz;
-
-const t = getCurrentInstance();
 
 const emit = defineEmits<{
   (e: "data", value: DictbizModel[]): void;
@@ -333,6 +328,19 @@ const props = withDefaults(
   },
 );
 
+function isEmptySelectValue(value: unknown): boolean {
+  if (value == null) {
+    return true;
+  }
+  if (typeof value === "string") {
+    return value === "";
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  return false;
+}
+
 async function copyModelLabel() {
   const text = modelLabels.join(",");
   if (!text) {
@@ -385,7 +393,7 @@ const selectDivRef = $ref<HTMLDivElement>();
 
 const isSelectAll = $computed({
   get() {
-    if (!modelValue) {
+    if (isEmptySelectValue(modelValue)) {
       return false;
     }
     if (!Array.isArray(modelValue)) {
@@ -421,7 +429,7 @@ const isSelectAll = $computed({
 });
 
 const isIndeterminate = $computed(() => {
-  if (!modelValue) {
+  if (isEmptySelectValue(modelValue)) {
     return false;
   }
   if (!Array.isArray(modelValue)) {
@@ -446,7 +454,7 @@ const modelValueComputed = $computed(() => {
     return modelValue;
   }
   if (!props.multiple) {
-    if (modelValue == null || modelValue === "") {
+    if (isEmptySelectValue(modelValue)) {
       return modelLabel;
     }
     const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
@@ -483,9 +491,9 @@ const isShowModelLabel = $computed(() => {
 
 const shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
-    return modelValue == null || modelValue.length === 0;
+    return isEmptySelectValue(modelValue);
   }
-  return modelValue == null || modelValue === "";
+  return isEmptySelectValue(modelValue);
 });
 
 function modelValueUpdate(value?: string | string[] | null) {
@@ -588,8 +596,8 @@ function getSelectInputWidth() {
     return 0;
   }
   const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
-  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
-  return Math.ceil(width);
+  const width = wrapper?.getBoundingClientRect().width ?? selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width || 0);
 }
 
 function getDropdownMeasureTexts() {
@@ -636,7 +644,7 @@ const {
 const dirtyStore = useDirtyStore();
 
 const modelLabels: string[] = $computed(() => {
-  if (!modelValue) {
+  if (isEmptySelectValue(modelValue) && modelValue !== 0) {
     return [ "" ];
   }
   if (!props.multiple) {
@@ -877,8 +885,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;

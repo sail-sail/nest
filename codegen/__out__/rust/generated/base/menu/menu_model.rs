@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -31,7 +28,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::usr::usr_model::UsrId;
 
@@ -51,9 +47,6 @@ fn get_can_sort_in_api_menu() -> &'static [&'static str; 4] {
 #[graphql(rename_fields = "snake_case", name = "MenuModel")]
 #[allow(dead_code)]
 pub struct MenuModel {
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: u8,
   /// ID
   pub id: MenuId,
   /// 父菜单
@@ -61,118 +54,120 @@ pub struct MenuModel {
   pub parent_id: MenuId,
   /// 父菜单
   #[graphql(name = "parent_id_lbl")]
-  pub parent_id_lbl: SmolStr,
+  pub parent_id_lbl: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 路由
   #[graphql(name = "route_path")]
-  pub route_path: SmolStr,
+  pub route_path: String,
   /// 参数
   #[graphql(name = "route_query")]
-  pub route_query: SmolStr,
+  pub route_query: String,
   /// 首页隐藏
   #[graphql(name = "is_home_hide")]
   pub is_home_hide: u8,
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
-  pub is_home_hide_lbl: SmolStr,
+  pub is_home_hide_lbl: String,
   /// 动态页面
   #[graphql(name = "is_dyn_page")]
   pub is_dyn_page: u8,
   /// 动态页面
   #[graphql(name = "is_dyn_page_lbl")]
-  pub is_dyn_page_lbl: SmolStr,
+  pub is_dyn_page_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: u8,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
-    // 隐藏字段
-    let is_hidden = row.try_get("is_hidden")?;
     // ID
     let id: MenuId = row.try_get("id")?;
     // 父菜单
     let parent_id: MenuId = row.try_get("parent_id")?;
     let parent_id_lbl: Option<&str> = row.try_get("parent_id_lbl")?;
-    let parent_id_lbl = SmolStr::new(parent_id_lbl.unwrap_or_default());
+    let parent_id_lbl = String::from(parent_id_lbl.unwrap_or_default());
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 路由
-    let route_path: &str = row.try_get("route_path")?;
-    let route_path = SmolStr::new(route_path);
+    let route_path: String = row.try_get("route_path")?;
     // 参数
-    let route_query: &str = row.try_get("route_query")?;
-    let route_query = SmolStr::new(route_query);
+    let route_query: String = row.try_get("route_query")?;
     // 首页隐藏
     let is_home_hide: u8 = row.try_get("is_home_hide")?;
-    let is_home_hide_lbl = SmolStr::new(is_home_hide.to_string());
+    let is_home_hide_lbl = is_home_hide.to_string();
     // 动态页面
     let is_dyn_page: u8 = row.try_get("is_dyn_page")?;
-    let is_dyn_page_lbl = SmolStr::new(is_dyn_page.to_string());
+    let is_dyn_page_lbl = is_dyn_page.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
+    // 隐藏
+    let is_hidden: u8 = row.try_get("is_hidden")?;
+    let is_hidden_lbl = is_hidden.to_string();
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
-      is_hidden,
       is_deleted,
       id,
       parent_id,
@@ -188,6 +183,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       is_enabled_lbl,
       order_by,
       rem,
+      is_hidden,
+      is_hidden_lbl,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -208,70 +205,76 @@ impl FromRow<'_, MySqlRow> for MenuModel {
 pub struct MenuFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 父菜单
   #[graphql(name = "parent_id")]
-  pub parent_id: SmolStr,
+  pub parent_id: String,
   /// 父菜单
   #[graphql(name = "parent_id_lbl")]
-  pub parent_id_lbl: SmolStr,
+  pub parent_id_lbl: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 路由
   #[graphql(name = "route_path")]
-  pub route_path: SmolStr,
+  pub route_path: String,
   /// 参数
   #[graphql(name = "route_query")]
-  pub route_query: SmolStr,
+  pub route_query: String,
   /// 首页隐藏
   #[graphql(name = "is_home_hide")]
-  pub is_home_hide: SmolStr,
+  pub is_home_hide: String,
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
-  pub is_home_hide_lbl: SmolStr,
+  pub is_home_hide_lbl: String,
   /// 动态页面
   #[graphql(name = "is_dyn_page")]
-  pub is_dyn_page: SmolStr,
+  pub is_dyn_page: String,
   /// 动态页面
   #[graphql(name = "is_dyn_page_lbl")]
-  pub is_dyn_page_lbl: SmolStr,
+  pub is_dyn_page_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: String,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -282,8 +285,6 @@ pub struct MenuSearch {
   pub id: Option<MenuId>,
   /// ID列表
   pub ids: Option<Vec<MenuId>>,
-  #[graphql(skip)]
-  pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
@@ -293,28 +294,28 @@ pub struct MenuSearch {
   pub parent_id_is_null: Option<bool>,
   /// 父菜单
   #[graphql(name = "parent_id_lbl")]
-  pub parent_id_lbl: Option<Vec<SmolStr>>,
+  pub parent_id_lbl: Option<Vec<String>>,
   /// 父菜单
   #[graphql(name = "parent_id_lbl_like")]
-  pub parent_id_lbl_like: Option<SmolStr>,
+  pub parent_id_lbl_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 路由
   #[graphql(name = "route_path")]
-  pub route_path: Option<SmolStr>,
+  pub route_path: Option<String>,
   /// 路由
   #[graphql(name = "route_path_like")]
-  pub route_path_like: Option<SmolStr>,
+  pub route_path_like: Option<String>,
   /// 参数
   #[graphql(skip)]
-  pub route_query: Option<SmolStr>,
+  pub route_query: Option<String>,
   /// 参数
   #[graphql(skip)]
-  pub route_query_like: Option<SmolStr>,
+  pub route_query_like: Option<String>,
   /// 首页隐藏
   #[graphql(skip)]
   pub is_home_hide: Option<Vec<u8>>,
@@ -329,10 +330,13 @@ pub struct MenuSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: Option<Vec<u8>>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -341,10 +345,10 @@ pub struct MenuSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -356,10 +360,10 @@ pub struct MenuSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -373,9 +377,6 @@ impl std::fmt::Debug for MenuSearch {
     }
     if let Some(ref ids) = self.ids {
       item = item.field("ids", ids);
-    }
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
     }
     if let Some(ref is_deleted) = self.is_deleted {
       if *is_deleted == 1 {
@@ -439,6 +440,10 @@ impl std::fmt::Debug for MenuSearch {
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
     }
+    // 隐藏
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -486,60 +491,63 @@ pub struct MenuInput {
   /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
   /// 父菜单
   #[graphql(name = "parent_id_lbl")]
-  pub parent_id_lbl: Option<SmolStr>,
+  pub parent_id_lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 路由
   #[graphql(name = "route_path")]
-  pub route_path: Option<SmolStr>,
+  pub route_path: Option<String>,
   /// 参数
   #[graphql(name = "route_query")]
-  pub route_query: Option<SmolStr>,
+  pub route_query: Option<String>,
   /// 首页隐藏
   #[graphql(name = "is_home_hide")]
   pub is_home_hide: Option<u8>,
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
-  pub is_home_hide_lbl: Option<SmolStr>,
+  pub is_home_hide_lbl: Option<String>,
   /// 动态页面
   #[graphql(name = "is_dyn_page")]
   pub is_dyn_page: Option<u8>,
   /// 动态页面
   #[graphql(name = "is_dyn_page_lbl")]
-  pub is_dyn_page_lbl: Option<SmolStr>,
+  pub is_dyn_page_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: Option<u8>,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -548,13 +556,13 @@ pub struct MenuInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -570,9 +578,6 @@ impl std::fmt::Debug for MenuInput {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
       }
-    }
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
     }
     if let Some(ref parent_id) = self.parent_id {
       item = item.field("parent_id", parent_id);
@@ -601,6 +606,9 @@ impl std::fmt::Debug for MenuInput {
     if let Some(ref rem) = self.rem {
       item = item.field("rem", rem);
     }
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -628,7 +636,6 @@ impl From<MenuModel> for MenuInput {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
-      is_hidden: model.is_hidden.into(),
       // 父菜单
       parent_id: model.parent_id.into(),
       parent_id_lbl: model.parent_id_lbl.into(),
@@ -651,6 +658,9 @@ impl From<MenuModel> for MenuInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
+      // 隐藏
+      is_hidden: model.is_hidden.into(),
+      is_hidden_lbl: model.is_hidden_lbl.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -674,8 +684,6 @@ impl From<MenuInput> for MenuSearch {
     Self {
       id: input.id,
       ids: None,
-      // 隐藏字段
-      is_hidden: input.is_hidden.map(|x| vec![x]),
       is_deleted: None,
       // 父菜单
       parent_id: input.parent_id.map(|x| vec![x]),
@@ -695,6 +703,8 @@ impl From<MenuInput> for MenuSearch {
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
       // 备注
       rem: input.rem,
+      // 隐藏
+      is_hidden: input.is_hidden.map(|x| vec![x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人
@@ -712,7 +722,7 @@ impl From<MenuInput> for MenuSearch {
   }
 }
 
-impl_id!(MenuId);
+crate::common::id::impl_id!(MenuId);
 
 /// 菜单 检测字段是否允许前端排序
 pub fn check_sort_menu(
@@ -738,7 +748,7 @@ pub fn check_sort_menu(
     }
     if !get_can_sort_in_api_menu.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_menu: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_menu: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

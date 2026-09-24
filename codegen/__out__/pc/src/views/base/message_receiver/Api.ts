@@ -338,6 +338,32 @@ export async function findByIdsMessageReceiver(
 }
 
 /**
+ * 根据搜索条件判断消息接收人是否存在
+ */
+export async function existsMessageReceiver(
+  search?: MessageReceiverSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMessageReceiver: Query["existsMessageReceiver"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MessageReceiverSearch) {
+        existsMessageReceiver(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMessageReceiver;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 消息接收人, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessageReceiver(
@@ -608,24 +634,6 @@ export function useDownloadImportTemplateMessageReceiver() {
             read_time_lbl
             org_id_lbl
           }
-          findAllMessage {
-            id
-            content
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -671,31 +679,15 @@ export function useExportExcelMessageReceiver() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: MessageReceiverSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MessageReceiverSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessageReceiver(search: $search, page: $page, sort: $sort) {
               ${ messageReceiverQueryField }
-            }
-            findAllMessage {
-              content
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

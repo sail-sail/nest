@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -39,6 +36,11 @@ pub async fn find_all_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_login_log(sort.as_deref())?;
   
@@ -65,6 +67,11 @@ pub async fn find_count_login_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
+  
   let num = login_log_service::find_count_login_log(
     search,
     options,
@@ -86,6 +93,11 @@ pub async fn find_one_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_login_log(sort.as_deref())?;
   
@@ -111,6 +123,11 @@ pub async fn find_one_ok_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_login_log(sort.as_deref())?;
   
@@ -186,6 +203,32 @@ pub async fn find_by_ids_login_log(
   Ok(models)
 }
 
+/// 根据搜索条件判断登录日志是否存在
+#[function_name::named]
+pub async fn exists_login_log(
+  search: Option<LoginLogSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
+  
+  let res = login_log_service::exists_login_log(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找登录日志, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_login_log(
@@ -246,8 +289,8 @@ pub async fn delete_by_ids_login_log(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_login_log()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_login_log()),
+    String::from("delete"),
   ).await?;
   
   let num = login_log_service::delete_by_ids_login_log(
@@ -292,8 +335,8 @@ pub async fn revert_by_ids_login_log(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_login_log()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_login_log()),
+    String::from("delete"),
   ).await?;
   
   let num = login_log_service::revert_by_ids_login_log(
@@ -319,8 +362,8 @@ pub async fn force_delete_by_ids_login_log(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_login_log()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_login_log()),
+    String::from("force_delete"),
   ).await?;
   
   let num = login_log_service::force_delete_by_ids_login_log(

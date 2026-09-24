@@ -414,6 +414,10 @@ import type {
   WatchHandle,
 } from "vue";
 
+import {
+  shouldPrefetchSelectedOptions,
+} from "./prefetch.ts";
+
 type OptionType = {
   label: string;
   subLabel?: string;
@@ -506,8 +510,6 @@ const props = withDefaults(
   },
 );
 
-const hasModelLabel = $computed(() => props.modelLabel != null);
-
 let _height = $ref(props.height || "90%");
 const _width = $ref(props.width || "90%");
 
@@ -527,6 +529,8 @@ const inited = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const data = ref<any[]>([ ]);
 const options4SelectV2 = ref<OptionType[]>([ ]);
+
+const isLoading = ref(false);
 
 const searchStr = ref(props.searchStr || "");
 const extraSearch = computed(() => {
@@ -589,9 +593,6 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
-  if (!hasModelLabel) {
-    return false;
-  }
   if (modelLabel == null || modelLabel === "") {
     return false;
   }
@@ -656,6 +657,14 @@ const modelValueIsEmpty = computed(() => {
 });
 
 const showPicker = ref(false);
+const emptyPrefetchKeys = ref<string[]>([ ]);
+
+function getPrefetchCacheKey(modelValues: unknown[]) {
+  return modelValues
+    .map((value) => String(value))
+    .sort()
+    .join("|");
+}
 
 let refresherTriggered = $ref(false);
 let pgOffset = $ref(0);
@@ -684,6 +693,22 @@ function getFallbackModelLabels() {
     .filter(Boolean);
 }
 
+function getNormalizedModelValues() {
+  if (props.multiple) {
+    if (selectedValue.value == null || selectedValue.value === "") {
+      return [ ];
+    }
+    if (Array.isArray(selectedValue.value)) {
+      return selectedValue.value.filter((item) => item != null && item !== "");
+    }
+    return [ selectedValue.value ];
+  }
+  if (selectedValue.value == null || selectedValue.value === "") {
+    return [ ];
+  }
+  return [ selectedValue.value ];
+}
+
 const modelLabels = computed(() => {
   if (selectedValueArr.value.length === 0) {
     return [ ];
@@ -709,6 +734,69 @@ const modelLabels = computed(() => {
   }
   return labels;
 });
+
+// 如果是分页模式, 没弹框之前data是空的, modelValue对应的label无法获取, 需要弹框之前单独获取
+watch(
+  () => [
+    props.modelValue,
+    props.isPage,
+    props.multiple,
+    showPicker.value,
+    props.method,
+  ],
+  async () => {
+    if (typeof props.method !== "function") {
+      return;
+    }
+    const modelValues = getNormalizedModelValues();
+    const prefetchCacheKey = getPrefetchCacheKey(modelValues);
+    if (emptyPrefetchKeys.value.includes(prefetchCacheKey)) {
+      return;
+    }
+    if (!shouldPrefetchSelectedOptions({
+      isPage: props.isPage,
+      showPicker: showPicker.value,
+      isLoading: isLoading.value,
+      modelValues,
+      dataItems: data.value,
+      optionsMap: props.optionsMap,
+    })) {
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let methodData: any = [ ];
+    try {
+      isLoading.value = true;
+      methodData = (await props.method?.(
+        {
+          [props.searchIds]: modelValues,
+        },
+        {
+          pgSize: modelValues.length,
+          pgOffset: 0,
+        },
+      )) || [ ];
+    } catch {
+      inited.value = true;
+      isLoading.value = false;
+    } finally {
+      isLoading.value = false;
+    }
+    const mergedData = [ ...data.value ];
+    for (const item of methodData) {
+      const itemValue = props.optionsMap(item).value;
+      if (!mergedData.some((existingItem) => props.optionsMap(existingItem).value === itemValue)) {
+        mergedData.push(item);
+      }
+    }
+    if (methodData.length === 0) {
+      emptyPrefetchKeys.value = [ ...emptyPrefetchKeys.value, prefetchCacheKey ];
+    }
+    data.value = mergedData;
+    emit("data", data.value);
+    options4SelectV2.value = data.value.map(props.optionsMap);
+  },
+);
 
 const scrollIntoViewId = ref("");
 
@@ -859,6 +947,7 @@ async function loadPage(
     )) || [ ];
   } catch {
     inited.value = true;
+    isLoading.value = false;
     return;
   } finally {
     isLoading.value = false;
@@ -891,9 +980,7 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", "");
-  }
+  emit("update:modelLabel", "");
   emit("confirm");
   emit("change");
   emit("clear");
@@ -905,9 +992,7 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", modelLabel);
-  }
+  emit("update:modelLabel", modelLabel);
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
@@ -946,8 +1031,6 @@ async function onLoadMore() {
 }
 
 let methodWatchHandle: WatchHandle | null = null;
-
-const isLoading = ref(false);
 
 async function onRefresh() {
   if (methodWatchHandle) {

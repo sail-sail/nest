@@ -1,8 +1,6 @@
 use serde::{Serialize, Deserialize};
 use async_graphql::{SimpleObject, InputObject};
 
-use smol_str::SmolStr;
-
 use crate::base::tenant::tenant_model::TenantId;
 
 /// 租户
@@ -12,13 +10,13 @@ pub struct GetLoginTenants {
   /// ID
   pub id: TenantId,
   /// 名称
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 标题
-  pub title: SmolStr,
+  pub title: String,
   /// 简介
-  pub info: SmolStr,
+  pub info: String,
   /// 语言
-  pub lang: SmolStr,
+  pub lang: String,
 }
 
 /// 设置租户管理员密码
@@ -26,7 +24,7 @@ pub struct GetLoginTenants {
 #[graphql(rename_fields = "snake_case")]
 pub struct SetTenantAdminPwdInput {
   /// 新密码
-  pub pwd: SmolStr,
+  pub pwd: String,
   /// 租户ID
   pub tenant_id: TenantId,
 }

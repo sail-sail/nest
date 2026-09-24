@@ -161,7 +161,7 @@
                 trigger="click"
               >
                 <span
-                  un-text="white hover:[var(--el-color-primary)]"
+                  un-text="hover:[var(--el-color-primary)]"
                   un-cursor-pointer
                   un-whitespace-nowrap
                 >
@@ -426,7 +426,7 @@
 </el-splitter>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";

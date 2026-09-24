@@ -14,98 +14,126 @@
   >
     
     <view
-      un-m="x-1"
+      un-m="x-2"
     >
       
       <tm-form
         ref="formRef"
         v-model="dyn_page_input"
-        :label-width="180"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
         
         <!-- 路由 -->
-        <tm-form-item
-          label="路由"
-          name="code"
-          :readonly="isReadonly"
-          :required="false"
+        <template
+          v-if="props.hideFields?.includes('code') !== true"
         >
-          <CustomInput
-            v-model="dyn_page_input.code"
-            placeholder="请输入 路由"
-          ></CustomInput>
-        </tm-form-item>
+          <!-- 路由 -->
+          <tm-form-item
+            label="路由"
+            name="code"
+            :readonly="isReadonly"
+            :required="false"
+          >
+            <CustomInput
+              v-model="dyn_page_input.code"
+              placeholder="请输入 路由"
+            ></CustomInput>
+          </tm-form-item>
+        </template>
         
         <!-- 名称 -->
-        <tm-form-item
-          label="名称"
-          name="lbl"
-          :readonly="isReadonly"
+        <template
+          v-if="props.hideFields?.includes('lbl') !== true"
         >
-          <CustomInput
-            v-model="dyn_page_input.lbl"
-            placeholder="请输入 名称"
-          ></CustomInput>
-        </tm-form-item>
+          <!-- 名称 -->
+          <tm-form-item
+            label="名称"
+            name="lbl"
+            :readonly="isReadonly"
+          >
+            <CustomInput
+              v-model="dyn_page_input.lbl"
+              placeholder="请输入 名称"
+            ></CustomInput>
+          </tm-form-item>
+        </template>
         
         <!-- 父菜单 -->
-        <tm-form-item
-          label="父菜单"
-          name="parent_menu_id"
-          :readonly="isReadonly"
-          :required="false"
+        <template
+          v-if="props.hideFields?.includes('parent_menu_id') !== true"
         >
-          <CustomSelectModal
-            v-model="dyn_page_input.parent_menu_id"
-            placeholder="请选择 父菜单"
-            :method="getListMenu"
-          ></CustomSelectModal>
-        </tm-form-item>
+          <tm-form-item
+            label="父菜单"
+            name="parent_menu_id"
+            :readonly="isReadonly"
+            :required="false"
+          >
+            <CustomSelectModal
+              v-model="dyn_page_input.parent_menu_id"
+              placeholder="请选择 父菜单"
+              :method="getListMenu"
+            ></CustomSelectModal>
+          </tm-form-item>
+        </template>
         
         <!-- 所属角色 -->
-        <tm-form-item
-          label="所属角色"
-          name="role_ids"
-          :readonly="isReadonly"
-          :required="false"
+        <template
+          v-if="props.hideFields?.includes('role_ids') !== true"
         >
-          <CustomSelectModal
-            v-model="dyn_page_input.role_ids"
-            placeholder="请选择 所属角色"
-            :method="getListRole"
-            multiple
-          ></CustomSelectModal>
-        </tm-form-item>
+          <tm-form-item
+            label="所属角色"
+            name="role_ids"
+            :readonly="isReadonly"
+            :required="false"
+          >
+            <CustomSelectModal
+              v-model="dyn_page_input.role_ids"
+              placeholder="请选择 所属角色"
+              :method="getListRole"
+              multiple
+            ></CustomSelectModal>
+          </tm-form-item>
+        </template>
         
         <!-- 排序 -->
-        <tm-form-item
-          label="排序"
-          name="order_by"
-          :readonly="isReadonly"
+        <template
+          v-if="props.hideFields?.includes('order_by') !== true"
         >
-          <CustomInput
-            v-model="dyn_page_input.order_by"
-            type="number"
-            placeholder="请输入 排序"
-          ></CustomInput>
-        </tm-form-item>
+          <!-- 排序 -->
+          <tm-form-item
+            label="排序"
+            name="order_by"
+            :readonly="isReadonly"
+          >
+            <CustomInput
+              v-model="dyn_page_input.order_by"
+              type="number"
+              placeholder="请输入 排序"
+            ></CustomInput>
+          </tm-form-item>
+        </template>
         
         <!-- 备注 -->
-        <tm-form-item
-          label="备注"
-          name="rem"
-          :readonly="isReadonly"
-          :required="false"
+        <template
+          v-if="props.hideFields?.includes('rem') !== true"
         >
-          <CustomInput
-            v-model="dyn_page_input.rem"
-            type="textarea"
-            height="130"
-            placeholder="请输入 备注"
-          ></CustomInput>
-        </tm-form-item>
+          <!-- 备注 -->
+          <tm-form-item
+            label="备注"
+            name="rem"
+            :readonly="isReadonly"
+            :required="false"
+          >
+            <CustomInput
+              v-model="dyn_page_input.rem"
+              type="textarea"
+              height="130"
+              placeholder="请输入 备注"
+            ></CustomInput>
+          </tm-form-item>
+        </template>
         
       </tm-form>
       
@@ -118,6 +146,7 @@
       <tm-tabs
         v-model="inlineForeignTabIdx"
         color=""
+        :line-full="true"
         :list="[
           '动态页面字段',
         ]"
@@ -133,7 +162,6 @@
       <view
         un-sticky
         un-top="-.5"
-        un-bg="[var(--page-bg)]"
         un-z="3"
       >
         
@@ -192,6 +220,16 @@
             un-p="x-2 y-2"
             un-box-border
             un-cursor="pointer"
+            @click="onCopyDynPageField"
+          >
+            复制
+          </view>
+          
+          <view
+            un-text="[var(--color-primary)]"
+            un-p="x-2 y-2"
+            un-box-border
+            un-cursor="pointer"
             @click="onEditDynPageField"
           >
             编辑
@@ -236,7 +274,7 @@
           <!-- 编码 -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -246,7 +284,7 @@
           <!-- 名称 -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -256,7 +294,7 @@
           <!-- 类型 -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -322,6 +360,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -334,6 +373,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -346,6 +386,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -358,14 +399,14 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
   </scroll-view>
   
   <view
-    v-if="dialogAction !== 'view' && hasOperationButtons"
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -373,130 +414,95 @@
     un-items="center"
     un-gap="x-4"
   >
-    
-    <tm-drawer
-      v-model:show="operationDrawerShow"
-      title="操作"
-      un-w="full"
-      :show-close="true"
-      :show-footer="true"
-      size="auto"
+
+    <view
+      v-if="props.hasCloseBtn"
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
     >
-      
-      <template #trigger>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = true"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-          >
-            
-            <view>
-              操作
-            </view>
-            
-            <view
-              un-i="iconfont-caret_top"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <template #footer>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = false;"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-            un-gap="x-1"
-          >
-            
-            <view>
-              关闭
-            </view>
-            
-            <view
-              un-i="iconfont-caret_bottom"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <view
-        un-p="4"
-        un-box-border
-        un-w="full"
-        un-flex="~ col"
-        un-gap="y-4"
+      <tm-button
+        block
+        color="info"
+        @click="onCancel"
       >
-        
+        取消
+      </tm-button>
+    </view>
+
+    <view
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
+    >
+      <CustomActionBar
+        ref="actionBarRef"
+        trigger-text="操作"
+        trigger-color="info"
+        un-w="full"
+      >
+
         <view
           v-if="dialogAction === 'edit'"
           un-flex="~"
           un-gap="x-2"
         >
-          
-          <tm-button
-            v-if="permit('add', '新增')"
-            block
+
+          <CustomActionButton
+            v-if="permit('add', '新增') && dyn_page_id"
+            report
             color="info"
-            @click="operationDrawerShow = false; onCopy();"
+            un-w="full"
+            @click="actionBarRef?.close(); onCopy();"
           >
             复制
-          </tm-button>
-          
-          <tm-button
+          </CustomActionButton>
+
+          <CustomActionButton
             v-if="permit('edit', '编辑')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
+            report
+            un-w="full"
+            :disabled="!inited || is_form_hydrating || isReadonly"
+            @click="actionBarRef?.close(); formRef?.submit();"
           >
-            编辑
-          </tm-button>
-          
+            保存
+          </CustomActionButton>
+
         </view>
-        
+
         <CustomDivider
           v-if="dialogAction === 'edit'"
+          class="custom-action-bar-single-hide"
           :show-text="false"
           un-p="y-0 x-0"
         ></CustomDivider>
-        
+
         <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
         >
-          
-          <tm-button
+
+          <CustomActionButton
             v-if="permit('add', '新增')"
+            report
             :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
+            @click="actionBarRef?.close(); formRef?.submit();"
           >
-            新增
-          </tm-button>
-          
+            保存
+          </CustomActionButton>
+
         </template>
-          
+
         <CustomDivider
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          class="custom-action-bar-single-hide"
           :show-text="false"
           un-p="y-0 x-0"
         ></CustomDivider>
-        
-      </view>
-      
-    </tm-drawer>
-    
+      </CustomActionBar>
+    </view>
+
   </view>
   
   <AppLoading></AppLoading>
@@ -528,6 +534,10 @@ import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
 
 // 动态页面字段
 import DynPageFieldDetailModal from "@/pages/dyn_page_field/DetailModal.vue";
+
+import {
+  getDefaultInputDynPageField,
+} from "@/pages/dyn_page_field/Api.ts";
 
 const pagePath = getPagePathDynPage();
 const permitStore = usePermitStore();
@@ -578,26 +588,9 @@ watch(
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
-let operationDrawerShow = $ref(false);
-
-/** 是否有可用的操作按钮 */
-const hasOperationButtons = $computed(() => {
-  if (dialogAction === 'view') return false;
-
-  if (dialogAction === 'edit') {
-    // 复制按钮
-    if (permit('add')) return true;
-    // 编辑按钮
-    if (permit('edit')) return true;
-  }
-
-  if (dialogAction === 'add' || dialogAction === 'copy') {
-    // 新增按钮
-    if (permit('add')) return true;
-  }
-
-  return false;
-});
+const actionBarRef = $ref<{
+  close: () => void;
+}>();
 
 /** 复制 */
 async function onCopy() {
@@ -729,6 +722,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPage(),
+      ]);
       dyn_page_model = await findOneModel(
         {
           id: dyn_page_id,
@@ -751,9 +749,12 @@ async function onRefresh() {
       dyn_page_input = {
         ...dyn_page_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
       if (props.order_by) {
         dyn_page_input.order_by = props.order_by;
+      } else {
+        dyn_page_input.order_by = 1;
       }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_model = await findOneModel(
@@ -804,15 +805,14 @@ const dyn_page_field_detail_modal_ref = $ref<InstanceType<typeof DynPageFieldDet
 async function onAddDynPageField() {
   
   if (
-    !inited || !dyn_page_field_detail_modal_ref ||
-    !dyn_page_model
+    !inited || !dyn_page_field_detail_modal_ref
   ) {
     return;
   }
   
   let order_by = 1;
-  if ((dyn_page_model.dyn_page_field?.length || 0) > 0) {
-    const max_order_by = Math.max(...dyn_page_model.dyn_page_field.map((it) => it.order_by || 0));
+  if ((dyn_page_input.dyn_page_field?.length || 0) > 0) {
+    const max_order_by = Math.max(...dyn_page_input.dyn_page_field?.map((it) => it.order_by || 0) || [ ]);
     order_by = max_order_by + 1;
   }
   
@@ -822,6 +822,11 @@ async function onAddDynPageField() {
     model: {
       order_by,
     },
+    hideFields: [
+      "dyn_page_id",
+      "order_by",
+    ],
+    hasCloseBtn: true,
   });
   
   if (res.type === "cancel") {
@@ -831,15 +836,67 @@ async function onAddDynPageField() {
   const input = res.input;
   
   dyn_page_input.dyn_page_field = dyn_page_input.dyn_page_field || [ ];
-  dyn_page_input.dyn_page_field.push(input);
   
-  dyn_page_model.dyn_page_field.push({
+  dyn_page_input.dyn_page_field.push({
     ...input,
     is_deleted: 0,
   } as DynPageFieldModel);
   
-  dyn_page_model.dyn_page_field.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
-  dyn_page_input = intoInputDynPage(dyn_page_model);
+  dyn_page_input.dyn_page_field.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+  dyn_page_input = intoInputDynPage(dyn_page_input);
+  
+}
+
+/** 复制 */
+async function onCopyDynPageField() {
+  
+  if (
+    !inited || !dyn_page_field_detail_modal_ref
+  ) {
+    return;
+  }
+  
+  if (index_selected_dyn_page_field.length > 1) {
+    uni.showToast({
+      title: "只能单选 动态页面字段",
+      icon: "none",
+    });
+    return;
+  }
+  if (index_selected_dyn_page_field.length === 0) {
+    uni.showToast({
+      title: "请选择要复制的 动态页面字段",
+      icon: "none",
+    });
+    return;
+  }
+  
+  const index = index_selected_dyn_page_field[0];
+  const sourceItem = dyn_page_input.dyn_page_field?.[index] as DynPageFieldModel | undefined;
+  if (!sourceItem) {
+    return;
+  }
+  
+  let order_by = 1;
+  if ((dyn_page_input.dyn_page_field?.length || 0) > 0) {
+    const max_order_by = Math.max(...dyn_page_input.dyn_page_field?.map((it) => it.order_by || 0) || [ ]);
+    order_by = max_order_by + 1;
+  }
+  
+  const defaultInput = await getDefaultInputDynPageField();
+  const copiedItem = {
+    ...defaultInput,
+    ...sourceItem,
+    id: undefined,
+    order_by,
+    is_deleted: 0,
+  } as DynPageFieldInput;
+  
+  dyn_page_input.dyn_page_field = dyn_page_input.dyn_page_field || [ ];
+  dyn_page_input.dyn_page_field.splice(index + 1, 0, copiedItem);
+  
+  dyn_page_input.dyn_page_field.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+  dyn_page_input = intoInputDynPage(dyn_page_input);
   
 }
 
@@ -847,8 +904,7 @@ async function onAddDynPageField() {
 async function onEditDynPageField() {
   
   if (
-    !inited || !dyn_page_field_detail_modal_ref ||
-    !dyn_page_model
+    !inited || !dyn_page_field_detail_modal_ref
   ) {
     return;
   }
@@ -878,8 +934,13 @@ async function onEditDynPageField() {
       sort?: Sort[],
       opt?: GqlOpt,
     ): Promise<DynPageFieldModel | undefined> {
-      return dyn_page_model?.dyn_page_field?.[index] as DynPageFieldModel | undefined;
+      return dyn_page_input.dyn_page_field?.[index] as DynPageFieldModel | undefined;
     },
+    hideFields: [
+      "dyn_page_id",
+      "order_by",
+    ],
+    hasCloseBtn: true
   });
   
   if (res.type === "cancel") {
@@ -891,12 +952,20 @@ async function onEditDynPageField() {
   dyn_page_input.dyn_page_field = dyn_page_input.dyn_page_field || [ ];
   dyn_page_input.dyn_page_field.splice(index, 1, input);
   
-  if (dyn_page_model && dyn_page_model.dyn_page_field) {
-    Object.assign(dyn_page_model.dyn_page_field[index], input);
-    dyn_page_model.dyn_page_field.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
-    dyn_page_input = intoInputDynPage(dyn_page_model);
+  if (dyn_page_input.dyn_page_field) {
+    Object.assign(dyn_page_input.dyn_page_field[index], input);
+    dyn_page_input.dyn_page_field.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+    dyn_page_input = intoInputDynPage(dyn_page_input);
   }
   
+}
+
+async function onCancel() {
+  if (props.closeBtnFn) {
+    await props.closeBtnFn();
+  } else {
+    await uni.navigateBack();
+  }
 }
 
 async function initFrame() {
@@ -915,6 +984,10 @@ const props = withDefaults(
     inputPatch?: Partial<DynPageInput>;
     backAfterSave?: boolean;
     order_by?: number;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
+    closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -925,6 +998,10 @@ const props = withDefaults(
     inputPatch: undefined,
     backAfterSave: true,
     order_by: undefined,
+    hideFields: undefined,
+    hasCloseBtn: undefined,
+    closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 
@@ -968,7 +1045,7 @@ watch(
 
 onLoad(async function(query?: AnyObject) {
   const dyn_page_id_str = query?.dyn_page_id;
-  const action = query?.action;
+  const action = props.action || query?.action;
   const input_patch = query?.input_patch;
   const back_after_save = query?.back_after_save;
   if (action === "add") {

@@ -355,6 +355,32 @@ export async function findByIdsDynPage(
 }
 
 /**
+ * 根据搜索条件判断动态页面是否存在
+ */
+export async function existsDynPage(
+  search?: DynPageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPage: Query["existsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageSearch) {
+        existsDynPage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPage(
@@ -642,50 +668,6 @@ export async function findLastOrderByDynPage(
   const order_by = data.findLastOrderByDynPage;
   
   return order_by;
-}
-
-/**
- * 获取 动态页面 字段注释
- */
-export async function getFieldCommentsDynPage(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsDynPage: Query["getFieldCommentsDynPage"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsDynPage {
-          id,
-          code,
-          lbl,
-          parent_menu_id,
-          parent_menu_id_lbl,
-          role_ids,
-          role_ids_lbl,
-          order_by,
-          is_enabled,
-          is_enabled_lbl,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsDynPage as DynPageFieldComment;
-  
-  return field_comments;
 }
 
 export function getPagePathDynPage() {

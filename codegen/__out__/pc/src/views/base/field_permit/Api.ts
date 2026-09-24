@@ -294,6 +294,32 @@ export async function findByIdsFieldPermit(
 }
 
 /**
+ * 根据搜索条件判断字段权限是否存在
+ */
+export async function existsFieldPermit(
+  search?: FieldPermitSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsFieldPermit: Query["existsFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: FieldPermitSearch) {
+        existsFieldPermit(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsFieldPermit;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 字段权限, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkFieldPermit(

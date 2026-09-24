@@ -31,7 +31,7 @@
 ></AttDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import AttDialog from "./AttDialog.vue";
 
 const emit = defineEmits([

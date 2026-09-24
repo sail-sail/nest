@@ -85,6 +85,10 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "is_audit_msg",
+        width: 140,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -352,6 +356,10 @@ export default defineConfig({
         width: 120,
       },
       {
+        COLUMN_NAME: "is_reject_msg",
+        width: 120,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -362,6 +370,10 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "is_hidden",
+        dict: "yes_no",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -488,6 +500,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "is_hidden",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -1748,6 +1763,20 @@ export default defineConfig({
         order: "descending",
       },
       lbl_field: "content",
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "title", "content" ],
+        lbl: "关键字",
+        placeholder: "关键字",
+      },
+      isUniPage: {
+        list_page: {
+          search_fields: [ "keyword" ],
+          lbl_field: "content",
+          lbl2_fields: [ "title" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
       {
@@ -1761,6 +1790,7 @@ export default defineConfig({
         COLUMN_NAME: "channel",
         align: "center",
         width: 120,
+        search: true,
       },
       {
         COLUMN_NAME: "title",
@@ -1808,6 +1838,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "org_id",
+        require: false,
       },
       {
         COLUMN_NAME: "create_usr_id",

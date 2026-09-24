@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl I18nGenQuery {
       .scope({
         i18n_resolver::find_by_ids_i18n(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断国际化是否存在
+  #[graphql(name = "existsI18n")]
+  async fn exists_i18n(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<I18nSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::exists_i18n(
+          search,
           None,
         )
       }).await

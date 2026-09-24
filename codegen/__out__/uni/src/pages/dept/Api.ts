@@ -364,6 +364,32 @@ export async function findByIdsDept(
 }
 
 /**
+ * 根据搜索条件判断部门是否存在
+ */
+export async function existsDept(
+  search?: DeptSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDept: Query["existsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DeptSearch) {
+        existsDept(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDept;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 部门, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDept(
@@ -702,53 +728,6 @@ export async function findLastOrderByDept(
   const order_by = data.findLastOrderByDept;
   
   return order_by;
-}
-
-/**
- * 获取 部门 字段注释
- */
-export async function getFieldCommentsDept(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsDept: Query["getFieldCommentsDept"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsDept {
-          id,
-          parent_id,
-          parent_id_lbl,
-          lbl,
-          usr_ids,
-          usr_ids_lbl,
-          is_locked,
-          is_locked_lbl,
-          is_enabled,
-          is_enabled_lbl,
-          order_by,
-          org_id,
-          org_id_lbl,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsDept as DeptFieldComment;
-  
-  return field_comments;
 }
 
 export function getPagePathDept() {

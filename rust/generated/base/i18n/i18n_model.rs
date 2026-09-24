@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -31,7 +28,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::lang::lang_model::LangId;
 use crate::base::menu::menu_model::MenuId;
@@ -58,40 +54,40 @@ pub struct I18nModel {
   pub lang_id: LangId,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
-  pub lang_id_lbl: SmolStr,
+  pub lang_id_lbl: String,
   /// 菜单
   #[graphql(name = "menu_id")]
   pub menu_id: MenuId,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  pub menu_id_lbl: String,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for I18nModel {
@@ -101,39 +97,36 @@ impl FromRow<'_, MySqlRow> for I18nModel {
     // 语言
     let lang_id: LangId = row.try_get("lang_id")?;
     let lang_id_lbl: Option<&str> = row.try_get("lang_id_lbl")?;
-    let lang_id_lbl = SmolStr::new(lang_id_lbl.unwrap_or_default());
+    let lang_id_lbl = String::from(lang_id_lbl.unwrap_or_default());
     // 菜单
     let menu_id: MenuId = row.try_get("menu_id")?;
     let menu_id_lbl: Option<&str> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = SmolStr::new(menu_id_lbl.unwrap_or_default());
+    let menu_id_lbl = String::from(menu_id_lbl.unwrap_or_default());
     // 编码
-    let code: &str = row.try_get("code")?;
-    let code = SmolStr::new(code);
+    let code: String = row.try_get("code")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -168,52 +161,52 @@ impl FromRow<'_, MySqlRow> for I18nModel {
 pub struct I18nFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 语言
   #[graphql(name = "lang_id")]
-  pub lang_id: SmolStr,
+  pub lang_id: String,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
-  pub lang_id_lbl: SmolStr,
+  pub lang_id_lbl: String,
   /// 菜单
   #[graphql(name = "menu_id")]
-  pub menu_id: SmolStr,
+  pub menu_id: String,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  pub menu_id_lbl: String,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -233,10 +226,10 @@ pub struct I18nSearch {
   pub lang_id_is_null: Option<bool>,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
-  pub lang_id_lbl: Option<Vec<SmolStr>>,
+  pub lang_id_lbl: Option<Vec<String>>,
   /// 语言
   #[graphql(name = "lang_id_lbl_like")]
-  pub lang_id_lbl_like: Option<SmolStr>,
+  pub lang_id_lbl_like: Option<String>,
   /// 菜单
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
@@ -245,28 +238,28 @@ pub struct I18nSearch {
   pub menu_id_is_null: Option<bool>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<Vec<SmolStr>>,
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 菜单
   #[graphql(name = "menu_id_lbl_like")]
-  pub menu_id_lbl_like: Option<SmolStr>,
+  pub menu_id_lbl_like: Option<String>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 编码
   #[graphql(name = "code_like")]
-  pub code_like: Option<SmolStr>,
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -275,10 +268,10 @@ pub struct I18nSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -290,10 +283,10 @@ pub struct I18nSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -412,34 +405,34 @@ pub struct I18nInput {
   pub lang_id: Option<LangId>,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
-  pub lang_id_lbl: Option<SmolStr>,
+  pub lang_id_lbl: Option<String>,
   /// 菜单
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<SmolStr>,
+  pub menu_id_lbl: Option<String>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -448,13 +441,13 @@ pub struct I18nInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -576,7 +569,7 @@ impl From<I18nInput> for I18nSearch {
   }
 }
 
-impl_id!(I18nId);
+crate::common::id::impl_id!(I18nId);
 
 /// 国际化 检测字段是否允许前端排序
 pub fn check_sort_i18n(
@@ -602,7 +595,7 @@ pub fn check_sort_i18n(
     }
     if !get_can_sort_in_api_i18n.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_i18n: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_i18n: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

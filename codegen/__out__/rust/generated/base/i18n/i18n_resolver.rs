@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -37,6 +34,11 @@ pub async fn find_all_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_i18n()),
+    String::from("find"),
+  ).await?;
   
   check_sort_i18n(sort.as_deref())?;
   
@@ -63,6 +65,11 @@ pub async fn find_count_i18n(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_i18n()),
+    String::from("find"),
+  ).await?;
+  
   let num = i18n_service::find_count_i18n(
     search,
     options,
@@ -84,6 +91,11 @@ pub async fn find_one_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_i18n()),
+    String::from("find"),
+  ).await?;
   
   check_sort_i18n(sort.as_deref())?;
   
@@ -109,6 +121,11 @@ pub async fn find_one_ok_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_i18n()),
+    String::from("find"),
+  ).await?;
   
   check_sort_i18n(sort.as_deref())?;
   
@@ -184,6 +201,32 @@ pub async fn find_by_ids_i18n(
   Ok(models)
 }
 
+/// 根据搜索条件判断国际化是否存在
+#[function_name::named]
+pub async fn exists_i18n(
+  search: Option<I18nSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_i18n()),
+    String::from("find"),
+  ).await?;
+  
+  let res = i18n_service::exists_i18n(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找国际化, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_i18n(
@@ -235,8 +278,8 @@ pub async fn creates_i18n(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_i18n()),
-    SmolStr::new("add"),
+    String::from(get_page_path_i18n()),
+    String::from("add"),
   ).await?;
   
   let ids = i18n_service::creates_i18n(
@@ -271,8 +314,8 @@ pub async fn update_by_id_i18n(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_i18n()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_i18n()),
+    String::from("edit"),
   ).await?;
   
   let res = i18n_service::update_by_id_i18n(
@@ -299,8 +342,8 @@ pub async fn delete_by_ids_i18n(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_i18n()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_i18n()),
+    String::from("delete"),
   ).await?;
   
   let num = i18n_service::delete_by_ids_i18n(
@@ -345,8 +388,8 @@ pub async fn revert_by_ids_i18n(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_i18n()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_i18n()),
+    String::from("delete"),
   ).await?;
   
   let num = i18n_service::revert_by_ids_i18n(
@@ -372,8 +415,8 @@ pub async fn force_delete_by_ids_i18n(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_i18n()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_i18n()),
+    String::from("force_delete"),
   ).await?;
   
   let num = i18n_service::force_delete_by_ids_i18n(

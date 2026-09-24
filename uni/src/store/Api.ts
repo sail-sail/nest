@@ -13,7 +13,7 @@ export async function getUsrPermits(
     getUsrPermits: Query["getUsrPermits"],
   } = await query({
     query: /* GraphQL */ `
-      query($route_path: SmolStr) {
+      query($route_path: String) {
         getUsrPermits(route_path: $route_path) {
           route_path
           code
@@ -26,4 +26,25 @@ export async function getUsrPermits(
   }, gqlOpt);
   const data = res.getUsrPermits;
   return data;
+}
+
+/** 字段权限 */
+export async function getFieldPermit(
+  route_path: string,
+  opt?: GqlOpt,
+): Promise<string[] | null> {
+  const res: {
+    getFieldPermit: Query["getFieldPermit"],
+  } = await query({
+    query: /* GraphQL */ `
+      query($route_path: String!) {
+        getFieldPermit(route_path: $route_path)
+      }
+    `,
+    variables: {
+      route_path,
+    },
+  }, opt);
+  const data = res.getFieldPermit;
+  return data ?? null;
 }

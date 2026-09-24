@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -179,6 +176,26 @@ impl SeoGenQuery {
       .scope({
         seo_resolver::find_by_ids_seo(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断SEO优化是否存在
+  #[graphql(name = "existsSeo")]
+  async fn exists_seo(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<SeoSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        seo_resolver::exists_seo(
+          search,
           None,
         )
       }).await

@@ -36,7 +36,7 @@ async function getMenus(context: Context): Promise<MenuModel[]> {
 async function exec() {
   console.time("field_permit");
   
-  const context = await initContext(true);
+  const context = await initContext();
   
   const menu_models = await getMenus(context);
   

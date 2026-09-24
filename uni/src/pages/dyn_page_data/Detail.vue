@@ -14,13 +14,13 @@
   >
     
     <view
-      un-m="x-1"
+      un-m="x-2"
     >
       
       <tm-form
         ref="formRef"
         v-model="dyn_page_data_input"
-        :label-width="180"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -30,14 +30,14 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
   </scroll-view>
   
   <view
-    v-if="dialogAction !== 'view' && hasOperationButtons"
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -45,130 +45,95 @@
     un-items="center"
     un-gap="x-4"
   >
-    
-    <tm-drawer
-      v-model:show="operationDrawerShow"
-      title="操作"
-      un-w="full"
-      :show-close="true"
-      :show-footer="true"
-      size="auto"
+
+    <view
+      v-if="props.hasCloseBtn"
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
     >
-      
-      <template #trigger>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = true"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-          >
-            
-            <view>
-              操作
-            </view>
-            
-            <view
-              un-i="iconfont-caret_top"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <template #footer>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = false;"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-            un-gap="x-1"
-          >
-            
-            <view>
-              关闭
-            </view>
-            
-            <view
-              un-i="iconfont-caret_bottom"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <view
-        un-p="4"
-        un-box-border
-        un-w="full"
-        un-flex="~ col"
-        un-gap="y-4"
+      <tm-button
+        block
+        color="info"
+        @click="onCancel"
       >
-        
+        取消
+      </tm-button>
+    </view>
+
+    <view
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
+    >
+      <CustomActionBar
+        ref="actionBarRef"
+        trigger-text="操作"
+        trigger-color="info"
+        un-w="full"
+      >
+
         <view
           v-if="dialogAction === 'edit'"
           un-flex="~"
           un-gap="x-2"
         >
-          
-          <tm-button
-            v-if="permit('add', '新增')"
-            block
+
+          <CustomActionButton
+            v-if="permit('add', '新增') && dyn_page_data_id"
+            report
             color="info"
-            @click="operationDrawerShow = false; onCopy();"
+            un-w="full"
+            @click="actionBarRef?.close(); onCopy();"
           >
             复制
-          </tm-button>
-          
-          <tm-button
+          </CustomActionButton>
+
+          <CustomActionButton
             v-if="permit('edit', '编辑')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
+            report
+            un-w="full"
+            :disabled="!inited || is_form_hydrating || isReadonly"
+            @click="actionBarRef?.close(); formRef?.submit();"
           >
-            编辑
-          </tm-button>
-          
+            保存
+          </CustomActionButton>
+
         </view>
-        
+
         <CustomDivider
           v-if="dialogAction === 'edit'"
+          class="custom-action-bar-single-hide"
           :show-text="false"
           un-p="y-0 x-0"
         ></CustomDivider>
-        
+
         <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
         >
-          
-          <tm-button
+
+          <CustomActionButton
             v-if="permit('add', '新增')"
+            report
             :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
+            @click="actionBarRef?.close(); formRef?.submit();"
           >
-            新增
-          </tm-button>
-          
+            保存
+          </CustomActionButton>
+
         </template>
-          
+
         <CustomDivider
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          class="custom-action-bar-single-hide"
           :show-text="false"
           un-p="y-0 x-0"
         ></CustomDivider>
-        
-      </view>
-      
-    </tm-drawer>
-    
+      </CustomActionBar>
+    </view>
+
   </view>
   
   <AppLoading></AppLoading>
@@ -228,26 +193,9 @@ watch(
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
-let operationDrawerShow = $ref(false);
-
-/** 是否有可用的操作按钮 */
-const hasOperationButtons = $computed(() => {
-  if (dialogAction === 'view') return false;
-
-  if (dialogAction === 'edit') {
-    // 复制按钮
-    if (permit('add')) return true;
-    // 编辑按钮
-    if (permit('edit')) return true;
-  }
-
-  if (dialogAction === 'add' || dialogAction === 'copy') {
-    // 新增按钮
-    if (permit('add')) return true;
-  }
-
-  return false;
-});
+const actionBarRef = $ref<{
+  close: () => void;
+}>();
 
 /** 复制 */
 async function onCopy() {
@@ -376,6 +324,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPageData(),
+      ]);
       dyn_page_data_model = await findOneModel(
         {
           id: dyn_page_data_id,
@@ -398,6 +351,7 @@ async function onRefresh() {
       dyn_page_data_input = {
         ...dyn_page_data_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_data_model = await findOneModel(
@@ -426,6 +380,14 @@ async function onRefresh() {
   }
 }
 
+async function onCancel() {
+  if (props.closeBtnFn) {
+    await props.closeBtnFn();
+  } else {
+    await uni.navigateBack();
+  }
+}
+
 async function initFrame() {
   await onRefresh();
   inited = true;
@@ -441,6 +403,10 @@ const props = withDefaults(
     beforeSave?: (input: DynPageDataInput) => Promise<boolean>;
     inputPatch?: Partial<DynPageDataInput>;
     backAfterSave?: boolean;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
+    closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -450,6 +416,10 @@ const props = withDefaults(
     beforeSave: undefined,
     inputPatch: undefined,
     backAfterSave: true,
+    hideFields: undefined,
+    hasCloseBtn: undefined,
+    closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 
@@ -493,7 +463,7 @@ watch(
 
 onLoad(async function(query?: AnyObject) {
   const dyn_page_data_id_str = query?.dyn_page_data_id;
-  const action = query?.action;
+  const action = props.action || query?.action;
   const input_patch = query?.input_patch;
   const back_after_save = query?.back_after_save;
   if (action === "add") {

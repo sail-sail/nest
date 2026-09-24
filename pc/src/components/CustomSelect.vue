@@ -286,7 +286,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   WatchHandle,
 } from "vue";
@@ -779,8 +779,8 @@ function getSelectInputWidth() {
     return 0;
   }
   const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
-  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
-  return Math.ceil(width);
+  const width = wrapper?.getBoundingClientRect().width ?? selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width || 0);
 }
 
 // watch(
@@ -1080,8 +1080,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;
@@ -1116,8 +1116,8 @@ defineExpose({
 .custom_select_readonly {
   min-height: 32px;
   :deep(.el-tag) {
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     height: auto;
     .el-tag__content {

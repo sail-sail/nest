@@ -207,7 +207,6 @@
       <span
         class="dict_select_placeholder"
         un-relative
-        un-top="-0.25"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -219,7 +218,6 @@
         v-if="isShowModelLabel"
         class="dict_select_readonly_span"
         un-relative
-        un-top="-0.25"
       >
         {{ props.modelLabel || "" }}
       </span>
@@ -227,7 +225,6 @@
         v-else
         class="dict_select_readonly_span"
         un-relative
-        un-top="-0.25"
       >
         {{ modelLabels[0] || "" }}
       </span>
@@ -240,7 +237,7 @@
 ></DictDetailDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -585,8 +582,8 @@ function getSelectInputWidth() {
     return 0;
   }
   const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
-  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
-  return Math.ceil(width);
+  const width = wrapper?.getBoundingClientRect().width ?? selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width || 0);
 }
 
 function getDropdownMeasureTexts() {
@@ -875,8 +872,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;

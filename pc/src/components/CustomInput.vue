@@ -102,7 +102,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 
 const emit = defineEmits<{
   // oxlint-disable-next-line @typescript-eslint/no-explicit-any
@@ -235,7 +235,7 @@ defineExpose({
   .custom_input_readonly_content {
     text-align: left;
   }
-  :deep(el-input__inner) {
+  :deep(.el-input__inner) {
     text-align: left;
   }
 }

@@ -13,9 +13,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -177,6 +174,26 @@ impl LangGenQuery {
       .scope({
         lang_resolver::find_by_ids_lang(
           ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据搜索条件判断语言是否存在
+  #[graphql(name = "existsLang")]
+  async fn exists_lang(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<LangSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::exists_lang(
+          search,
           None,
         )
       }).await

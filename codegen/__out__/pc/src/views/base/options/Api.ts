@@ -339,6 +339,32 @@ export async function findByIdsOptions(
 }
 
 /**
+ * 根据搜索条件判断系统选项是否存在
+ */
+export async function existsOptions(
+  search?: OptionsSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOptions: Query["existsOptions"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OptionsSearch) {
+        existsOptions(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOptions;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptions(
@@ -574,23 +600,15 @@ export function useExportExcelOptions() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: OptionsSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOptions(search: $search, page: $page, sort: $sort) {
               ${ optionsQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -39,6 +36,11 @@ pub async fn find_all_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dept(sort.as_deref())?;
   
@@ -65,6 +67,11 @@ pub async fn find_count_dept(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
+  
   let num = dept_service::find_count_dept(
     search,
     options,
@@ -86,6 +93,11 @@ pub async fn find_one_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dept(sort.as_deref())?;
   
@@ -111,6 +123,11 @@ pub async fn find_one_ok_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dept(sort.as_deref())?;
   
@@ -186,6 +203,32 @@ pub async fn find_by_ids_dept(
   Ok(models)
 }
 
+/// 根据搜索条件判断部门是否存在
+#[function_name::named]
+pub async fn exists_dept(
+  search: Option<DeptSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
+  
+  let res = dept_service::exists_dept(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找部门, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_dept(
@@ -237,8 +280,8 @@ pub async fn creates_dept(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("add"),
+    String::from(get_page_path_dept()),
+    String::from("add"),
   ).await?;
   
   let ids = dept_service::creates_dept(
@@ -297,8 +340,8 @@ pub async fn update_by_id_dept(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dept()),
+    String::from("edit"),
   ).await?;
   
   let res = dept_service::update_by_id_dept(
@@ -325,8 +368,8 @@ pub async fn delete_by_ids_dept(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dept()),
+    String::from("delete"),
   ).await?;
   
   let num = dept_service::delete_by_ids_dept(
@@ -376,8 +419,8 @@ pub async fn enable_by_ids_dept(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dept()),
+    String::from("edit"),
   ).await?;
   
   let num = dept_service::enable_by_ids_dept(
@@ -429,8 +472,8 @@ pub async fn lock_by_ids_dept(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dept()),
+    String::from("edit"),
   ).await?;
   
   let num = dept_service::lock_by_ids_dept(
@@ -476,8 +519,8 @@ pub async fn revert_by_ids_dept(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dept()),
+    String::from("delete"),
   ).await?;
   
   let num = dept_service::revert_by_ids_dept(
@@ -503,8 +546,8 @@ pub async fn force_delete_by_ids_dept(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dept()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_dept()),
+    String::from("force_delete"),
   ).await?;
   
   let num = dept_service::force_delete_by_ids_dept(

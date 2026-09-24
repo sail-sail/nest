@@ -38,7 +38,7 @@
 </el-config-provider>
 </template>
 
-<script setup lang="ts" vapor>
+<script setup lang="ts">
 import locale from "@/locales";
 
 const {

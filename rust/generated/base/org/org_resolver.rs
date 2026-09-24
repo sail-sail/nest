@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -39,6 +36,11 @@ pub async fn find_all_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   check_sort_org(sort.as_deref())?;
   
@@ -65,6 +67,11 @@ pub async fn find_count_org(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
+  
   let num = org_service::find_count_org(
     search,
     options,
@@ -86,6 +93,11 @@ pub async fn find_one_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   check_sort_org(sort.as_deref())?;
   
@@ -111,6 +123,11 @@ pub async fn find_one_ok_org(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
   
   check_sort_org(sort.as_deref())?;
   
@@ -186,6 +203,32 @@ pub async fn find_by_ids_org(
   Ok(models)
 }
 
+/// 根据搜索条件判断组织是否存在
+#[function_name::named]
+pub async fn exists_org(
+  search: Option<OrgSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_org()),
+    String::from("find"),
+  ).await?;
+  
+  let res = org_service::exists_org(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找组织, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_org(
@@ -237,8 +280,8 @@ pub async fn creates_org(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("add"),
+    String::from(get_page_path_org()),
+    String::from("add"),
   ).await?;
   
   let ids = org_service::creates_org(
@@ -297,8 +340,8 @@ pub async fn update_by_id_org(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_org()),
+    String::from("edit"),
   ).await?;
   
   let res = org_service::update_by_id_org(
@@ -325,8 +368,8 @@ pub async fn delete_by_ids_org(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_org()),
+    String::from("delete"),
   ).await?;
   
   let num = org_service::delete_by_ids_org(
@@ -376,8 +419,8 @@ pub async fn enable_by_ids_org(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_org()),
+    String::from("edit"),
   ).await?;
   
   let num = org_service::enable_by_ids_org(
@@ -429,8 +472,8 @@ pub async fn lock_by_ids_org(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_org()),
+    String::from("edit"),
   ).await?;
   
   let num = org_service::lock_by_ids_org(
@@ -476,8 +519,8 @@ pub async fn revert_by_ids_org(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_org()),
+    String::from("delete"),
   ).await?;
   
   let num = org_service::revert_by_ids_org(
@@ -503,8 +546,8 @@ pub async fn force_delete_by_ids_org(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_org()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_org()),
+    String::from("force_delete"),
   ).await?;
   
   let num = org_service::force_delete_by_ids_org(

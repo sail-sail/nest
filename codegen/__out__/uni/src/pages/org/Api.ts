@@ -333,6 +333,32 @@ export async function findByIdsOrg(
 }
 
 /**
+ * 根据搜索条件判断组织是否存在
+ */
+export async function existsOrg(
+  search?: OrgSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOrg: Query["existsOrg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch) {
+        existsOrg(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOrg;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 组织, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOrg(
@@ -526,47 +552,6 @@ export async function findLastOrderByOrg(
   const order_by = data.findLastOrderByOrg;
   
   return order_by;
-}
-
-/**
- * 获取 组织 字段注释
- */
-export async function getFieldCommentsOrg(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsOrg: Query["getFieldCommentsOrg"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsOrg {
-          id,
-          lbl,
-          is_locked,
-          is_locked_lbl,
-          is_enabled,
-          is_enabled_lbl,
-          order_by,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsOrg as OrgFieldComment;
-  
-  return field_comments;
 }
 
 export function getPagePathOrg() {

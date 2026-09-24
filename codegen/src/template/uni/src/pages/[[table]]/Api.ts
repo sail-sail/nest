@@ -565,15 +565,23 @@ export async function setLblById<#=Table_Up#>(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = getImgUrl({
-      id: model.<#=column_name#>,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = getImgUrl({
+        id: img,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>) || "";
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#
@@ -1370,6 +1378,32 @@ export async function findByIds<#=Table_Up#>(
 }
 
 /**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up#>(
+  search?: <#=searchName#>,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    exists<#=Table_Up2#>: Query["exists<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>) {
+        exists<#=Table_Up2#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.exists<#=Table_Up2#>;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 <#=table_comment#>, 出现查询不到的 id 则报错
  */
 export async function findByIdsOk<#=Table_Up#>(
@@ -1984,77 +2018,6 @@ export async function findLastOrderBy<#=Table_Up#>(
 }<#
 }
 #>
-
-/**
- * 获取 <#=table_comment#> 字段注释
- */
-export async function getFieldComments<#=Table_Up#>(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldComments<#=Table_Up2#>: Query["getFieldComments<#=Table_Up2#>"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldComments<#=Table_Up2#> {<#
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
-            const column_name = column.COLUMN_NAME;
-            let data_type = column.DATA_TYPE;
-            let column_type = column.COLUMN_TYPE;
-            let column_comment = column.COLUMN_COMMENT || "";
-            if (column_name === "is_sys") {
-              continue;
-            }
-            if (column_name === "is_deleted") {
-              continue;
-            }
-            if (column_name === "tenant_id") {
-              continue;
-            }
-            if (column_name === "is_hidden") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            const foreignKey = column.foreignKey;
-          #><#
-            if (foreignKey || column.dict || column.dictbiz
-              || data_type === "datetime" || data_type === "date"
-            ) {
-          #>
-          <#=column_name#>,<#
-              if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
-          #>
-          <#=column_name#>_lbl,<#
-              }
-          #><#
-            } else {
-          #>
-          <#=column_name#>,<#
-            }
-          #><#
-          }
-          #><#
-          if (opts.isUseDynPageFields) {
-          #>
-          dyn_page_data<#
-          }
-          #>
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldComments<#=Table_Up2#> as <#=fieldCommentName#>;
-  
-  return field_comments;
-}
 
 export function getPagePath<#=Table_Up#>() {
   return "/<#=mod#>/<#=table#>";

@@ -3,6 +3,9 @@ name = "generated"
 version = "0.0.0"
 edition = "2024"
 
+[lints.clippy]
+needless_bool = "allow"
+
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
@@ -15,7 +18,6 @@ tracing-attributes.workspace = true
 tokio.workspace = true
 poem.workspace = true
 async-graphql.workspace = true
-smol_str.workspace = true
 slab.workspace = true
 chrono.workspace = true
 # anyhow.workspace = true
@@ -25,6 +27,7 @@ rust-s3.workspace = true
 imstr.workspace = true
 jsonwebtoken.workspace = true
 sha2.workspace = true
+md-5.workspace = true
 hmac.workspace = true
 # protobuf.workspace = true
 hex-literal.workspace = true
@@ -43,10 +46,9 @@ deadpool.workspace = true
 deadpool-redis.workspace = true
 redis.workspace = true
 # pin-project.workspace = true
-bigdecimal.workspace = true
 time.workspace = true
 rust_decimal.workspace = true
-rust_decimal_macros.workspace = true
+# rust_decimal_macros.workspace = true
 # enum_dispatch.workspace = true
 # pin-project-lite.workspace = true
 # rayon.workspace = true
@@ -71,6 +73,7 @@ rand.workspace = true
 csv.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
+rumqttc-v5-next.workspace = true
 
 [lib]
 path = "lib.rs"

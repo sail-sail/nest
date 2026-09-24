@@ -1,6 +1,9 @@
 #![forbid(unsafe_code)]
 #![recursion_limit="512"]
 
+use aliyun_sdk as _;
+use wx_pay_sdk as _;
+
 #[cfg(not(target_env = "msvc"))]
 #[global_allocator]
 static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
@@ -9,8 +12,6 @@ use std::time::Duration;
 use std::time::Instant;
 
 use tracing::error;
-
-use smol_str::SmolStr;
 
 use poem::{
   handler, Response,
@@ -27,13 +28,10 @@ use generated::common::auth::auth_model::{AUTHORIZATION, AuthToken};
 use generated::common::gql::request_id::handle_request_id;
 
 use std::env;
-use async_graphql::{
-  EmptySubscription, Schema,
-};
 use poem::{
   get, post,
   listener::TcpListener,
-  middleware::{CatchPanic, TokioMetrics, Tracing},
+  middleware::{CatchPanic, /*TokioMetrics,*/ Tracing},
   EndpointExt, Route, Server,
 };
 use generated::common::gql::server_timing::{
@@ -142,15 +140,15 @@ async fn graceful_shutdown() {
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct AuthTokenParam {
-  pub Authorization: Option<SmolStr>,
+  pub Authorization: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct GglParams {
-  pub query: SmolStr,
-  pub variables: Option<SmolStr>,
-  pub Authorization: Option<SmolStr>,
+  pub query: String,
+  pub variables: Option<String>,
+  pub Authorization: Option<String>,
 }
 
 #[handler]
@@ -161,7 +159,7 @@ pub async fn graphql_handler_get(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(SmolStr::new);
+    .map(|s| s.to_string());
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -170,12 +168,12 @@ pub async fn graphql_handler_get(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip.into());
+  let ip = generated::common::gql::model::Ip(ip);
   let now0 = Instant::now();
   
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
-  match req.header(AUTHORIZATION).map(SmolStr::new) {
+  match req.header(AUTHORIZATION).map(|s| s.to_string()) {
     None => {
       if let Some(auth_token) = gql_params.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);
@@ -240,7 +238,7 @@ pub async fn graphql_handler(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(SmolStr::new);
+    .map(|s| s.to_string());
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -249,11 +247,11 @@ pub async fn graphql_handler(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip.into());
+  let ip = generated::common::gql::model::Ip(ip);
   
   let now0 = Instant::now();
   let mut gql_req = data.0;
-  match req.header(AUTHORIZATION).map(SmolStr::new) {
+  match req.header(AUTHORIZATION).map(|s| s.to_string()) {
     None => {
       if let Some(auth_token) = token_param.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);
@@ -387,7 +385,7 @@ fn cleanup_old_log_files(
 }
 
 fn main() -> Result<(), std::io::Error> {
-  let runtime = tokio::runtime::Builder::new_multi_thread()
+  let runtime = tokio::runtime::Builder::new_current_thread()
     .enable_all()
     .thread_stack_size(TOKIO_THREAD_STACK_SIZE)
     .build()
@@ -397,7 +395,9 @@ fn main() -> Result<(), std::io::Error> {
 
 #[allow(clippy::too_many_lines)]
 async fn async_main() -> Result<(), std::io::Error> {
+  
   dotenv().ok();
+  
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();
   let log_path = std::env::var("log_path").ok();
@@ -520,12 +520,11 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   });
   
-  let schema: app::QuerySchema = Schema::build(
+  let schema: app::QuerySchema = async_graphql::Schema::build(
     app::Query::default(),
     app::Mutation::default(),
-    EmptySubscription
-  )
-    .finish();
+    async_graphql::EmptySubscription,
+  ).finish();
   
   #[cfg(debug_assertions)]
   {
@@ -576,7 +575,10 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   }
   
-  let metrics_graphql = TokioMetrics::new();
+  generated::init();
+  app::init();
+  
+  // let metrics_graphql = TokioMetrics::new();
   
   let app = {
     let mut app = Route::new();
@@ -585,13 +587,13 @@ async fn async_main() -> Result<(), std::io::Error> {
     //   app = app.at("/graphiql", get(graphql_playground));
     // }
     
-    app = app.at("/metrics/graphql", metrics_graphql.exporter());
+    // app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
     app = app.at(
       "/graphql",
       post(graphql_handler)
       .get(graphql_handler_get)
-      .with(metrics_graphql)
+      // .with(metrics_graphql)
     );
     
     // 上传附件

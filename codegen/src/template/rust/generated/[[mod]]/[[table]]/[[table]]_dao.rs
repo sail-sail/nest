@@ -52,8 +52,7 @@ const hasDict = columns.some((column) => {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) return false;
   const column_comment = column.COLUMN_COMMENT || "";
   if (!column.dict) return false;
@@ -67,8 +66,7 @@ const hasDictbiz = columns.some((column) => {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) return false;
   const column_comment = column.COLUMN_COMMENT || "";
   if (!column.dictbiz) return false;
@@ -85,7 +83,6 @@ const hasDictModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dict;
@@ -101,7 +98,6 @@ const hasDictbizModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dictbiz;
@@ -203,9 +199,6 @@ use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
-
-#[allow(unused_imports)]
-use smol_str::SmolStr;
 
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
@@ -610,56 +603,6 @@ for (const cascadeUpdateField of cascadeUpdateFields) {
     cascadeUpdateFieldWatchColumns.push(cascadeUpdateField.watchColumn);
   }
 }
-for (const item of cascadeUpdateFieldTables) {
-  const mod = item.mod;
-  const table = item.table;
-  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-  const tableUP = tableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("");
-  if (
-    findAllTableUps.includes(tableUP) &&
-    updateByIdTableUps.includes(tableUP)
-  ) {
-    continue;
-  }
-  const hasFindAllTableUps = findAllTableUps.includes(tableUP);
-  if (!hasFindAllTableUps) {
-    findAllTableUps.push(tableUP);
-  }
-  const hasUpdateByIdTableUps = updateByIdTableUps.includes(tableUP);
-  if (!hasUpdateByIdTableUps) {
-    updateByIdTableUps.push(tableUP);
-  }
-  const hasSearchTableUps = searchTableUps.includes(tableUP);
-  if (!hasSearchTableUps) {
-    searchTableUps.push(tableUP);
-  }
-#>
-
-use crate::<#=mod#>::<#=table#>::<#=table#>_model::{<#
-  if (!hasSearchTableUps) {
-  #>
-  <#=tableUP#>Search,<#
-  }
-  #>
-  <#=tableUP#>Input,
-};
-
-use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
-  if (!hasFindAllTableUps) {
-  #>
-  find_all_<#=table#>,<#
-  }
-  #><#
-  if (!hasUpdateByIdTableUps) {
-  #>
-  update_by_id_<#=table#>,<#
-  }
-  #>
-};<#
-}
-#><#
 
 // 已经导入的ID列表
 const modelIds = [ ];
@@ -748,8 +691,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
   if (column_name === 'id') continue;
@@ -776,6 +718,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   modelIds.push(modelId);
 #>
+#[allow(unused_imports)]
 use crate::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
 }
 #><#
@@ -863,7 +806,7 @@ async fn get_where_query(
   }
   #>
   
-  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
+  let mut where_query = String::with_capacity(80 * <#=columns.length#> * 6);<#
   if (hasIsDeleted) {
   #>
   
@@ -876,31 +819,23 @@ async fn get_where_query(
   }
   #>
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<<#=Table_Up#>Id>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -918,14 +853,14 @@ async fn get_where_query(
     let dept_ids = get_auth_and_children_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -935,14 +870,14 @@ async fn get_where_query(
     let dept_ids = get_auth_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -952,14 +887,14 @@ async fn get_where_query(
     let role_ids = get_auth_role_ids().await?;
     let arg = {
       if role_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(role_ids.len());
         for role_id in role_ids {
           args.push(role_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_role_.role_id in (");
@@ -997,7 +932,7 @@ async fn get_where_query(
     const fields = searchByKeyword.fields;
   #>
   {
-    let <#=prop_rust#>: Option<SmolStr> = match search {
+    let <#=prop_rust#>: Option<String> = match search {
       Some(item) => item.<#=prop_rust#>.clone(),
       None => None,
     };
@@ -1033,6 +968,10 @@ async fn get_where_query(
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
+    const isIcon = column.isIcon;
+    if (isIcon) {
+      continue;
+    }
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -1053,14 +992,14 @@ async fn get_where_query(
     const modelLabel = column.modelLabel;
     const modelLabel_rust = rustKeyEscape(modelLabel);
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -1072,9 +1011,9 @@ async fn get_where_query(
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'text') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -1097,7 +1036,6 @@ async fn get_where_query(
     }
   #><#
     if ([
-      "is_hidden",
       "is_sys",
     ].includes(column_name)) {
   #>
@@ -1110,14 +1048,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1129,21 +1067,17 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+    if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1178,21 +1112,21 @@ async fn get_where_query(
   {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=modelLabel#> in (");
@@ -1201,14 +1135,14 @@ async fn get_where_query(
     }<#
     } else {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1216,7 +1150,7 @@ async fn get_where_query(
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and (t.<#=modelLabel#> in (");
@@ -1276,21 +1210,21 @@ async fn get_where_query(
     } else if (foreignKey.lbl) {
   #>
   {
-    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>> = match search {
+    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
       None => None,
     };
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
         if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
           for item in <#=column_name#>_<#=foreignKey.lbl#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
@@ -1324,21 +1258,17 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+    if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (");
@@ -1409,14 +1339,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1467,14 +1397,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1518,21 +1448,17 @@ async fn get_where_query(
     }<#
     if (column.searchByArray) {
     #>
-    let <#=column_name#>s: Option<Vec<<#=_data_type#>>> = match search {
-      Some(item) => item.<#=column_name#>s.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name#>s) = <#=column_name#>s {
+    if let Some(<#=column_name#>s) = search.and_then(|item| item.<#=column_name#>s.as_deref()) {
       let arg = {
         if <#=column_name#>s.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>s.len());
           for item in <#=column_name#>s {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1877,8 +1803,8 @@ pub async fn set_dyn_page_data_<#=table#>(
       ref_ids: Some(
         ids
           .into_iter()
-          .map(|item| SmolStr::new(item.as_str()))
-          .collect::<Vec<SmolStr>>()
+          .map(|item| item.as_str().to_string())
+          .collect::<Vec<String>>()
       ),
       ..Default::default()
     }),
@@ -2011,7 +1937,6 @@ pub async fn find_all_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -2315,7 +2240,7 @@ pub async fn find_all_<#=table#>(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -2344,8 +2269,7 @@ pub async fn find_all_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -2367,8 +2291,7 @@ pub async fn find_all_<#=table#>(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dict) continue;
@@ -2397,8 +2320,7 @@ pub async fn find_all_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dictbiz) continue;
@@ -2420,8 +2342,7 @@ pub async fn find_all_<#=table#>(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dictbiz) continue;
@@ -2447,6 +2368,10 @@ pub async fn find_all_<#=table#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=inlineForeignTab.label#>
@@ -2563,7 +2488,6 @@ pub async fn find_all_<#=table#>(
         [
           "is_deleted",
           "is_sys",
-          "is_hidden",
         ].includes(column_name)
       ) continue;
       const data_type = column.DATA_TYPE;
@@ -2575,11 +2499,15 @@ pub async fn find_all_<#=table#>(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      let res = get_object(&model.<#=column_name#>).await?;
-      if let Some(res) = res {
-        SmolStr::new(String::from_utf8(res.to_vec())?)
+      if model.<#=column_name#>.is_empty() {
+        String::from("")
       } else {
-        SmolStr::new("")
+        let res = get_object(&model.<#=column_name#>).await?;
+        if let Some(res) = res && res.status_code() != 404 {
+          String::from_utf8(res.to_vec())?
+        } else {
+          String::from("")
+        }
       }
     };<#
     }
@@ -2594,7 +2522,6 @@ pub async fn find_all_<#=table#>(
         [
           "is_deleted",
           "is_sys",
-          "is_hidden",
         ].includes(column_name)
       ) continue;
       const data_type = column.DATA_TYPE;
@@ -2650,7 +2577,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string().into())
+        .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
     }
     #><#
@@ -2821,7 +2748,6 @@ pub async fn find_count_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -3085,8 +3011,7 @@ pub async fn get_field_comments_<#=table#>(<#
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       const data_type = column.DATA_TYPE;
@@ -3163,8 +3088,7 @@ pub async fn get_field_comments_<#=table#>(<#
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       const data_type = column.DATA_TYPE;
@@ -3412,19 +3336,19 @@ pub async fn find_by_id_ok_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      SmolStr::new("<#=table_comment#>"),
+      String::from("<#=table_comment#>"),
       None,
     ).await?;
     let map = HashMap::from([
-      (SmolStr::new("0"), table_comment),
+      (String::from("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      SmolStr::new("此 {0} 已被删除"),
+      String::from("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
+    let err_msg = String::from("此 <#=table_comment#> 已被删除");<#
     }
     #>
     error!(
@@ -3545,15 +3469,15 @@ pub async fn find_by_ids_ok_<#=table#>(
       None,
     ).await?;
     let map = HashMap::from([
-      (SmolStr::new("0"), table_comment),
+      (String::from("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      SmolStr::new("此 {0} 已被删除"),
+      String::from("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
+    let err_msg = String::from("此 <#=table_comment#> 已被删除");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -3578,12 +3502,12 @@ pub async fn find_by_ids_ok_<#=table#>(
         ("0".to_owned(), table_comment),
       ]);
       let err_msg = i18n_dao::ns(
-        SmolStr::new("此 {0} 已经被删除"),
+        String::from("此 {0} 已经被删除"),
         map.into(),
       ).await?;<#
       } else {
       #>
-      let err_msg = SmolStr::new("此 <#=table_comment#> 已经被删除");<#
+      let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
       }
       #>
       Err(eyre!(err_msg))
@@ -3690,11 +3614,16 @@ pub async fn exists_<#=table#>(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }<#
@@ -3729,7 +3658,6 @@ pub async fn exists_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -3737,17 +3665,27 @@ pub async fn exists_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
-    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(<#=column_name_rust#>) = &search.<#=column_name_rust#> {
+    let len = <#=column_name_rust#>.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+    }
+  }<#
+    }
+  #><#
+    if (column.searchByArray) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search && let Some(<#=column_name#>s) = &search.<#=column_name#>s {
+    let len = <#=column_name#>s.len();
+    if len == 0 {
+      return Ok(false);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>s.length > {ids_limit}"));
     }
   }<#
     }
@@ -3757,14 +3695,35 @@ pub async fn exists_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = Some(options);
+  let options = Some(options);<#
+  if (hasIsDeleted) {
+  #>
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);<#
+  }
+  #>
   
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
+  if (opts?.isHasForUpdate) {
+  #>
+  let for_update_str = if options.as_ref().and_then(|x| x.get_is_for_update()).unwrap_or(false) {
+    " for update"
+  } else {
+    ""
+  };<#
+  }
+  #>
   
-  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)<#
+  if (opts?.isHasForUpdate) {
+  #>{for_update_str}<#
+  }
+  #>"#);
   
   let args = args.into();<#
   if (cache) {
@@ -3809,10 +3768,6 @@ pub async fn exists_<#=table#>(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,
@@ -3831,10 +3786,6 @@ pub async fn exists_<#=table#>(
   Ok(exists_res)<#
   } else {
   #>
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,
@@ -3948,7 +3899,7 @@ pub async fn find_by_unique_<#=table#>(
     if !is_silent_mode && search.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
       Some(vec![auth_usr_id])
     } else {
-      search.create_usr_id.clone()
+      search.create_usr_id
     }
   };<#
   }
@@ -4196,7 +4147,6 @@ pub async fn set_id_by_lbl_<#=table#>(
         "update_time",
         "is_deleted",
         "is_sys",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
@@ -4315,8 +4265,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -4336,8 +4285,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -4375,8 +4323,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4396,8 +4343,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4433,8 +4379,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
@@ -4486,7 +4431,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let dict_model = <#=column_name#>_dict.iter().find(|item| {
       item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -4520,7 +4465,7 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (column.dictbiz) {
@@ -4574,7 +4519,7 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>.unwrap_or_default()<#
         if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
-      #>.as_str()<#
+      #>.to_string()<#
         }
       #>
     });
@@ -4590,7 +4535,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     && input.<#=column_name_rust#>.is_none()
   {
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );<#
     if (foreignTableUp !== tableUP) {
     #>
@@ -4654,15 +4599,15 @@ pub async fn set_id_by_lbl_<#=table#>(
   if input.<#=rustKeyEscape(modelLabel)#>.is_some() && input.<#=column_name_rust#>.is_none() {
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.<#=rustKeyEscape(modelLabel)#>.clone().unwrap_or_default() {
@@ -4958,7 +4903,7 @@ async fn _creates(
         let hash = hash.finalize();
         let bytes = hash.as_slice();
         let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-        let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+        let <#=column_name#> = String::from(<#=column_name#>.get(0..22).unwrap_or_default());
         let stat = head_object(&<#=column_name#>).await?;
         if stat.is_none() {
           let content_type = <#=column_name#>_lbl
@@ -5019,7 +4964,7 @@ async fn _creates(
   #>
 
   let auth_org_id = get_auth_org_id();
-  let mut auth_org_id_lbl = SmolStr::new("");
+  let mut auth_org_id_lbl = String::from("");
   if let Some(auth_org_id) = auth_org_id {
     let org_model = crate::base::org::org_dao::find_by_id_org(
       auth_org_id,
@@ -5064,18 +5009,33 @@ async fn _creates(
       const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
       const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
       const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+    #><#
+    if (inline_foreign_type === "one2many") {
     #>
     
     input.<#=inline_column_name#>.iter_mut().for_each(|items| {
       for item in items {
         item.org_id = org_id;<#
-        if (hasOrgIdLbl) {
+        if (inlineForeignHasOrgIdLbl) {
         #>
         item.org_id_lbl = org_id_lbl.clone();<#
         }
         #>
       }
     });<#
+    } else if (inline_foreign_type === "one2one") {
+    #>
+    
+    input.<#=inline_column_name#>.iter_mut().for_each(|item| {
+      item.org_id = org_id;<#
+      if (inlineForeignHasOrgIdLbl) {
+      #>
+      item.org_id_lbl = org_id_lbl.clone();<#
+      }
+      #>
+    });<#
+    }
+    #><#
     }
     #>
     
@@ -5126,8 +5086,7 @@ async fn _creates(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       if (
         column_name === "create_usr_id" ||
@@ -5208,7 +5167,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
+  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> * 3 + 60);
   
   sql_fields += "id";<#
   if (hasCreateTime) {
@@ -5330,7 +5289,7 @@ async fn _creates(
   #>
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * <#=columns.length#> + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * <#=columns.length#> + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -5410,7 +5369,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -5435,7 +5394,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -5686,8 +5645,8 @@ async fn _creates(
           ref_ids: Some(
             inputs2_ids
               .iter()
-              .map(|id| SmolStr::new(id.as_str()))
-              .collect::<Vec<SmolStr>>()
+              .map(|id| id.as_str().to_string())
+              .collect::<Vec<String>>()
           ),
           ..Default::default()
         }),
@@ -5756,7 +5715,7 @@ async fn _creates(
               update_by_id_dyn_page_val(
                 old_value_model.id,
                 DynPageValInput {
-                  lbl: Some(SmolStr::new(new_value.clone())),
+                  lbl: Some(new_value.clone()),
                   ..Default::default()
                 },
                 options,
@@ -5766,9 +5725,9 @@ async fn _creates(
             create_dyn_page_val(
               DynPageValInput {
                 ref_code: Some(page_path.clone()),
-                ref_id: Some(SmolStr::new(id.as_str())),
+                ref_id: Some(id.as_str().to_string()),
                 code: Some(field_code),
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(new_value.clone()),
                 ..Default::default()
               },
               options,
@@ -6001,7 +5960,7 @@ if (autoCodeColumn && !dateSeq) {
 pub async fn find_auto_code_<#=table#>(
   num: u32,
   options: Option<Options>,
-) -> Result<Vec<(u32, SmolStr)>> {
+) -> Result<Vec<(u32, String)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6066,7 +6025,7 @@ pub async fn find_auto_code_<#=table#>(
   for i in 0..num {
     let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
     let <#=autoCodeColumn.autoCode.seq#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-    <#=autoCodeColumn.autoCode.seq#>_vec.push((<#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.autoCode.seq#>)));
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((<#=autoCodeColumn.autoCode.seq#>_seq_i, String::from(&<#=autoCodeColumn.autoCode.seq#>)));
   }
   Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
@@ -6087,7 +6046,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
 } else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
 #>chrono::NaiveDateTime<#
 }
-#>, u32, SmolStr)>> {
+#>, u32, String)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6185,7 +6144,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   for i in 0..num {
     let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
     let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-    <#=autoCodeColumn.autoCode.seq#>_vec.push((auto_code_date.clone(), <#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)));
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((auto_code_date.clone(), <#=autoCodeColumn.autoCode.seq#>_seq_i, String::from(&<#=autoCodeColumn.COLUMN_NAME#>)));
   }
   Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
@@ -6360,7 +6319,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -6369,14 +6328,14 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();<#
   if (hasCreateUsrId && hasCreateUsrIdLbl) {
   #>
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");<#
   }
@@ -6385,7 +6344,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   #>
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");<#
   }
@@ -6394,7 +6353,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   #>
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");<#
   }
@@ -6406,17 +6365,17 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   if (hasCreateUsrId && hasCreateUsrIdLbl) {
   #>
   
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #><#
   if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
   #>
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #><#
   if (hasDeleteUsrId && hasDeleteUsrIdLbl) {
   #>
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #>
   let where_query = where_querys.join(" or ");
@@ -6865,7 +6824,7 @@ pub async fn update_by_id_<#=table#>(
       let hash = hash.finalize();
       let bytes = hash.as_slice();
       let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-      let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+      let <#=column_name#> = String::from(<#=column_name#>.get(0..22).unwrap_or_default());
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
@@ -6931,7 +6890,6 @@ pub async fn update_by_id_<#=table#>(
         "tenant_id",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     if (
@@ -6982,26 +6940,8 @@ pub async fn update_by_id_<#=table#>(
   
   let old_model = match old_model {
     Some(model) => model,
-    None => {<#
-      if (isUseI18n) {
-      #>
-      let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = i18n_dao::ns(
-        "编辑失败, 此 {0} 已被删除".to_owned(),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = "编辑失败, 此 <#=table_comment#> 已被删除";<#
-      }
-      #>
-      return Err(eyre!(err_msg));
+    None => {
+      return Ok(id);
     }
   };<#
   if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
@@ -7205,13 +7145,13 @@ pub async fn update_by_id_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
+  let mut sql_fields = String::with_capacity((80 * <#=columns.length#> + 20) * 3);
   
   let mut field_num: usize = 0;<#
   if (cascadeUpdateFields.length > 0) {
   #>
   
-  let mut sql_set_flds: Vec<SmolStr> = vec![];
+  let mut sql_set_flds: Vec<String> = vec![];
   let mut sql_set_fld_input: <#=tableUP#>Input = <#=tableUP#>Input {
     ..Default::default()
   };<#
@@ -7260,7 +7200,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
+    sql_set_flds.push(String::from("<#=modelLabel#>"));
     sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
     }
     #><#
@@ -7330,7 +7270,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -7340,7 +7280,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -7376,7 +7316,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #><#
@@ -7431,7 +7371,7 @@ pub async fn update_by_id_<#=table#>(
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
           ref_code: Some(page_path.clone()),
-          ref_ids: Some(vec![ SmolStr::new(id.as_str()) ]),
+          ref_ids: Some(vec![ String::from(id.as_str()) ]),
           ..Default::default()
         }),
         None,
@@ -7487,7 +7427,7 @@ pub async fn update_by_id_<#=table#>(
             update_by_id_dyn_page_val(
               old_value_model.id,
               DynPageValInput {
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(String::from(new_value.clone())),
                 ..Default::default()
               },
               options,
@@ -7498,9 +7438,9 @@ pub async fn update_by_id_<#=table#>(
           create_dyn_page_val(
             DynPageValInput {
               ref_code: Some(page_path.clone()),
-              ref_id: Some(SmolStr::new(id.as_str())),
+              ref_id: Some(String::from(id.as_str())),
               code: Some(field_code),
-              lbl: Some(SmolStr::new(new_value.clone())),
+              lbl: Some(String::from(new_value.clone())),
               ..Default::default()
             },
             options,
@@ -7540,7 +7480,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(val)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=val#>"));
+    sql_set_flds.push(String::from("<#=val#>"));
     sql_set_fld_input.<#=val#> = Some(<#=val#>.clone());<#
     }
     #><#
@@ -8046,7 +7986,7 @@ pub async fn update_by_id_<#=table#>(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -8070,7 +8010,7 @@ pub async fn update_by_id_<#=table#>(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -8146,7 +8086,7 @@ pub async fn update_by_id_<#=table#>(
       for (let i = 0; i < cascadeUpdateFieldWatchColumns.length; i++) {
         const fld = cascadeUpdateFieldWatchColumns[i];
       #>
-      sql_set_flds.contains(&SmolStr::new("<#=fld#>"))<#
+      sql_set_flds.contains(&String::from("<#=fld#>"))<#
       if (i < cascadeUpdateFieldWatchColumns.length - 1) {
       #> ||<#
       }
@@ -8157,40 +8097,95 @@ pub async fn update_by_id_<#=table#>(
       for (const cascadeUpdateFieldTable of cascadeUpdateFieldTables) {
         const table = cascadeUpdateFieldTable.table;
         const mod = cascadeUpdateFieldTable.mod;
-        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-        const tableUP = tableUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
-        }).join("");
+        const tableName = `${mod}_${table}`;
+        const tableSchema = optTables[tableName];
+        if (!tableSchema) {
+          throw `cascadeUpdateFieldTables 中的表: ${ tableName } 不存在`;
+          process.exit(1);
+        }
+        const hasIsDeleted = tableSchema.columns.some((item) => item.COLUMN_NAME === "is_deleted");
+        const hasCache = !!tableSchema.opts?.cache;
+        const cacheKey1s = [ `dao.sql.${tableName}` ];
+        for (const column of tableSchema.columns) {
+          if (column.ignoreCodegen) continue;
+          if (column.isVirtual) continue;
+          const column_name = column.COLUMN_NAME;
+          if (column_name === "id") continue;
+          if (column_name === "create_usr_id") continue;
+          if (column_name === "create_time") continue;
+          const foreignKey = column.foreignKey;
+          if (!foreignKey) continue;
+          const foreignTable = foreignKey.table;
+          if ([ "usr" ].includes(foreignTable) || foreignKey.modelLabel) continue;
+          const cacheKey1 = `dao.sql.${foreignKey.mod}_${foreignTable}`;
+          if (!cacheKey1s.includes(cacheKey1)) {
+            cacheKey1s.push(cacheKey1);
+          }
+        }
+        if (
+          hasCache &&
+          (
+            (mod === "base" && table === "tenant") ||
+            (mod === "base" && table === "role") ||
+            (mod === "base" && table === "menu") ||
+            (mod === "base" && table === "usr")
+          )
+        ) {
+          cacheKey1s.push("dao.sql.base_menu._getMenus");
+        }
         const cascadeUpdateFields2 = cascadeUpdateFields.filter((item) => item.mod === mod && item.table === table);
       #>
       
-      let <#=table#>_models = find_all_<#=table#>(
-        Some(<#=tableUP#>Search {
-          <#=cascadeUpdateFieldTable.idColumn#>: Some(vec![id]),
-          ..Default::default()
-        }),
-        None,
-        None,
-        options,
-      ).await?;
-      
-      for <#=table#>_model in <#=table#>_models {
-        let <#=table#>_id = <#=table#>_model.id;
-        let mut <#=table#>_input: <#=tableUP#>Input = <#=tableUP#>Input {
-          ..Default::default()
-        };<#
+      {
+        let mut cascade_args = QueryArgs::new();
+        let mut cascade_sql_fields = String::with_capacity(120<#
+        if (cascadeUpdateFields2.length > 1) {
+        #> * <#=cascadeUpdateFields2.length#><#
+        }
+        #> * 3);
+        let mut cascade_field_num: usize = 0;<#
         for (const item of cascadeUpdateFields2) {
+          const columnMysql = mysqlKeyEscape(item.column);
         #>
-        if sql_set_flds.contains(&SmolStr::new("<#=item.watchColumn#>")) {
-          <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>.clone();
+        if sql_set_flds.contains(&String::from("<#=item.watchColumn#>")) {
+          if let Some(<#=item.watchColumn#>) = sql_set_fld_input.<#=item.watchColumn#>.clone() {
+            cascade_field_num += 1;
+            cascade_sql_fields += "<#=columnMysql#>=?,";
+            cascade_args.push(<#=item.watchColumn#>.into());
+          }
         }<#
         }
         #>
-        update_by_id_<#=table#>(
-          <#=table#>_id,
-          <#=table#>_input,
-          options,
-        ).await?;
+        if cascade_field_num > 0 {
+          if cascade_sql_fields.ends_with(',') {
+            cascade_sql_fields.pop();
+          }
+          cascade_args.push(id.into());
+          let sql = format!("update <#=tableName#> set {cascade_sql_fields} where <#=mysqlKeyEscape(cascadeUpdateFieldTable.idColumn)#>=?<#
+          if (hasIsDeleted) {
+          #> and is_deleted=0<#
+          }
+          #>");
+          let affected_rows = execute(
+            sql,
+            cascade_args.into(),
+            options,
+          ).await?;<#
+          if (hasCache) {
+          #>
+          if affected_rows > 0 {
+            del_caches([
+              <#
+              for (const cacheKey1 of cacheKey1s) {
+              #>"<#=cacheKey1#>",<#
+              #><#
+              }
+              #>
+            ].as_slice()).await?;
+          }<#
+          }
+          #>
+        }
       }<#
       }
       #>
@@ -8270,6 +8265,7 @@ pub async fn update_by_id_<#=table#>(
   }<#
   }
   #><#
+  if (false) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -8301,6 +8297,8 @@ pub async fn update_by_id_<#=table#>(
       );
     }
   }<#
+  }
+  #><#
   }
   #>
   
@@ -8382,7 +8380,7 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )<#
     if (
       cache &&
@@ -8392,10 +8390,10 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
       (mod === "base" && table === "usr")
     ) {
     #>
-    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])<#
+    .chain(vec!["dao.sql.base_menu._getMenus".to_string()])<#
     }
     #>
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -8508,7 +8506,7 @@ pub async fn delete_by_ids_<#=table#>(
   }
   #>
   
-  let old_models = find_by_ids_ok_<#=table#>(
+  let old_models = find_by_ids_<#=table#>(
     ids.clone(),
     options,
   ).await?;
@@ -8585,12 +8583,12 @@ pub async fn delete_by_ids_<#=table#>(
     if (hasIsDeleted) {
     #>
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");<#
     if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
     #>
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -8890,7 +8888,7 @@ pub async fn delete_by_ids_<#=table#>(
     #><#
     }
     #><#
-    if (!hasIsDeleted) {
+    if (false && !hasIsDeleted) {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -8920,17 +8918,11 @@ pub async fn delete_by_ids_<#=table#>(
     }
     #>
   }<#
-  if (cache) {
-  #>
-  
-  del_cache_<#=table#>().await?;<#
-  }
-  #>
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }<#
   for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
@@ -8938,6 +8930,7 @@ pub async fn delete_by_ids_<#=table#>(
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=inlineForeignTab.label#>
@@ -8992,13 +8985,18 @@ pub async fn delete_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9039,6 +9037,10 @@ pub async fn delete_by_ids_<#=table#>(
   del_cache_<#=table#>().await?;<#
   }
   #>
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }<#
@@ -9566,8 +9568,16 @@ pub async fn revert_by_ids_<#=table#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    const inlineMany2manySchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineMany2manySchema) {
+      throw `inline many2many 中的表: ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #><#
     if (inline_foreign_type === "one2many") {
+  #><#
+    if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
@@ -9593,7 +9603,11 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+    }
+  #><#
     } else if (inline_foreign_type === "one2one") {
+  #><#
+    if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
@@ -9620,6 +9634,8 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+    }
+  #><#
     }
   #><#
   }
@@ -9652,13 +9668,20 @@ pub async fn revert_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
+  #><#
+  if (hasIsDeleted) {
   #>
   
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9673,6 +9696,8 @@ pub async fn revert_by_ids_<#=table#>(
       .collect::<Vec<_>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   if (cache) {
@@ -9886,6 +9911,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     #><#
     }
     #><#
+    if (false) {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -9903,23 +9929,36 @@ pub async fn force_delete_by_ids_<#=table#>(
       old_model.<#=column_name#>.as_str(),
     ).await?;<#
     }
+    #><#
+    }
     #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw new Error(`Inline foreign schema not found for ${inlineForeignTab.mod}_${inlineForeignTab.table}`);
+    }
     const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
+    const hasIsDeleted = inlineForeignSchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
+  #><#
+  if (hasIsDeleted) {
   #>
   
   // <#=inlineForeignTab.label#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=inlineForeignTab.column#>: ids.clone().into(),
-      is_deleted: 0.into(),
+      <#=inlineForeignTab.column#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 0.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9933,6 +9972,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       .collect::<Vec<<#=Table_Up#>Id>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -9963,12 +10004,17 @@ pub async fn force_delete_by_ids_<#=table#>(
     const Table_Up = tableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const hasIsDeleted = inlineMany2manySchema.columns.some(col => col.COLUMN_NAME === "is_deleted");
   #>
   // <#=column_comment#>
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 0.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 0.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -9982,12 +10028,18 @@ pub async fn force_delete_by_ids_<#=table#>(
       .map(|item| item.id)
       .collect::<Vec<_>>(),
     options,
-  ).await?;
+  ).await?;<#
+  if (hasIsDeleted) {
+  #>
   
   let <#=table#>_models = find_all_<#=table#>(
     <#=Table_Up#>Search {
-      <#=many2many.column1#>: ids.clone().into(),
-      is_deleted: 1.into(),
+      <#=many2many.column1#>: ids.clone().into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: 1.into(),<#
+      }
+      #>
       ..Default::default()
     }.into(),
     None,
@@ -10002,6 +10054,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       .collect::<Vec<_>>(),
     options,
   ).await?;<#
+  }
+  #><#
   }
   #><#
   if (cache) {
@@ -10261,17 +10315,17 @@ pub async fn validate_is_enabled_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      SmolStr::new("<#=table_comment#>"),
+      String::from("<#=table_comment#>"),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      SmolStr::new("已禁用"),
+      String::from("已禁用"),
       None,
     ).await?;
-    let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
+    let err_msg = String::from(format!("{table_comment}{msg1}"));<#
     } else {
     #>
-    let err_msg = SmolStr::new("<#=table_comment#>已禁用");<#
+    let err_msg = String::from("<#=table_comment#>已禁用");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -10294,17 +10348,17 @@ pub async fn validate_option_<#=table#>(
       if (isUseI18n) {
       #>
       let table_comment = i18n_dao::ns(
-        SmolStr::new("<#=table_comment#>"),
+        String::from("<#=table_comment#>"),
         None,
       ).await?;
       let msg1 = i18n_dao::ns(
-        SmolStr::new("不存在"),
+        String::from("不存在"),
         None,
       ).await?;
-      let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
+      let err_msg = String::from(format!("{table_comment}{msg1}"));<#
       } else {
       #>
-      let err_msg = SmolStr::new("<#=table_comment#>不存在");<#
+      let err_msg = String::from("<#=table_comment#>不存在");<#
       }
       #>
       error!(

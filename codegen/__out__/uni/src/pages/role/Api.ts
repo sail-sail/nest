@@ -47,6 +47,9 @@ export function intoInputRole(
     // 字段权限
     field_permit_ids: model?.field_permit_ids,
     field_permit_ids_lbl: model?.field_permit_ids_lbl,
+    // 接收审核消息
+    is_audit_msg: model?.is_audit_msg,
+    is_audit_msg_lbl: model?.is_audit_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -349,6 +352,32 @@ export async function findByIdsRole(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search?: RoleSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsRole: Query["existsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch) {
+        existsRole(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsRole;
+  
+  return res;
 }
 
 /**
@@ -766,57 +795,6 @@ export async function findLastOrderByRole(
   return order_by;
 }
 
-/**
- * 获取 角色 字段注释
- */
-export async function getFieldCommentsRole(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsRole: Query["getFieldCommentsRole"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsRole {
-          id,
-          code,
-          lbl,
-          home_url,
-          menu_ids,
-          menu_ids_lbl,
-          permit_ids,
-          permit_ids_lbl,
-          data_permit_ids,
-          data_permit_ids_lbl,
-          field_permit_ids,
-          field_permit_ids_lbl,
-          is_locked,
-          is_locked_lbl,
-          is_enabled,
-          is_enabled_lbl,
-          order_by,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsRole as RoleFieldComment;
-  
-  return field_comments;
-}
-
 export function getPagePathRole() {
   return "/base/role";
 }
@@ -824,6 +802,7 @@ export function getPagePathRole() {
 /** 新增时的默认值 */
 export async function getDefaultInputRole() {
   const defaultInput: RoleInput = {
+    is_audit_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

@@ -84,6 +84,10 @@ export function useInlineForeignTab(
   function onDelete() {
     const inputs = inputsFn() || [ ];
     if (index_selected.length === 0) {
+      uni.showToast({
+        title: '请先选择要删除的行',
+        icon: 'none',
+      });
       return;
     }
     index_selected.sort((a, b) => b - a);

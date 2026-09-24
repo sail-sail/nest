@@ -17,12 +17,12 @@
           消息中心
         </div>
         <div un-m="t-1" un-text="gray-500">
-          共 {{ totalCount }} 条消息，未读 {{ unreadCount }} 条
+          共 {{ totalCount }} 条消息，未读 {{ unreadCount }} 条，已读 {{ readCount }} 条
         </div>
       </div>
       <el-button
         plain
-        @click="refreshMessages()"
+        @click="refreshMessageTabs()"
       >
         <template #icon>
           <ElIconRefresh />
@@ -31,53 +31,89 @@
       </el-button>
     </div>
 
-    <el-card
+    <div
       shadow="never"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
     >
-      <el-tabs v-model="activeTab" un-h="full">
+      <el-tabs
+        v-model="activeTab"
+        class="el-flex-tabs"
+        type="card"
+      >
         <el-tab-pane
-          label="未读消息"
+          :label="`未读(${unreadCount})`"
           name="unread"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-p="4"
+          un-box-border
         >
           <div
             un-min="h-80"
           >
+            <div un-flex="~ items-center justify-between" un-m="b-3">
+              <div un-flex="~ items-center" un-gap="x-2">
+                <el-checkbox
+                  :model-value="isCurrentTabAllSelected"
+                  :indeterminate="isCurrentTabIndeterminate"
+                  @change="toggleCurrentTabSelectAll"
+                />
+                <span un-text="gray-500 sm">全选</span>
+              </div>
+              <el-button
+                :disabled="selectedUnreadIds.length === 0"
+                @click="markSelectedAsRead"
+              >
+                设为已读
+              </el-button>
+            </div>
             <div
               v-if="unreadItems.length > 0"
               class="message-list"
+              un-flex="~ [1_0_0] col"
+              un-overflow="x-hidden y-auto"
             >
               <div
                 v-for="item in unreadItems"
                 :key="item.receiver.id"
                 class="message-card unread"
-                @click="openDetail(item)"
+                :class="{ 'is-selected': isItemSelected(item, 'unread') }"
               >
-                <div un-flex="~ justify-between items-start">
-                  <div un-flex="~ col" un-gap="y-1">
-                    <div un-flex="~ items-center" un-gap="x-2">
-                      <el-tag type="danger" size="small">未读</el-tag>
-                      <span un-font="semibold">
-                        {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
-                      </span>
+                <div un-flex="~ items-start" un-gap="x-3">
+                  <div class="selection-cell" @click.stop>
+                    <el-checkbox
+                      :model-value="isItemSelected(item, 'unread')"
+                      @change="toggleItemSelection(item, 'unread')"
+                    />
+                  </div>
+                  <div un-flex="~ col" un-w="full" @click="openDetail(item)">
+                    <div un-flex="~ justify-between items-start">
+                      <div un-flex="~ col" un-gap="y-1">
+                        <div un-flex="~ items-center" un-gap="x-2">
+                          <el-tag type="danger" size="small">未读</el-tag>
+                          <span un-font="semibold">
+                            {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
+                          </span>
+                        </div>
+                        <div un-text="gray-500 sm" un-line-clamp="2">
+                          {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                        </div>
+                      </div>
+                      <div un-text="gray-400 sm" un-whitespace-nowrap>
+                        {{ formatTime(item.receiver.create_time) }}
+                      </div>
                     </div>
-                    <div un-text="gray-500 sm" un-line-clamp="2">
-                      {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                    <div v-if="item.message?.route_path" un-m="t-5">
+                      <el-button
+                        link
+                        type="primary"
+                        @click.stop="goToRoute(item)"
+                      >
+                        跳转
+                      </el-button>
                     </div>
                   </div>
-                  <div un-text="gray-400 sm" un-whitespace-nowrap>
-                    {{ formatTime(item.receiver.create_time) }}
-                  </div>
-                </div>
-                <div v-if="item.message?.route_path" un-m="t-5">
-                  <el-button
-                    link
-                    type="primary"
-                    @click.stop="goToRoute(item)"
-                  >
-                    跳转
-                  </el-button>
                 </div>
               </div>
             </div>
@@ -93,52 +129,86 @@
         </el-tab-pane>
 
         <el-tab-pane
-          label="已读消息"
+          :label="`已读(${readCount})`"
           name="read"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-p="4"
+          un-box-border
         >
           <div
             un-min="h-80"
+            un-flex="~ [1_0_0] col"
+            un-overflow="hidden"
           >
+            <div un-flex="~ items-center justify-between" un-m="b-3">
+              <div un-flex="~ items-center" un-gap="x-2">
+                <el-checkbox
+                  :model-value="isCurrentTabAllSelected"
+                  :indeterminate="isCurrentTabIndeterminate"
+                  @change="toggleCurrentTabSelectAll"
+                />
+                <span un-text="gray-500 sm">全选</span>
+              </div>
+              <el-button
+                :disabled="selectedReadIds.length === 0"
+                @click="deleteSelectedReadMessages"
+              >
+                删除已选
+              </el-button>
+            </div>
             <div
               v-if="readItems.length > 0"
               class="message-list"
+              un-flex="~ [1_0_0] col"
+              un-overflow="x-hidden y-auto"
             >
               <div
                 v-for="item in readItems"
                 :key="item.receiver.id"
                 class="message-card"
-                @click="openDetail(item)"
+                :class="{ 'is-selected': isItemSelected(item, 'read') }"
               >
-                <div un-flex="~ justify-between items-start">
-                  <div un-flex="~ col" un-gap="y-1">
-                    <div un-flex="~ items-center" un-gap="x-2">
-                      <el-tag type="info" size="small">已读</el-tag>
-                      <span un-font="semibold">
-                        {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
-                      </span>
-                    </div>
-                    <div un-text="gray-500 sm" un-line-clamp="2">
-                      {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
-                    </div>
+                <div un-flex="~ items-start" un-gap="x-3">
+                  <div class="selection-cell" @click.stop>
+                    <el-checkbox
+                      :model-value="isItemSelected(item, 'read')"
+                      @change="toggleItemSelection(item, 'read')"
+                    />
                   </div>
-                  <div un-text="gray-400 sm" un-whitespace-nowrap>
-                    {{ formatTime(item.receiver.create_time) }}
-                  </div>
-                </div>
-                <div un-flex="~ justify-between items-center" un-m="t-3">
-                  <div un-text="gray-400 sm">
-                    <div v-if="item.message?.route_path" un-m="t-2">
-                      <el-button
-                        link
-                        type="primary"
-                        @click.stop="goToRoute(item)"
-                      >
-                        跳转
-                      </el-button>
+                  <div un-flex="~ col" un-w="full" @click="openDetail(item)">
+                    <div un-flex="~ justify-between items-start">
+                      <div un-flex="~ col" un-gap="y-1">
+                        <div un-flex="~ items-center" un-gap="x-2">
+                          <el-tag type="info" size="small">已读</el-tag>
+                          <span un-font="semibold">
+                            {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
+                          </span>
+                        </div>
+                        <div un-text="gray-500 sm" un-line-clamp="2">
+                          {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                        </div>
+                      </div>
+                      <div un-text="gray-400 sm" un-whitespace-nowrap>
+                        {{ formatTime(item.receiver.create_time) }}
+                      </div>
                     </div>
-                  </div>
-                  <div un-text="blue-500 hover:blue-600">
-                    查看详情
+                    <div un-flex="~ justify-between items-center" un-m="t-3">
+                      <div un-text="gray-400 sm">
+                        <div v-if="item.message?.route_path" un-m="t-2">
+                          <el-button
+                            link
+                            type="primary"
+                            @click.stop="goToRoute(item)"
+                          >
+                            跳转
+                          </el-button>
+                        </div>
+                      </div>
+                      <div un-text="blue-500 hover:blue-600">
+                        查看详情
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -150,22 +220,22 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-    </el-card>
+    </div>
 
     <div
-      v-if="page.total > 0"
+      v-if="activePage.total > 0"
       un-flex="~ justify-end"
       un-m="t-4"
     >
       <el-pagination
         background
         :page-sizes="pageSizes"
-        :page-size="page.size"
+        :page-size="activePage.size"
         layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
-        :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
+        :current-page="activePage.current"
+        :total="activePage.total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageCurrentChange"
       />
     </div>
 
@@ -205,10 +275,11 @@
   </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import { usePage } from "@/compositions/List";
 import { query } from "@/utils/graphql";
 import { markMessageReceiverAsRead } from "@/views/base/message/Api2";
+import { deleteByIdsMessageReceiver } from "@/views/base/message_receiver/Api";
 
 defineOptions({
   name: "消息中心",
@@ -219,27 +290,122 @@ type MessageCenterItem = {
   message?: MessageModel;
 };
 
+type MessageTab = "unread" | "read";
+
 const router = useRouter();
 const usrStore = useUsrStore();
 
-let activeTab = $ref("unread");
+const pageSizes = [ 20, 50, 100 ];
+
+let activeTab = $ref<MessageTab>("unread");
 let detailVisible = $ref(false);
 let selectedItem = $ref<MessageCenterItem | null>(null);
-let items = $ref<MessageCenterItem[]>([]);
+let unreadItems = $ref<MessageCenterItem[]>([]);
+let readItems = $ref<MessageCenterItem[]>([]);
+let selectedUnreadIds = $ref<string[]>([]);
+let selectedReadIds = $ref<string[]>([]);
 
-const { page, pageSizes, pgSizeChg, pgCurrentChg } = $(usePage(async (isCount = true) => {
-  await refreshMessages(isCount);
+const { page: unreadPage, pgSizeChg: unreadPgSizeChg, pgCurrentChg: unreadPgCurrentChg } = $(usePage(async (isCount = true) => {
+  await refreshMessages("unread", isCount);
 }, {
+  pageSizes,
   isPagination: true,
 }));
 
-const totalCount = $computed(() => page.total);
-const unreadItems = $computed(() => items.filter((item) => !isRead(item.receiver)));
-const readItems = $computed(() => items.filter((item) => isRead(item.receiver)));
-const unreadCount = $computed(() => unreadItems.length);
+const { page: readPage, pgSizeChg: readPgSizeChg, pgCurrentChg: readPgCurrentChg } = $(usePage(async (isCount = true) => {
+  await refreshMessages("read", isCount);
+}, {
+  pageSizes,
+  isPagination: true,
+}));
+
+const activePage = $computed(() => activeTab === "unread" ? unreadPage : readPage);
+const totalCount = $computed(() => unreadPage.total + readPage.total);
+const unreadCount = $computed(() => unreadPage.total);
+const readCount = $computed(() => readPage.total);
+const currentTabSelectionIds = $computed(() => activeTab === "unread" ? selectedUnreadIds : selectedReadIds);
+const currentTabItems = $computed(() => activeTab === "unread" ? unreadItems : readItems);
+const isCurrentTabAllSelected = $computed(() => currentTabItems.length > 0 && currentTabSelectionIds.length === currentTabItems.length);
+const isCurrentTabIndeterminate = $computed(() => currentTabSelectionIds.length > 0 && currentTabSelectionIds.length < currentTabItems.length);
 
 function isRead(receiver: MessageReceiverModel) {
   return Number(receiver.is_read) === 1;
+}
+
+function getItemSelectionId(item: MessageCenterItem) {
+  return String(item.receiver.id);
+}
+
+function isItemSelected(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  if (tabName === "unread") {
+    return selectedUnreadIds.includes(id);
+  }
+  return selectedReadIds.includes(id);
+}
+
+function toggleItemSelection(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  if (tabName === "unread") {
+    selectedUnreadIds = selectedUnreadIds.includes(id)
+      ? selectedUnreadIds.filter((currentId) => currentId !== id)
+      : [...selectedUnreadIds, id];
+    return;
+  }
+  selectedReadIds = selectedReadIds.includes(id)
+    ? selectedReadIds.filter((currentId) => currentId !== id)
+    : [...selectedReadIds, id];
+}
+
+function selectSingleItem(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  selectedUnreadIds = [];
+  selectedReadIds = [];
+  if (tabName === "unread") {
+    selectedUnreadIds = [id];
+    return;
+  }
+  selectedReadIds = [id];
+}
+
+function toggleCurrentTabSelectAll() {
+  if (isCurrentTabAllSelected) {
+    if (activeTab === "unread") {
+      selectedUnreadIds = [];
+    } else {
+      selectedReadIds = [];
+    }
+    return;
+  }
+
+  const ids = currentTabItems.map((item) => getItemSelectionId(item));
+  if (activeTab === "unread") {
+    selectedUnreadIds = ids;
+  } else {
+    selectedReadIds = ids;
+  }
+}
+
+function syncSelectionIds() {
+  const unreadIds = new Set(unreadItems.map((item) => getItemSelectionId(item)));
+  selectedUnreadIds = selectedUnreadIds.filter((id) => unreadIds.has(id));
+
+  const readIds = new Set(readItems.map((item) => getItemSelectionId(item)));
+  selectedReadIds = selectedReadIds.filter((id) => readIds.has(id));
+}
+
+function handlePageSizeChange(size: number) {
+  if (activeTab === "unread") {
+    return unreadPgSizeChg(size);
+  }
+  return readPgSizeChg(size);
+}
+
+function handlePageCurrentChange(current: number) {
+  if (activeTab === "unread") {
+    return unreadPgCurrentChg(current);
+  }
+  return readPgCurrentChg(current);
 }
 
 function formatTime(value?: string | null) {
@@ -273,13 +439,19 @@ function getRouteQuery(routeQuery?: string | Record<string, unknown> | null) {
   return routeQuery as Record<string, unknown>;
 }
 
-async function refreshMessages(isCount = true) {
+async function refreshMessages(tab: MessageTab = activeTab, isCount = true) {
   const shouldCount = isCount !== false;
+  const currentPage = tab === "unread" ? unreadPage : readPage;
+  const tabStatus = tab === "unread" ? 0 : 1;
 
   if (!usrStore.usr_id) {
-    items = [];
+    if (tab === "unread") {
+      unreadItems = [];
+    } else {
+      readItems = [];
+    }
     if (shouldCount) {
-      page.total = 0;
+      currentPage.total = 0;
     }
     inited = true;
     return;
@@ -304,10 +476,12 @@ async function refreshMessages(isCount = true) {
     variables: {
       search: {
         receiver_usr_id: usrStore.usr_id,
+        channel: "sys",
+        is_read: [ tabStatus ],
       },
       page: {
-        pgOffset: (page.current - 1) * page.size,
-        pgSize: page.size,
+        pgOffset: (currentPage.current - 1) * currentPage.size,
+        pgSize: currentPage.size,
         isResultLimit: true,
       },
       sort: [
@@ -323,9 +497,13 @@ async function refreshMessages(isCount = true) {
 
   const receivers = data.findAllMessageReceiver || [];
   if (receivers.length === 0) {
-    items = [];
+    if (tab === "unread") {
+      unreadItems = [];
+    } else {
+      readItems = [];
+    }
     if (shouldCount) {
-      page.total = 0;
+      currentPage.total = 0;
     }
     inited = true;
     return;
@@ -343,12 +521,14 @@ async function refreshMessages(isCount = true) {
       variables: {
         search: {
           receiver_usr_id: usrStore.usr_id,
+          channel: "sys",
+          is_read: [ tabStatus ],
         },
       },
     }, {
       notLoading: true,
     });
-    page.total = countData.findCountMessageReceiver || 0;
+    currentPage.total = countData.findCountMessageReceiver || 0;
   }
 
   const messageIds = receivers
@@ -386,7 +566,7 @@ async function refreshMessages(isCount = true) {
   }
 
   const messageMap = new Map(messages.map((item) => [String(item.id), item]));
-  items = receivers
+  const nextItems = receivers
     .map((receiver) => ({
       receiver,
       message: messageMap.get(String(receiver.message_id)),
@@ -397,7 +577,21 @@ async function refreshMessages(isCount = true) {
       return bTime.localeCompare(aTime);
     });
 
+  if (tab === "unread") {
+    unreadItems = nextItems;
+  } else {
+    readItems = nextItems;
+  }
+
+  syncSelectionIds();
   inited = true;
+}
+
+async function refreshMessageTabs(isCount = true) {
+  await Promise.all([
+    refreshMessages("unread", isCount),
+    refreshMessages("read", isCount),
+  ]);
 }
 
 async function markAsRead(item: MessageCenterItem) {
@@ -420,9 +614,67 @@ async function markAsRead(item: MessageCenterItem) {
 }
 
 async function openDetail(item: MessageCenterItem) {
+  selectSingleItem(item, activeTab === "unread" ? "unread" : "read");
   await markAsRead(item);
   selectedItem = item;
   detailVisible = true;
+}
+
+async function markSelectedAsRead() {
+  const ids = selectedUnreadIds
+    .map((id) => id as MessageReceiverId)
+    .filter(Boolean);
+  if (ids.length === 0) {
+    return;
+  }
+
+  try {
+    let successCount = 0;
+    for (const id of ids) {
+      const ok = await markMessageReceiverAsRead(id);
+      if (ok) {
+        successCount += 1;
+      }
+    }
+
+    if (successCount === 0) {
+      ElMessage.error("更新消息状态失败");
+      return;
+    }
+
+    selectedUnreadIds = [];
+    await refreshMessageTabs();
+    window.dispatchEvent(new CustomEvent("message-count-changed"));
+    ElMessage.success(`已将 ${successCount} 条消息设为已读`);
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("更新消息状态失败");
+  }
+}
+
+async function deleteSelectedReadMessages() {
+  const ids = selectedReadIds
+    .map((id) => id as MessageReceiverId)
+    .filter(Boolean);
+  if (ids.length === 0) {
+    return;
+  }
+
+  try {
+    const count = await deleteByIdsMessageReceiver(ids);
+    if (count <= 0) {
+      ElMessage.error("删除消息失败");
+      return;
+    }
+
+    selectedReadIds = [];
+    await refreshMessageTabs();
+    window.dispatchEvent(new CustomEvent("message-count-changed"));
+    ElMessage.success(`已删除 ${count} 条消息`);
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("删除消息失败");
+  }
 }
 
 async function goToRoute(item: MessageCenterItem) {
@@ -439,19 +691,19 @@ async function goToRoute(item: MessageCenterItem) {
 let inited = $ref(false);
 
 async function initFrame() {
-  await refreshMessages();
+  await refreshMessageTabs();
   inited = true;
 }
 
 initFrame();
 
 onActivated(() => {
-  refreshMessages();
+  refreshMessageTabs();
 });
 
 onMounted(() => {
   window.addEventListener("message-count-changed", () => {
-    refreshMessages();
+    refreshMessageTabs();
   });
 });
 </script>
@@ -476,8 +728,19 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 }
 
+.message-card.is-selected {
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+}
+
 .message-card.unread {
   background: var(--el-color-primary-light-9);
+}
+
+.selection-cell {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
 }
 
 .detail {

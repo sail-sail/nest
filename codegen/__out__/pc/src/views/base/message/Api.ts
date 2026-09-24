@@ -348,6 +348,32 @@ export async function findByIdsMessage(
 }
 
 /**
+ * 根据搜索条件判断消息是否存在
+ */
+export async function existsMessage(
+  search?: MessageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMessage: Query["existsMessage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MessageSearch) {
+        existsMessage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMessage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 消息, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessage(
@@ -579,23 +605,6 @@ export function useDownloadImportTemplateMessage() {
             is_pinned_lbl
             org_id_lbl
           }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "message_category",
-            "message_channel",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -641,31 +650,15 @@ export function useExportExcelMessage() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: MessageSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MessageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessage(search: $search, page: $page, sort: $sort) {
               ${ messageQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "message_category",
-              "message_channel",
-              "yes_no",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -812,7 +805,7 @@ export function getPagePathMessage() {
 export async function getDefaultInputMessage() {
   const usrStore = useUsrStore();
   const defaultInput: MessageInput = {
-    channel: "pc",
+    channel: "sys",
     is_sys_msg: 0,
     is_pinned: 0,
     org_id: usrStore.loginInfo?.org_id,

@@ -1,3 +1,4 @@
+/* oxlint-disable @typescript-eslint/no-explicit-any @react/immutability */
 import {
   n0,
 } from "./Api.ts";

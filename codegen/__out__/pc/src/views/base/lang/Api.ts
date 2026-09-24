@@ -333,6 +333,32 @@ export async function findByIdsLang(
 }
 
 /**
+ * 根据搜索条件判断语言是否存在
+ */
+export async function existsLang(
+  search?: LangSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsLang: Query["existsLang"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: LangSearch) {
+        existsLang(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsLang;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 语言, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkLang(
@@ -539,22 +565,15 @@ export function useExportExcelLang() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: LangSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllLang(search: $search, page: $page, sort: $sort) {
               ${ langQueryField }
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

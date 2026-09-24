@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -37,6 +34,11 @@ pub async fn find_all_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   check_sort_lang(sort.as_deref())?;
   
@@ -63,6 +65,11 @@ pub async fn find_count_lang(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
+  
   let num = lang_service::find_count_lang(
     search,
     options,
@@ -84,6 +91,11 @@ pub async fn find_one_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   check_sort_lang(sort.as_deref())?;
   
@@ -109,6 +121,11 @@ pub async fn find_one_ok_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   check_sort_lang(sort.as_deref())?;
   
@@ -184,6 +201,32 @@ pub async fn find_by_ids_lang(
   Ok(models)
 }
 
+/// 根据搜索条件判断语言是否存在
+#[function_name::named]
+pub async fn exists_lang(
+  search: Option<LangSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
+  
+  let res = lang_service::exists_lang(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找语言, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_lang(
@@ -235,8 +278,8 @@ pub async fn creates_lang(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("add"),
+    String::from(get_page_path_lang()),
+    String::from("add"),
   ).await?;
   
   let ids = lang_service::creates_lang(
@@ -271,8 +314,8 @@ pub async fn update_by_id_lang(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_lang()),
+    String::from("edit"),
   ).await?;
   
   let res = lang_service::update_by_id_lang(
@@ -299,8 +342,8 @@ pub async fn delete_by_ids_lang(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_lang()),
+    String::from("delete"),
   ).await?;
   
   let num = lang_service::delete_by_ids_lang(
@@ -350,8 +393,8 @@ pub async fn enable_by_ids_lang(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_lang()),
+    String::from("edit"),
   ).await?;
   
   let num = lang_service::enable_by_ids_lang(
@@ -397,8 +440,8 @@ pub async fn revert_by_ids_lang(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_lang()),
+    String::from("delete"),
   ).await?;
   
   let num = lang_service::revert_by_ids_lang(
@@ -424,8 +467,8 @@ pub async fn force_delete_by_ids_lang(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_lang()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_lang()),
+    String::from("force_delete"),
   ).await?;
   
   let num = lang_service::force_delete_by_ids_lang(

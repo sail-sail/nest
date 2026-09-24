@@ -109,7 +109,7 @@ export interface TableColumn {
    *   CURRENT_TENANT_ID: 当前租户ID
    *   其余的请查看dayjs文档: https://dayjs.fenxianglu.cn/category/manipulate.html#%E6%97%B6%E9%97%B4%E7%9A%84%E5%BC%80%E5%A7%8B
    */
-  COLUMN_DEFAULT?: string | "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
+  COLUMN_DEFAULT?: "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
     | "start_of_year" | "end_of_year" | "start_of_month" | "end_of_month" | "start_of_week" | "end_of_week" | "start_of_day" | "end_of_day"
     | "start_of_hour" | "end_of_hour" | "start_of_minute" | "end_of_minute" | "start_of_second" | "end_of_second",
   
@@ -209,9 +209,7 @@ export interface TableColumn {
   notForeignKeyById?: boolean;
   
   /**
-   * 是否不显示导入导出中的下拉框
-   * 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-   *   true: 不显示, false: 显示, 默认为false
+   * 是否不显示导入导出中的下拉框, 默认为 true
    */
   notImportExportList?: boolean;
   
@@ -1124,6 +1122,13 @@ export interface TablesConfigItem {
        */
       hasReverse?: boolean;
       
+      /**
+       * 此审核功能审核后是否发送消息 message，默认为 true
+       * 如果不需要发送消息，则显式写 false
+       * 相关逻辑 notify_next_audit_usr_by_permit
+       */
+      sendAuditMessage?: boolean;
+      
     };
     
     /**
@@ -1154,6 +1159,9 @@ export interface TablesConfigItem {
        * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
        */
       hasDetailModal?: boolean;
+      /** Detail.vue 中表单文本框的宽度, 默认为: 160 */
+      detailFormWidth?: number;
+      navigationStyle?: "default" | "custom";
     };
     
     /**

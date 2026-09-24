@@ -278,6 +278,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree !== "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -332,6 +333,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree === "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -1200,7 +1202,9 @@ if (searchByKeyword) {
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
       if (opts.noAdd !== true) {
@@ -2300,7 +2304,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById<#=Table_Up#>(
@@ -2429,7 +2437,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
@@ -2443,7 +2455,11 @@ if (searchByKeyword) {
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
@@ -2899,7 +2915,7 @@ if (searchByKeyword) {
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -3348,7 +3364,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -4316,6 +4331,52 @@ function getDataSearch() {<#
   if (hasIsDeleted) {
   #>
   const is_deleted = search.is_deleted;<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (!column.search) continue;
+    const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+  #><#
+  if (data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];
+  }<#
+    }
+  #><#
+  } else if (data_type === "datetime") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ];
+  }<#
+    }
+  }
+  #><#
   }
   #>
   const search2 = {
@@ -5772,7 +5833,7 @@ async function onLockByIds(is_locked: number) {
       msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
       } else {
       #>
-      msg = `解锋 ${ num } <#=table_comment#> 成功`;<#
+      msg = `解锁 ${ num } <#=table_comment#> 成功`;<#
       }
       #>
     }
