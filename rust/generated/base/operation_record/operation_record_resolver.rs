@@ -37,6 +37,11 @@ pub async fn find_all_operation_record(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_operation_record()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_operation_record(sort.as_deref())?;
   
   let models = operation_record_service::find_all_operation_record(
@@ -62,6 +67,11 @@ pub async fn find_count_operation_record(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_operation_record()),
+    String::from("find"),
+  ).await?;
+  
   let num = operation_record_service::find_count_operation_record(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_operation_record(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_operation_record()),
+    String::from("find"),
+  ).await?;
   
   check_sort_operation_record(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_operation_record(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_operation_record()),
+    String::from("find"),
+  ).await?;
   
   check_sort_operation_record(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_operation_record(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_operation_record()),
+    String::from("find"),
+  ).await?;
   
   let res = operation_record_service::exists_operation_record(
     search,
