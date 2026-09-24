@@ -37,6 +37,11 @@ pub async fn find_all_wxw_app(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wxw_app()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_wxw_app(sort.as_deref())?;
   
   let models = wxw_app_service::find_all_wxw_app(
@@ -62,6 +67,11 @@ pub async fn find_count_wxw_app(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_wxw_app()),
+    String::from("find"),
+  ).await?;
+  
   let num = wxw_app_service::find_count_wxw_app(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_wxw_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wxw_app()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wxw_app(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_wxw_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wxw_app()),
+    String::from("find"),
+  ).await?;
   
   check_sort_wxw_app(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_wxw_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_wxw_app()),
+    String::from("find"),
+  ).await?;
   
   let res = wxw_app_service::exists_wxw_app(
     search,
