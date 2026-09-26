@@ -74,6 +74,7 @@ csv.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
 rumqttc-v5-next.workspace = true
+coordtransform.workspace = true
 
 [lib]
 path = "lib.rs"

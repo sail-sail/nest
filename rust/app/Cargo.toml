@@ -78,6 +78,7 @@ qrcode.workspace = true
 calamine.workspace = true
 wecom-crypto.workspace = true
 rumqttc-v5-next.workspace = true
+coordtransform.workspace = true
 
 generated = { path = "../generated" }
 wx_pay_sdk = { path = "../wx_pay_sdk" }
