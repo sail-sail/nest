@@ -32,14 +32,14 @@
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "7.4.2",
+    "@graphql-codegen/cli": "7.4.3",
     "@graphql-codegen/typescript": "6.1.0",
     "@graphql-codegen/typescript-operations": "6.1.7",
-    "@types/node": "26.6.2",
+    "@types/node": "26.6.3",
     "@types/sqlstring": "2.3.2",
     "chokidar": "5.0.0",
     "commander": "15.0.0",
-    "dotenv": "18.0.3",
+    "dotenv": "18.0.4",
     "ssh2-promise": "1.0.3",
     "typescript": "7.0.2"
   }
