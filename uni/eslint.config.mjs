@@ -31,6 +31,9 @@ export default typescriptEslint.config(
         parser: typescriptEslint.parser,
       },
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: "off"
+    },
     rules: {
       "@typescript-eslint/no-unused-vars": 0,
       "vue/prop-name-casing": 0,
