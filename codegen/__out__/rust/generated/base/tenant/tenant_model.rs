@@ -505,6 +505,9 @@ impl std::fmt::Debug for TenantSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    if let Some(ref keyword) = self.keyword {
+      item = item.field("keyword", keyword);
+    }
     // 编码-序列号
     if let Some(ref code_seq) = self.code_seq {
       item = item.field("code_seq", code_seq);
