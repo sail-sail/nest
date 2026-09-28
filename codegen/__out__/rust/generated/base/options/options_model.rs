@@ -324,6 +324,9 @@ impl std::fmt::Debug for OptionsSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    if let Some(ref keyword) = self.keyword {
+      item = item.field("keyword", keyword);
+    }
     // 名称
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);

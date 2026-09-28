@@ -625,6 +625,9 @@ impl std::fmt::Debug for UsrSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    if let Some(ref keyword) = self.keyword {
+      item = item.field("keyword", keyword);
+    }
     // 头像
     if let Some(ref img) = self.img {
       item = item.field("img", img);
