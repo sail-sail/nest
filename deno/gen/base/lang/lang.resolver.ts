@@ -218,6 +218,29 @@ export async function findByIdsLang(
 }
 
 /**
+ * 根据搜索条件判断语言是否存在
+ */
+export async function existsLang(
+  search: LangSearch,
+): Promise<boolean> {
+  
+  const {
+    existsLang,
+  } = await import("./lang.service.ts");
+  
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
+  await usePermit(
+    getPagePathLang(),
+    "find",
+  );
+
+  return await existsLang(search);
+}
+
+/**
  * 根据 ids 查找语言, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkLang(

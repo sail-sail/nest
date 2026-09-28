@@ -989,7 +989,9 @@ type Query {
   "根据 id 查找<#=table_comment#>"
   findById<#=Table_Up2#>(id: <#=Table_Up#>Id!): <#=modelName#>
   "根据 ids 查找<#=table_comment#>"
-  findByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): [<#=modelName#>]!<#
+  findByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): [<#=modelName#>]!
+  "根据搜索条件判断<#=table_comment#>是否存在"
+  exists<#=Table_Up2#>(search: <#=searchName#>): Boolean!<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   "根据 ids 获取<#=table_comment#>是否可编辑数据权限"

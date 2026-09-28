@@ -216,6 +216,29 @@ export async function findByIdsFieldPermit(
 }
 
 /**
+ * 根据搜索条件判断字段权限是否存在
+ */
+export async function existsFieldPermit(
+  search: FieldPermitSearch,
+): Promise<boolean> {
+  
+  const {
+    existsFieldPermit,
+  } = await import("./field_permit.service.ts");
+  
+  const {
+    getPagePathFieldPermit,
+  } = await import("./field_permit.model.ts");
+  
+  await usePermit(
+    getPagePathFieldPermit(),
+    "find",
+  );
+
+  return await existsFieldPermit(search);
+}
+
+/**
  * 根据 ids 查找字段权限, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkFieldPermit(

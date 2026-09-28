@@ -218,6 +218,29 @@ export async function findByIdsOptbiz(
 }
 
 /**
+ * 根据搜索条件判断业务选项是否存在
+ */
+export async function existsOptbiz(
+  search: OptbizSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOptbiz,
+  } = await import("./optbiz.service.ts");
+  
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+
+  return await existsOptbiz(search);
+}
+
+/**
  * 根据 ids 查找业务选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptbiz(

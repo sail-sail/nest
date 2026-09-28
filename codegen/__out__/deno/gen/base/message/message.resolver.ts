@@ -218,6 +218,29 @@ export async function findByIdsMessage(
 }
 
 /**
+ * 根据搜索条件判断消息是否存在
+ */
+export async function existsMessage(
+  search: MessageSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMessage,
+  } = await import("./message.service.ts");
+  
+  const {
+    getPagePathMessage,
+  } = await import("./message.model.ts");
+  
+  await usePermit(
+    getPagePathMessage(),
+    "find",
+  );
+
+  return await existsMessage(search);
+}
+
+/**
  * 根据 ids 查找消息, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessage(

@@ -218,6 +218,29 @@ export async function findByIdsDomain(
 }
 
 /**
+ * 根据搜索条件判断域名是否存在
+ */
+export async function existsDomain(
+  search: DomainSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDomain,
+  } = await import("./domain.service.ts");
+  
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+
+  return await existsDomain(search);
+}
+
+/**
  * 根据 ids 查找域名, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDomain(

@@ -295,7 +295,7 @@ async function getAuditNotifyReceiverUsrIds(
     if (await isAdmin(receiver_usr_id)) {
       continue;
     }
-    const has_permit = await exist<#=Table_Up#>({
+    const has_permit = await exists<#=Table_Up#>({
       id: <#=table#>_id,
       auth_usr_id: receiver_usr_id,
     });
@@ -588,7 +588,7 @@ export async function findByIdsOk<#=Table_Up#>(
 /**
  * 根据搜索条件查找<#=table_comment#>是否存在
  */
-export async function exist<#=Table_Up#>(
+export async function exists<#=Table_Up#>(
   search?: <#=searchName#>,
 ): Promise<boolean> {
   
@@ -596,7 +596,7 @@ export async function exist<#=Table_Up#>(
   
   await setSearchQuery(search);
   
-  const <#=table#>_exist = await <#=table#>Dao.exist<#=Table_Up#>(search<#
+  const <#=table#>_exist = await <#=table#>Dao.exists<#=Table_Up#>(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {

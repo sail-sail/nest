@@ -1284,9 +1284,9 @@ export async function findByIdsOkTenant(
   return models2;
 }
 
-// MARK: existTenant
+// MARK: existsTenant
 /** 根据搜索条件判断租户是否存在 */
-export async function existTenant(
+export async function existsTenant(
   search?: Readonly<TenantSearch>,
   options?: {
     is_debug?: boolean;
@@ -1294,7 +1294,7 @@ export async function existTenant(
 ): Promise<boolean> {
   
   const table = getTableNameTenant();
-  const method = "existTenant";
+  const method = "existsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   

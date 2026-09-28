@@ -244,6 +244,29 @@ export async function findByIdsUsr(
 }
 
 /**
+ * 根据搜索条件判断用户是否存在
+ */
+export async function existsUsr(
+  search: UsrSearch,
+): Promise<boolean> {
+  
+  const {
+    existsUsr,
+  } = await import("./usr.service.ts");
+  
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
+
+  return await existsUsr(search);
+}
+
+/**
  * 根据 ids 查找用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkUsr(

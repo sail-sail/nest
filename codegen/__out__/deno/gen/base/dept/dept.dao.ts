@@ -1226,9 +1226,9 @@ export async function findByIdsOkDept(
   return models2;
 }
 
-// MARK: existDept
+// MARK: existsDept
 /** 根据搜索条件判断部门是否存在 */
-export async function existDept(
+export async function existsDept(
   search?: Readonly<DeptSearch>,
   options?: {
     is_debug?: boolean;
@@ -1236,7 +1236,7 @@ export async function existDept(
 ): Promise<boolean> {
   
   const table = getTableNameDept();
-  const method = "existDept";
+  const method = "existsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   

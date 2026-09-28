@@ -218,6 +218,29 @@ export async function findByIdsDictbiz(
 }
 
 /**
+ * 根据搜索条件判断业务字典是否存在
+ */
+export async function existsDictbiz(
+  search: DictbizSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDictbiz,
+  } = await import("./dictbiz.service.ts");
+  
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+
+  return await existsDictbiz(search);
+}
+
+/**
  * 根据 ids 查找业务字典, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDictbiz(

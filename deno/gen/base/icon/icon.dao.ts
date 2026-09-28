@@ -972,9 +972,9 @@ export async function findByIdsOkIcon(
   return models2;
 }
 
-// MARK: existIcon
+// MARK: existsIcon
 /** 根据搜索条件判断图标库是否存在 */
-export async function existIcon(
+export async function existsIcon(
   search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
@@ -982,7 +982,7 @@ export async function existIcon(
 ): Promise<boolean> {
   
   const table = getTableNameIcon();
-  const method = "existIcon";
+  const method = "existsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   

@@ -106,6 +106,8 @@ type Query {
   findByIdDynPageData(id: DynPageDataId!): DynPageDataModel
   "根据 ids 查找动态页面数据"
   findByIdsDynPageData(ids: [DynPageDataId!]!): [DynPageDataModel]!
+  "根据搜索条件判断动态页面数据是否存在"
+  existsDynPageData(search: DynPageDataSearch): Boolean!
 }
 type Mutation {
   "批量创建动态页面数据"

@@ -140,7 +140,7 @@ export async function findByIdsOkOptions(
 /**
  * 根据搜索条件查找系统选项是否存在
  */
-export async function existOptions(
+export async function existsOptions(
   search?: OptionsSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existOptions(
   
   await setSearchQuery(search);
   
-  const options_exist = await optionsDao.existOptions(search);
+  const options_exist = await optionsDao.existsOptions(search);
   
   return options_exist;
 }

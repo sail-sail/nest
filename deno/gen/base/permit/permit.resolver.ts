@@ -216,6 +216,29 @@ export async function findByIdsPermit(
 }
 
 /**
+ * 根据搜索条件判断按钮权限是否存在
+ */
+export async function existsPermit(
+  search: PermitSearch,
+): Promise<boolean> {
+  
+  const {
+    existsPermit,
+  } = await import("./permit.service.ts");
+  
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+
+  return await existsPermit(search);
+}
+
+/**
  * 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkPermit(

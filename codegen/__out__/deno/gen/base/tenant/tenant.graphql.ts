@@ -221,6 +221,8 @@ type Query {
   findByIdTenant(id: TenantId!): TenantModel
   "根据 ids 查找租户"
   findByIdsTenant(ids: [TenantId!]!): [TenantModel]!
+  "根据搜索条件判断租户是否存在"
+  existsTenant(search: TenantSearch): Boolean!
   "查找租户 order_by 字段的最大值"
   findLastOrderByTenant(search: TenantSearch): Int!
 }

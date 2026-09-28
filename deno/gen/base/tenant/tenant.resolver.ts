@@ -218,6 +218,29 @@ export async function findByIdsTenant(
 }
 
 /**
+ * 根据搜索条件判断租户是否存在
+ */
+export async function existsTenant(
+  search: TenantSearch,
+): Promise<boolean> {
+  
+  const {
+    existsTenant,
+  } = await import("./tenant.service.ts");
+  
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
+  await usePermit(
+    getPagePathTenant(),
+    "find",
+  );
+
+  return await existsTenant(search);
+}
+
+/**
  * 根据 ids 查找租户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkTenant(

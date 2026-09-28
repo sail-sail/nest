@@ -218,6 +218,29 @@ export async function findByIdsDept(
 }
 
 /**
+ * 根据搜索条件判断部门是否存在
+ */
+export async function existsDept(
+  search: DeptSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDept,
+  } = await import("./dept.service.ts");
+  
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+
+  return await existsDept(search);
+}
+
+/**
  * 根据 ids 查找部门, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDept(

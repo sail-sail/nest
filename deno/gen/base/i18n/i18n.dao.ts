@@ -998,9 +998,9 @@ export async function findByIdsOkI18n(
   return models2;
 }
 
-// MARK: existI18n
+// MARK: existsI18n
 /** 根据搜索条件判断国际化是否存在 */
-export async function existI18n(
+export async function existsI18n(
   search?: Readonly<I18nSearch>,
   options?: {
     is_debug?: boolean;
@@ -1008,7 +1008,7 @@ export async function existI18n(
 ): Promise<boolean> {
   
   const table = getTableNameI18n();
-  const method = "existI18n";
+  const method = "existsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   

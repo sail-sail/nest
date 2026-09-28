@@ -189,11 +189,15 @@ export async function findCount<#=Table_Up2#>(
   
   const {
     findCount<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -230,11 +234,15 @@ export async function findAll<#=Table_Up2#>(
   
   const {
     findAll<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -322,11 +330,15 @@ export async function findSummary<#=Table_Up2#>(
   
   const {
     findSummary<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -358,11 +370,15 @@ export async function findOne<#=Table_Up2#>(
   
   const {
     findOne<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -419,11 +435,15 @@ export async function findOneOk<#=Table_Up2#>(
   
   const {
     findOneOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -477,11 +497,15 @@ export async function findById<#=Table_Up2#>(
   
   const {
     findById<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -535,11 +559,15 @@ export async function findByIdOk<#=Table_Up2#>(
   
   const {
     findByIdOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -591,11 +619,15 @@ export async function findByIds<#=Table_Up2#>(
   
   const {
     findByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -645,6 +677,37 @@ export async function findByIds<#=Table_Up2#>(
 }
 
 /**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up2#>(
+  search: <#=searchName#>,
+): Promise<boolean> {
+  
+  const {
+    exists<#=Table_Up2#>,
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  } else {
+  #>
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "find",
+  );<#
+  }
+  #>
+
+  return await exists<#=Table_Up2#>(search);
+}
+
+/**
  * 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
  */
 export async function findByIdsOk<#=Table_Up2#>(
@@ -653,17 +716,17 @@ export async function findByIdsOk<#=Table_Up2#>(
   
   const {
     findByIdsOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
-  
-  const {
-    getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");<#
+  } = await import("./<#=table#>.service.ts");<#
   if (is_with_auth_optional) {
   #>
   
   setNotVerifyToken(true);<#
   } else {
   #>
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
   
   await usePermit(
     getPagePath<#=Table_Up#>(),
@@ -720,11 +783,15 @@ export async function creates<#=Table_Up2#>(
     validate<#=Table_Up2#>,
     setIdByLbl<#=Table_Up2#>,
     creates<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -809,11 +876,15 @@ export async function updateById<#=Table_Up2#>(
     setIdByLbl<#=Table_Up2#>,
     validate<#=Table_Up2#>,
     updateById<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -889,11 +960,15 @@ export async function auditSubmit<#=Table_Up2#>(
   
   const {
     auditSubmit<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -950,11 +1025,15 @@ export async function auditPass<#=Table_Up2#>(
   
   const {
     auditPass<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1012,11 +1091,15 @@ export async function auditReject<#=Table_Up2#>(
   
   const {
     auditReject<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1075,11 +1158,15 @@ export async function auditReverse<#=Table_Up2#>(
   
   const {
     auditReverse<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1140,11 +1227,15 @@ export async function auditReview<#=Table_Up2#>(
   
   const {
     auditReview<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1209,11 +1300,15 @@ export async function deleteByIds<#=Table_Up2#>(
   
   const {
     deleteByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1280,11 +1375,15 @@ export async function defaultById<#=Table_Up2#>(
   
   const {
     defaultById<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1357,11 +1456,15 @@ export async function enableByIds<#=Table_Up2#>(
   
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIds<#=Table_Up#>.is_enabled expect 0 or 1 but got ${ is_enabled }`);
-  }
+  }<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  }
+  #>
   
   set_is_tran(true);<#
   if (!is_with_auth_optional) {
@@ -1435,11 +1538,15 @@ export async function lockByIds<#=Table_Up2#>(
   
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=Table_Up2#>.is_locked expect 0 or 1 but got ${ is_locked }`);
-  }
+  }<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  }
+  #>
   
   set_is_tran(true);<#
   if (!is_with_auth_optional) {
@@ -1496,11 +1603,15 @@ export async function revertByIds<#=Table_Up2#>(
   
   const {
     revertByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   
@@ -1563,11 +1674,15 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   
   const {
     forceDeleteByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (!is_with_auth_optional) {
+  #>
   
   const {
     getPagePath<#=Table_Up#>,
   } = await import("./<#=table#>.model.ts");<#
+  }
+  #><#
   if (is_with_auth_optional) {
   #>
   

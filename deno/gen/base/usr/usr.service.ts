@@ -147,7 +147,7 @@ export async function findByIdsOkUsr(
 /**
  * 根据搜索条件查找用户是否存在
  */
-export async function existUsr(
+export async function existsUsr(
   search?: UsrSearch,
 ): Promise<boolean> {
   
@@ -155,7 +155,7 @@ export async function existUsr(
   
   await setSearchQuery(search);
   
-  const usr_exist = await usrDao.existUsr(search);
+  const usr_exist = await usrDao.existsUsr(search);
   
   return usr_exist;
 }

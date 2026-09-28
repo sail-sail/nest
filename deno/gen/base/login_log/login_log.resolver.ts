@@ -216,6 +216,29 @@ export async function findByIdsLoginLog(
 }
 
 /**
+ * 根据搜索条件判断登录日志是否存在
+ */
+export async function existsLoginLog(
+  search: LoginLogSearch,
+): Promise<boolean> {
+  
+  const {
+    existsLoginLog,
+  } = await import("./login_log.service.ts");
+  
+  const {
+    getPagePathLoginLog,
+  } = await import("./login_log.model.ts");
+  
+  await usePermit(
+    getPagePathLoginLog(),
+    "find",
+  );
+
+  return await existsLoginLog(search);
+}
+
+/**
  * 根据 ids 查找登录日志, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkLoginLog(

@@ -216,6 +216,29 @@ export async function findByIdsOperationRecord(
 }
 
 /**
+ * 根据搜索条件判断操作记录是否存在
+ */
+export async function existsOperationRecord(
+  search: OperationRecordSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOperationRecord,
+  } = await import("./operation_record.service.ts");
+  
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+
+  return await existsOperationRecord(search);
+}
+
+/**
  * 根据 ids 查找操作记录, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOperationRecord(

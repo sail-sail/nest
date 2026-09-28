@@ -996,9 +996,9 @@ export async function findByIdsOkDictDetail(
   return models2;
 }
 
-// MARK: existDictDetail
+// MARK: existsDictDetail
 /** 根据搜索条件判断系统字典明细是否存在 */
-export async function existDictDetail(
+export async function existsDictDetail(
   search?: Readonly<DictDetailSearch>,
   options?: {
     is_debug?: boolean;
@@ -1006,7 +1006,7 @@ export async function existDictDetail(
 ): Promise<boolean> {
   
   const table = getTableNameDictDetail();
-  const method = "existDictDetail";
+  const method = "existsDictDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   

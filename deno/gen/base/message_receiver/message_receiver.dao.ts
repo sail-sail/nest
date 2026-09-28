@@ -1098,9 +1098,9 @@ export async function findByIdsOkMessageReceiver(
   return models2;
 }
 
-// MARK: existMessageReceiver
+// MARK: existsMessageReceiver
 /** 根据搜索条件判断消息接收人是否存在 */
-export async function existMessageReceiver(
+export async function existsMessageReceiver(
   search?: Readonly<MessageReceiverSearch>,
   options?: {
     is_debug?: boolean;
@@ -1108,7 +1108,7 @@ export async function existMessageReceiver(
 ): Promise<boolean> {
   
   const table = getTableNameMessageReceiver();
-  const method = "existMessageReceiver";
+  const method = "existsMessageReceiver";
   
   const is_debug = get_is_debug(options?.is_debug);
   

@@ -155,6 +155,8 @@ type Query {
   findByIdDictDetail(id: DictDetailId!): DictDetailModel
   "根据 ids 查找系统字典明细"
   findByIdsDictDetail(ids: [DictDetailId!]!): [DictDetailModel]!
+  "根据搜索条件判断系统字典明细是否存在"
+  existsDictDetail(search: DictDetailSearch): Boolean!
   "查找系统字典明细 order_by 字段的最大值"
   findLastOrderByDictDetail(search: DictDetailSearch): Int!
 }

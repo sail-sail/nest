@@ -140,7 +140,7 @@ export async function findByIdsOkDictbiz(
 /**
  * 根据搜索条件查找业务字典是否存在
  */
-export async function existDictbiz(
+export async function existsDictbiz(
   search?: DictbizSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDictbiz(
   
   await setSearchQuery(search);
   
-  const dictbiz_exist = await dictbizDao.existDictbiz(search);
+  const dictbiz_exist = await dictbizDao.existsDictbiz(search);
   
   return dictbiz_exist;
 }

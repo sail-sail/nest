@@ -199,6 +199,8 @@ type Query {
   findByIdMenu(id: MenuId!): MenuModel
   "根据 ids 查找菜单"
   findByIdsMenu(ids: [MenuId!]!): [MenuModel]!
+  "根据搜索条件判断菜单是否存在"
+  existsMenu(search: MenuSearch): Boolean!
   "查找菜单 order_by 字段的最大值"
   findLastOrderByMenu(search: MenuSearch): Int!
 }

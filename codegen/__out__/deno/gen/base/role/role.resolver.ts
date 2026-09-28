@@ -218,6 +218,29 @@ export async function findByIdsRole(
 }
 
 /**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search: RoleSearch,
+): Promise<boolean> {
+  
+  const {
+    existsRole,
+  } = await import("./role.service.ts");
+  
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+
+  return await existsRole(search);
+}
+
+/**
  * 根据 ids 查找角色, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkRole(

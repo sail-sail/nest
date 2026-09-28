@@ -942,9 +942,9 @@ export async function findByIdsOkLang(
   return models2;
 }
 
-// MARK: existLang
+// MARK: existsLang
 /** 根据搜索条件判断语言是否存在 */
-export async function existLang(
+export async function existsLang(
   search?: Readonly<LangSearch>,
   options?: {
     is_debug?: boolean;
@@ -952,7 +952,7 @@ export async function existLang(
 ): Promise<boolean> {
   
   const table = getTableNameLang();
-  const method = "existLang";
+  const method = "existsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   

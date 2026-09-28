@@ -218,6 +218,29 @@ export async function findByIdsDataPermit(
 }
 
 /**
+ * 根据搜索条件判断数据权限是否存在
+ */
+export async function existsDataPermit(
+  search: DataPermitSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDataPermit,
+  } = await import("./data_permit.service.ts");
+  
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
+  await usePermit(
+    getPagePathDataPermit(),
+    "find",
+  );
+
+  return await existsDataPermit(search);
+}
+
+/**
  * 根据 ids 查找数据权限, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDataPermit(

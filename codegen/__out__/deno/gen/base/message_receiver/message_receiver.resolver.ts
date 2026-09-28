@@ -218,6 +218,29 @@ export async function findByIdsMessageReceiver(
 }
 
 /**
+ * 根据搜索条件判断消息接收人是否存在
+ */
+export async function existsMessageReceiver(
+  search: MessageReceiverSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMessageReceiver,
+  } = await import("./message_receiver.service.ts");
+  
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+
+  return await existsMessageReceiver(search);
+}
+
+/**
  * 根据 ids 查找消息接收人, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessageReceiver(

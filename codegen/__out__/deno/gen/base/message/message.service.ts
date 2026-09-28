@@ -162,7 +162,7 @@ export async function findByIdsOkMessage(
 /**
  * 根据搜索条件查找消息是否存在
  */
-export async function existMessage(
+export async function existsMessage(
   search?: MessageSearch,
 ): Promise<boolean> {
   
@@ -170,7 +170,7 @@ export async function existMessage(
   
   await setSearchQuery(search);
   
-  const message_exist = await messageDao.existMessage(search);
+  const message_exist = await messageDao.existsMessage(search);
   
   return message_exist;
 }

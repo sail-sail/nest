@@ -177,6 +177,8 @@ type Query {
   findByIdDynPage(id: DynPageId!): DynPageModel
   "根据 ids 查找动态页面"
   findByIdsDynPage(ids: [DynPageId!]!): [DynPageModel]!
+  "根据搜索条件判断动态页面是否存在"
+  existsDynPage(search: DynPageSearch): Boolean!
   "查找动态页面 order_by 字段的最大值"
   findLastOrderByDynPage(search: DynPageSearch): Int!
 }

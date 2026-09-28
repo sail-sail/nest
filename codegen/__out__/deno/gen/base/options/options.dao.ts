@@ -990,9 +990,9 @@ export async function findByIdsOkOptions(
   return models2;
 }
 
-// MARK: existOptions
+// MARK: existsOptions
 /** 根据搜索条件判断系统选项是否存在 */
-export async function existOptions(
+export async function existsOptions(
   search?: Readonly<OptionsSearch>,
   options?: {
     is_debug?: boolean;
@@ -1000,7 +1000,7 @@ export async function existOptions(
 ): Promise<boolean> {
   
   const table = getTableNameOptions();
-  const method = "existOptions";
+  const method = "existsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
   

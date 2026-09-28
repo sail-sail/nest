@@ -218,6 +218,29 @@ export async function findByIdsI18n(
 }
 
 /**
+ * 根据搜索条件判断国际化是否存在
+ */
+export async function existsI18n(
+  search: I18nSearch,
+): Promise<boolean> {
+  
+  const {
+    existsI18n,
+  } = await import("./i18n.service.ts");
+  
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+
+  return await existsI18n(search);
+}
+
+/**
  * 根据 ids 查找国际化, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkI18n(

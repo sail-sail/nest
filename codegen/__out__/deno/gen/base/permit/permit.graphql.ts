@@ -89,6 +89,8 @@ type Query {
   findByIdPermit(id: PermitId!): PermitModel
   "根据 ids 查找按钮权限"
   findByIdsPermit(ids: [PermitId!]!): [PermitModel]!
+  "根据搜索条件判断按钮权限是否存在"
+  existsPermit(search: PermitSearch): Boolean!
   "查找按钮权限 order_by 字段的最大值"
   findLastOrderByPermit(search: PermitSearch): Int!
 }

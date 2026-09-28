@@ -1170,9 +1170,9 @@ export async function findByIdsOkMessage(
   return models2;
 }
 
-// MARK: existMessage
+// MARK: existsMessage
 /** 根据搜索条件判断消息是否存在 */
-export async function existMessage(
+export async function existsMessage(
   search?: Readonly<MessageSearch>,
   options?: {
     is_debug?: boolean;
@@ -1180,7 +1180,7 @@ export async function existMessage(
 ): Promise<boolean> {
   
   const table = getTableNameMessage();
-  const method = "existMessage";
+  const method = "existsMessage";
   
   const is_debug = get_is_debug(options?.is_debug);
   

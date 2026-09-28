@@ -218,6 +218,29 @@ export async function findByIdsDict(
 }
 
 /**
+ * 根据搜索条件判断系统字典是否存在
+ */
+export async function existsDict(
+  search: DictSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDict,
+  } = await import("./dict.service.ts");
+  
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+
+  return await existsDict(search);
+}
+
+/**
  * 根据 ids 查找系统字典, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDict(

@@ -1027,9 +1027,9 @@ export async function findByIdsOkDict(
   return models2;
 }
 
-// MARK: existDict
+// MARK: existsDict
 /** 根据搜索条件判断系统字典是否存在 */
-export async function existDict(
+export async function existsDict(
   search?: Readonly<DictSearch>,
   options?: {
     is_debug?: boolean;
@@ -1037,7 +1037,7 @@ export async function existDict(
 ): Promise<boolean> {
   
   const table = getTableNameDict();
-  const method = "existDict";
+  const method = "existsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   

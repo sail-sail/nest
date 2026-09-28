@@ -966,9 +966,9 @@ export async function findByIdsOkDomain(
   return models2;
 }
 
-// MARK: existDomain
+// MARK: existsDomain
 /** 根据搜索条件判断域名是否存在 */
-export async function existDomain(
+export async function existsDomain(
   search?: Readonly<DomainSearch>,
   options?: {
     is_debug?: boolean;
@@ -976,7 +976,7 @@ export async function existDomain(
 ): Promise<boolean> {
   
   const table = getTableNameDomain();
-  const method = "existDomain";
+  const method = "existsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   

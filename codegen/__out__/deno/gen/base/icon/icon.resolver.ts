@@ -218,6 +218,29 @@ export async function findByIdsIcon(
 }
 
 /**
+ * 根据搜索条件判断图标库是否存在
+ */
+export async function existsIcon(
+  search: IconSearch,
+): Promise<boolean> {
+  
+  const {
+    existsIcon,
+  } = await import("./icon.service.ts");
+  
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+
+  return await existsIcon(search);
+}
+
+/**
  * 根据 ids 查找图标库, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkIcon(

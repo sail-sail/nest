@@ -162,7 +162,7 @@ export async function findByIdsOkMessageReceiver(
 /**
  * 根据搜索条件查找消息接收人是否存在
  */
-export async function existMessageReceiver(
+export async function existsMessageReceiver(
   search?: MessageReceiverSearch,
 ): Promise<boolean> {
   
@@ -170,7 +170,7 @@ export async function existMessageReceiver(
   
   await setSearchQuery(search);
   
-  const message_receiver_exist = await message_receiverDao.existMessageReceiver(search);
+  const message_receiver_exist = await message_receiverDao.existsMessageReceiver(search);
   
   return message_receiver_exist;
 }

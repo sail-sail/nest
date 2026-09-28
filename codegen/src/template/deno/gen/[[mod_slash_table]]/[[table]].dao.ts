@@ -3845,9 +3845,9 @@ export async function findByIdsOk<#=Table_Up#>(
   return models2;
 }
 
-// MARK: exist<#=Table_Up#>
+// MARK: exists<#=Table_Up#>
 /** 根据搜索条件判断<#=table_comment#>是否存在 */
-export async function exist<#=Table_Up#>(
+export async function exists<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;<#
@@ -3860,7 +3860,7 @@ export async function exist<#=Table_Up#>(
 ): Promise<boolean> {
   
   const table = getTableName<#=Table_Up#>();
-  const method = "exist<#=Table_Up#>";
+  const method = "exists<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   

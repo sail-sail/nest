@@ -164,7 +164,7 @@ export async function findByIdsOkServerLog(
 /**
  * 根据搜索条件查找系统日志是否存在
  */
-export async function existServerLog(
+export async function existsServerLog(
   search?: ServerLogSearch,
 ): Promise<boolean> {
   

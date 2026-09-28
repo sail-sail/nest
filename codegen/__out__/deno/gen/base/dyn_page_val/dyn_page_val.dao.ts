@@ -863,9 +863,9 @@ export async function findByIdsOkDynPageVal(
   return models2;
 }
 
-// MARK: existDynPageVal
+// MARK: existsDynPageVal
 /** 根据搜索条件判断动态页面值是否存在 */
-export async function existDynPageVal(
+export async function existsDynPageVal(
   search?: Readonly<DynPageValSearch>,
   options?: {
     is_debug?: boolean;
@@ -873,7 +873,7 @@ export async function existDynPageVal(
 ): Promise<boolean> {
   
   const table = getTableNameDynPageVal();
-  const method = "existDynPageVal";
+  const method = "existsDynPageVal";
   
   const is_debug = get_is_debug(options?.is_debug);
   

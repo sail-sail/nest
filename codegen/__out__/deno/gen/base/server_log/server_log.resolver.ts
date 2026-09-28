@@ -216,6 +216,29 @@ export async function findByIdsServerLog(
 }
 
 /**
+ * 根据搜索条件判断系统日志是否存在
+ */
+export async function existsServerLog(
+  search: ServerLogSearch,
+): Promise<boolean> {
+  
+  const {
+    existsServerLog,
+  } = await import("./server_log.service.ts");
+  
+  const {
+    getPagePathServerLog,
+  } = await import("./server_log.model.ts");
+  
+  await usePermit(
+    getPagePathServerLog(),
+    "find",
+  );
+
+  return await existsServerLog(search);
+}
+
+/**
  * 根据 ids 查找系统日志, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkServerLog(

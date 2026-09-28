@@ -218,6 +218,29 @@ export async function findByIdsOptions(
 }
 
 /**
+ * 根据搜索条件判断系统选项是否存在
+ */
+export async function existsOptions(
+  search: OptionsSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOptions,
+  } = await import("./options.service.ts");
+  
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+
+  return await existsOptions(search);
+}
+
+/**
  * 根据 ids 查找系统选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptions(

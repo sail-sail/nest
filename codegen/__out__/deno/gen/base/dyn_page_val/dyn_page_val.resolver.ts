@@ -218,6 +218,29 @@ export async function findByIdsDynPageVal(
 }
 
 /**
+ * 根据搜索条件判断动态页面值是否存在
+ */
+export async function existsDynPageVal(
+  search: DynPageValSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDynPageVal,
+  } = await import("./dyn_page_val.service.ts");
+  
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+
+  return await existsDynPageVal(search);
+}
+
+/**
  * 根据 ids 查找动态页面值, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPageVal(

@@ -218,6 +218,29 @@ export async function findByIdsOrg(
 }
 
 /**
+ * 根据搜索条件判断组织是否存在
+ */
+export async function existsOrg(
+  search: OrgSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOrg,
+  } = await import("./org.service.ts");
+  
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+
+  return await existsOrg(search);
+}
+
+/**
  * 根据 ids 查找组织, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOrg(

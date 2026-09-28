@@ -140,7 +140,7 @@ export async function findByIdsOkDynPageField(
 /**
  * 根据搜索条件查找动态页面字段是否存在
  */
-export async function existDynPageField(
+export async function existsDynPageField(
   search?: DynPageFieldSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDynPageField(
   
   await setSearchQuery(search);
   
-  const dyn_page_field_exist = await dyn_page_fieldDao.existDynPageField(search);
+  const dyn_page_field_exist = await dyn_page_fieldDao.existsDynPageField(search);
   
   return dyn_page_field_exist;
 }

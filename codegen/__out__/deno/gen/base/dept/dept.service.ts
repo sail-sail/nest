@@ -162,7 +162,7 @@ export async function findByIdsOkDept(
 /**
  * 根据搜索条件查找部门是否存在
  */
-export async function existDept(
+export async function existsDept(
   search?: DeptSearch,
 ): Promise<boolean> {
   
@@ -170,7 +170,7 @@ export async function existDept(
   
   await setSearchQuery(search);
   
-  const dept_exist = await deptDao.existDept(search);
+  const dept_exist = await deptDao.existsDept(search);
   
   return dept_exist;
 }

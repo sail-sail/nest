@@ -218,6 +218,29 @@ export async function findByIdsMenu(
 }
 
 /**
+ * 根据搜索条件判断菜单是否存在
+ */
+export async function existsMenu(
+  search: MenuSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMenu,
+  } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+
+  return await existsMenu(search);
+}
+
+/**
  * 根据 ids 查找菜单, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMenu(
