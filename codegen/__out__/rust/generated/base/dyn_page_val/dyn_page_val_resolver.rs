@@ -37,6 +37,11 @@ pub async fn find_all_dyn_page_val(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dyn_page_val()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_dyn_page_val(sort.as_deref())?;
   
   let models = dyn_page_val_service::find_all_dyn_page_val(
@@ -62,6 +67,11 @@ pub async fn find_count_dyn_page_val(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dyn_page_val()),
+    String::from("find"),
+  ).await?;
+  
   let num = dyn_page_val_service::find_count_dyn_page_val(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_dyn_page_val(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dyn_page_val()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dyn_page_val(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_dyn_page_val(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dyn_page_val()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dyn_page_val(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_dyn_page_val(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dyn_page_val()),
+    String::from("find"),
+  ).await?;
   
   let res = dyn_page_val_service::exists_dyn_page_val(
     search,

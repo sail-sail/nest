@@ -33,7 +33,7 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
-  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id {
     auth_usr_id
   } else {
     get_auth_id_ok()?

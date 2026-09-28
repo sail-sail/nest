@@ -362,7 +362,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete', '删除') && !isLocked"
+        v-if="permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"

@@ -35,6 +35,11 @@ pub async fn find_all_lang(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_lang(sort.as_deref())?;
   
   let models = lang_service::find_all_lang(
@@ -60,6 +65,11 @@ pub async fn find_count_lang(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
+  
   let num = lang_service::find_count_lang(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   check_sort_lang(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   check_sort_lang(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_lang(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_lang()),
+    String::from("find"),
+  ).await?;
   
   let res = lang_service::exists_lang(
     search,

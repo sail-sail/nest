@@ -35,6 +35,11 @@ pub async fn find_all_permit(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_permit(sort.as_deref())?;
   
   let models = permit_service::find_all_permit(
@@ -60,6 +65,11 @@ pub async fn find_count_permit(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
+  
   let num = permit_service::find_count_permit(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   check_sort_permit(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   check_sort_permit(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_permit()),
+    String::from("find"),
+  ).await?;
   
   let res = permit_service::exists_permit(
     search,

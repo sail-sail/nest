@@ -35,6 +35,11 @@ pub async fn find_all_dict_detail(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dict_detail()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_dict_detail(sort.as_deref())?;
   
   let models = dict_detail_service::find_all_dict_detail(
@@ -60,6 +65,11 @@ pub async fn find_count_dict_detail(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dict_detail()),
+    String::from("find"),
+  ).await?;
+  
   let num = dict_detail_service::find_count_dict_detail(
     search,
     options,
@@ -81,6 +91,11 @@ pub async fn find_one_dict_detail(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict_detail()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dict_detail(sort.as_deref())?;
   
@@ -106,6 +121,11 @@ pub async fn find_one_ok_dict_detail(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict_detail()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dict_detail(sort.as_deref())?;
   
@@ -193,6 +213,11 @@ pub async fn exists_dict_detail(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dict_detail()),
+    String::from("find"),
+  ).await?;
   
   let res = dict_detail_service::exists_dict_detail(
     search,

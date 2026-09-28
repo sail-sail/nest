@@ -37,6 +37,11 @@ pub async fn find_all_dept(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_dept(sort.as_deref())?;
   
   let models = dept_service::find_all_dept(
@@ -62,6 +67,11 @@ pub async fn find_count_dept(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
+  
   let num = dept_service::find_count_dept(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dept(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   check_sort_dept(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_dept(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_dept()),
+    String::from("find"),
+  ).await?;
   
   let res = dept_service::exists_dept(
     search,

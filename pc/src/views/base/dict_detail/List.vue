@@ -355,7 +355,7 @@
     <template v-else>
       
       <el-button
-        v-if="dict_model && dict_model.is_add && permit('delete', '删除') && !isLocked"
+        v-if="dict_model && dict_model.is_add && permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"

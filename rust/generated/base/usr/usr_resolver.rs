@@ -37,6 +37,11 @@ pub async fn find_all_usr(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
+  
   let search = Some({
     let mut search = search.unwrap_or_default();
     search.is_hidden = Some(vec![0]);
@@ -75,6 +80,11 @@ pub async fn find_count_usr(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
+  
   let search = Some({
     let mut search = search.unwrap_or_default();
     search.is_hidden = Some(vec![0]);
@@ -102,6 +112,11 @@ pub async fn find_one_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   let search = Some({
     let mut search = search.unwrap_or_default();
@@ -140,6 +155,11 @@ pub async fn find_one_ok_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   let search = Some({
     let mut search = search.unwrap_or_default();
@@ -257,6 +277,11 @@ pub async fn exists_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   let res = usr_service::exists_usr(
     search,

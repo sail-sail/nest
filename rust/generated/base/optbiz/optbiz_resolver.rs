@@ -37,6 +37,11 @@ pub async fn find_all_optbiz(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_optbiz()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_optbiz(sort.as_deref())?;
   
   let models = optbiz_service::find_all_optbiz(
@@ -62,6 +67,11 @@ pub async fn find_count_optbiz(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_optbiz()),
+    String::from("find"),
+  ).await?;
+  
   let num = optbiz_service::find_count_optbiz(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_optbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_optbiz()),
+    String::from("find"),
+  ).await?;
   
   check_sort_optbiz(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_optbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_optbiz()),
+    String::from("find"),
+  ).await?;
   
   check_sort_optbiz(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_optbiz(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_optbiz()),
+    String::from("find"),
+  ).await?;
   
   let res = optbiz_service::exists_optbiz(
     search,

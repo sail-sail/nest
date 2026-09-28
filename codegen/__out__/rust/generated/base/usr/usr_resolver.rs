@@ -37,6 +37,11 @@ pub async fn find_all_usr(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_usr(sort.as_deref())?;
   
   let models = usr_service::find_all_usr(
@@ -69,6 +74,11 @@ pub async fn find_count_usr(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
+  
   let num = usr_service::find_count_usr(
     search,
     options,
@@ -90,6 +100,11 @@ pub async fn find_one_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   check_sort_usr(sort.as_deref())?;
   
@@ -122,6 +137,11 @@ pub async fn find_one_ok_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   check_sort_usr(sort.as_deref())?;
   
@@ -233,6 +253,11 @@ pub async fn exists_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_usr()),
+    String::from("find"),
+  ).await?;
   
   let res = usr_service::exists_usr(
     search,

@@ -37,6 +37,11 @@ pub async fn find_all_login_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_login_log(sort.as_deref())?;
   
   let models = login_log_service::find_all_login_log(
@@ -62,6 +67,11 @@ pub async fn find_count_login_log(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
+  
   let num = login_log_service::find_count_login_log(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_login_log(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   check_sort_login_log(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_login_log(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_login_log()),
+    String::from("find"),
+  ).await?;
   
   let res = login_log_service::exists_login_log(
     search,

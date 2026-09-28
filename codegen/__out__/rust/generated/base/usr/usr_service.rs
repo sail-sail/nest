@@ -295,7 +295,7 @@ pub async fn update_by_id_usr(
   
   if is_sync_usr_lbl {
     sync_usr_lbl_by_usr_id(
-      usr_id.clone(),
+      usr_id,
       options,
     ).await?;
   }

@@ -2173,6 +2173,15 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     }<#
     }
     #><#
+    if (searchByKeyword) {
+      const prop = searchByKeyword.prop;
+      const prop_rust = rustKeyEscape(prop);
+    #>
+    if let Some(ref <#=prop_rust#>) = self.<#=prop_rust#> {
+      item = item.field("<#=prop_rust#>", <#=prop_rust#>);
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;

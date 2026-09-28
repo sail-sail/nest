@@ -37,6 +37,11 @@ pub async fn find_all_role(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_role()),
+    String::from("find"),
+  ).await?;
+  
   check_sort_role(sort.as_deref())?;
   
   let models = role_service::find_all_role(
@@ -62,6 +67,11 @@ pub async fn find_count_role(
     function_name = function_name!(),
   );
   
+  use_permit(
+    String::from(get_page_path_role()),
+    String::from("find"),
+  ).await?;
+  
   let num = role_service::find_count_role(
     search,
     options,
@@ -83,6 +93,11 @@ pub async fn find_one_role(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_role()),
+    String::from("find"),
+  ).await?;
   
   check_sort_role(sort.as_deref())?;
   
@@ -108,6 +123,11 @@ pub async fn find_one_ok_role(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_role()),
+    String::from("find"),
+  ).await?;
   
   check_sort_role(sort.as_deref())?;
   
@@ -195,6 +215,11 @@ pub async fn exists_role(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
+  
+  use_permit(
+    String::from(get_page_path_role()),
+    String::from("find"),
+  ).await?;
   
   let res = role_service::exists_role(
     search,
