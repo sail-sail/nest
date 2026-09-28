@@ -225,7 +225,7 @@ async fn set_search_query(
   if (opts.filterDataByCreateUsr || hasOrgId || hasAudit) {
   #>
   
-  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id {
     auth_usr_id
   } else {
     get_auth_id_ok()?
@@ -927,7 +927,7 @@ pub async fn update_by_id_<#=table#>(
   
   if is_sync_usr_lbl {
     sync_usr_lbl_by_usr_id(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options,
     ).await?;
   }<#
