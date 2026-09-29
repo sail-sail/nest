@@ -44,6 +44,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -363,7 +364,6 @@ export async function findAllDynPageVal(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -863,9 +863,9 @@ export async function findByIdsOkDynPageVal(
   return models2;
 }
 
-// MARK: existDynPageVal
+// MARK: existsDynPageVal
 /** 根据搜索条件判断动态页面值是否存在 */
-export async function existDynPageVal(
+export async function existsDynPageVal(
   search?: Readonly<DynPageValSearch>,
   options?: {
     is_debug?: boolean;
@@ -873,7 +873,7 @@ export async function existDynPageVal(
 ): Promise<boolean> {
   
   const table = getTableNameDynPageVal();
-  const method = "existDynPageVal";
+  const method = "existsDynPageVal";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1545,12 +1545,7 @@ export async function updateByIdDynPageVal(
   const oldModel = await findByIdDynPageVal(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 动态页面值 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

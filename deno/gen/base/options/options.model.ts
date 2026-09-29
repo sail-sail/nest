@@ -28,7 +28,7 @@ declare global {
   /** 系统选项 */
   interface OptionsSearch extends OptionsSearchType {
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建时间 */

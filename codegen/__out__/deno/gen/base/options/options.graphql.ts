@@ -165,6 +165,8 @@ type Query {
   findByIdOptions(id: OptionsId!): OptionsModel
   "根据 ids 查找系统选项"
   findByIdsOptions(ids: [OptionsId!]!): [OptionsModel]!
+  "根据搜索条件判断系统选项是否存在"
+  existsOptions(search: OptionsSearch): Boolean!
   "查找系统选项 order_by 字段的最大值"
   findLastOrderByOptions(search: OptionsSearch): Int!
 }

@@ -140,7 +140,7 @@ export async function findByIdsOkSeo(
 /**
  * 根据搜索条件查找SEO优化是否存在
  */
-export async function existSeo(
+export async function existsSeo(
   search?: SeoSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existSeo(
   
   await setSearchQuery(search);
   
-  const seo_exist = await seoDao.existSeo(search);
+  const seo_exist = await seoDao.existsSeo(search);
   
   return seo_exist;
 }

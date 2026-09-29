@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -170,13 +169,13 @@
           >
             <el-table
               ref="dict_detailRef"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="dict_detailData"
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {DictDetailModel} -->
               <el-table-column
                 prop="_seq"
                 label="序号"
@@ -236,6 +235,7 @@
                 </template>
               </el-table-column>
               
+              <!-- @vue-generic {DictDetailModel & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&
@@ -323,43 +323,44 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -401,7 +402,10 @@ const pagePath = getPagePathDict();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -551,11 +555,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }
+    isLocked = toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -816,7 +816,7 @@ watch(
     dialogModel.type,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.type) {
@@ -841,10 +841,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {
@@ -971,7 +971,6 @@ function dict_detailRemove(row: DictDetailModel) {
 
 watch(
   () => [
-    dialogModel.dict_detail,
     dialogModel.dict_detail?.length,
   ],
   () => {

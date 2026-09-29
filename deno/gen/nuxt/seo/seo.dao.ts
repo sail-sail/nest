@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -39,10 +40,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deleteObject,
-} from "/lib/oss/oss.dao.ts";
-
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -50,6 +47,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -281,8 +279,15 @@ export async function findCountSeo(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -394,14 +399,19 @@ export async function findAllSeo(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -869,9 +879,9 @@ export async function findByIdsOkSeo(
   return models2;
 }
 
-// MARK: existSeo
+// MARK: existsSeo
 /** 根据搜索条件判断SEO优化是否存在 */
-export async function existSeo(
+export async function existsSeo(
   search?: Readonly<SeoSearch>,
   options?: {
     is_debug?: boolean;
@@ -879,7 +889,7 @@ export async function existSeo(
 ): Promise<boolean> {
   
   const table = getTableNameSeo();
-  const method = "existSeo";
+  const method = "existsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -932,8 +942,15 @@ export async function existByIdSeo(
   const args = new QueryArgs();
   const sql = `select 1 e from nuxt_seo t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1629,12 +1646,7 @@ export async function updateByIdSeo(
   const oldModel = await findByIdSeo(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 SEO优化 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();
@@ -1790,20 +1802,6 @@ export async function updateByIdSeo(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
-  }
-  
-  // 图标
-  if (input.ico != null && input.ico !== oldModel?.ico) {
-    await deleteObject(
-      oldModel?.ico,
-    );
-  }
-  
-  // 分享图片
-  if (input.og_image != null && input.og_image !== oldModel?.og_image) {
-    await deleteObject(
-      oldModel?.og_image,
-    );
   }
   
   return id;
@@ -2058,16 +2056,6 @@ export async function forceDeleteByIdsSeo(
     const sql = `delete from nuxt_seo where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    
-    // 图标
-    await deleteObject(
-      oldModel?.ico,
-    );
-    
-    // 分享图片
-    await deleteObject(
-      oldModel?.og_image,
-    );
   }
   
   await delCacheSeo();

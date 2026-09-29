@@ -11,6 +11,8 @@ type IconModel {
   id: IconId!
   "图标"
   img: String!
+  "图标"
+  img_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -81,6 +83,8 @@ input IconInput {
   id: IconId
   "图标"
   img: String
+  "图标"
+  img_lbl: String
   "编码"
   code: String
   "名称"
@@ -139,6 +143,8 @@ type Query {
   findByIdIcon(id: IconId!): IconModel
   "根据 ids 查找图标库"
   findByIdsIcon(ids: [IconId!]!): [IconModel]!
+  "根据搜索条件判断图标库是否存在"
+  existsIcon(search: IconSearch): Boolean!
   "查找图标库 order_by 字段的最大值"
   findLastOrderByIcon(search: IconSearch): Int!
 }

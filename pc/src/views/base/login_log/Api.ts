@@ -265,6 +265,32 @@ export async function findByIdsLoginLog(
 }
 
 /**
+ * 根据搜索条件判断登录日志是否存在
+ */
+export async function existsLoginLog(
+  search?: LoginLogSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsLoginLog: Query["existsLoginLog"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: LoginLogSearch) {
+        existsLoginLog(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsLoginLog;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 登录日志, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkLoginLog(

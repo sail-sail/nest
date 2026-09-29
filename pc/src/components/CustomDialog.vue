@@ -75,8 +75,6 @@ const {
   setFullscreen,
 } = useFullscreenEfc();
 
-export type CustomDialogType = "auto" | "medium" | "large" | "default";
-
 let dialogVisible = $ref(false);
 let dialogTitle = $ref("");
 let dialogNotice = $ref("");
@@ -98,16 +96,28 @@ watch(
 
 const props = withDefaults(
   defineProps<{
-  height?: string;
-  closeOnClickModal?: boolean;
-}>(),
-{
-  height: undefined,
-  closeOnClickModal: false,
-});
+    height?: string;
+    closeOnClickModal?: boolean;
+  }>(),
+  {
+    height: undefined,
+    closeOnClickModal: false,
+  },
+);
 
 let titleWatchHandle: WatchStopHandle | undefined;
 let noticeWatchHandle: WatchStopHandle | undefined;
+
+function cleanupWatchers() {
+  if (titleWatchHandle) {
+    titleWatchHandle();
+    titleWatchHandle = undefined;
+  }
+  if (noticeWatchHandle) {
+    noticeWatchHandle();
+    noticeWatchHandle = undefined;
+  }
+}
 
 function showDialog<OnCloseResolveType>(
   arg: {
@@ -121,6 +131,7 @@ function showDialog<OnCloseResolveType>(
   dialogPrm: Promise<OnCloseResolveType>;
   onCloseResolve: (arg: OnCloseResolveType) => void;
 } {
+  cleanupWatchers();
   dialogVisible = true;
   if (isRef(arg.title)) {
     titleWatchHandle = watch(
@@ -154,6 +165,7 @@ function showDialog<OnCloseResolveType>(
   let onCloseResolve: ((arg: OnCloseResolveType) => void) | undefined = undefined;
   const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
     onCloseResolve = function(arg: OnCloseResolveType) {
+      cleanupWatchers();
       dialogVisible = false;
       resolve(arg);
     };
@@ -191,14 +203,9 @@ async function focus() {
   }
 }
 
-async function beforeClose(done: (cancel: boolean) => void) {
-  done(false);
-  if (titleWatchHandle) {
-    titleWatchHandle();
-  }
-  if (noticeWatchHandle) {
-    noticeWatchHandle();
-  }
+async function beforeClose(done: (cancel?: boolean) => void) {
+  cleanupWatchers();
+  done();
 }
 
 watch(
@@ -216,12 +223,7 @@ watch(
 );
 
 onUnmounted(() => {
-  if (titleWatchHandle) {
-    titleWatchHandle();
-  }
-  if (noticeWatchHandle) {
-    noticeWatchHandle();
-  }
+  cleanupWatchers();
 });
 
 defineExpose({

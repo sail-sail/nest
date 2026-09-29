@@ -43,12 +43,10 @@ const projectPh = resolve(`${ __dirname }/../../`).replace(/\\/gm, "/");
 
 const chalk = new Chalk();
 
-async function exec(context: Context, table_names0: string[]) {
+async function exec(context: Context) {
   const table_names: string[] = Object.keys(tables).filter((item) => item);
   
-  if (!table_names0) {
-    table_names0 = table_names;
-  }
+  const table_names0 = table_names;
   for (let i = 0; i < table_names0.length; i++) {
     const table_name = table_names0[i];
     if (!tables[table_name]) continue;
@@ -78,14 +76,6 @@ async function exec(context: Context, table_names0: string[]) {
   await genRouter(context);
   // await genMenu(context);
 }
-
-const envArgs = process.argv;
-const program = new Command();
-program
-  .option('-t, --table [value]', '表名')
-  .parse(envArgs);
-
-const options = program.opts();
 
 /**
  * 查看git是否有未加入暂存区的文件, 如果有, 则退出
@@ -118,16 +108,9 @@ function validateGitStaging() {
       cwd: projectPh,
     });
     
-    let table = options.table;
-    if (table) {
-      table = table.split(",");
-      table = table.map((item: string) => item.trim());
-    }
-    console.log(`table:`, table);
-    
     const context = await initContext();
     try {
-      await exec(context, table);
+      await exec(context);
     } catch (err) {
       execSync("git restore . && git clean -fd", {
         cwd: projectPh,

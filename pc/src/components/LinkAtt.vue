@@ -79,7 +79,7 @@ const attLen = $computed(() => {
   return modelValue1.split(",").length;
 });
 
-const attDialogRef = $ref<InstanceType<typeof AttDialog>>();
+const attDialogRef = $(useTemplateRef("attDialogRef"));
 
 async function linkClk(e?: MouseEvent) {
   if (e) {

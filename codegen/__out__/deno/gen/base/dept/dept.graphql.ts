@@ -196,6 +196,8 @@ type Query {
   findByIdDept(id: DeptId!): DeptModel
   "根据 ids 查找部门"
   findByIdsDept(ids: [DeptId!]!): [DeptModel]!
+  "根据搜索条件判断部门是否存在"
+  existsDept(search: DeptSearch): Boolean!
   "查找部门 order_by 字段的最大值"
   findLastOrderByDept(search: DeptSearch): Int!
 }

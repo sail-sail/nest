@@ -146,6 +146,8 @@ type Query {
   findByIdSeo(id: SeoId!): SeoModel
   "根据 ids 查找SEO优化"
   findByIdsSeo(ids: [SeoId!]!): [SeoModel]!
+  "根据搜索条件判断SEO优化是否存在"
+  existsSeo(search: SeoSearch): Boolean!
   "查找SEO优化 order_by 字段的最大值"
   findLastOrderBySeo(search: SeoSearch): Int!
 }

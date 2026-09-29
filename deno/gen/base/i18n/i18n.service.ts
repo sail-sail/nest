@@ -144,7 +144,7 @@ export async function findByIdsOkI18n(
 /**
  * 根据搜索条件查找国际化是否存在
  */
-export async function existI18n(
+export async function existsI18n(
   search?: I18nSearch,
 ): Promise<boolean> {
   
@@ -152,7 +152,7 @@ export async function existI18n(
   
   await setSearchQuery(search);
   
-  const i18n_exist = await i18nDao.existI18n(search);
+  const i18n_exist = await i18nDao.existsI18n(search);
   
   return i18n_exist;
 }

@@ -178,6 +178,8 @@ type Query {
   findByIdDictbiz(id: DictbizId!): DictbizModel
   "根据 ids 查找业务字典"
   findByIdsDictbiz(ids: [DictbizId!]!): [DictbizModel]!
+  "根据搜索条件判断业务字典是否存在"
+  existsDictbiz(search: DictbizSearch): Boolean!
   "查找业务字典 order_by 字段的最大值"
   findLastOrderByDictbiz(search: DictbizSearch): Int!
 }

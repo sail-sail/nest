@@ -243,6 +243,45 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/message",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "消息",
+        component: () => import("@/views/base/message/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "消息",
+        },
+      },
+      {
+        path: "list",
+        name: "消息中心",
+        component: () => import("@/views/base/message/Center.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "消息中心",
+        },
+      },
+    ],
+  },
+  {
+    path: "/base/message_receiver",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "消息接收人",
+        component: () => import("@/views/base/message_receiver/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "消息接收人",
+        },
+      },
+    ],
+  },
+  {
     path: "/base/operation_record",
     component: Layout1,
     children: [

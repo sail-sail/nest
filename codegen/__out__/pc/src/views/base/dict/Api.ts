@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -356,6 +355,32 @@ export async function findByIdsDict(
 }
 
 /**
+ * 根据搜索条件判断系统字典是否存在
+ */
+export async function existsDict(
+  search?: DictSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDict: Query["existsDict"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictSearch) {
+        existsDict(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDict;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统字典, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDict(
@@ -423,7 +448,7 @@ export async function deleteByIdsDict(
  */
 export async function enableByIdsDict(
   ids: DictId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -519,12 +544,6 @@ export function useDownloadImportTemplateDict() {
             order_by
             rem
           }
-          getDict(codes: [
-            "dict_type",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -570,23 +589,15 @@ export function useExportExcelDict() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DictSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDict(search: $search, page: $page, sort: $sort) {
               ${ dictQueryField }
-            }
-            getDict(codes: [
-              "dict_type",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

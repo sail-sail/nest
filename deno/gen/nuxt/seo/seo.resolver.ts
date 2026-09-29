@@ -29,6 +29,15 @@ export async function findCountSeo(
     findCountSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+  
   const num = await findCountSeo(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllSeo(
   const {
     findAllSeo,
   } = await import("./seo.service.ts");
+  
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
   
   checkSortSeo(sort);
   
@@ -80,6 +98,15 @@ export async function findOneSeo(
     findOneSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+  
   checkSortSeo(sort);
   
   const model = await findOneSeo(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkSeo(
     findOneOkSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+  
   checkSortSeo(sort);
   
   const model = await findOneOkSeo(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdSeo(
     findByIdSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+  
   const model = await findByIdSeo(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkSeo(
   const {
     findByIdOkSeo,
   } = await import("./seo.service.ts");
+  
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
   
   const model = await findByIdOkSeo(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsSeo(
     findByIdsSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+  
   const models = await findByIdsSeo(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断SEO优化是否存在
+ */
+export async function existsSeo(
+  search: SeoSearch,
+): Promise<boolean> {
+  
+  const {
+    existsSeo,
+  } = await import("./seo.service.ts");
+  
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
+
+  return await existsSeo(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkSeo(
   const {
     findByIdsOkSeo,
   } = await import("./seo.service.ts");
+  
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
+  await usePermit(
+    getPagePathSeo(),
+    "find",
+  );
   
   const models = await findByIdsOkSeo(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdSeo(
   input: SeoInput,
 ): Promise<SeoId> {
   
-  intoInputSeo(input);
-  
   const {
     setIdByLblSeo,
+    validateSeo,
     updateByIdSeo,
   } = await import("./seo.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdSeo(
   
   set_is_tran(true);
   
+  intoInputSeo(input);
+  
   await setIdByLblSeo(input);
+  
+  await validateSeo(input);
   
   await usePermit(
     getPagePathSeo(),

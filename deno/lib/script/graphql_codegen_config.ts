@@ -19,7 +19,7 @@ const config: CodegenConfig = {
         "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
-          "SmolStr": {
+          "String": {
             "input": "string",
             "output": "string",
           },
@@ -80,7 +80,7 @@ const config: CodegenConfig = {
         "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
-          "SmolStr": {
+          "String": {
             "input": "string",
             "output": "string",
           },
@@ -190,7 +190,7 @@ const config: CodegenConfig = {
         "declarationKind": "interface",
         "useTypeImports": true,
         "scalars": {
-          "SmolStr": {
+          "String": {
             "input": "string",
             "output": "string",
           },

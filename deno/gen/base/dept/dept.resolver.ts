@@ -29,6 +29,15 @@ export async function findCountDept(
     findCountDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+  
   const num = await findCountDept(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDept(
   const {
     findAllDept,
   } = await import("./dept.service.ts");
+  
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
   
   checkSortDept(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDept(
     findOneDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+  
   checkSortDept(sort);
   
   const model = await findOneDept(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDept(
     findOneOkDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+  
   checkSortDept(sort);
   
   const model = await findOneOkDept(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDept(
     findByIdDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+  
   const model = await findByIdDept(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDept(
   const {
     findByIdOkDept,
   } = await import("./dept.service.ts");
+  
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
   
   const model = await findByIdOkDept(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsDept(
     findByIdsDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+  
   const models = await findByIdsDept(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断部门是否存在
+ */
+export async function existsDept(
+  search: DeptSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDept,
+  } = await import("./dept.service.ts");
+  
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
+
+  return await existsDept(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkDept(
   const {
     findByIdsOkDept,
   } = await import("./dept.service.ts");
+  
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
+  await usePermit(
+    getPagePathDept(),
+    "find",
+  );
   
   const models = await findByIdsOkDept(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdDept(
   input: DeptInput,
 ): Promise<DeptId> {
   
-  intoInputDept(input);
-  
   const {
     setIdByLblDept,
+    validateDept,
     updateByIdDept,
   } = await import("./dept.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdDept(
   
   set_is_tran(true);
   
+  intoInputDept(input);
+  
   await setIdByLblDept(input);
+  
+  await validateDept(input);
   
   await usePermit(
     getPagePathDept(),

@@ -140,7 +140,7 @@ export async function findByIdsOkOrg(
 /**
  * 根据搜索条件查找组织是否存在
  */
-export async function existOrg(
+export async function existsOrg(
   search?: OrgSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existOrg(
   
   await setSearchQuery(search);
   
-  const org_exist = await orgDao.existOrg(search);
+  const org_exist = await orgDao.existsOrg(search);
   
   return org_exist;
 }

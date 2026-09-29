@@ -69,6 +69,14 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `@use "@/assets/style/uni.scss";`,
+        silenceDeprecations: [
+          "legacy-js-api",
+        ],
+      },
+      sass: {
+        silenceDeprecations: [
+          "legacy-js-api",
+        ],
       },
     },
   },
@@ -97,9 +105,16 @@ export default defineConfig({
             "getDict",
             "getDictbiz",
             "list2tree",
+            "formatTimeRange",
           ],
           "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
+          ],
+          "@/store/permit.ts": [
+            [ "default", "usePermitStore" ],
+          ],
+          "@/store/field_permit.ts": [
+            [ "default", "useFieldPermitStore" ],
           ],
           "@/store/index.ts": [
             [ "default", "useIndexStore" ],
@@ -186,6 +201,11 @@ export default defineConfig({
         secure: false,
       },
       "/img": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/pca-code.json": {
         target: "http://localhost:4000",
         changeOrigin: true,
         secure: false,

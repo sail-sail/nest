@@ -19,6 +19,7 @@ declare module 'vue' {
     CustomBetweenDate: typeof import('./../components/CustomBetweenDate/CustomBetweenDate.vue')['default']
     CustomDivider: typeof import('./../components/CustomDivider/CustomDivider.vue')['default']
     CustomIcon: typeof import('./../components/CustomIcon/CustomIcon.vue')['default']
+    CustomUploadImage: typeof import('./../components/CustomUploadImage/CustomUploadImage.vue')['default']
     TmAlert: typeof import('./../uni_modules/tm-ui/components/tm-alert/tm-alert.vue')['default']
     TmBadge: typeof import('./../uni_modules/tm-ui/components/tm-badge/tm-badge.vue')['default']
     TmBetweenTime: typeof import('./../uni_modules/tm-ui/components/tm-between-time/tm-between-time.vue')['default']

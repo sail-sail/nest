@@ -140,7 +140,7 @@ export async function findByIdsOkLoginLog(
 /**
  * 根据搜索条件查找登录日志是否存在
  */
-export async function existLoginLog(
+export async function existsLoginLog(
   search?: LoginLogSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existLoginLog(
   
   await setSearchQuery(search);
   
-  const login_log_exist = await login_logDao.existLoginLog(search);
+  const login_log_exist = await login_logDao.existsLoginLog(search);
   
   return login_log_exist;
 }

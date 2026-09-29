@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -28,6 +29,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -38,10 +40,10 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
 const auditColumnUp = auditColumn.substring(0,1).toUpperCase() + auditColumn.substring(1);
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -98,8 +100,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-  validateOptionUsr,
+  findByIdOkUsr,
 } from "/gen/base/usr/usr.dao.ts";<#
 }
 #><#
@@ -129,14 +130,29 @@ import {
 #><#
 if (
   (hasAudit && auditTable_Up) ||
-  opts.filterDataByCreateUsr ||
-  hasOrgId
+  opts.filterDataByCreateUsr
 ) {
 #>
 
 import {
   isAdmin,
 } from "/src/base/usr/usr.dao.ts";<#
+}
+#><#
+if (hasAudit && opts?.audit?.sendAuditMessage) {
+#>
+
+import {
+  getPagePath<#=Table_Up#>,
+} from "./<#=table#>.model.ts";
+
+import {
+  getAuditReceiverUsrIds,
+} from "/src/base/permit/permit.service.ts";
+
+import {
+  sendMessage,
+} from "/src/base/message/message.service.ts";<#
 }
 #><#
 if (hasAudit && auditTable_Up) {
@@ -170,7 +186,7 @@ import dayjs from "dayjs";<#
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 async function setSearchQuery(<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
+  if (opts.filterDataByCreateUsr || hasOrgId || hasIsHidden || hasAudit) {
   #>
   search: <#=searchName#>,<#
   } else {
@@ -179,22 +195,23 @@ async function setSearchQuery(<#
   }
   #>
 ) {<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
+  if (hasIsHidden) {
+  #>
+  if (search.is_hidden == null) {
+    search.is_hidden = [ 0 ];
+  }<#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr || hasOrgId || hasAudit) {
   #>
   
-  const usr_id = await get_usr_id(false);<#
+  const usr_id = search.auth_usr_id || await get_usr_id(false);<#
   if (hasOrgId) {
   #>
-  const org_id = await get_org_id();<#
-  }
-  #>
-  const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
-  );<#
-  if (hasOrgId) {
-  #>
+  const org_id = await get_org_id();
+  const usr_model = await findByIdOkUsr(usr_id);
   const org_ids: OrgId[] = [ ];
-  if (org_id) {
+  if (!search.auth_usr_id && org_id) {
     org_ids.push(org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
@@ -213,13 +230,125 @@ async function setSearchQuery(<#
   } else if (hasOrgId) {
   #>
   
-  if (!await isAdmin(usr_id)) {
-    search.org_id = org_ids;
-  }<#
+  search.org_id = org_ids;<#
   }
   #>
   
+}<#
+if (hasAudit) {
+#>
+
+function getReverse<#=auditColumnUp#>Status(
+  audit: <#=Table_Up#><#=auditColumnUp#>,
+): [<#=Table_Up#><#=auditColumnUp#>, <#=auditTable_Up#>Audit] {<#
+  if (hasReviewed) {
+  #>
+  switch (audit) {
+    case <#=Table_Up#><#=auditColumnUp#>.Reviewed:
+      return [<#=Table_Up#><#=auditColumnUp#>.Audited, <#=auditTable_Up#>Audit.Audited];
+    case <#=Table_Up#><#=auditColumnUp#>.Audited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unaudited, <#=auditTable_Up#>Audit.Unaudited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unaudited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unsubmited, <#=auditTable_Up#>Audit.Unsubmited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unsubmited:
+    case <#=Table_Up#><#=auditColumnUp#>.Rejected:
+      throw "只有待审核、已审核、已复核的 <#=table_comment#> 才能 反审核";
+  }
+<#
+  } else {
+  #>
+  switch (audit) {
+    case <#=Table_Up#><#=auditColumnUp#>.Audited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unaudited, <#=auditTable_Up#>Audit.Unaudited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unaudited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unsubmited, <#=auditTable_Up#>Audit.Unsubmited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unsubmited:
+    case <#=Table_Up#><#=auditColumnUp#>.Rejected:
+      throw "只有待审核、已审核的 <#=table_comment#> 才能 反审核";
+  }
+<#
+  }
+  #>
+}<#
 }
+#><#
+if (hasAudit && opts?.audit?.sendAuditMessage) {
+#>
+
+async function getAuditNotifyReceiverUsrIds(
+  code: string,
+  audit_usr_id: UsrId,
+  <#=table#>_id: <#=Table_Up#>Id,
+): Promise<UsrId[]> {
+  let receiver_usr_ids = await getAuditReceiverUsrIds(
+    getPagePath<#=Table_Up#>(),
+    code,
+  );
+
+  receiver_usr_ids = receiver_usr_ids
+    .filter((item) => item && item !== audit_usr_id);
+
+  receiver_usr_ids = Array.from(new Set(receiver_usr_ids));
+
+  const receiver_usr_ids2: UsrId[] = [ ];
+  for (const receiver_usr_id of receiver_usr_ids) {
+    if (await isAdmin(receiver_usr_id)) {
+      continue;
+    }
+    const has_permit = await exists<#=Table_Up#>({
+      id: <#=table#>_id,
+      auth_usr_id: receiver_usr_id,
+    });
+    if (!has_permit) {
+      continue;
+    }
+    receiver_usr_ids2.push(receiver_usr_id);
+  }
+
+  return receiver_usr_ids2;
+}<#
+if (opts?.audit?.hasReverse) {
+#>
+
+function getAuditReverseNotifyInfo(
+  audit: <#=Table_Up#><#=auditColumnUp#>,
+): {
+  title: string;
+  action: string;
+  code?: string;
+  toCreator?: boolean;
+} {<#
+  if (hasReviewed) {
+  #>
+  if (audit === <#=Table_Up#><#=auditColumnUp#>.Audited) {
+    return {
+      title: "<#=table_comment#>待复核",
+      action: "复核",
+      code: "audit_review",
+    };
+  }<#
+  }
+  #>
+  if (audit === <#=Table_Up#><#=auditColumnUp#>.Unaudited) {
+    return {
+      title: "<#=table_comment#>待审核",
+      action: "审核",
+      code: "audit_pass",
+    };
+  }
+  if (audit === <#=Table_Up#><#=auditColumnUp#>.Unsubmited) {
+    return {
+      title: "<#=table_comment#>待提交",
+      action: "提交审核",
+      toCreator: true,
+    };
+  }
+  throw new Error(`Unsupported audit status: ${ audit }`);
+}<#
+}
+#><#
+}
+#>
 
 /**
  * 根据条件查找<#=table_comment#>总数
@@ -459,7 +588,7 @@ export async function findByIdsOk<#=Table_Up#>(
 /**
  * 根据搜索条件查找<#=table_comment#>是否存在
  */
-export async function exist<#=Table_Up#>(
+export async function exists<#=Table_Up#>(
   search?: <#=searchName#>,
 ): Promise<boolean> {
   
@@ -467,7 +596,7 @@ export async function exist<#=Table_Up#>(
   
   await setSearchQuery(search);
   
-  const <#=table#>_exist = await <#=table#>Dao.exist<#=Table_Up#>(search<#
+  const <#=table#>_exist = await <#=table#>Dao.exists<#=Table_Up#>(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -710,8 +839,8 @@ export async function auditSubmit<#=Table_Up#>(
   }
   #>
   
-  await <#=table#>Dao.updateById(
-    id,
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Unaudited,
     },
@@ -722,9 +851,7 @@ export async function auditSubmit<#=Table_Up#>(
   const audit_usr_id = await get_usr_id();
   const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
   
-  const audit_usr_model = await validateOptionUsr(
-    await findByIdUsr(audit_usr_id),
-  );
+  const audit_usr_model = await findByIdOkUsr(audit_usr_id);
   
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
@@ -740,6 +867,34 @@ export async function auditSubmit<#=Table_Up#>(
     audit_usr_id_lbl,
     audit_time,
   });<#
+  if (opts?.audit?.sendAuditMessage) {
+  #>
+
+  const next_message = {
+    title: "<#=table_comment#>待审核",
+    content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已提交审核，请尽快处理`,
+    route_path: getPagePath<#=Table_Up#>(),
+    route_query: `id=${ <#=table#>_id }`,<#
+    if (hasTenant_id) {
+    #>
+    tenant_id: old_model.tenant_id,
+    <#
+    }
+    #>
+    is_sys_msg: 1,
+  };
+
+  const receiver_usr_ids = await getAuditNotifyReceiverUsrIds(
+    "audit_pass",
+    audit_usr_id,
+    <#=table#>_id,
+  );
+
+  if (receiver_usr_ids.length > 0) {
+    await sendMessage(next_message, receiver_usr_ids);
+  }<#
+  }
+  #><#
   }
   #>
   
@@ -781,8 +936,8 @@ export async function auditPass<#=Table_Up#>(
   }
   #>
   
-  await <#=table#>Dao.updateById(
-    id,
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Audited,
     },
@@ -793,9 +948,7 @@ export async function auditPass<#=Table_Up#>(
   const audit_usr_id = await get_usr_id();
   const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
   
-  const audit_usr_model = await validateOptionUsr(
-    await findByIdUsr(audit_usr_id),
-  );
+  const audit_usr_model = await findByIdOkUsr(audit_usr_id);
   
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
@@ -811,6 +964,56 @@ export async function auditPass<#=Table_Up#>(
     audit_usr_id_lbl,
     audit_time,
   });<#
+  if (hasReviewed) {
+    if (opts?.audit?.sendAuditMessage) {
+    #>
+
+  const next_message = {
+    title: "<#=table_comment#>待复核",
+    content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已审核通过，请继续复核`,
+    route_path: getPagePath<#=Table_Up#>(),
+    route_query: `id=${ <#=table#>_id }`,<#
+    if (hasTenant_id) {
+    #>
+    tenant_id: old_model.tenant_id,
+    <#
+    }
+    #>
+    is_sys_msg: 1,
+  };
+
+  const receiver_usr_ids = await getAuditNotifyReceiverUsrIds(
+    "audit_review",
+    audit_usr_id,
+    <#=table#>_id,
+  );
+
+  if (receiver_usr_ids.length > 0) {
+    await sendMessage(next_message, receiver_usr_ids);
+  }<#
+    }
+  } else if (opts?.audit?.sendAuditMessage) {
+    if (hasCreateUsrId) {
+    #>
+
+  if (old_model.create_usr_id) {
+    await sendMessage({
+      title: "<#=table_comment#>已审核通过",
+      content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已审核通过`,
+      route_path: getPagePath<#=Table_Up#>(),
+      route_query: `id=${ <#=table#>_id }`,<#
+      if (hasTenant_id) {
+      #>
+      tenant_id: old_model.tenant_id,
+      <#
+      }
+      #>
+      is_sys_msg: 1,
+    }, [ old_model.create_usr_id ]);
+  }<#
+    }
+  }
+  #><#
   }
   #>
   
@@ -861,7 +1064,7 @@ export async function auditReject<#=Table_Up#>(
   #>
   
   await <#=table#>Dao.updateById<#=Table_Up#>(
-    id,
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Rejected,
     },
@@ -872,9 +1075,7 @@ export async function auditReject<#=Table_Up#>(
   const audit_usr_id = await get_usr_id();
   const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
   
-  const audit_usr_model = await validateOptionUsr(
-    await findByIdUsr(audit_usr_id),
-  );
+  const audit_usr_model = await findByIdOkUsr(audit_usr_id);
   
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
@@ -891,11 +1092,143 @@ export async function auditReject<#=Table_Up#>(
     audit_time,
     rem: audit_input.rem,
   });<#
+  if (hasCreateUsrId && opts?.audit?.sendAuditMessage) {
+  #>
+
+  if (old_model.create_usr_id) {
+    await sendMessage({
+      title: "<#=table_comment#>已被拒绝",
+      content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已被拒绝，请重新提交审核`,
+      route_path: getPagePath<#=Table_Up#>(),
+      route_query: `id=${ <#=table#>_id }`,<#
+      if (hasTenant_id) {
+      #>
+      tenant_id: old_model.tenant_id,
+      <#
+      }
+      #>
+      is_sys_msg: 1,
+    }, [ old_model.create_usr_id ]);
+  }<#
+  }
+  #><#
   }
   #>
   
   return true;
 }<#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** <#=table_comment#> 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption<#=Table_Up#>(
+    await <#=table#>Dao.findById<#=Table_Up#>(<#=table#>_id),
+  );
+  
+  const [audit, audit_log] = getReverse<#=auditColumnUp#>Status(old_model.<#=auditColumn#>);<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
+    {
+      <#=auditColumn#>: audit,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await findByIdOkUsr(audit_usr_id);
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: audit_log,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+    rem: "反审核",
+  });<#
+  if (opts?.audit?.sendAuditMessage) {
+  #>
+
+  const reverse_notify = getAuditReverseNotifyInfo(audit);
+  if (reverse_notify.toCreator) {<#
+    if (hasCreateUsrId) {
+    #>
+    if (old_model.create_usr_id) {
+      await sendMessage({
+        title: reverse_notify.title,
+        content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已被反审核，请重新${ reverse_notify.action }`,
+        route_path: getPagePath<#=Table_Up#>(),
+        route_query: `id=${ <#=table#>_id }`,<#
+        if (hasTenant_id) {
+        #>
+        tenant_id: old_model.tenant_id,
+        <#
+        }
+        #>
+        is_sys_msg: 1,
+      }, [ old_model.create_usr_id ]);
+    }<#
+    }
+    #>
+  } else if (reverse_notify.code) {
+    const receiver_usr_ids = await getAuditNotifyReceiverUsrIds(
+      reverse_notify.code,
+      audit_usr_id,
+      <#=table#>_id,
+    );
+    if (receiver_usr_ids.length > 0) {
+      await sendMessage({
+        title: reverse_notify.title,
+        content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已被反审核，请重新${ reverse_notify.action }`,
+        route_path: getPagePath<#=Table_Up#>(),
+        route_query: `id=${ <#=table#>_id }`,<#
+        if (hasTenant_id) {
+        #>
+        tenant_id: old_model.tenant_id,
+        <#
+        }
+        #>
+        is_sys_msg: 1,
+      }, receiver_usr_ids);
+    }
+  }<#
+  }
+  #><#
+  }
+  #>
+  
+  return true;
+}<#
+}
+#><#
 if (hasReviewed) {
 #>
 
@@ -935,7 +1268,7 @@ export async function auditReview<#=Table_Up#>(
   #>
   
   await <#=table#>Dao.updateById<#=Table_Up#>(
-    id,
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Reviewed,
     },
@@ -946,9 +1279,7 @@ export async function auditReview<#=Table_Up#>(
   const audit_usr_id = await get_usr_id();
   const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
   
-  const audit_usr_model = await validateOptionUsr(
-    await findByIdUsr(audit_usr_id),
-  );
+  const audit_usr_model = await findByIdOkUsr(audit_usr_id);
   
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
@@ -964,6 +1295,26 @@ export async function auditReview<#=Table_Up#>(
     audit_usr_id_lbl,
     audit_time,
   });<#
+  if (hasCreateUsrId && opts?.audit?.sendAuditMessage) {
+  #>
+
+  if (old_model.create_usr_id) {
+    await sendMessage({
+      title: "<#=table_comment#>已复核通过",
+      content: `<#=table_comment#> ${ <#=auditModelLabel#> } 已复核通过`,
+      route_path: getPagePath<#=Table_Up#>(),
+      route_query: `id=${ <#=table#>_id }`,<#
+      if (hasTenant_id) {
+      #>
+      tenant_id: old_model.tenant_id,
+      <#
+      }
+      #>
+      is_sys_msg: 1,
+    }, [ old_model.create_usr_id ]);
+  }<#
+  }
+  #><#
   }
   #>
   

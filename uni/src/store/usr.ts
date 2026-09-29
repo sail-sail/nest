@@ -1,12 +1,12 @@
 import type {
   GetLoginInfo,
-} from "@/typings/types";
-  
-let authorization: string = uni.getStorageSync("authorization") || "";
-let usr_id: UsrId = uni.getStorageSync("usr_id");
-let tenant_id: TenantId = uni.getStorageSync("tenant_id");
-let username: string = uni.getStorageSync("username");
-let loginInfo: GetLoginInfo = uni.getStorageSync("loginInfo");
+} from "#/types.ts";
+
+let authorization = $ref<string>(uni.getStorageSync("authorization") || "");
+let usr_id = $ref<UsrId>(uni.getStorageSync("usr_id"));
+let tenant_id = $ref<TenantId>(uni.getStorageSync("tenant_id"));
+let username = $ref<string>(uni.getStorageSync("username"));
+let loginInfo = $ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
 let showAuth = false;
   
@@ -14,7 +14,7 @@ let lang = "";
 
 export default function() {
   
-  function setAuthorization(authorization0: string) {
+  async function setAuthorization(authorization0: string) {
     if (authorization !== authorization0) {
       authorization = authorization0;
       uni.setStorageSync("authorization", authorization0);
@@ -77,7 +77,12 @@ export default function() {
     return tenant_id;
   }
   
+  function isAdmin() {
+    return username === "admin";
+  }
+  
   return {
+    isAdmin,
     getAuthorization,
     setAuthorization,
     getUsrId,

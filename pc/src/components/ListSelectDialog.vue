@@ -4,12 +4,13 @@
   v-model="dialogVisible"
   :fullscreen="fullscreen"
   append-to-body
-  :close-on-click-modal="false"
+  :close-on-click-modal="props.closeOnClickModal"
   class="custom_dialog ListSelectDialog"
   :class="{
     auto_dialog: dialogType === 'auto',
     medium_dialog: dialogType === 'medium',
     large_dialog: dialogType === 'large',
+    pointer_pierce_dialog: props.closeOnClickModal === false && pointerPierce,
   }"
   top="0"
   :before-close="beforeClose"
@@ -96,9 +97,18 @@
 
 <script setup lang="ts">
 
-const props = defineProps<{
-  isLocked?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    isLocked?: boolean;
+    height?: string;
+    closeOnClickModal?: boolean;
+  }>(),
+  {
+    isLocked: false,
+    height: undefined,
+    closeOnClickModal: false,
+  },
+);
 
 const {
   ns,
@@ -113,8 +123,6 @@ let inited = $ref(false);
 
 const dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
-export type CustomDialogType = "auto" | "medium" | "large" | "default";
-
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref<"select" | "close" | "cancel">("select");
@@ -122,6 +130,8 @@ let dialogType = $ref<CustomDialogType>("default");
 
 let selectedIds = $ref<string[] | undefined>([ ]);
 let oldSelectedIds = $ref<string[] | undefined>([ ]);
+
+let pointerPierce = $ref(false);
 
 const isLocked = $computed(() => {
   return argIsLocked || props.isLocked || false;
@@ -146,6 +156,7 @@ async function showDialog(
     // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     selectedIds: any[];
     isLocked?: boolean;
+    pointerPierce?: boolean;
   },
 ) {
   inited = false;
@@ -157,6 +168,7 @@ async function showDialog(
   const action = arg?.action;
   dialogType = arg?.type ?? "medium";
   dialogAction = action || "select";
+  pointerPierce = arg?.pointerPierce ?? true;
   if (title) {
     dialogTitle = title;
   }

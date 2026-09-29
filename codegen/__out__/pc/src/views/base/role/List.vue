@@ -178,7 +178,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -219,7 +221,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -275,7 +277,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -350,7 +354,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -362,7 +366,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -518,6 +522,7 @@
           
           <!-- 编码 -->
           <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +532,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,6 +542,7 @@
           
           <!-- 首页 -->
           <template v-else-if="'home_url' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -545,6 +552,7 @@
           
           <!-- 菜单权限 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,6 +571,7 @@
           
           <!-- 按钮权限 -->
           <template v-else-if="'permit_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.permit_ids == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -581,6 +590,7 @@
           
           <!-- 数据权限 -->
           <template v-else-if="'data_permit_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.data_permit_ids == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -599,6 +609,7 @@
           
           <!-- 字段权限 -->
           <template v-else-if="'field_permit_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.field_permit_ids == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -615,8 +626,26 @@
             </el-table-column>
           </template>
           
+          <!-- 接收审核消息 -->
+          <template v-else-if="'is_audit_msg_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_audit_msg"
+                  @change="onIs_audit_msg(row.id, row.is_audit_msg)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -633,6 +662,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -649,6 +679,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -675,6 +706,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -684,6 +716,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -693,6 +726,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -702,6 +736,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -711,6 +746,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -869,7 +905,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1176,6 +1215,7 @@ function getTableColumns(): ColumnType[] {
       label: "编码",
       prop: "code",
       width: 100,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1230,6 +1270,15 @@ function getTableColumns(): ColumnType[] {
       prop: "field_permit_ids_lbl",
       sortBy: "field_permit_ids_lbl",
       width: 80,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "接收审核消息",
+      prop: "is_audit_msg_lbl",
+      sortBy: "is_audit_msg",
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1311,7 +1360,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1325,6 +1374,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1400,8 +1473,8 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "order_by",
-  order: "ascending",
+  prop: "code",
+  order: "descending",
 };
 
 const defaultSort: Sort = $computed(() => {
@@ -1424,7 +1497,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<RoleModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<RoleModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1469,7 +1546,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1501,7 +1578,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1572,6 +1649,7 @@ async function onImportExcel() {
     [ "按钮权限" ]: "permit_ids_lbl",
     [ "数据权限" ]: "data_permit_ids_lbl",
     [ "字段权限" ]: "field_permit_ids_lbl",
+    [ "接收审核消息" ]: "is_audit_msg_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1603,6 +1681,7 @@ async function onImportExcel() {
           "permit_ids_lbl": "string[]",
           "data_permit_ids_lbl": "string[]",
           "field_permit_ids_lbl": "string[]",
+          "is_audit_msg_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1636,8 +1715,32 @@ async function stopImport() {
   isImporting = false;
 }
 
+/** 接收审核消息 */
+async function onIs_audit_msg(id: RoleId, is_audit_msg: number) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdRole(
+    id,
+    {
+      is_audit_msg,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
 /** 锁定 */
-async function onIs_locked(id: RoleId, is_locked: 0 | 1) {
+async function onIs_locked(id: RoleId, is_locked: number) {
   if (isLocked) {
     return;
   }
@@ -1659,7 +1762,7 @@ async function onIs_locked(id: RoleId, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: RoleId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: RoleId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1688,7 +1791,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1737,9 +1840,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: RoleModel,
-  column: TableColumnCtx<RoleModel>,
+  column: TableColumnCtx<RoleModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1790,7 +1893,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1822,7 +1925,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1849,12 +1952,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1883,12 +1986,12 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1908,7 +2011,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 角色 成功`;
     } else {
-      msg = `解锋 ${ num } 角色 成功`;
+      msg = `解锁 ${ num } 角色 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1922,7 +2025,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1950,10 +2053,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1962,10 +2066,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

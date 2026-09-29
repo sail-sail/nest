@@ -109,7 +109,7 @@ export interface TableColumn {
    *   CURRENT_TENANT_ID: 当前租户ID
    *   其余的请查看dayjs文档: https://dayjs.fenxianglu.cn/category/manipulate.html#%E6%97%B6%E9%97%B4%E7%9A%84%E5%BC%80%E5%A7%8B
    */
-  COLUMN_DEFAULT?: string | "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
+  COLUMN_DEFAULT?: "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
     | "start_of_year" | "end_of_year" | "start_of_month" | "end_of_month" | "start_of_week" | "end_of_week" | "start_of_day" | "end_of_day"
     | "start_of_hour" | "end_of_hour" | "start_of_minute" | "end_of_minute" | "start_of_second" | "end_of_second",
   
@@ -209,9 +209,7 @@ export interface TableColumn {
   notForeignKeyById?: boolean;
   
   /**
-   * 是否不显示导入导出中的下拉框
-   * 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-   *   true: 不显示, false: 显示, 默认为false
+   * 是否不显示导入导出中的下拉框, 默认为 true
    */
   notImportExportList?: boolean;
   
@@ -326,6 +324,19 @@ export interface TableColumn {
      */
     isForceJoinQuery?: boolean;
     
+    /**
+     * 在dao层sql查询中, 是否有 is not null 的查询条件, 默认为 false
+     */
+    is_where_query_not_null?: boolean;
+    
+    /**
+     * uni 移动端中, 如果此外键弹窗数据量很大, 需要分页, 则配置分页搜索键
+     */
+    uniCustomSelectModalPage?: {
+      searchKey: string;
+      searchIds?: string;
+    };
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
@@ -408,6 +419,23 @@ export interface TableColumn {
   search?: boolean,
   
   /**
+   * 前端列表搜索条件默认值
+   * 比如: 最近3年: subtract:94608000
+   */
+  searchDefaultValue?: any,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围
+   * 时间跨度时单位为秒
+   */
+  searchRangeMax?: number,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围提示信息
+   */
+  searchRangeMaxMsg?: string,
+  
+  /**
    * 是否可以搜索
    * 默认为 false, 如果 search == true, 则默认为 true
    * 如果是外键关联字段, 则默认为 true
@@ -426,6 +454,8 @@ export interface TableColumn {
    * 如果字段名是img或者_img结尾, 并且isImg == null，则认isImg默认为true,并且此时width默认为80
    */
   isImg?: boolean,
+  
+  isSpanFull?: boolean;
   
   /**
    * 是否图标
@@ -612,9 +642,14 @@ export interface TableColumn {
   dict?: string,
   
   /**
+   * is_sys的系统字典,业务字典是否强制ENUM类型, 默认为true
+   */
+  isDictEnum?: boolean;
+   
+  /**
    * 业务字典
    */
-  dictbiz?: string,
+  dictbiz?: string;
   
   /**
    * 系统字典 或 业务字典 的下拉框是否有增加按钮
@@ -1075,9 +1110,24 @@ export interface TablesConfigItem {
       auditTableSchema?: TablesConfigItem;
       
       /**
-       * 是否有复核功能, 默认寻找 [表名]_audit 复核表的 audit 字段的枚举值是否有 
+       * 是否有复核功能。
+       * 建议在需要复核时显式写 true；如果主表/审核表的 audit 枚举没有 reviewed，则显式写 false。
        */
       hasReviewed?: boolean;
+      
+      /**
+       * 是否有反审核功能。
+       * 建议需要标准反审核时显式写 true，不要依赖“省略即默认 true”的口头约定。
+       * 标准反审核仅做状态回退：reviewed -> audited -> unaudited -> unsubmited，rejected / unsubmited 不允许反审核。
+       */
+      hasReverse?: boolean;
+      
+      /**
+       * 此审核功能审核后是否发送消息 message，默认为 true
+       * 如果不需要发送消息，则显式写 false
+       * 相关逻辑 notify_next_audit_usr_by_permit
+       */
+      sendAuditMessage?: boolean;
       
     };
     
@@ -1109,6 +1159,9 @@ export interface TablesConfigItem {
        * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
        */
       hasDetailModal?: boolean;
+      /** Detail.vue 中表单文本框的宽度, 默认为: 160 */
+      detailFormWidth?: number;
+      navigationStyle?: "default" | "custom";
     };
     
     /**
@@ -1156,6 +1209,36 @@ export interface TablesConfigItem {
      * sql 查询是否启用 for update, 默认为 false
      */
     isHasForUpdate?: boolean;
+  
+    /**
+     * 此表是否启用bpm工作流
+     */
+    bpm?: {
+      /**
+       * 工作流业务编码, 一般为: [模块]_[表名]
+       */
+      biz_code: string;
+      /**
+       * 默认值为 bpm_status
+       * 此字段默认只读
+       */
+      bpm_status_field?: string;
+      /**
+       * 申请人字段, 默认为 apply_usr_id
+       * 此字段默认只读, 前端默认值为当前登录用户
+       */
+      apply_usr_id_field?: string;
+      /**
+       * 申请人字段lbl, 默认为 apply_usr_id_lbl
+       * 此字段默认只读, 前端默认值为当前登录用户
+       */
+      apply_usr_id_lbl_field?: string;
+      /**
+       * 申请时间字段, 默认为 apply_time
+       * 此字段默认只读, 默认值为当前时间 CURRENT_DATETIME
+       */
+      apply_time_field?: string;
+    };
     
   },
   columns: TableColumn[];

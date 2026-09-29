@@ -140,7 +140,7 @@ export async function findByIdsOkFieldPermit(
 /**
  * 根据搜索条件查找字段权限是否存在
  */
-export async function existFieldPermit(
+export async function existsFieldPermit(
   search?: FieldPermitSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existFieldPermit(
   
   await setSearchQuery(search);
   
-  const field_permit_exist = await field_permitDao.existFieldPermit(search);
+  const field_permit_exist = await field_permitDao.existsFieldPermit(search);
   
   return field_permit_exist;
 }

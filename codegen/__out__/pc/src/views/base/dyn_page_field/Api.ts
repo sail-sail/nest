@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -362,6 +361,32 @@ export async function findByIdsDynPageField(
 }
 
 /**
+ * 根据搜索条件判断动态页面字段是否存在
+ */
+export async function existsDynPageField(
+  search?: DynPageFieldSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPageField: Query["existsDynPageField"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageFieldSearch) {
+        existsDynPageField(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPageField;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面字段, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPageField(
@@ -429,7 +454,7 @@ export async function deleteByIdsDynPageField(
  */
 export async function enableByIdsDynPageField(
   ids: DynPageFieldId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -539,8 +564,8 @@ export async function getListDynPage() {
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
     ],
     {
@@ -577,20 +602,6 @@ export function useDownloadImportTemplateDynPageField() {
             is_mobile_list_lbl
             is_mobile_search_lbl
             order_by
-          }
-          findAllDynPage {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-            "yes_no",
-            "dyn_page_field_align",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
           }
         }
       `,
@@ -637,30 +648,15 @@ export function useExportExcelDynPageField() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DynPageFieldSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DynPageFieldSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDynPageField(search: $search, page: $page, sort: $sort) {
               ${ dynPageFieldQueryField }
-            }
-            findAllDynPage {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-              "yes_no",
-              "dyn_page_field_align",
-              "yes_no",
-              "yes_no",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
