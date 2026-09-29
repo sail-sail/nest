@@ -78,7 +78,7 @@
     "@dcloudio/vite-plugin-uni": "3.0.0-5020620260917001",
     "@eslint/js": "10.0.1",
     "@plugin-web-update-notification/vite": "2.1.3",
-    "@types/node": "26.6.2",
+    "@types/node": "26.6.3",
     "@uni-helper/uni-app-types": "1.3.0",
     "@unocss/preset-attributify": "66.10.5",
     "@vue-macros/eslint-config": "3.1.4",
@@ -90,12 +90,12 @@
     "birpc": "4.2.0",
     "cross-env": "10.1.0",
     "eslint": "10.11.0",
-    "eslint-plugin-vue": "10.11.0",
+    "eslint-plugin-vue": "10.11.1",
     "globals": "17.12.0",
     "hookable": "6.1.2",
     "perfect-debounce": "2.1.0",
-    "rollup": "4.63.4",
-    "sass": "1.104.1",
+    "rollup": "4.63.5",
+    "sass": "1.105.0",
     "svgo": "4.1.0",
     "tmui-cli": "2.0.6",
     "typescript": "6.0.3",
@@ -108,7 +108,7 @@
     "vite": "7.3.1",
     "vite-plugin-inspect": "12.0.2",
     "vite-plugin-vue-inspector": "7.0.0",
-    "vitest": "5.0.1",
+    "vitest": "5.0.2",
     "vue-tsc": "3.3.11"
   }
 }
