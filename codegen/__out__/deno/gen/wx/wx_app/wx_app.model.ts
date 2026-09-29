@@ -34,7 +34,7 @@ declare global {
     default_role_codes?: string;
     default_role_codes_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

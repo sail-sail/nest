@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -480,7 +481,6 @@ export async function findAllWxRefund(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -1092,9 +1092,9 @@ export async function findByIdsOkWxRefund(
   return models2;
 }
 
-// MARK: existWxRefund
+// MARK: existsWxRefund
 /** 根据搜索条件判断微信退款申请是否存在 */
-export async function existWxRefund(
+export async function existsWxRefund(
   search?: Readonly<WxRefundSearch>,
   options?: {
     is_debug?: boolean;
@@ -1102,7 +1102,7 @@ export async function existWxRefund(
 ): Promise<boolean> {
   
   const table = getTableNameWxRefund();
-  const method = "existWxRefund";
+  const method = "existsWxRefund";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1762,12 +1762,7 @@ export async function updateByIdWxRefund(
   const oldModel = await findByIdWxRefund(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 微信退款申请 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

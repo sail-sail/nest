@@ -140,7 +140,7 @@ export async function findByIdsOkWxoApp(
 /**
  * 根据搜索条件查找公众号设置是否存在
  */
-export async function existWxoApp(
+export async function existsWxoApp(
   search?: WxoAppSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxoApp(
   
   await setSearchQuery(search);
   
-  const wxo_app_exist = await wxo_appDao.existWxoApp(search);
+  const wxo_app_exist = await wxo_appDao.existsWxoApp(search);
   
   return wxo_app_exist;
 }

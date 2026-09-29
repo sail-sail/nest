@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -345,6 +344,32 @@ export async function findByIdsWxApp(
 }
 
 /**
+ * 根据搜索条件判断小程序设置是否存在
+ */
+export async function existsWxApp(
+  search?: WxAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxApp: Query["existsWxApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxAppSearch) {
+        existsWxApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 小程序设置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxApp(
@@ -412,7 +437,7 @@ export async function deleteByIdsWxApp(
  */
 export async function enableByIdsWxApp(
   ids: WxAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -440,7 +465,7 @@ export async function enableByIdsWxApp(
  */
 export async function lockByIdsWxApp(
   ids: WxAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -582,23 +607,15 @@ export function useExportExcelWxApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxApp(search: $search, page: $page, sort: $sort) {
               ${ wxAppQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

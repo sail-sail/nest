@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -353,6 +352,32 @@ export async function findByIdsWxPay(
 }
 
 /**
+ * 根据搜索条件判断微信支付设置是否存在
+ */
+export async function existsWxPay(
+  search?: WxPaySearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxPay: Query["existsWxPay"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxPaySearch) {
+        existsWxPay(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxPay;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 微信支付设置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxPay(
@@ -420,7 +445,7 @@ export async function deleteByIdsWxPay(
  */
 export async function enableByIdsWxPay(
   ids: WxPayId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -448,7 +473,7 @@ export async function enableByIdsWxPay(
  */
 export async function lockByIdsWxPay(
   ids: WxPayId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -591,23 +616,15 @@ export function useExportExcelWxPay() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxPaySearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxPay(search: $search, page: $page, sort: $sort) {
               ${ wxPayQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -780,7 +797,7 @@ export async function getDefaultInputWxPay() {
   const defaultInput: WxPayInput = {
     notify_url: "/api/wx_pay/wx_pay_notify",
     refund_notify_url: "/api/wx_pay/wx_refund_notice",
-    is_locked: 1,
+    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };

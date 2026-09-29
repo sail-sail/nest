@@ -27,6 +27,15 @@ export async function findCountPayTransactionsJsapi(
     findCountPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+  
   const num = await findCountPayTransactionsJsapi(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllPayTransactionsJsapi(
   const {
     findAllPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
   
   checkSortPayTransactionsJsapi(sort);
   
@@ -78,6 +96,15 @@ export async function findOnePayTransactionsJsapi(
     findOnePayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+  
   checkSortPayTransactionsJsapi(sort);
   
   const model = await findOnePayTransactionsJsapi(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkPayTransactionsJsapi(
     findOneOkPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+  
   checkSortPayTransactionsJsapi(sort);
   
   const model = await findOneOkPayTransactionsJsapi(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdPayTransactionsJsapi(
     findByIdPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+  
   const model = await findByIdPayTransactionsJsapi(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkPayTransactionsJsapi(
   const {
     findByIdOkPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
   
   const model = await findByIdOkPayTransactionsJsapi(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsPayTransactionsJsapi(
     findByIdsPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+  
   const models = await findByIdsPayTransactionsJsapi(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断微信JSAPI下单是否存在
+ */
+export async function existsPayTransactionsJsapi(
+  search: PayTransactionsJsapiSearch,
+): Promise<boolean> {
+  
+  const {
+    existsPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
+
+  return await existsPayTransactionsJsapi(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkPayTransactionsJsapi(
   const {
     findByIdsOkPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const {
+    getPagePathPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.model.ts");
+  
+  await usePermit(
+    getPagePathPayTransactionsJsapi(),
+    "find",
+  );
   
   const models = await findByIdsOkPayTransactionsJsapi(ids);
   

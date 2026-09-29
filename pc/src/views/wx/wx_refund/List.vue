@@ -190,7 +190,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="true">
       
@@ -239,7 +241,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -416,6 +420,7 @@
           
           <!-- 开发者ID -->
           <template v-if="'appid' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -425,6 +430,7 @@
           
           <!-- 商户号 -->
           <template v-else-if="'mchid' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -434,6 +440,7 @@
           
           <!-- 商户订单号 -->
           <template v-else-if="'out_trade_no' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -443,6 +450,7 @@
           
           <!-- 微信支付订单号 -->
           <template v-else-if="'transaction_id' === col.prop && (showBuildIn || builtInSearch?.transaction_id == null)">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,6 +475,7 @@
           
           <!-- 商户退款单号 -->
           <template v-else-if="'out_refund_no' === col.prop && (showBuildIn || builtInSearch?.out_refund_no == null)">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -476,6 +485,7 @@
           
           <!-- 微信退款单号 -->
           <template v-else-if="'refund_id' === col.prop && (showBuildIn || builtInSearch?.refund_id == null)">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -500,6 +510,7 @@
           
           <!-- 退款原因 -->
           <template v-else-if="'reason' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -509,6 +520,7 @@
           
           <!-- 退款渠道 -->
           <template v-else-if="'channel_lbl' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -518,6 +530,7 @@
           
           <!-- 退款入账账户 -->
           <template v-else-if="'user_received_account' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +540,7 @@
           
           <!-- 退款成功时间 -->
           <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,6 +550,7 @@
           
           <!-- 退款状态 -->
           <template v-else-if="'status_lbl' === col.prop && (showBuildIn || builtInSearch?.status == null)">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -545,6 +560,7 @@
           
           <!-- 资金账户 -->
           <template v-else-if="'funds_account_lbl' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -554,6 +570,7 @@
           
           <!-- 订单金额(分) -->
           <template v-else-if="'amount_total' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,6 +580,7 @@
           
           <!-- 退款金额(分) -->
           <template v-else-if="'amount_refund' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -572,6 +590,7 @@
           
           <!-- 用户实际支付金额(分) -->
           <template v-else-if="'amount_payer_total' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -581,6 +600,7 @@
           
           <!-- 用户退款金额(分) -->
           <template v-else-if="'amount_payer_refund' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -590,6 +610,7 @@
           
           <!-- 应结退款金额(分) -->
           <template v-else-if="'amount_settlement_refund' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -599,6 +620,7 @@
           
           <!-- 优惠退款金额(分) -->
           <template v-else-if="'amount_discount_refund' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -608,6 +630,7 @@
           
           <!-- 退款币种 -->
           <template v-else-if="'amount_currency_lbl' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -617,6 +640,7 @@
           
           <!-- 手续费退款金额(分) -->
           <template v-else-if="'amount_refund_fee' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -626,6 +650,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -635,6 +660,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {WxRefundModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -714,7 +740,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1186,7 +1215,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1200,6 +1229,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1297,7 +1350,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxRefundModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxRefundModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1346,9 +1403,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxRefundModel,
-  column: TableColumnCtx<WxRefundModel>,
+  column: TableColumnCtx<WxRefundModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1392,10 +1449,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1404,10 +1462,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

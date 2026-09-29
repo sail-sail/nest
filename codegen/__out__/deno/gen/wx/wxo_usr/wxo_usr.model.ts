@@ -37,7 +37,7 @@ declare global {
     unionid?: string;
     unionid_like?: string;
     /** 性别 */
-    sex?: number[];
+    sex?: number[] | null;
     /** 省份 */
     province?: string;
     province_like?: string;

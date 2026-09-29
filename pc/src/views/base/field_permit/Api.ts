@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -292,6 +291,32 @@ export async function findByIdsFieldPermit(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断字段权限是否存在
+ */
+export async function existsFieldPermit(
+  search?: FieldPermitSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsFieldPermit: Query["existsFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: FieldPermitSearch) {
+        existsFieldPermit(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsFieldPermit;
+  
+  return res;
 }
 
 /**

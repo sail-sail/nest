@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -361,6 +360,32 @@ export async function findByIdsWxoApp(
 }
 
 /**
+ * 根据搜索条件判断公众号设置是否存在
+ */
+export async function existsWxoApp(
+  search?: WxoAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxoApp: Query["existsWxoApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxoAppSearch) {
+        existsWxoApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxoApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 公众号设置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxoApp(
@@ -428,7 +453,7 @@ export async function deleteByIdsWxoApp(
  */
 export async function enableByIdsWxoApp(
   ids: WxoAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -456,7 +481,7 @@ export async function enableByIdsWxoApp(
  */
 export async function lockByIdsWxoApp(
   ids: WxoAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -604,17 +629,6 @@ export function useDownloadImportTemplateWxoApp() {
             order_by
             rem
           }
-          findAllDomain {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "wxo_app_encoding_type",
-            "wxo_app_scope",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -660,28 +674,15 @@ export function useExportExcelWxoApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxoAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxoAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxoApp(search: $search, page: $page, sort: $sort) {
               ${ wxoAppQueryField }
-            }
-            findAllDomain {
-              lbl
-            }
-            getDict(codes: [
-              "wxo_app_encoding_type",
-              "wxo_app_scope",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

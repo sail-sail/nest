@@ -65,7 +65,7 @@ declare global {
     /** 订单金额(分) */
     total_fee?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
-    currency?: PayTransactionsJsapiCurrency[];
+    currency?: PayTransactionsJsapiCurrency[] | null;
     /** 用户标识 */
     openid?: string;
     openid_like?: string;

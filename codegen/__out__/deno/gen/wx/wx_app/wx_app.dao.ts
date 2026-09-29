@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -50,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -297,8 +299,15 @@ export async function findCountWxApp(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -432,14 +441,19 @@ export async function findAllWxApp(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -1039,9 +1053,9 @@ export async function findByIdsOkWxApp(
   return models2;
 }
 
-// MARK: existWxApp
+// MARK: existsWxApp
 /** 根据搜索条件判断小程序设置是否存在 */
-export async function existWxApp(
+export async function existsWxApp(
   search?: Readonly<WxAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -1049,7 +1063,7 @@ export async function existWxApp(
 ): Promise<boolean> {
   
   const table = getTableNameWxApp();
-  const method = "existWxApp";
+  const method = "existsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1102,8 +1116,15 @@ export async function existByIdWxApp(
   const args = new QueryArgs();
   const sql = `select 1 e from wx_wx_app t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1795,12 +1816,7 @@ export async function updateByIdWxApp(
   const oldModel = await findByIdWxApp(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 小程序设置 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

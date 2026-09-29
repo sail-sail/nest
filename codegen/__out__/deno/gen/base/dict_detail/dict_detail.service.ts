@@ -140,7 +140,7 @@ export async function findByIdsOkDictDetail(
 /**
  * 根据搜索条件查找系统字典明细是否存在
  */
-export async function existDictDetail(
+export async function existsDictDetail(
   search?: DictDetailSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDictDetail(
   
   await setSearchQuery(search);
   
-  const dict_detail_exist = await dict_detailDao.existDictDetail(search);
+  const dict_detail_exist = await dict_detailDao.existsDictDetail(search);
   
   return dict_detail_exist;
 }

@@ -10,3 +10,5 @@ supportedArchitectures:
   cpu:
     - x64
     - current
+minimumReleaseAgeExclude:
+  - '*'

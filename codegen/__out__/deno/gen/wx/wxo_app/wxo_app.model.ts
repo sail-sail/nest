@@ -41,14 +41,14 @@ declare global {
     encoding_aes_key?: string;
     encoding_aes_key_like?: string;
     /** 消息加解密方式 */
-    encoding_type?: WxoAppEncodingType[];
+    encoding_type?: WxoAppEncodingType[] | null;
     /** 授权作用域 */
-    scope?: WxoAppScope[];
+    scope?: WxoAppScope[] | null;
     /** 默认角色 */
     default_role_codes?: string;
     default_role_codes_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

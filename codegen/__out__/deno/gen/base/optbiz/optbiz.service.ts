@@ -140,7 +140,7 @@ export async function findByIdsOkOptbiz(
 /**
  * 根据搜索条件查找业务选项是否存在
  */
-export async function existOptbiz(
+export async function existsOptbiz(
   search?: OptbizSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existOptbiz(
   
   await setSearchQuery(search);
   
-  const optbiz_exist = await optbizDao.existOptbiz(search);
+  const optbiz_exist = await optbizDao.existsOptbiz(search);
   
   return optbiz_exist;
 }

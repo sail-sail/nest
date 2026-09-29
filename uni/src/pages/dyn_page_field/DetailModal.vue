@@ -1,16 +1,16 @@
 <template>
-<tm-modal
-  v-model:show="dialogVisible"
-  :closeable="true"
-  :height="height"
+<CustomDialog
+  ref="customDialogRef"
   :title="dialogTitle"
+  type="large"
   disabled-scroll
   show-close
   :show-footer="false"
   :content-padding="0"
   max-height="90%"
-  :overlay-click="true"
+  :close-on-click-modal="true"
   v-bind="$attrs"
+  @close="onClose"
 >
   
   <view
@@ -27,7 +27,7 @@
       :scroll-with-animation="true"
     >
       
-      <DynPageFieldDetal
+      <DynPageFieldDetail
         ref="dyn_page_field_detail_ref"
         un-flex="~ [1_0_0]"
         un-overflow="hidden"
@@ -38,17 +38,21 @@
         :dyn_page_field_id="dyn_page_field_id"
         :find-one="findOneModel"
         :order_by="order_by"
-      ></DynPageFieldDetal>
+        :hide-fields="hideFields"
+        :has-close-btn="hasCloseBtn"
+        :close-btn-fn="onClose"
+      ></DynPageFieldDetail>
       
     </scroll-view>
     
   </view>
   
-</tm-modal>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
-import DynPageFieldDetal from "./Detail.vue";
+import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
+import DynPageFieldDetail from "./Detail.vue";
 
 import {
   findOneDynPageField,
@@ -57,17 +61,18 @@ import {
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
-let dialogVisible = $ref(false);
-const height = $ref<string | number>("90%");
 
 let dyn_page_field_id = $ref<DynPageFieldId>();
 let order_by = $ref<number>();
 
 let inited = $ref(false);
 
-const dyn_page_field_detail_ref = $ref<InstanceType<typeof DynPageFieldDetal>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const dyn_page_field_detail_ref = $ref<InstanceType<typeof DynPageFieldDetail>>();
 
 let findOneModel = findOneDynPageField;
+let hideFields = $ref<string[]>([ ]);
+let hasCloseBtn = $ref<boolean>(false);
 
 type OnCloseResolveType = {
   type: "ok";
@@ -75,8 +80,6 @@ type OnCloseResolveType = {
 } | {
   type: "cancel";
 };
-
-let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 打开对话框 */
 async function showDialog(
@@ -88,6 +91,8 @@ async function showDialog(
       order_by?: number;
     };
     findOne?: typeof findOneDynPageField;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
     action: DialogAction;
   },
 ) {
@@ -101,22 +106,38 @@ async function showDialog(
   } else {
     findOneModel = findOneDynPageField;
   }
+  if (arg?.hideFields) {
+    hideFields = arg.hideFields;
+  } else {
+    hideFields = [ ];
+  }
+  if (arg?.hasCloseBtn != null) {
+    hasCloseBtn = arg.hasCloseBtn;
+  } else {
+    hasCloseBtn = false;
+  }
   dialogAction = action || "add";
   dyn_page_field_id = model?.id;
-  
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
-  });
-  
-  dialogVisible = true;
+
   
   await onRefresh();
-  
+
   inited = true;
-  return await dialogPrm;
+  
+  return await customDialogRef!.showDialog<OnCloseResolveType>({
+    title: dialogTitle,
+    type: "large",
+    showFooter: false,
+    showClose: true,
+    showTitle: true,
+    disabledScroll: true,
+    contentPadding: 0,
+    maxHeight: "90%",
+    closeOnClickModal: true,
+    closeResult: {
+      type: "cancel",
+    },
+  });
 }
 
 /** 刷新 */
@@ -128,7 +149,7 @@ async function onRefresh() {
 async function beforeSave(
   input: DynPageFieldInput,
 ) {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "ok",
     input,
   });
@@ -136,7 +157,7 @@ async function beforeSave(
 }
 
 async function onClose() {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "cancel",
   });
 }

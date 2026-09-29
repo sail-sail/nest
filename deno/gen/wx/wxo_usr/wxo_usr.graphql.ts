@@ -181,6 +181,8 @@ type Query {
   findByIdWxoUsr(id: WxoUsrId!): WxoUsrModel
   "根据 ids 查找公众号用户"
   findByIdsWxoUsr(ids: [WxoUsrId!]!): [WxoUsrModel]!
+  "根据搜索条件判断公众号用户是否存在"
+  existsWxoUsr(search: WxoUsrSearch): Boolean!
 }
 type Mutation {
   "批量创建公众号用户"

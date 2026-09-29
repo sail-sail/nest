@@ -12,6 +12,7 @@ declare global {
   interface WxUsrModel extends WxUsrModelType {
     /** 头像 */
     avatar_img_lbl: string;
+    avatar_img_lbls: string[];
   }
   
   /** 小程序用户 */

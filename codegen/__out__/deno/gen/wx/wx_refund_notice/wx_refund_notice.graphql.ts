@@ -164,6 +164,8 @@ type Query {
   findByIdWxRefundNotice(id: WxRefundNoticeId!): WxRefundNoticeModel
   "根据 ids 查找微信退款通知"
   findByIdsWxRefundNotice(ids: [WxRefundNoticeId!]!): [WxRefundNoticeModel]!
+  "根据搜索条件判断微信退款通知是否存在"
+  existsWxRefundNotice(search: WxRefundNoticeSearch): Boolean!
 }
 
 `);

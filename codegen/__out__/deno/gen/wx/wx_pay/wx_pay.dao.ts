@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -39,10 +40,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deleteObject,
-} from "/lib/oss/oss.dao.ts";
-
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -54,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -331,8 +329,15 @@ export async function findCountWxPay(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -466,14 +471,19 @@ export async function findAllWxPay(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -1054,9 +1064,9 @@ export async function findByIdsOkWxPay(
   return models2;
 }
 
-// MARK: existWxPay
+// MARK: existsWxPay
 /** 根据搜索条件判断微信支付设置是否存在 */
-export async function existWxPay(
+export async function existsWxPay(
   search?: Readonly<WxPaySearch>,
   options?: {
     is_debug?: boolean;
@@ -1064,7 +1074,7 @@ export async function existWxPay(
 ): Promise<boolean> {
   
   const table = getTableNameWxPay();
-  const method = "existWxPay";
+  const method = "existsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1117,8 +1127,15 @@ export async function existByIdWxPay(
   const args = new QueryArgs();
   const sql = `select 1 e from wx_wx_pay t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1870,12 +1887,7 @@ export async function updateByIdWxPay(
   const oldModel = await findByIdWxPay(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 微信支付设置 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();
@@ -2061,20 +2073,6 @@ export async function updateByIdWxPay(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
-  }
-  
-  // 公钥
-  if (input.public_key != null && input.public_key !== oldModel?.public_key) {
-    await deleteObject(
-      oldModel?.public_key,
-    );
-  }
-  
-  // 私钥
-  if (input.private_key != null && input.private_key !== oldModel?.private_key) {
-    await deleteObject(
-      oldModel?.private_key,
-    );
   }
   
   return id;
@@ -2475,16 +2473,6 @@ export async function forceDeleteByIdsWxPay(
     const sql = `delete from wx_wx_pay where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    
-    // 公钥
-    await deleteObject(
-      oldModel?.public_key,
-    );
-    
-    // 私钥
-    await deleteObject(
-      oldModel?.private_key,
-    );
   }
   
   await delCacheWxPay();

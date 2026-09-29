@@ -335,8 +335,15 @@ watch(
   },
 );
 
+function normalizeInputValue(value: string) {
+  if (isDecimal || isNumber) {
+    return value.trim();
+  }
+  return value;
+}
+
 function onUpdateModelValue(value: string) {
-  const rawValue = value.trim();
+  const rawValue = normalizeInputValue(value);
   if (isDecimal) {
     const decimalValue = parseDecimalValue(rawValue);
     syncDecimalModelValue(rawValue, decimalValue);
@@ -379,7 +386,7 @@ function onFocus() {
 }
 
 function onBlur(value: string) {
-  const rawValue = value.trim();
+  const rawValue = normalizeInputValue(value);
   if (isDecimal) {
     const decimalValue = parseDecimalValue(rawValue);
     emit("blur", decimalValue);

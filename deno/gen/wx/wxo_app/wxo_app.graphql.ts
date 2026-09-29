@@ -246,6 +246,8 @@ type Query {
   findByIdWxoApp(id: WxoAppId!): WxoAppModel
   "根据 ids 查找公众号设置"
   findByIdsWxoApp(ids: [WxoAppId!]!): [WxoAppModel]!
+  "根据搜索条件判断公众号设置是否存在"
+  existsWxoApp(search: WxoAppSearch): Boolean!
   "查找公众号设置 order_by 字段的最大值"
   findLastOrderByWxoApp(search: WxoAppSearch): Int!
 }

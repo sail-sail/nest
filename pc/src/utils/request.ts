@@ -2,7 +2,7 @@
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr.ts";
 import useIndexStore from "../store/index.ts";
-import { saveAs } from "file-saver";
+import { saveAs } from "../compositions/download.ts";
 
 export const baseURL = "";
 
@@ -367,6 +367,16 @@ export function getImgUrl(
     }
   }
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
+}
+
+export function getImageUrlByIds(ids: string[]) {
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  if (!Array.isArray(ids)) {
+    ids = [ ids ];
+  }
+  return ids.map(id => getImgUrl(id));
 }
 
 /**

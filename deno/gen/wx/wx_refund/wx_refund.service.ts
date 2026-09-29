@@ -140,7 +140,7 @@ export async function findByIdsOkWxRefund(
 /**
  * 根据搜索条件查找微信退款申请是否存在
  */
-export async function existWxRefund(
+export async function existsWxRefund(
   search?: WxRefundSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxRefund(
   
   await setSearchQuery(search);
   
-  const wx_refund_exist = await wx_refundDao.existWxRefund(search);
+  const wx_refund_exist = await wx_refundDao.existsWxRefund(search);
   
   return wx_refund_exist;
 }

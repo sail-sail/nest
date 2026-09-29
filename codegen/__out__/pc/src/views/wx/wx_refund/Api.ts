@@ -306,6 +306,32 @@ export async function findByIdsWxRefund(
 }
 
 /**
+ * 根据搜索条件判断微信退款申请是否存在
+ */
+export async function existsWxRefund(
+  search?: WxRefundSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxRefund: Query["existsWxRefund"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxRefundSearch) {
+        existsWxRefund(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxRefund;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 微信退款申请, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxRefund(
@@ -360,25 +386,15 @@ export function useExportExcelWxRefund() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxRefundSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxRefundSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxRefund(search: $search, page: $page, sort: $sort) {
               ${ wxRefundQueryField }
-            }
-            getDict(codes: [
-              "wx_refund_channel",
-              "wx_refund_status",
-              "wx_refund_funds_account",
-              "wx_pay_notice_currency",
-            ]) {
-              code
-              lbl
             }
           }
         `,

@@ -1,5 +1,5 @@
 /* oxlint-disable @typescript-eslint/no-explicit-any */
-import saveAs from "file-saver";
+import { saveAs } from "../compositions/download.ts";
 
 import dayjs from "dayjs";
 
@@ -157,6 +157,9 @@ export function saveAsExcel(
     });
   }
   
+  if (!name.toLowerCase().endsWith(".xlsx")) {
+    name += ".xlsx";
+  }
   saveAs(blob, name);
 }
 

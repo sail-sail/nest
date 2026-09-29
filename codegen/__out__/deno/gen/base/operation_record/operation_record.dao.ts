@@ -44,6 +44,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -372,7 +373,6 @@ export async function findAllOperationRecord(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -836,9 +836,9 @@ export async function findByIdsOkOperationRecord(
   return models2;
 }
 
-// MARK: existOperationRecord
+// MARK: existsOperationRecord
 /** 根据搜索条件判断操作记录是否存在 */
-export async function existOperationRecord(
+export async function existsOperationRecord(
   search?: Readonly<OperationRecordSearch>,
   options?: {
     is_debug?: boolean;
@@ -846,7 +846,7 @@ export async function existOperationRecord(
 ): Promise<boolean> {
   
   const table = getTableNameOperationRecord();
-  const method = "existOperationRecord";
+  const method = "existsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1538,12 +1538,7 @@ export async function updateByIdOperationRecord(
   const oldModel = await findByIdOperationRecord(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 操作记录 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

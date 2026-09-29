@@ -52,7 +52,7 @@ declare global {
     refund_notify_url?: string;
     refund_notify_url_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

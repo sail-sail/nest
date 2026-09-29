@@ -166,6 +166,8 @@ type Query {
   findByIdWxApp(id: WxAppId!): WxAppModel
   "根据 ids 查找小程序设置"
   findByIdsWxApp(ids: [WxAppId!]!): [WxAppModel]!
+  "根据搜索条件判断小程序设置是否存在"
+  existsWxApp(search: WxAppSearch): Boolean!
   "查找小程序设置 order_by 字段的最大值"
   findLastOrderByWxApp(search: WxAppSearch): Int!
 }

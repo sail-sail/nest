@@ -9,7 +9,7 @@
     <template v-if="Component">
       <component :is="Component"></component>
     </template>
-    <template v-else-if="$route.fullPath === '/'">
+    <template v-else-if="$route.fullPath === '/' || $route.fullPath === ''">
     </template>
     <template v-else>
       <div
@@ -28,7 +28,7 @@
             @click="goHome"
           >
             <span un-text="4.5">
-              {{ ns("返回首页") }}
+              {{ ns("返回") }}
             </span>
           </el-button>
         </el-empty>
@@ -55,7 +55,7 @@ async function goHome() {
   if (tabsStore.actTab) {
     tabsStore.closeCurrentTab(tabsStore.actTab, false, router);
   }
-  window.location.href = "/";
+  window.location.href = window.location.origin + window.location.pathname;
 }
 
 // const warn = console.warn;

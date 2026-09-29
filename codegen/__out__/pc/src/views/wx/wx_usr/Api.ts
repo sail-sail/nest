@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -23,12 +22,20 @@ export async function setLblByIdWxUsr(
   
   // 头像
   if (model.avatar_img) {
-    model.avatar_img_lbl = location.origin + getImgUrl({
-      id: model.avatar_img,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
+    const avatar_img_lbls: string[] = [ ];
+    const avatar_imgs = model.avatar_img.split(",");
+    for (let i = 0; i < avatar_imgs.length; i++) {
+      const img = avatar_imgs[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }, {
+        notAuthorization: true,
+      }) || "";
+      avatar_img_lbls.push(img_lbl);
+    }
+    model.avatar_img_lbls = avatar_img_lbls;
+    model.avatar_img_lbl = avatar_img_lbls[0] || "";
   }
 }
 
@@ -363,6 +370,32 @@ export async function findByIdsWxUsr(
 }
 
 /**
+ * 根据搜索条件判断小程序用户是否存在
+ */
+export async function existsWxUsr(
+  search?: WxUsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxUsr: Query["existsWxUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxUsrSearch) {
+        existsWxUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 小程序用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxUsr(
@@ -552,16 +585,6 @@ export function useDownloadImportTemplateWxUsr() {
             language
             rem
           }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "wx_usr_gender",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -607,25 +630,15 @@ export function useExportExcelWxUsr() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxUsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxUsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxUsr(search: $search, page: $page, sort: $sort) {
               ${ wxUsrQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            getDict(codes: [
-              "wx_usr_gender",
-            ]) {
-              code
-              lbl
             }
           }
         `,

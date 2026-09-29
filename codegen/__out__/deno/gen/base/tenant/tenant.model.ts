@@ -36,7 +36,7 @@ declare global {
     info?: string;
     info_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
@@ -88,6 +88,8 @@ declare global {
 
 /** 租户 前端允许排序的字段 */
 export const canSortInApiTenant = {
+  // 编码
+  "code": true,
   // 排序
   "order_by": true,
   // 创建时间

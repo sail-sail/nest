@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -441,7 +442,6 @@ export async function findAllWxPayNotice(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -1049,9 +1049,9 @@ export async function findByIdsOkWxPayNotice(
   return models2;
 }
 
-// MARK: existWxPayNotice
+// MARK: existsWxPayNotice
 /** 根据搜索条件判断微信支付通知是否存在 */
-export async function existWxPayNotice(
+export async function existsWxPayNotice(
   search?: Readonly<WxPayNoticeSearch>,
   options?: {
     is_debug?: boolean;
@@ -1059,7 +1059,7 @@ export async function existWxPayNotice(
 ): Promise<boolean> {
   
   const table = getTableNameWxPayNotice();
-  const method = "existWxPayNotice";
+  const method = "existsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1696,12 +1696,7 @@ export async function updateByIdWxPayNotice(
   const oldModel = await findByIdWxPayNotice(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 微信支付通知 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

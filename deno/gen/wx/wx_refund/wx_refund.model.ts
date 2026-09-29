@@ -52,12 +52,12 @@ declare global {
     notify_url?: string;
     notify_url_like?: string;
     /** 退款渠道 */
-    channel?: WxRefundChannel[];
+    channel?: WxRefundChannel[] | null;
     /** 退款入账账户 */
     user_received_account?: string;
     user_received_account_like?: string;
     /** 资金账户 */
-    funds_account?: WxRefundFundsAccount[];
+    funds_account?: WxRefundFundsAccount[] | null;
     /** 订单金额(分) */
     amount_total?: [(number|undefined|null), (number|undefined|null)];
     /** 退款金额(分) */
@@ -71,7 +71,7 @@ declare global {
     /** 优惠退款金额(分) */
     amount_discount_refund?: [(number|undefined|null), (number|undefined|null)];
     /** 退款币种 */
-    amount_currency?: WxRefundAmountCurrency[];
+    amount_currency?: WxRefundAmountCurrency[] | null;
     /** 手续费退款金额(分) */
     amount_refund_fee?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

@@ -175,7 +175,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -224,7 +226,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -401,6 +405,7 @@
           
           <!-- 开发者ID -->
           <template v-if="'appid' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -410,6 +415,7 @@
           
           <!-- 商户号 -->
           <template v-else-if="'mchid' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -419,6 +425,7 @@
           
           <!-- 商品描述 -->
           <template v-else-if="'description' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -428,6 +435,7 @@
           
           <!-- 商户订单号 -->
           <template v-else-if="'out_trade_no' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -437,6 +445,7 @@
           
           <!-- 微信支付订单号 -->
           <template v-else-if="'transaction_id' === col.prop && (showBuildIn || builtInSearch?.transaction_id == null)">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -461,6 +470,7 @@
           
           <!-- 交易状态 -->
           <template v-else-if="'trade_state_lbl' === col.prop && (showBuildIn || builtInSearch?.trade_state == null)">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -470,6 +480,7 @@
           
           <!-- 交易状态描述 -->
           <template v-else-if="'trade_state_desc' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -479,6 +490,7 @@
           
           <!-- 支付完成时间 -->
           <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -488,6 +500,7 @@
           
           <!-- 交易限制时间 -->
           <template v-else-if="'time_expire' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -497,6 +510,7 @@
           
           <!-- 附加数据 -->
           <template v-else-if="'attach' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -506,6 +520,7 @@
           
           <!-- 开发票 -->
           <template v-else-if="'receipt' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -515,6 +530,7 @@
           
           <!-- 分账 -->
           <template v-else-if="'profit_sharing' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -524,6 +540,7 @@
           
           <!-- 订单金额(分) -->
           <template v-else-if="'total_fee' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -533,6 +550,7 @@
           
           <!-- 货币类型 -->
           <template v-else-if="'currency_lbl' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -542,6 +560,7 @@
           
           <!-- 用户标识 -->
           <template v-else-if="'openid' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -551,6 +570,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -560,6 +580,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -569,6 +590,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -578,6 +600,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {PayTransactionsJsapiModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -657,7 +680,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1110,7 +1136,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1124,6 +1150,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1223,7 +1273,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<PayTransactionsJsapiModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<PayTransactionsJsapiModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1272,9 +1326,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: PayTransactionsJsapiModel,
-  column: TableColumnCtx<PayTransactionsJsapiModel>,
+  column: TableColumnCtx<PayTransactionsJsapiModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1320,10 +1374,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1332,10 +1387,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

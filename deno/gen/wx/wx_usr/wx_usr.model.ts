@@ -43,7 +43,7 @@ declare global {
     unionid?: string;
     unionid_like?: string;
     /** 性别 */
-    gender?: number[];
+    gender?: number[] | null;
     /** 城市 */
     city?: string;
     city_like?: string;

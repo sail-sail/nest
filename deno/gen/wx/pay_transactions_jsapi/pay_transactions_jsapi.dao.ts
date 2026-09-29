@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -478,7 +479,6 @@ export async function findAllPayTransactionsJsapi(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -1051,9 +1051,9 @@ export async function findByIdsOkPayTransactionsJsapi(
   return models2;
 }
 
-// MARK: existPayTransactionsJsapi
+// MARK: existsPayTransactionsJsapi
 /** 根据搜索条件判断微信JSAPI下单是否存在 */
-export async function existPayTransactionsJsapi(
+export async function existsPayTransactionsJsapi(
   search?: Readonly<PayTransactionsJsapiSearch>,
   options?: {
     is_debug?: boolean;
@@ -1061,7 +1061,7 @@ export async function existPayTransactionsJsapi(
 ): Promise<boolean> {
   
   const table = getTableNamePayTransactionsJsapi();
-  const method = "existPayTransactionsJsapi";
+  const method = "existsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1852,12 +1852,7 @@ export async function updateByIdPayTransactionsJsapi(
   const oldModel = await findByIdPayTransactionsJsapi(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 微信JSAPI下单 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

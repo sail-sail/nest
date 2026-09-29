@@ -140,7 +140,7 @@ export async function findByIdsOkWxPayNotice(
 /**
  * 根据搜索条件查找微信支付通知是否存在
  */
-export async function existWxPayNotice(
+export async function existsWxPayNotice(
   search?: WxPayNoticeSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxPayNotice(
   
   await setSearchQuery(search);
   
-  const wx_pay_notice_exist = await wx_pay_noticeDao.existWxPayNotice(search);
+  const wx_pay_notice_exist = await wx_pay_noticeDao.existsWxPayNotice(search);
   
   return wx_pay_notice_exist;
 }

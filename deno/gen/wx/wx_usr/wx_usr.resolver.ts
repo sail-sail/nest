@@ -29,6 +29,15 @@ export async function findCountWxUsr(
     findCountWxUsr,
   } = await import("./wx_usr.service.ts");
   
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+  
   const num = await findCountWxUsr(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllWxUsr(
   const {
     findAllWxUsr,
   } = await import("./wx_usr.service.ts");
+  
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
   
   checkSortWxUsr(sort);
   
@@ -80,6 +98,15 @@ export async function findOneWxUsr(
     findOneWxUsr,
   } = await import("./wx_usr.service.ts");
   
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+  
   checkSortWxUsr(sort);
   
   const model = await findOneWxUsr(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkWxUsr(
     findOneOkWxUsr,
   } = await import("./wx_usr.service.ts");
   
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+  
   checkSortWxUsr(sort);
   
   const model = await findOneOkWxUsr(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdWxUsr(
     findByIdWxUsr,
   } = await import("./wx_usr.service.ts");
   
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+  
   const model = await findByIdWxUsr(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkWxUsr(
   const {
     findByIdOkWxUsr,
   } = await import("./wx_usr.service.ts");
+  
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
   
   const model = await findByIdOkWxUsr(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsWxUsr(
     findByIdsWxUsr,
   } = await import("./wx_usr.service.ts");
   
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+  
   const models = await findByIdsWxUsr(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断小程序用户是否存在
+ */
+export async function existsWxUsr(
+  search: WxUsrSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxUsr,
+  } = await import("./wx_usr.service.ts");
+  
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
+
+  return await existsWxUsr(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkWxUsr(
   const {
     findByIdsOkWxUsr,
   } = await import("./wx_usr.service.ts");
+  
+  const {
+    getPagePathWxUsr,
+  } = await import("./wx_usr.model.ts");
+  
+  await usePermit(
+    getPagePathWxUsr(),
+    "find",
+  );
   
   const models = await findByIdsOkWxUsr(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdWxUsr(
   input: WxUsrInput,
 ): Promise<WxUsrId> {
   
-  intoInputWxUsr(input);
-  
   const {
     setIdByLblWxUsr,
+    validateWxUsr,
     updateByIdWxUsr,
   } = await import("./wx_usr.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdWxUsr(
   
   set_is_tran(true);
   
+  intoInputWxUsr(input);
+  
   await setIdByLblWxUsr(input);
+  
+  await validateWxUsr(input);
   
   await usePermit(
     getPagePathWxUsr(),

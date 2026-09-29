@@ -193,6 +193,8 @@ type Query {
   findByIdWxPay(id: WxPayId!): WxPayModel
   "根据 ids 查找微信支付设置"
   findByIdsWxPay(ids: [WxPayId!]!): [WxPayModel]!
+  "根据搜索条件判断微信支付设置是否存在"
+  existsWxPay(search: WxPaySearch): Boolean!
   "查找微信支付设置 order_by 字段的最大值"
   findLastOrderByWxPay(search: WxPaySearch): Int!
 }

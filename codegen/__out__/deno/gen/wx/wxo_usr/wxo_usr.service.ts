@@ -140,7 +140,7 @@ export async function findByIdsOkWxoUsr(
 /**
  * 根据搜索条件查找公众号用户是否存在
  */
-export async function existWxoUsr(
+export async function existsWxoUsr(
   search?: WxoUsrSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxoUsr(
   
   await setSearchQuery(search);
   
-  const wxo_usr_exist = await wxo_usrDao.existWxoUsr(search);
+  const wxo_usr_exist = await wxo_usrDao.existsWxoUsr(search);
   
   return wxo_usr_exist;
 }

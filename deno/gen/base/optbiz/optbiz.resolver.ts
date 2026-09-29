@@ -29,6 +29,15 @@ export async function findCountOptbiz(
     findCountOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+  
   const num = await findCountOptbiz(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllOptbiz(
   const {
     findAllOptbiz,
   } = await import("./optbiz.service.ts");
+  
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
   
   checkSortOptbiz(sort);
   
@@ -80,6 +98,15 @@ export async function findOneOptbiz(
     findOneOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+  
   checkSortOptbiz(sort);
   
   const model = await findOneOptbiz(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkOptbiz(
     findOneOkOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+  
   checkSortOptbiz(sort);
   
   const model = await findOneOkOptbiz(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdOptbiz(
     findByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+  
   const model = await findByIdOptbiz(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkOptbiz(
   const {
     findByIdOkOptbiz,
   } = await import("./optbiz.service.ts");
+  
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
   
   const model = await findByIdOkOptbiz(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsOptbiz(
     findByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+  
   const models = await findByIdsOptbiz(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断业务选项是否存在
+ */
+export async function existsOptbiz(
+  search: OptbizSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOptbiz,
+  } = await import("./optbiz.service.ts");
+  
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
+
+  return await existsOptbiz(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkOptbiz(
   const {
     findByIdsOkOptbiz,
   } = await import("./optbiz.service.ts");
+  
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
+  await usePermit(
+    getPagePathOptbiz(),
+    "find",
+  );
   
   const models = await findByIdsOkOptbiz(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdOptbiz(
   input: OptbizInput,
 ): Promise<OptbizId> {
   
-  intoInputOptbiz(input);
-  
   const {
     setIdByLblOptbiz,
+    validateOptbiz,
     updateByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdOptbiz(
   
   set_is_tran(true);
   
+  intoInputOptbiz(input);
+  
   await setIdByLblOptbiz(input);
+  
+  await validateOptbiz(input);
   
   await usePermit(
     getPagePathOptbiz(),

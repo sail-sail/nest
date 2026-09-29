@@ -89,9 +89,13 @@ export async function findLoginUsr(
 
 export async function getOrgIdsById(
   id: UsrId,
+  tenant_id?: TenantId,
 ) {
   const args = new QueryArgs();
-  const sql = `select t.org_id from base_usr_org t where t.is_deleted = 0 and t.usr_id = ${ args.push(id) }`;
+  let sql = `select t.org_id from base_usr_org t where t.is_deleted = 0 and t.usr_id = ${ args.push(id) }`;
+  if (tenant_id != null) {
+    sql += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+  }
   const result = await query<{
     org_id: OrgId,
   }>(sql, args);

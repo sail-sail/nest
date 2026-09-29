@@ -230,6 +230,8 @@ type Query {
   findByIdPayTransactionsJsapi(id: PayTransactionsJsapiId!): PayTransactionsJsapiModel
   "根据 ids 查找微信JSAPI下单"
   findByIdsPayTransactionsJsapi(ids: [PayTransactionsJsapiId!]!): [PayTransactionsJsapiModel]!
+  "根据搜索条件判断微信JSAPI下单是否存在"
+  existsPayTransactionsJsapi(search: PayTransactionsJsapiSearch): Boolean!
 }
 
 `);

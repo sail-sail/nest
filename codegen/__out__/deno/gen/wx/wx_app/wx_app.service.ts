@@ -140,7 +140,7 @@ export async function findByIdsOkWxApp(
 /**
  * 根据搜索条件查找小程序设置是否存在
  */
-export async function existWxApp(
+export async function existsWxApp(
   search?: WxAppSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxApp(
   
   await setSearchQuery(search);
   
-  const wx_app_exist = await wx_appDao.existWxApp(search);
+  const wx_app_exist = await wx_appDao.existsWxApp(search);
   
   return wx_app_exist;
 }

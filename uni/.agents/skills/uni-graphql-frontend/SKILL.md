@@ -34,6 +34,7 @@ src/pages/{table}/
 
 - 禁止在 `Api2.ts` 里包一层 `try/catch`; 当前封装已经统一处理 loading、toast、鉴权失效、token 刷新、`TenantId` 和响应头里的 `authorization`
 - `query()` 会在同一轮 microtask 里自动合并/去重 GraphQL 查询; 多个彼此独立的查询先一起发起, 再 `await Promise.all(...)`, 不要串行一个个等
+- 前端调用 `Api` 接口时不需要写 `try catch`, 已被封装在 `src/utils/request.ts` 中
 
 ## Query 模板
 

@@ -140,7 +140,7 @@ export async function findByIdsOkPayTransactionsJsapi(
 /**
  * 根据搜索条件查找微信JSAPI下单是否存在
  */
-export async function existPayTransactionsJsapi(
+export async function existsPayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existPayTransactionsJsapi(
   
   await setSearchQuery(search);
   
-  const pay_transactions_jsapi_exist = await pay_transactions_jsapiDao.existPayTransactionsJsapi(search);
+  const pay_transactions_jsapi_exist = await pay_transactions_jsapiDao.existsPayTransactionsJsapi(search);
   
   return pay_transactions_jsapi_exist;
 }

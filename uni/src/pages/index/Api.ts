@@ -5,6 +5,7 @@ import type {
   RoleSearch,
   PageInput,
   GetLoginTenants,
+  GetLoginInfo,
 } from "#/types";
 
 import {
@@ -26,7 +27,7 @@ export async function getLoginTenants(
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
     query: /* GraphQL */ `
-      query($domain: SmolStr!) {
+      query($domain: String!) {
         getLoginTenants(domain: $domain) {
           id
           lbl
@@ -49,9 +50,15 @@ export async function login(
       mutation($input: LoginInput!) {
         login(input: $input) {
           usr_id
+          lbl
           username
+          role_codes
           tenant_id
           org_id
+          org_id_models {
+            id
+            lbl
+          }
           authorization
           lang
         }
@@ -117,7 +124,7 @@ export async function checkClientTenantId(): Promise<boolean> {
   const indexStore = useIndexStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork) {
-    platform = "wechat";
+    platform = "wecom";
   } else if (userAgent.isWechat) {
     platform = "wechat";
   } else if (userAgent.isPc) {
@@ -166,7 +173,7 @@ export async function checkClientTenantId(): Promise<boolean> {
   } = await query(
     {
       query: /* GraphQL */ `
-        query($platform: SmolStr!, $appid: SmolStr!) {
+        query($platform: String!, $appid: String!) {
           getTenantIdByAppid(platform: $platform, appid: $appid)
         }
       `,
@@ -304,4 +311,31 @@ export async function findAllRole(
     const item = res[i];
   }
   return res;
+}
+
+export async function getLoginInfo(
+  opt?: GqlOpt,
+) {
+  const res: {
+    getLoginInfo: GetLoginInfo;
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getLoginInfo {
+          lbl
+          username
+          role_codes
+          lang
+          tenant_id
+          org_id
+          org_id_models {
+            id
+            lbl
+          }
+        }
+      }
+    `,
+  }, opt);
+  const data = res.getLoginInfo;
+  return data;
 }

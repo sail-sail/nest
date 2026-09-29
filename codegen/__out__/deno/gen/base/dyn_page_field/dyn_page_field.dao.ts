@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -578,7 +579,6 @@ export async function findAllDynPageField(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -1297,9 +1297,9 @@ export async function findByIdsOkDynPageField(
   return models2;
 }
 
-// MARK: existDynPageField
+// MARK: existsDynPageField
 /** 根据搜索条件判断动态页面字段是否存在 */
-export async function existDynPageField(
+export async function existsDynPageField(
   search?: Readonly<DynPageFieldSearch>,
   options?: {
     is_debug?: boolean;
@@ -1307,7 +1307,7 @@ export async function existDynPageField(
 ): Promise<boolean> {
   
   const table = getTableNameDynPageField();
-  const method = "existDynPageField";
+  const method = "existsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1452,7 +1452,30 @@ export async function findAutoCodeDynPageField(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  code_seq: number;
+  code: string;
+}>;
+export async function findAutoCodeDynPageField(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  code_seq: number;
+  code: string;
+}[]>;
+export async function findAutoCodeDynPageField(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableNameDynPageField();
   const method = "findAutoCodeDynPageField";
@@ -1467,6 +1490,10 @@ export async function findAutoCodeDynPageField(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOneDynPageField(
@@ -1497,12 +1524,20 @@ export async function findAutoCodeDynPageField(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "fld_" + code_seq.toString();
-  
-  return {
-    code_seq,
-    code,
-  };
+
+  const code_seq_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const code_seq_i = code_seq + i;
+    const code_i = "fld_" + code_seq_i.toString();
+    code_seq_list.push({
+      code_seq: code_seq_i,
+      code: code_i,
+    });
+  }
+  if (legacyMode) {
+    return code_seq_list[0];
+  }
+  return code_seq_list;
 }
 
 // MARK: createReturnDynPageField
@@ -1683,15 +1718,25 @@ async function _creates(
     return [ ];
   }
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.code == null || input.code === "";
+  }).length;
+  const autoCodes = await findAutoCodeDynPageField(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.code) {
+    if (input.code != null && input.code !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {
       code_seq,
       code,
-    } = await findAutoCodeDynPageField(options);
+    } = autoCode;
     input.code_seq = code_seq;
     input.code = code;
   }
@@ -2109,12 +2154,7 @@ export async function updateByIdDynPageField(
   const oldModel = await findByIdDynPageField(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 动态页面字段 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

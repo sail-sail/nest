@@ -118,6 +118,8 @@ type Query {
   findByIdServerLog(id: ServerLogId!): ServerLogModel
   "根据 ids 查找系统日志"
   findByIdsServerLog(ids: [ServerLogId!]!): [ServerLogModel]!
+  "根据搜索条件判断系统日志是否存在"
+  existsServerLog(search: ServerLogSearch): Boolean!
 }
 
 `);

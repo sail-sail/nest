@@ -29,6 +29,15 @@ export async function findCountWxAppToken(
     findCountWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+  
   const num = await findCountWxAppToken(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllWxAppToken(
   const {
     findAllWxAppToken,
   } = await import("./wx_app_token.service.ts");
+  
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
   
   checkSortWxAppToken(sort);
   
@@ -80,6 +98,15 @@ export async function findOneWxAppToken(
     findOneWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+  
   checkSortWxAppToken(sort);
   
   const model = await findOneWxAppToken(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkWxAppToken(
     findOneOkWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+  
   checkSortWxAppToken(sort);
   
   const model = await findOneOkWxAppToken(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdWxAppToken(
     findByIdWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+  
   const model = await findByIdWxAppToken(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkWxAppToken(
   const {
     findByIdOkWxAppToken,
   } = await import("./wx_app_token.service.ts");
+  
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
   
   const model = await findByIdOkWxAppToken(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsWxAppToken(
     findByIdsWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+  
   const models = await findByIdsWxAppToken(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断小程序接口凭据是否存在
+ */
+export async function existsWxAppToken(
+  search: WxAppTokenSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxAppToken,
+  } = await import("./wx_app_token.service.ts");
+  
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
+
+  return await existsWxAppToken(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkWxAppToken(
   const {
     findByIdsOkWxAppToken,
   } = await import("./wx_app_token.service.ts");
+  
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxAppToken(),
+    "find",
+  );
   
   const models = await findByIdsOkWxAppToken(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdWxAppToken(
   input: WxAppTokenInput,
 ): Promise<WxAppTokenId> {
   
-  intoInputWxAppToken(input);
-  
   const {
     setIdByLblWxAppToken,
+    validateWxAppToken,
     updateByIdWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdWxAppToken(
   
   set_is_tran(true);
   
+  intoInputWxAppToken(input);
+  
   await setIdByLblWxAppToken(input);
+  
+  await validateWxAppToken(input);
   
   await usePermit(
     getPagePathWxAppToken(),

@@ -140,7 +140,7 @@ export async function findByIdsOkWxUsr(
 /**
  * 根据搜索条件查找小程序用户是否存在
  */
-export async function existWxUsr(
+export async function existsWxUsr(
   search?: WxUsrSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxUsr(
   
   await setSearchQuery(search);
   
-  const wx_usr_exist = await wx_usrDao.existWxUsr(search);
+  const wx_usr_exist = await wx_usrDao.existsWxUsr(search);
   
   return wx_usr_exist;
 }

@@ -27,6 +27,15 @@ export async function findCountWxPayNotice(
     findCountWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+  
   const num = await findCountWxPayNotice(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllWxPayNotice(
   const {
     findAllWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
   
   checkSortWxPayNotice(sort);
   
@@ -78,6 +96,15 @@ export async function findOneWxPayNotice(
     findOneWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+  
   checkSortWxPayNotice(sort);
   
   const model = await findOneWxPayNotice(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkWxPayNotice(
     findOneOkWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+  
   checkSortWxPayNotice(sort);
   
   const model = await findOneOkWxPayNotice(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdWxPayNotice(
     findByIdWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+  
   const model = await findByIdWxPayNotice(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkWxPayNotice(
   const {
     findByIdOkWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
   
   const model = await findByIdOkWxPayNotice(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsWxPayNotice(
     findByIdsWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+  
   const models = await findByIdsWxPayNotice(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断微信支付通知是否存在
+ */
+export async function existsWxPayNotice(
+  search: WxPayNoticeSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxPayNotice,
+  } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
+
+  return await existsWxPayNotice(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkWxPayNotice(
   const {
     findByIdsOkWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
+  
+  const {
+    getPagePathWxPayNotice,
+  } = await import("./wx_pay_notice.model.ts");
+  
+  await usePermit(
+    getPagePathWxPayNotice(),
+    "find",
+  );
   
   const models = await findByIdsOkWxPayNotice(ids);
   

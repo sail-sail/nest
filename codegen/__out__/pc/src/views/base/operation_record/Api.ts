@@ -267,6 +267,32 @@ export async function findByIdsOperationRecord(
 }
 
 /**
+ * 根据搜索条件判断操作记录是否存在
+ */
+export async function existsOperationRecord(
+  search?: OperationRecordSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOperationRecord: Query["existsOperationRecord"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OperationRecordSearch) {
+        existsOperationRecord(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOperationRecord;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 操作记录, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOperationRecord(

@@ -27,6 +27,15 @@ export async function findCountWxRefund(
     findCountWxRefund,
   } = await import("./wx_refund.service.ts");
   
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+  
   const num = await findCountWxRefund(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllWxRefund(
   const {
     findAllWxRefund,
   } = await import("./wx_refund.service.ts");
+  
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
   
   checkSortWxRefund(sort);
   
@@ -78,6 +96,15 @@ export async function findOneWxRefund(
     findOneWxRefund,
   } = await import("./wx_refund.service.ts");
   
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+  
   checkSortWxRefund(sort);
   
   const model = await findOneWxRefund(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkWxRefund(
     findOneOkWxRefund,
   } = await import("./wx_refund.service.ts");
   
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+  
   checkSortWxRefund(sort);
   
   const model = await findOneOkWxRefund(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdWxRefund(
     findByIdWxRefund,
   } = await import("./wx_refund.service.ts");
   
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+  
   const model = await findByIdWxRefund(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkWxRefund(
   const {
     findByIdOkWxRefund,
   } = await import("./wx_refund.service.ts");
+  
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
   
   const model = await findByIdOkWxRefund(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsWxRefund(
     findByIdsWxRefund,
   } = await import("./wx_refund.service.ts");
   
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+  
   const models = await findByIdsWxRefund(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断微信退款申请是否存在
+ */
+export async function existsWxRefund(
+  search: WxRefundSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxRefund,
+  } = await import("./wx_refund.service.ts");
+  
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
+
+  return await existsWxRefund(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkWxRefund(
   const {
     findByIdsOkWxRefund,
   } = await import("./wx_refund.service.ts");
+  
+  const {
+    getPagePathWxRefund,
+  } = await import("./wx_refund.model.ts");
+  
+  await usePermit(
+    getPagePathWxRefund(),
+    "find",
+  );
   
   const models = await findByIdsOkWxRefund(ids);
   

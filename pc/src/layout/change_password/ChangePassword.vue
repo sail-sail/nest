@@ -120,12 +120,12 @@
 import type {
   ChangePasswordInput,
   GetLoginInfo,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   getLoginInfo,
   changePassword,
-} from "./Api";
+} from "./Api.ts";
 
 const {
   n,
@@ -189,7 +189,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 /** 打开对话框 */
 async function showDialog(

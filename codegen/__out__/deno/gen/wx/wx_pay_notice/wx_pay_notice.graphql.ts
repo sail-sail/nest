@@ -233,6 +233,8 @@ type Query {
   findByIdWxPayNotice(id: WxPayNoticeId!): WxPayNoticeModel
   "根据 ids 查找微信支付通知"
   findByIdsWxPayNotice(ids: [WxPayNoticeId!]!): [WxPayNoticeModel]!
+  "根据搜索条件判断微信支付通知是否存在"
+  existsWxPayNotice(search: WxPayNoticeSearch): Boolean!
 }
 
 `);

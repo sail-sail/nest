@@ -140,7 +140,7 @@ export async function findByIdsOkWxoAppToken(
 /**
  * 根据搜索条件查找小程序接口凭据是否存在
  */
-export async function existWxoAppToken(
+export async function existsWxoAppToken(
   search?: WxoAppTokenSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxoAppToken(
   
   await setSearchQuery(search);
   
-  const wxo_app_token_exist = await wxo_app_tokenDao.existWxoAppToken(search);
+  const wxo_app_token_exist = await wxo_app_tokenDao.existsWxoAppToken(search);
   
   return wxo_app_token_exist;
 }

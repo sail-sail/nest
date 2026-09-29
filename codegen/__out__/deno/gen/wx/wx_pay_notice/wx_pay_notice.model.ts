@@ -45,9 +45,9 @@ declare global {
     out_trade_no?: string;
     out_trade_no_like?: string;
     /** 交易类型 */
-    trade_type?: WxPayNoticeTradeType[];
+    trade_type?: WxPayNoticeTradeType[] | null;
     /** 交易状态 */
-    trade_state?: WxPayNoticeTradeState[];
+    trade_state?: WxPayNoticeTradeState[] | null;
     /** 交易状态描述 */
     trade_state_desc?: string;
     trade_state_desc_like?: string;
@@ -62,9 +62,9 @@ declare global {
     /** 用户支付金额(分) */
     payer_total?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
-    currency?: WxPayNoticeCurrency[];
+    currency?: WxPayNoticeCurrency[] | null;
     /** 用户支付币种 */
-    payer_currency?: WxPayNoticePayerCurrency[];
+    payer_currency?: WxPayNoticePayerCurrency[] | null;
     /** 商户端设备号 */
     device_id?: string;
     device_id_like?: string;

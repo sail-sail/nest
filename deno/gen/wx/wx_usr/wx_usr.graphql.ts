@@ -199,6 +199,8 @@ type Query {
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
   "根据 ids 查找小程序用户"
   findByIdsWxUsr(ids: [WxUsrId!]!): [WxUsrModel]!
+  "根据搜索条件判断小程序用户是否存在"
+  existsWxUsr(search: WxUsrSearch): Boolean!
 }
 type Mutation {
   "批量创建小程序用户"

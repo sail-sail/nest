@@ -99,6 +99,8 @@ type Query {
   findByIdWxoAppToken(id: WxoAppTokenId!): WxoAppTokenModel
   "根据 ids 查找小程序接口凭据"
   findByIdsWxoAppToken(ids: [WxoAppTokenId!]!): [WxoAppTokenModel]!
+  "根据搜索条件判断小程序接口凭据是否存在"
+  existsWxoAppToken(search: WxoAppTokenSearch): Boolean!
 }
 type Mutation {
   "批量创建小程序接口凭据"

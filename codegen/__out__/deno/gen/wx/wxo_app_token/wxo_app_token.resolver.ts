@@ -29,6 +29,15 @@ export async function findCountWxoAppToken(
     findCountWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+  
   const num = await findCountWxoAppToken(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllWxoAppToken(
   const {
     findAllWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
+  
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
   
   checkSortWxoAppToken(sort);
   
@@ -80,6 +98,15 @@ export async function findOneWxoAppToken(
     findOneWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+  
   checkSortWxoAppToken(sort);
   
   const model = await findOneWxoAppToken(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkWxoAppToken(
     findOneOkWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+  
   checkSortWxoAppToken(sort);
   
   const model = await findOneOkWxoAppToken(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdWxoAppToken(
     findByIdWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+  
   const model = await findByIdWxoAppToken(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkWxoAppToken(
   const {
     findByIdOkWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
+  
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
   
   const model = await findByIdOkWxoAppToken(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsWxoAppToken(
     findByIdsWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+  
   const models = await findByIdsWxoAppToken(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断小程序接口凭据是否存在
+ */
+export async function existsWxoAppToken(
+  search: WxoAppTokenSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxoAppToken,
+  } = await import("./wxo_app_token.service.ts");
+  
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
+
+  return await existsWxoAppToken(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkWxoAppToken(
   const {
     findByIdsOkWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
+  
+  const {
+    getPagePathWxoAppToken,
+  } = await import("./wxo_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxoAppToken(),
+    "find",
+  );
   
   const models = await findByIdsOkWxoAppToken(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdWxoAppToken(
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
   
-  intoInputWxoAppToken(input);
-  
   const {
     setIdByLblWxoAppToken,
+    validateWxoAppToken,
     updateByIdWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdWxoAppToken(
   
   set_is_tran(true);
   
+  intoInputWxoAppToken(input);
+  
   await setIdByLblWxoAppToken(input);
+  
+  await validateWxoAppToken(input);
   
   await usePermit(
     getPagePathWxoAppToken(),

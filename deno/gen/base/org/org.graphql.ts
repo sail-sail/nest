@@ -136,6 +136,8 @@ type Query {
   findByIdOrg(id: OrgId!): OrgModel
   "根据 ids 查找组织"
   findByIdsOrg(ids: [OrgId!]!): [OrgModel]!
+  "根据搜索条件判断组织是否存在"
+  existsOrg(search: OrgSearch): Boolean!
   "查找组织 order_by 字段的最大值"
   findLastOrderByOrg(search: OrgSearch): Int!
 }

@@ -37,7 +37,7 @@ declare global {
     is_add?: number;
     is_add_like?: number;
     /** 数据类型 */
-    type?: DictbizType[];
+    type?: DictbizType[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建时间 */
