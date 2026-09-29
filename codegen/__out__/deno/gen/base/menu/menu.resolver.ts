@@ -29,8 +29,14 @@ export async function findCountMenu(
     findCountMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   const num = await findCountMenu(search);
   
@@ -50,8 +56,14 @@ export async function findAllMenu(
     findAllMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   checkSortMenu(sort);
   
@@ -86,8 +98,14 @@ export async function findOneMenu(
     findOneMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   checkSortMenu(sort);
   
@@ -108,8 +126,14 @@ export async function findOneOkMenu(
     findOneOkMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   checkSortMenu(sort);
   
@@ -129,6 +153,15 @@ export async function findByIdMenu(
     findByIdMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   const model = await findByIdMenu(id);
   
   return model;
@@ -144,6 +177,15 @@ export async function findByIdOkMenu(
   const {
     findByIdOkMenu,
   } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   const model = await findByIdOkMenu(id);
   
@@ -161,9 +203,41 @@ export async function findByIdsMenu(
     findByIdsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   const models = await findByIdsMenu(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断菜单是否存在
+ */
+export async function existsMenu(
+  search: MenuSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMenu,
+  } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+
+  return await existsMenu(search);
 }
 
 /**
@@ -176,6 +250,15 @@ export async function findByIdsOkMenu(
   const {
     findByIdsOkMenu,
   } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   const models = await findByIdsOkMenu(ids);
   
@@ -230,10 +313,9 @@ export async function updateByIdMenu(
   input: MenuInput,
 ): Promise<MenuId> {
   
-  intoInputMenu(input);
-  
   const {
     setIdByLblMenu,
+    validateMenu,
     updateByIdMenu,
   } = await import("./menu.service.ts");
   
@@ -243,7 +325,11 @@ export async function updateByIdMenu(
   
   set_is_tran(true);
   
+  intoInputMenu(input);
+  
   await setIdByLblMenu(input);
+  
+  await validateMenu(input);
   
   await usePermit(
     getPagePathMenu(),

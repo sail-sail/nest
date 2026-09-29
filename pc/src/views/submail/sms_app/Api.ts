@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -342,6 +341,32 @@ export async function findByIdsSmsApp(
 }
 
 /**
+ * 根据搜索条件判断短信应用是否存在
+ */
+export async function existsSmsApp(
+  search?: SmsAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsSmsApp: Query["existsSmsApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: SmsAppSearch) {
+        existsSmsApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsSmsApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 短信应用, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkSmsApp(
@@ -409,7 +434,7 @@ export async function deleteByIdsSmsApp(
  */
 export async function enableByIdsSmsApp(
   ids: SmsAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -437,7 +462,7 @@ export async function enableByIdsSmsApp(
  */
 export async function lockByIdsSmsApp(
   ids: SmsAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -533,12 +558,6 @@ export function useDownloadImportTemplateSmsApp() {
             order_by
             rem
           }
-          getDict(codes: [
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -584,24 +603,15 @@ export function useExportExcelSmsApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: SmsAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: SmsAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllSmsApp(search: $search, page: $page, sort: $sort) {
               ${ smsAppQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

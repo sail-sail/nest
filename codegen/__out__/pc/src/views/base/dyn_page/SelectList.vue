@@ -80,13 +80,13 @@ let inited = $ref(false);
 
 let dialogAction = $ref("select");
 
-export type OnCloseResolveType = {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   selectedIds?: DynPageId[];
   selectedModels?: DynPageModel[];
 };
-export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: DynPageModel[]) => Promise<boolean | undefined>;
+type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
+type OnBeforeChangeFnType = (value: DynPageModel[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
@@ -196,20 +196,25 @@ async function onSave() {
       return;
     }
   }
+  if (onBeforeChange) {
+    const isCloseChange = await onBeforeChange(selectedModels);
+    if (isCloseChange === false) {
+      onCloseResolve({
+        type: "ok",
+        selectedIds,
+        selectedModels,
+      });
+      return;
+    }
+  }
+  nextTick(() => nextTick(() => {
+    emit("change", selectedModels);
+  }));
   onCloseResolve({
     type: "ok",
     selectedIds,
     selectedModels,
   });
-  if (onBeforeChange) {
-    const isCloseChange = await onBeforeChange(selectedModels);
-    if (isCloseChange === false) {
-      return;
-    }
-  }
-  await nextTick();
-  await nextTick();
-  emit("change", selectedModels);
 }
 
 /** 点击取消关闭按钮 */

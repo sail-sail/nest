@@ -27,6 +27,15 @@ export async function findCountSmsSendRecord(
     findCountSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+  
   const num = await findCountSmsSendRecord(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllSmsSendRecord(
   const {
     findAllSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
+  
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
   
   checkSortSmsSendRecord(sort);
   
@@ -78,6 +96,15 @@ export async function findOneSmsSendRecord(
     findOneSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+  
   checkSortSmsSendRecord(sort);
   
   const model = await findOneSmsSendRecord(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkSmsSendRecord(
     findOneOkSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+  
   checkSortSmsSendRecord(sort);
   
   const model = await findOneOkSmsSendRecord(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdSmsSendRecord(
     findByIdSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+  
   const model = await findByIdSmsSendRecord(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkSmsSendRecord(
   const {
     findByIdOkSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
+  
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
   
   const model = await findByIdOkSmsSendRecord(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsSmsSendRecord(
     findByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+  
   const models = await findByIdsSmsSendRecord(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断短信发送记录是否存在
+ */
+export async function existsSmsSendRecord(
+  search: SmsSendRecordSearch,
+): Promise<boolean> {
+  
+  const {
+    existsSmsSendRecord,
+  } = await import("./sms_send_record.service.ts");
+  
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
+
+  return await existsSmsSendRecord(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkSmsSendRecord(
   const {
     findByIdsOkSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
+  
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
+  await usePermit(
+    getPagePathSmsSendRecord(),
+    "find",
+  );
   
   const models = await findByIdsOkSmsSendRecord(ids);
   

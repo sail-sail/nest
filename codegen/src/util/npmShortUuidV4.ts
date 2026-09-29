@@ -1,4 +1,4 @@
-import { shortUuidV4 } from "./uuid.ts";
+import { shortUuidV7 } from "./uuid.ts";
 import clipboardy from "clipboardy";
 
 // 使用方法: npm run uuid [数量]
@@ -15,7 +15,7 @@ if (!num) {
   num = 1;
 }
 for (let i = 0; i < num; i++) {
-  ids.push(shortUuidV4());
+  ids.push(shortUuidV7());
 }
 const idStr = ids.join("\n");
 

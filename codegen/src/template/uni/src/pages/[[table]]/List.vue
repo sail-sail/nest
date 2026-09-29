@@ -48,6 +48,18 @@ const hasForeignTabsMore = columns.some((item) => {
     return item2.linkType === "more";
   });
 });
+const hasUniForeignTabs = columns.some((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+});
+const defaultForeignTabsGroup = columns.find((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+})?.COLUMN_NAME || "";
 const hasForeignPage = columns.some((item) => item.foreignPage);
 const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
 const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
@@ -65,6 +77,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -72,9 +85,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -143,6 +156,8 @@ if (searchByKeyword) {
 const search_fields = opts?.isUniPage?.list_page?.search_fields || [ ];
 const lbl_field = opts?.isUniPage?.list_page?.lbl_field || "lbl";
 const lbl_field_column = columns.find((col) => col.COLUMN_NAME === lbl_field);
+const lbl_field_foreignKey = lbl_field_column?.foreignKey;
+const lbl_field_modelLabel = lbl_field_column?.modelLabel;
 const lbl2_fields = opts?.isUniPage?.list_page?.lbl2_fields || [ ];
 const lbl2_fields_columns = lbl2_fields.map((field) => {
   const column = columns.find((col) => col.COLUMN_NAME === field);
@@ -260,16 +275,15 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     ><#
     for (let i = 0; i < search_fields.length; i++) {
       const search_field = search_fields[i];
-      const column = columns.find((col) => col.COLUMN_NAME === search_field);
-      if (!column && search_field !== searchByKeyword.prop) {
-        throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-      }
+      const column = columns.find((col) => {
+        return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+      });
       const column_name = column?.COLUMN_NAME;
       const data_type = column?.DATA_TYPE;
       const column_type = column?.COLUMN_TYPE;
@@ -284,11 +298,11 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
       <!-- <#=lbl#> -->
       <tm-form-item
         label="<#=lbl#>"
-        name="<#=prop#>"
+        name="<#=search_field#>"
         :required="false"
       >
         <CustomInput
-          v-model="search.<#=prop#>"
+          v-model="search.<#=search_field#>"
           placeholder="请输入 <#=placeholder#>"
           @change="onSearch"
         ></CustomInput>
@@ -303,7 +317,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
         :required="false"
       >
         <CustomBetweenDate
-          v-model="search.<#=column_name#>"
+          v-model="search.<#=search_field#>"
           placeholder="请选择 <#=column_comment#>"
           @change="onSearch"
         ></CustomBetweenDate>
@@ -318,7 +332,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
         :required="false"
       >
         <CustomInput
-          v-model="search.<#=column_name#>"
+          v-model="search.<#=search_field#>"
           placeholder="请输入 <#=column_comment#>"
           @change="onSearch"
         ></CustomInput>
@@ -373,16 +387,19 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
       (暂无<#=table_comment#>)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="<#=table#>_model of <#=table#>_models_computed"
         :key="<#=table#>_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -429,15 +446,63 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               <view
                 un-flex="~"
                 un-gap="x-2"
-              >
+              ><#
+                if (lbl_field_foreignKey && lbl_field_modelLabel) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field_modelLabel#> }}
+                </view><#
+                } else if (lbl_field_foreignKey) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field#>_lbl }}
+                </view><#
+                } else {
+                #>
                 
                 <view>
                   {{ <#=table#>_model.<#=lbl_field#> }}
-                </view>
+                </view><#
+                }
+                #>
                 
               </view><#
               for (let i = 0; i < lbl2_fields.length; i++) {
                 const lbl2_field = lbl2_fields[i];
+                const lbl2_field_column = lbl2_fields_columns[i];
+                const data_type = lbl2_field_column?.DATA_TYPE;
+                if (!lbl2_field_column) {
+                  throw new Error(`表: ${ mod }_${ table } 中配置的列表辅助显示字段 ${ lbl2_field } 在列中不存在`);
+                }
+                const foreignKey = lbl2_field_column.foreignKey;
+                const modelLabel = lbl2_field_column.modelLabel;
+                if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else if (foreignKey && modelLabel) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=modelLabel#> }}
+              </view><#
+                } else if (foreignKey) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else {
               #>
               
               <view
@@ -445,6 +510,8 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               >
                 {{ <#=table#>_model.<#=lbl2_field#> }}
               </view><#
+                }
+              #><#
               }
               #>
               
@@ -484,6 +551,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             
@@ -493,10 +561,16 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} <#=table_comment#>
     </CustomDivider>
@@ -557,25 +631,14 @@ let isEditing = $ref(false);
 let <#=table#>_ids_selected = $ref<<#=Table_Up#>Id[]>([ ]);
 let <#=table#>_id_selected = $ref<<#=Table_Up#>Id>();
 
-const <#=table#>_models_key = "<#=table#>.List.<#=table#>_models";
 let <#=table#>_models = $ref<<#=Table_Up#>Model[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(<#=table#>_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblById<#=Table_Up#>(model);
-  }
-  <#=table#>_models = models;
-})();
 
 type SearchType = {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
-    if (!column && search_field !== searchByKeyword.prop) {
-      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-    }
+    const column = columns.find((col) => {
+      return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+    });
     const column_name = column?.COLUMN_NAME;
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
@@ -587,70 +650,153 @@ type SearchType = {<#
     const placeholder = searchByKeyword.placeholder || "关键字";
   #>
   // <#=lbl#>
-  <#=prop#>?: string;<#
+  <#=search_field#>?: string;<#
   } else if (data_type === "datetime" || data_type === "date") {
   #>
   // <#=column_comment#>
-  <#=column_name#>: [string | null, string | null];<#
+  <#=search_field#>: [string | null, string | null];<#
   } else {
   #>
   // <#=column_comment#>
-  <#=column_name#>?: string;<#
+  <#=search_field#>?: string;<#
   }
   #><#
   }
   #>
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<<#=Table_Up#>Search>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/<#=table#>/List:search";
-const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {<#
+
+function initSearch() {
+  const search: SearchType = {<#
+    for (let i = 0; i < search_fields.length; i++) {
+      const search_field = search_fields[i];
+      const column = columns.find((col) => {
+        return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+      });
+      const column_name = column?.COLUMN_NAME;
+      const data_type = column?.DATA_TYPE;
+      const column_type = column?.COLUMN_TYPE;
+      const column_comment = column?.COLUMN_COMMENT || "";
+      const searchDefaultValue = column?.searchDefaultValue == null
+        ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+        : column.searchDefaultValue;
+    #><#
+    if (data_type === "datetime" || data_type === "date") {
+      if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+        let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+        // 减去1天
+        subtractSecond = subtractSecond - 24 * 60 * 60;
+    #>
+    // <#=column_comment#>
+    <#=search_field#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ],<#
+      } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+        const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+        const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+    #>
+    // <#=column_comment#>
+    <#=search_field#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+      } else {
+    #>
+    // <#=column_comment#>
+    <#=search_field#>: [ null, null ],<#
+      }
+    } else if (searchDefaultValue != null) {
+      const searchDefaultValueStr = String(searchDefaultValue);
+    #>
+    // <#=column_comment#>
+    <#=search_field#>: <#=JSON.stringify(searchDefaultValueStr)#>,<#
+    }
+    #><#
+    }
+    #>
+  };<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
-    if (!column && search_field !== searchByKeyword.prop) {
-      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-    }
+    const column = columns.find((col) => {
+      return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+    });
     const column_name = column?.COLUMN_NAME;
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
-  #><#
-  if (data_type === "datetime" || data_type === "date") {
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+    if (search_field === searchByKeyword.prop) {
+      continue;
+    }
+    if (data_type !== "datetime" && data_type !== "date" && searchDefaultValue == null) {
+      continue;
+    }
   #>
   // <#=column_comment#>
-  <#=column_name#>: [ null, null ],<#
-  }
-  #><#
+  if (search.<#=column_name#> == null) {<#
+    if (data_type === "datetime" || data_type === "date") {
+      if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+        let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+        // 减去1天
+        subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];<#
+      } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+        const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+        const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    search.<#=search_field#> = [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ];<#
+      } else {
+  #>
+    search.<#=search_field#> = [ null, null ];<#
+      }
+    } else {
+      if (searchDefaultValue != null) {
+      const searchDefaultValueStr = String(searchDefaultValue);
+  #>
+    search.<#=search_field#> = <#=JSON.stringify(searchDefaultValueStr)#>;<#
+      } else {
+  #>
+  search.<#=search_field#> = undefined;<#
+      }
+    }
+  #>
+  }<#
   }
   #>
-});<#
-for (let i = 0; i < search_fields.length; i++) {
-  const search_field = search_fields[i];
-  const column = columns.find((col) => col.COLUMN_NAME === search_field);
-  if (!column && search_field !== searchByKeyword.prop) {
-    throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-  }
-  const column_name = column?.COLUMN_NAME;
-  const data_type = column?.DATA_TYPE;
-  const column_type = column?.COLUMN_TYPE;
-  const column_comment = column?.COLUMN_COMMENT || "";
-  if (search_field === searchByKeyword.prop) {
-    continue;
-  }
-  if (data_type !== "datetime" && data_type !== "date") {
-    continue;
-  }
-#>
-// <#=column_comment#>
-if (!search.<#=column_name#>) {
-  search.<#=column_name#> = [ null, null ];
-}<#
+  return search;
 }
-#>
+
+let search = $ref<SearchType>(uni.getStorageSync(searchKey) || initSearch());
 
 type <#=Table_Up#>ModelComputed = {
-  id: <#=Table_Up#>Id;
+  id: <#=Table_Up#>Id;<#
+  if (lbl_field_foreignKey && lbl_field_modelLabel) {
+  #>
+  <#=lbl_field_modelLabel#>: string;<#
+  } else if (lbl_field_foreignKey) {
+  #>
+  <#=lbl_field#>_lbl: string;<#
+  } else {
+  #>
   <#=lbl_field#>: string;<#
+  }
+  #><#
   for (let i = 0; i < lbl2_fields_columns.length; i++) {
     const column = lbl2_fields_columns[i];
     if (!column) {
@@ -661,11 +807,19 @@ type <#=Table_Up#>ModelComputed = {
     const column_comment = column.COLUMN_COMMENT || "";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    } else if (data_type === "decimal") {
+      data_type_ts = "DecimalType";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -673,8 +827,23 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #><#
   if (right_field) {
@@ -685,11 +854,17 @@ type <#=Table_Up#>ModelComputed = {
     const data_type = column.DATA_TYPE;
     const column_name = column.COLUMN_NAME;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -697,8 +872,23 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #>
 };
@@ -717,14 +907,26 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
     }
     #>
     return {
-      id: <#=table#>_model.id,
+      id: <#=table#>_model.id,<#
+      if (lbl_field_foreignKey && lbl_field_modelLabel) {
+      #>
+      <#=lbl_field_modelLabel#>: <#=table#>_model.<#=lbl_field_modelLabel#>,<#
+      } else if (lbl_field_foreignKey) {
+      #>
+      <#=lbl_field#>_lbl: <#=table#>_model.<#=lbl_field#>_lbl,<#
+      } else {
+      #>
       <#=lbl_field#>: <#=table#>_model.<#=lbl_field#>,<#
+      }
+      #><#
       for (let i = 0; i < lbl2_fields_columns.length; i++) {
         const lbl2_fields_column = lbl2_fields_columns[i];
         const column_name = lbl2_fields_column.COLUMN_NAME;
         const column_comment = lbl2_fields_column.COLUMN_COMMENT || "";
         const data_type = lbl2_fields_column.DATA_TYPE;
         const column_type = lbl2_fields_column.COLUMN_TYPE;
+        const foreignKey = lbl2_fields_column.foreignKey;
+        const modelLabel = lbl2_fields_column.modelLabel;
         let data_type_ts = "string";
         if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
           data_type_ts = "number";
@@ -739,12 +941,28 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = column_name + "_lbl";
           column_value = table + "_model." + column_name_ts;
         }
+      #><#
+      if (lbl2_fields_column.dict || lbl2_fields_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
+      if (foreignKey && modelLabel) {
+      #>
+      <#=modelLabel#>: <#=table + "_model." + modelLabel#>,<#
+      } else if (foreignKey) {
+      #>
+      <#=column_name_ts#>: <#=table + "_model." + column_name + "_lbl"#>,<#
+      }
+      #><#
       }
       #><#
       if (right_field) {
         const data_type = right_field_column?.DATA_TYPE;
+        let column_name = right_field;
         let column_name_ts = right_field;
         let column_value = table + "_model." + right_field;
         if (right_field_column.dict || right_field_column.dictbiz
@@ -753,6 +971,13 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = right_field + "_lbl";
           column_value = column_name_ts;
         }
+      #><#
+      if (right_field_column.dict || right_field_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
       }
@@ -760,6 +985,20 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
     };
   });
 });
+
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
 
 function onRadio(
   checked: boolean,
@@ -785,10 +1024,24 @@ async function on<#=Table_Up#>(
     }
     return;
   }
-  <#=table#>_id_selected = <#=table#>_id;
+  <#=table#>_id_selected = <#=table#>_id;<#
+if (hasUniForeignTabs) {
+#>
+  
+  await uni.navigateTo({
+    url: `/pages/<#=table#>/ForeignTabs${ buildPageQuery({
+      <#=table#>_id,
+      tabGroup: "<#=defaultForeignTabsGroup#>",
+    }) }`,
+  });<#
+  } else {
+  #>
+  
   await uni.navigateTo({
     url: `/pages/<#=table#>/Detail?<#=table#>_id=${ encodeURIComponent(<#=table#>_id) }`,
-  });
+  });<#
+  }
+  #>
 }
 
 async function onAdd<#=Table_Up#>() {
@@ -796,33 +1049,15 @@ async function onAdd<#=Table_Up#>() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/<#=table#>/Detail",
+    url: `/pages/<#=table#>/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
-async function onReset() {<#
-  for (let i = 0; i < search_fields.length; i++) {
-    const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
-    if (!column && search_field !== searchByKeyword.prop) {
-      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-    }
-    const column_name = column?.COLUMN_NAME;
-    const data_type = column?.DATA_TYPE;
-    const column_type = column?.COLUMN_TYPE;
-    const column_comment = column?.COLUMN_COMMENT || "";
-    const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
-  #><#
-  if (data_type === "datetime" || data_type === "date") {
-  #>
-  search.<#=prop#> = [ null, null ];<#
-  } else {
-  #>
-  search.<#=prop#> = undefined;<#
-  }
-  #><#
-  }
-  #>
+async function onReset() {
+  search = initSearch();
   pgOffset = 0;
   await onSearch();
 }
@@ -919,14 +1154,13 @@ async function onSearch() {
     data: {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
-    if (!column && search_field !== searchByKeyword?.prop) {
-      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-    }
+    const column = columns.find((col) => {
+      return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+    });
     const column_name = column?.COLUMN_NAME;
     const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
   #>
-      <#=prop#>: search.<#=prop#>,<#
+      <#=search_field#>: search.<#=search_field#>,<#
   }
   #>
     },
@@ -935,34 +1169,69 @@ async function onSearch() {
   await onRefresh();
 }
 
-function getSearch<#=Table_Up#>() {
-  const search2: SearchType = {<#
+function getSearch<#=Table_Up#>() {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
-    if (!column && search_field !== searchByKeyword?.prop) {
-      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
-    }
+    const column = columns.find((col) => {
+      return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+    });
     const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=search_field#>?.[0] || !search.<#=search_field#>?.[1]) {
+    search.<#=search_field#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];
+  }<#
+    }
+  #><#
+  }
+  #><#
+  }
+  #>
+  const search2: <#=Table_Up#>Search = {<#
+  for (let i = 0; i < search_fields.length; i++) {
+    const search_field = search_fields[i];
+    const column = columns.find((col) => {
+      return col.COLUMN_NAME === search_field || col.modelLabel === search_field;
+    });
+    const column_name = column?.COLUMN_NAME;
+    const foreignKey = column?.foreignKey;
     const data_type = column?.DATA_TYPE;
     const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
     
     if (search_field === searchByKeyword?.prop) {
   #>
-    <#=prop#>: search.<#=prop#>?.trim() || undefined,<#
+    <#=search_field#>: search.<#=search_field#>?.trim() || undefined,<#
+    } else if (foreignKey) {
+  #>
+    <#=search_field#>: search.<#=search_field#>?.trim() ? [ search.<#=search_field#>?.trim() ] : undefined,<#
     } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>
-    <#=column_name#>: [ search.<#=column_name#>[0], search.<#=column_name#>[1] ],<#
+    <#=search_field#>: [ search.<#=search_field#>[0], search.<#=search_field#>[1] ],<#
     } else {
   #>
-    <#=column_name#>: search.<#=column_name#>?.trim() || undefined,<#
+    <#=search_field#>: search.<#=search_field#>?.trim() || undefined,<#
     }
   }
   #>
   };<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
-    const column = columns.find((col) => col.COLUMN_NAME === search_field);
+    const column = columns.find((col) => col.COLUMN_NAME === search_field || col.modelLabel === search_field);
     if (!column && search_field !== searchByKeyword?.prop) {
       continue;
     }
@@ -974,16 +1243,20 @@ function getSearch<#=Table_Up#>() {
     
     if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>
-  if (search2.<#=column_name#>?.[0]) {
-    search2.<#=column_name#>[0] = dayjs(search2.<#=column_name#>[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss");
+  
+  if (search2.<#=search_field#>?.[0]) {
+    search2.<#=search_field#>[0] = dayjs(search2.<#=search_field#>[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss");
   }
-  if (search2.<#=column_name#>?.[1]) {
-    search2.<#=column_name#>[1] = dayjs(search2.<#=column_name#>[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss");
+  if (search2.<#=search_field#>?.[1]) {
+    search2.<#=search_field#>[1] = dayjs(search2.<#=search_field#>[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss");
   }<#
     }
   }
   #>
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {
@@ -1027,10 +1300,6 @@ async function onRefresh() {
     const len = <#=table#>_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -1068,10 +1337,6 @@ async function onLoadMore() {
     if (!<#=table#>_models.some((item) => item.id === <#=table#>_id_selected)) {
       <#=table#>_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }

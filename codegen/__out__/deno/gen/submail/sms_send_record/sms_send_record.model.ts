@@ -31,7 +31,7 @@ declare global {
     content?: string;
     content_like?: string;
     /** 状态 */
-    status?: string[];
+    status?: string[] | null;
     /** 发送时间 */
     send_time?: [(string|undefined|null), (string|undefined|null)];
     /** 标签 */

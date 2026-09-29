@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -379,7 +380,6 @@ export async function findAllSmsSendRecord(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -912,9 +912,9 @@ export async function findByIdsOkSmsSendRecord(
   return models2;
 }
 
-// MARK: existSmsSendRecord
+// MARK: existsSmsSendRecord
 /** 根据搜索条件判断短信发送记录是否存在 */
-export async function existSmsSendRecord(
+export async function existsSmsSendRecord(
   search?: Readonly<SmsSendRecordSearch>,
   options?: {
     is_debug?: boolean;
@@ -922,7 +922,7 @@ export async function existSmsSendRecord(
 ): Promise<boolean> {
   
   const table = getTableNameSmsSendRecord();
-  const method = "existSmsSendRecord";
+  const method = "existsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1633,12 +1633,7 @@ export async function updateByIdSmsSendRecord(
   const oldModel = await findByIdSmsSendRecord(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 短信发送记录 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

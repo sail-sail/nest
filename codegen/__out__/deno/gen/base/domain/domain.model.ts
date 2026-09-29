@@ -31,7 +31,7 @@ declare global {
     protocol?: string;
     protocol_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

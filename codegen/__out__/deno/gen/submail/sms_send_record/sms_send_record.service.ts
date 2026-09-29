@@ -140,7 +140,7 @@ export async function findByIdsOkSmsSendRecord(
 /**
  * 根据搜索条件查找短信发送记录是否存在
  */
-export async function existSmsSendRecord(
+export async function existsSmsSendRecord(
   search?: SmsSendRecordSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existSmsSendRecord(
   
   await setSearchQuery(search);
   
-  const sms_send_record_exist = await sms_send_recordDao.existSmsSendRecord(search);
+  const sms_send_record_exist = await sms_send_recordDao.existsSmsSendRecord(search);
   
   return sms_send_record_exist;
 }

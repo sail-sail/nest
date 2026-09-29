@@ -29,6 +29,15 @@ export async function findCountIcon(
     findCountIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+  
   const num = await findCountIcon(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllIcon(
   const {
     findAllIcon,
   } = await import("./icon.service.ts");
+  
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
   
   checkSortIcon(sort);
   
@@ -80,6 +98,15 @@ export async function findOneIcon(
     findOneIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+  
   checkSortIcon(sort);
   
   const model = await findOneIcon(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkIcon(
     findOneOkIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+  
   checkSortIcon(sort);
   
   const model = await findOneOkIcon(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdIcon(
     findByIdIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+  
   const model = await findByIdIcon(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkIcon(
   const {
     findByIdOkIcon,
   } = await import("./icon.service.ts");
+  
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
   
   const model = await findByIdOkIcon(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsIcon(
     findByIdsIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+  
   const models = await findByIdsIcon(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断图标库是否存在
+ */
+export async function existsIcon(
+  search: IconSearch,
+): Promise<boolean> {
+  
+  const {
+    existsIcon,
+  } = await import("./icon.service.ts");
+  
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
+
+  return await existsIcon(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkIcon(
   const {
     findByIdsOkIcon,
   } = await import("./icon.service.ts");
+  
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
+  await usePermit(
+    getPagePathIcon(),
+    "find",
+  );
   
   const models = await findByIdsOkIcon(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdIcon(
   input: IconInput,
 ): Promise<IconId> {
   
-  intoInputIcon(input);
-  
   const {
     setIdByLblIcon,
+    validateIcon,
     updateByIdIcon,
   } = await import("./icon.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdIcon(
   
   set_is_tran(true);
   
+  intoInputIcon(input);
+  
   await setIdByLblIcon(input);
+  
+  await validateIcon(input);
   
   await usePermit(
     getPagePathIcon(),

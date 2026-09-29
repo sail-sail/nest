@@ -140,7 +140,7 @@ export async function findByIdsOkRole(
 /**
  * 根据搜索条件查找角色是否存在
  */
-export async function existRole(
+export async function existsRole(
   search?: RoleSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existRole(
   
   await setSearchQuery(search);
   
-  const role_exist = await roleDao.existRole(search);
+  const role_exist = await roleDao.existsRole(search);
   
   return role_exist;
 }

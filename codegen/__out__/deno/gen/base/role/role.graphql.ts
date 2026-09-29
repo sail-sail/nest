@@ -29,6 +29,10 @@ type RoleModel {
   field_permit_ids: [FieldPermitId!]!
   "字段权限"
   field_permit_ids_lbl: [String!]!
+  "接收审核消息"
+  is_audit_msg: Int!
+  "接收审核消息"
+  is_audit_msg_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -87,6 +91,10 @@ type RoleFieldComment {
   field_permit_ids: String!
   "字段权限"
   field_permit_ids_lbl: String!
+  "接收审核消息"
+  is_audit_msg: String!
+  "接收审核消息"
+  is_audit_msg_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -139,6 +147,10 @@ input RoleInput {
   field_permit_ids: [FieldPermitId!]
   "字段权限"
   field_permit_ids_lbl: [String!]
+  "接收审核消息"
+  is_audit_msg: Int
+  "接收审核消息"
+  is_audit_msg_lbl: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -231,6 +243,8 @@ type Query {
   findByIdRole(id: RoleId!): RoleModel
   "根据 ids 查找角色"
   findByIdsRole(ids: [RoleId!]!): [RoleModel]!
+  "根据搜索条件判断角色是否存在"
+  existsRole(search: RoleSearch): Boolean!
   "查找角色 order_by 字段的最大值"
   findLastOrderByRole(search: RoleSearch): Int!
 }

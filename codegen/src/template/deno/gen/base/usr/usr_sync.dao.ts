@@ -5,19 +5,6 @@ const syncTables = usrLblSyncTables;
   log,
 } from "/lib/context.ts";
 
-import type {
-  UsrId,
-} from "/gen/types.ts";<#
-for (let i = 0; i < syncTables.length; i++) {
-  const item = syncTables[i];
-#>
-
-import {
-  syncUsrLblByUsrId<#=item.Table_Up#>,
-} from "/gen/<#=item.mod#>/<#=item.table#>/<#=item.table#>.dao.ts";<#
-}
-#>
-
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -51,16 +38,20 @@ export async function syncUsrLblByUsrId(
   };
   
   let affectedRows = 0;<#
-for (let i = 0; i < syncTables.length; i++) {
-  const item = syncTables[i];
-#>
+  for (let i = 0; i < syncTables.length; i++) {
+    const item = syncTables[i];
+  #>
+  
+  const {
+    syncUsrLblByUsrId<#=item.Table_Up#>,
+  } = await import("/gen/<#=item.mod#>/<#=item.table#>/<#=item.table#>.dao.ts");
   
   affectedRows += await syncUsrLblByUsrId<#=item.Table_Up#>(
     usr_id,
     syncOptions,
   );<#
-}
-#>
+  }
+  #>
   
   return affectedRows;
 }

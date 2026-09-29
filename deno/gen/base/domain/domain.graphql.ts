@@ -142,6 +142,8 @@ type Query {
   findByIdDomain(id: DomainId!): DomainModel
   "根据 ids 查找域名"
   findByIdsDomain(ids: [DomainId!]!): [DomainModel]!
+  "根据搜索条件判断域名是否存在"
+  existsDomain(search: DomainSearch): Boolean!
   "查找域名 order_by 字段的最大值"
   findLastOrderByDomain(search: DomainSearch): Int!
 }

@@ -70,6 +70,9 @@
         @remove="onFindTree"
         @revert="onFindTree"
         @refresh="onFindTree"
+        @selected-ids-chg="emit('selectedIdsChg', $event)"
+        @row-enter="emit('rowEnter', $event)"
+        @row-dblclick="emit('rowDblclick', $event)"
         @before-search-reset="beforeSearchReset"
       ></List>
     </slot>
@@ -96,6 +99,12 @@ import type {
 defineOptions({
   name: "国际化TreeList",
 });
+
+const emit = defineEmits<{
+  selectedIdsChg: [ I18nId[] ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ I18nModel ],
+}>();
 
 const props = defineProps<{
   parent_id?: MenuId;

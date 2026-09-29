@@ -62,9 +62,14 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.status_field || "bpm_status";
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -72,9 +77,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -273,6 +278,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree !== "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -327,6 +333,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree === "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -408,6 +415,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -514,7 +522,7 @@ if (searchByKeyword) {
           ></SelectInput<#=Foreign_Table_Up#>>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
@@ -545,6 +553,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -564,7 +573,49 @@ if (searchByKeyword) {
           ></CustomSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
+      #>
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
+          prop="<#=column_name#>"
+        >
+          <CustomInput
+            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请输入 <#=column_comment#>"<#
+            }
+            #>
+            @change="onSearch(false)"
+          ></CustomInput>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
@@ -1151,7 +1202,9 @@ if (searchByKeyword) {
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
       if (opts.noAdd !== true) {
@@ -1223,6 +1276,39 @@ if (searchByKeyword) {
       </el-button><#
       }
       #><#
+      if (hasBpm) {
+      #>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onStartProcess"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('提交') }}</span><#
+        } else {
+        #>
+        <span>提交</span><#
+        }
+        #>
+      </el-button>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onApprove"
+      >
+        <template #icon>
+          <ElIconStamp />
+        </template>
+        <span>审批</span>
+      </el-button><#
+      }
+      #><#
       if (hasAudit) {
       #>
       
@@ -1231,8 +1317,17 @@ if (searchByKeyword) {
           (
             permit('audit_submit', '审核提交') ||
             permit('audit_pass', '审核通过') ||
-            permit('audit_reject', '审核拒绝') ||
-            permit('audit_review', '复核通过')
+            permit('audit_reject', '审核拒绝')<#
+            if (opts?.audit?.hasReverse) {
+            #> ||
+            permit('audit_reverse', '反审核')<#
+            }
+            #><#
+            if (hasReviewed) {
+            #> ||
+            permit('audit_review', '复核通过')<#
+            }
+            #>
           )
         "
         plain
@@ -1252,6 +1347,27 @@ if (searchByKeyword) {
         <span>审核</span><#
         }
         #>
+      </el-button>
+
+      <el-button
+        v-if="permit('audit_reverse', '反审核') && !isLocked"
+        plain
+        type="warning"
+        @click="onAuditReverseByIds"
+      >
+        <template #icon>
+          <ElIcon>
+            <div un-i="iconfont-undo"></div>
+          </ElIcon>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('反审核') }}</span><#
+        } else {
+        #>
+        <span>反审核</span><#
+        }
+        #>
       </el-button><#
       }
       #><#
@@ -1259,7 +1375,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -1434,7 +1550,9 @@ if (searchByKeyword) {
           </span><#
             }
           #>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -1623,7 +1741,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -1646,7 +1764,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -1936,6 +2054,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1957,6 +2076,30 @@ if (searchByKeyword) {
               </template>
             </el-table-column>
           </template><#
+          } else if (hasBpm && column_name === bpmStatusField) {
+          #>
+          
+          <!-- <#=table_comment#> -->
+          <template v-else-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+            <!-- @vue-generic {<#=modelName#>} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.<#=column_name#> !== 'draft'"
+                  type="primary"
+                  @click.stop="onOpenProcessFlow(row)"
+                >
+                  {{ row.<#=column_name#>_lbl }}
+                </el-link>
+                <span v-else>
+                  {{ row.<#=column_name#>_lbl }}
+                </span>
+              </template>
+            </el-table-column>
+          </template><#
           } else if (column.isImg) {
           #>
           
@@ -1966,6 +2109,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1998,6 +2142,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2016,17 +2161,19 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             ><#
               if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
+              <!-- @vue-generic {<#=modelName#>} -->
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2091,13 +2238,14 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <LinkAtt
-                  v-model="row[column.property]"<#
+                  v-model="row.<#=column_name#>"<#
                   if (column.attMaxSize > 1) {
                   #>
                   :max-size="<#=column.attMaxSize#>"<#
@@ -2129,7 +2277,7 @@ if (searchByKeyword) {
                   :readonly="isLocked"<#
                   }
                   #>
-                  @change="onLinkAtt(row, column.property)"
+                  @change="onLinkAtt(row, '<#=column_name#>')"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -2143,6 +2291,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2155,7 +2304,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById<#=Table_Up#>(
@@ -2193,6 +2346,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2217,6 +2371,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2227,7 +2382,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2282,7 +2437,11 @@ if (searchByKeyword) {
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
@@ -2296,7 +2455,11 @@ if (searchByKeyword) {
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1 && !isLocked"
+                  #><#
+                  if (hasIsDeleted) {
+                  #> && row.is_deleted !== 1<#
+                  }
+                  #> && !isLocked"
                   v-model="row.<#=column_name#>"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
@@ -2330,6 +2493,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2349,7 +2513,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2429,6 +2593,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2462,7 +2627,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2733,6 +2898,18 @@ if (searchByKeyword) {
     ref="dynPageDetailRef"
   ></DynPageDetail><#
   }
+  #><#
+  if (hasBpm) {
+  #>
+
+  <ProcessFlowDialog
+    ref="processFlowDialogRef"
+  ></ProcessFlowDialog>
+
+  <ApprovalDialog
+    ref="approvalDialogRef"
+  ></ApprovalDialog><#
+  }
   #>
   
 </div>
@@ -2803,6 +2980,11 @@ import {
   getPagePath<#=Table_Up#>,
   findAll<#=Table_Up#>,
   findCount<#=Table_Up#>,<#
+    if (hasAudit) {
+  #>
+  auditReverse<#=Table_Up#>,<#
+    }
+  #><#
     if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
   #>
   revertByIds<#=Table_Up#>,<#
@@ -2856,8 +3038,21 @@ import {
   #>
   findSummary<#=Table_Up#>,<#
     }
+  #><#
+    if (hasBpm) {
+  #>
+  startProcess<#=Table_Up#>,<#
+    }
   #>
 } from "./Api.ts";<#
+if (hasAudit) {
+#>
+
+import {
+  <#=Table_Up#>Audit,
+} from "#/types.ts";<#
+}
+#><#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -3003,6 +3198,12 @@ if (opts?.isUseDynPageFields) {
 
 import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
 }
+#><#
+if (hasBpm) {
+#>
+
+import ApprovalDialog from "./ApprovalDialog.vue";<#
+}
 #>
 
 <#
@@ -3110,7 +3311,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
@@ -3160,7 +3364,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -3402,6 +3605,69 @@ useSubscribeList<<#=Table_Up#>Id>(
 /** 查询 */
 function initSearch() {
   const search = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "version") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.isPassword || column.isEncrypt) continue;
+      if (!column.search) continue;
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const searchDefaultValue = column.searchDefaultValue == null
+        ? (column.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+        : column.searchDefaultValue;
+      if (searchDefaultValue == null) continue;
+      if (data_type === "datetime") {
+        if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else if (data_type === "date") {
+        if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else {
+        const searchDefaultValueText = typeof searchDefaultValue === "string"
+          ? searchDefaultValue
+          : JSON.stringify(searchDefaultValue);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: <#=JSON.stringify(searchDefaultValueText)#>,<#
+      }
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     is_deleted: 0,<#
@@ -3431,7 +3697,7 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
 #><#
-  if (foreignKey || column.dict || column.dictbiz) {
+  if ((foreignKey && !foreignKey.isSearchByLbl) || column.dict || column.dictbiz) {
 #>
 
 // <#=column_comment#>
@@ -3951,7 +4217,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());<#
+let tableColumns = $ref<ColumnType[]>(getTableColumns());<#
 if (isUseI18n) {
 #>
 
@@ -3987,7 +4253,38 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef("detailRef"));
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+
+const detailRef = $(useTemplateRef("detailRef"));<#
+if (hasBpm) {
+#>
+
+const approvalDialogRef = $(useTemplateRef("approvalDialogRef"));
+const processFlowDialogRef = $(useTemplateRef("processFlowDialogRef"));<#
+}
+#>
 
 /** 刷新表格 */
 async function dataGrid(
@@ -4034,6 +4331,52 @@ function getDataSearch() {<#
   if (hasIsDeleted) {
   #>
   const is_deleted = search.is_deleted;<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (!column.search) continue;
+    const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+  #><#
+  if (data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];
+  }<#
+    }
+  #><#
+  } else if (data_type === "datetime") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ];
+  }<#
+    }
+  }
+  #><#
   }
   #>
   const search2 = {
@@ -4148,7 +4491,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<<#=modelName#>>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -4249,7 +4596,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4295,7 +4642,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4600,7 +4947,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4624,7 +4971,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4648,7 +4995,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4683,7 +5030,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {<#
+  if (!await permitAsync("edit")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4736,6 +5083,154 @@ async function openEdit() {
 }<#
 }
 #><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+async function onStartProcess() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要提交的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要提交的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("每次仅支持对一条 {0} 提交", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 提交");<#
+    }
+    #>
+    return;
+  }
+
+  const id = selectedIds[0];
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("未找到对应 {0} 数据", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("未找到对应 <#=table_comment#> 数据");<#
+    }
+    #>
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定提交吗"),<#
+      } else {
+      #>
+      "确定提交吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    tableFocus();
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("提交成功");<#
+  }
+  #>
+  await onRefresh();
+}
+
+/** 审批 */
+async function onApprove() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`请选择需要审批的 ${ await nsAsync("<#=table_comment#>") }`);<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要审批的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`每次仅支持对一条 ${ await nsAsync("<#=table_comment#>") } 审批`);<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 审批");<#
+    }
+    #>
+    return;
+  }
+
+  if (!approvalDialogRef) {
+    return;
+  }
+
+  const result = await approvalDialogRef.showDialog({
+    id: selectedIds[0],
+  });
+  
+  if (result.type === "cancel") {
+    tableFocus();
+    return;
+  }
+
+  await onRefresh();
+}
+
+/** 查看流程状态 */
+async function onOpenProcessFlow(row: <#=modelName#>) {
+  tableFocus();
+  if (!processFlowDialogRef) {
+    return;
+  }
+  await processFlowDialogRef.showDialog(
+    {
+      biz_id: row.id,
+      title: `${ row.lbl } - 流程状态`,
+    },
+  );
+  tableFocus();
+}<#
+}
+#><#
 if (hasAudit) {
 #>
 
@@ -4748,10 +5243,11 @@ async function openAudit() {
     return;
   }
   if (
-    !permit("audit_submit") &&
-    !permit("audit_pass") &&
-    !permit("audit_reject") &&
-    !permit("audit_review")
+    !await permitAsync("audit_submit") &&
+    !await permitAsync("audit_pass") &&
+    !await permitAsync("audit_reject") &&
+    !await permitAsync("audit_review") &&
+    !await permitAsync("audit_reverse")
   ) {<#
     if (isUseI18n) {
     #>
@@ -4802,6 +5298,106 @@ async function openAudit() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
+}
+
+/** 反审核 */
+async function onAuditReverseByIds() {
+  tableFocus();
+
+  if (isLocked) {
+    return;
+  }
+  if (!await permitAsync("audit_reverse")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
+    return;
+  }
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要反审核的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要反审核的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("反审核仅支持选择一条 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("反审核仅支持选择一条 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+  const id = selectedIds[0];
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  if (
+    model.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+    model.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+  ) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("当前状态不允许反审核"));<#
+    } else {
+    #>
+    ElMessage.warning("当前状态不允许反审核");<#
+    }
+    #>
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确认要反审核吗"),<#
+      } else {
+      #>
+      "确认要反审核吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(id);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("反审核成功"));<#
+  } else {
+  #>
+  ElMessage.success("反审核成功");<#
+  }
+  #>
+  emit("edit", [ id ]);
 }<#
 }
 #><#
@@ -4876,9 +5472,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: <#=modelName#>,
-  column: TableColumnCtx<<#=modelName#>>,
+  column: TableColumnCtx<<#=modelName#>> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -4953,7 +5549,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {<#
+  if (!await permitAsync("delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5032,7 +5628,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {<#
+  if (!await permitAsync("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5106,12 +5702,12 @@ async function onForceDeleteByIds() {
 #>
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5179,12 +5775,12 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 #>
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5237,7 +5833,7 @@ async function onLockByIds(is_locked: 0 | 1) {
       msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
       } else {
       #>
-      msg = `解锋 ${ num } <#=table_comment#> 成功`;<#
+      msg = `解锁 ${ num } <#=table_comment#> 成功`;<#
       }
       #>
     }
@@ -5257,7 +5853,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {<#
+  if (await permitAsync("delete") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5456,10 +6052,11 @@ async function initI18nsEfc() {
 #>
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -5468,10 +6065,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

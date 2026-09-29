@@ -269,6 +269,32 @@ export async function findByIdsSmsSendRecord(
 }
 
 /**
+ * 根据搜索条件判断短信发送记录是否存在
+ */
+export async function existsSmsSendRecord(
+  search?: SmsSendRecordSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsSmsSendRecord: Query["existsSmsSendRecord"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: SmsSendRecordSearch) {
+        existsSmsSendRecord(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsSmsSendRecord;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 短信发送记录, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkSmsSendRecord(
@@ -447,25 +473,15 @@ export function useExportExcelSmsSendRecord() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: SmsSendRecordSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: SmsSendRecordSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllSmsSendRecord(search: $search, page: $page, sort: $sort) {
               ${ smsSendRecordQueryField }
-            }
-            findAllSmsApp {
-              lbl
-            }
-            getDict(codes: [
-              "submail_sms_send_record_status",
-            ]) {
-              code
-              lbl
             }
           }
         `,

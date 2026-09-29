@@ -160,6 +160,8 @@ type Query {
   findByIdSmsApp(id: SmsAppId!): SmsAppModel
   "根据 ids 查找短信应用"
   findByIdsSmsApp(ids: [SmsAppId!]!): [SmsAppModel]!
+  "根据搜索条件判断短信应用是否存在"
+  existsSmsApp(search: SmsAppSearch): Boolean!
   "查找短信应用 order_by 字段的最大值"
   findLastOrderBySmsApp(search: SmsAppSearch): Int!
 }

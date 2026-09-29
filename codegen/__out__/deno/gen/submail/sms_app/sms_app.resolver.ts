@@ -29,6 +29,15 @@ export async function findCountSmsApp(
     findCountSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+  
   const num = await findCountSmsApp(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllSmsApp(
   const {
     findAllSmsApp,
   } = await import("./sms_app.service.ts");
+  
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
   
   checkSortSmsApp(sort);
   
@@ -80,6 +98,15 @@ export async function findOneSmsApp(
     findOneSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+  
   checkSortSmsApp(sort);
   
   const model = await findOneSmsApp(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkSmsApp(
     findOneOkSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+  
   checkSortSmsApp(sort);
   
   const model = await findOneOkSmsApp(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdSmsApp(
     findByIdSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+  
   const model = await findByIdSmsApp(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkSmsApp(
   const {
     findByIdOkSmsApp,
   } = await import("./sms_app.service.ts");
+  
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
   
   const model = await findByIdOkSmsApp(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsSmsApp(
     findByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+  
   const models = await findByIdsSmsApp(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断短信应用是否存在
+ */
+export async function existsSmsApp(
+  search: SmsAppSearch,
+): Promise<boolean> {
+  
+  const {
+    existsSmsApp,
+  } = await import("./sms_app.service.ts");
+  
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
+
+  return await existsSmsApp(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkSmsApp(
   const {
     findByIdsOkSmsApp,
   } = await import("./sms_app.service.ts");
+  
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
+  await usePermit(
+    getPagePathSmsApp(),
+    "find",
+  );
   
   const models = await findByIdsOkSmsApp(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdSmsApp(
   input: SmsAppInput,
 ): Promise<SmsAppId> {
   
-  intoInputSmsApp(input);
-  
   const {
     setIdByLblSmsApp,
+    validateSmsApp,
     updateByIdSmsApp,
   } = await import("./sms_app.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdSmsApp(
   
   set_is_tran(true);
   
+  intoInputSmsApp(input);
+  
   await setIdByLblSmsApp(input);
+  
+  await validateSmsApp(input);
   
   await usePermit(
     getPagePathSmsApp(),

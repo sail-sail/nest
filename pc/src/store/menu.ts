@@ -16,6 +16,7 @@ const menus = useStorage<MenuModel[]>("store.menu.menus", [ ]);
 
 const isCollapse = useStorage<boolean>("store.menu.isCollapse", false);
 const hide = useStorage<boolean>("store.menu.hide", false);
+const size = useStorage<number>("store.menu.size", 250);
 
 let searchTimer: NodeJS.Timeout | undefined = undefined;
 let searchTimerHandle: ReturnType<typeof watch> | undefined = undefined;
@@ -216,6 +217,12 @@ export default function() {
     },
     set hide (hide0: boolean) {
       hide.value = hide0;
+    },
+    get size () {
+      return size.value;
+    },
+    set size (size0: number) {
+      size.value = size0;
     },
     get search() {
       return search.value;

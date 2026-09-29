@@ -140,7 +140,7 @@ export async function findByIdsOkSmsApp(
 /**
  * 根据搜索条件查找短信应用是否存在
  */
-export async function existSmsApp(
+export async function existsSmsApp(
   search?: SmsAppSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existSmsApp(
   
   await setSearchQuery(search);
   
-  const sms_app_exist = await sms_appDao.existSmsApp(search);
+  const sms_app_exist = await sms_appDao.existsSmsApp(search);
   
   return sms_app_exist;
 }

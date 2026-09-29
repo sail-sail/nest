@@ -214,7 +214,7 @@ let database_crypto_key: Uint8Array | undefined;
 
 try {
   if (database_crypto_key_path) {
-    database_crypto_key = await Deno.readFile(database_crypto_key_path);
+    database_crypto_key = await Deno.readFile(Deno.cwd() + "/" + database_crypto_key_path);
   }
 } catch (_) {
   // console.error(error);

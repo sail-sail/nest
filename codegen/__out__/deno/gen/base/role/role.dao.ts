@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -50,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -180,6 +182,9 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.field_permit_ids_lbl_like)) {
     whereQuery += ` and base_field_permit.lbl like ${ args.push("%" + sqlLike(search?.field_permit_ids_lbl_like) + "%") }`;
+  }
+  if (search?.is_audit_msg != null) {
+    whereQuery += ` and t.is_audit_msg in (${ args.push(search.is_audit_msg) })`;
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
@@ -399,6 +404,17 @@ export async function findCountRole(
       throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
     }
   }
+  // 接收审核消息
+  if (search && search.is_audit_msg != null) {
+    const len = search.is_audit_msg.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_audit_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -452,8 +468,15 @@ export async function findCountRole(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -557,6 +580,17 @@ export async function findAllRole(
       throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
     }
   }
+  // 接收审核消息
+  if (search && search.is_audit_msg != null) {
+    const len = search.is_audit_msg.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_audit_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -624,8 +658,8 @@ export async function findAllRole(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "order_by",
-    order: SortOrderEnum.Asc,
+    prop: "code",
+    order: SortOrderEnum.Desc,
   });
   
   if (!sort.some((item) => item.prop === "create_time")) {
@@ -645,14 +679,19 @@ export async function findAllRole(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -762,15 +801,27 @@ export async function findAllRole(
   }
   
   const [
+    is_audit_msgDict, // 接收审核消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 接收审核消息
+    let is_audit_msg_lbl = model.is_audit_msg?.toString() || "";
+    if (model.is_audit_msg != null) {
+      const dictItem = is_audit_msgDict.find((dictItem) => dictItem.val === String(model.is_audit_msg));
+      if (dictItem) {
+        is_audit_msg_lbl = dictItem.lbl;
+      }
+    }
+    model.is_audit_msg_lbl = is_audit_msg_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -833,9 +884,11 @@ export async function setIdByLblRole(
   };
   
   const [
+    is_audit_msgDict, // 接收审核消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
@@ -906,6 +959,17 @@ export async function setIdByLblRole(
     }
   }
   
+  // 接收审核消息
+  if (isNotEmpty(input.is_audit_msg_lbl) && input.is_audit_msg == null) {
+    const val = is_audit_msgDict.find((itemTmp) => itemTmp.lbl === input.is_audit_msg_lbl)?.val;
+    if (val != null) {
+      input.is_audit_msg = Number(val);
+    }
+  } else if (isEmpty(input.is_audit_msg_lbl) && input.is_audit_msg != null) {
+    const lbl = is_audit_msgDict.find((itemTmp) => itemTmp.val === String(input.is_audit_msg))?.lbl || "";
+    input.is_audit_msg_lbl = lbl;
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -945,6 +1009,8 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
     data_permit_ids_lbl: "数据权限",
     field_permit_ids: "字段权限",
     field_permit_ids_lbl: "字段权限",
+    is_audit_msg: "接收审核消息",
+    is_audit_msg_lbl: "接收审核消息",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1387,9 +1453,9 @@ export async function findByIdsOkRole(
   return models2;
 }
 
-// MARK: existRole
+// MARK: existsRole
 /** 根据搜索条件判断角色是否存在 */
-export async function existRole(
+export async function existsRole(
   search?: Readonly<RoleSearch>,
   options?: {
     is_debug?: boolean;
@@ -1397,7 +1463,7 @@ export async function existRole(
 ): Promise<boolean> {
   
   const table = getTableNameRole();
-  const method = "existRole";
+  const method = "existsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1450,8 +1516,15 @@ export async function existByIdRole(
   const args = new QueryArgs();
   const sql = `select 1 e from base_role t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1558,7 +1631,30 @@ export async function findAutoCodeRole(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  code_seq: number;
+  code: string;
+}>;
+export async function findAutoCodeRole(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  code_seq: number;
+  code: string;
+}[]>;
+export async function findAutoCodeRole(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableNameRole();
   const method = "findAutoCodeRole";
@@ -1573,6 +1669,10 @@ export async function findAutoCodeRole(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOneRole(
@@ -1603,12 +1703,20 @@ export async function findAutoCodeRole(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "JS" + code_seq.toString().padStart(3, "0");
-  
-  return {
-    code_seq,
-    code,
-  };
+
+  const code_seq_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const code_seq_i = code_seq + i;
+    const code_i = "JS" + code_seq_i.toString().padStart(3, "0");
+    code_seq_list.push({
+      code_seq: code_seq_i,
+      code: code_i,
+    });
+  }
+  if (legacyMode) {
+    return code_seq_list[0];
+  }
+  return code_seq_list;
 }
 
 // MARK: createReturnRole
@@ -1789,15 +1897,25 @@ async function _creates(
     return [ ];
   }
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.code == null || input.code === "";
+  }).length;
+  const autoCodes = await findAutoCodeRole(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.code) {
+    if (input.code != null && input.code !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {
       code_seq,
       code,
-    } = await findAutoCodeRole(options);
+    } = autoCode;
     input.code_seq = code_seq;
     input.code = code;
   }
@@ -1860,7 +1978,7 @@ async function _creates(
   await delCacheRole();
   
   const args = new QueryArgs();
-  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,home_url,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,home_url,is_audit_msg,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1975,6 +2093,11 @@ async function _creates(
       }
       if (input.home_url != null) {
         sql += `,${ args.push(input.home_url) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_audit_msg != null) {
+        sql += `,${ args.push(input.is_audit_msg) }`;
       } else {
         sql += ",default";
       }
@@ -2266,12 +2389,7 @@ export async function updateByIdRole(
   const oldModel = await findByIdRole(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 角色 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   {
@@ -2306,6 +2424,12 @@ export async function updateByIdRole(
   if (input.home_url != null) {
     if (input.home_url != oldModel.home_url) {
       sql += `home_url=${ args.push(input.home_url) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_audit_msg != null) {
+    if (input.is_audit_msg != oldModel.is_audit_msg) {
+      sql += `is_audit_msg=${ args.push(input.is_audit_msg) },`;
       updateFldNum++;
     }
   }

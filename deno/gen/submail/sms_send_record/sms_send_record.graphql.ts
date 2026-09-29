@@ -140,6 +140,8 @@ type Query {
   findByIdSmsSendRecord(id: SmsSendRecordId!): SmsSendRecordModel
   "根据 ids 查找短信发送记录"
   findByIdsSmsSendRecord(ids: [SmsSendRecordId!]!): [SmsSendRecordModel]!
+  "根据搜索条件判断短信发送记录是否存在"
+  existsSmsSendRecord(search: SmsSendRecordSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除短信发送记录"

@@ -34,9 +34,9 @@ declare global {
     appkey?: string;
     appkey_like?: string;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 暂停发送 */
-    is_paused?: number[];
+    is_paused?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
