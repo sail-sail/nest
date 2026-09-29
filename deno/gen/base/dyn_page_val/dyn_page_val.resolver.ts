@@ -29,6 +29,15 @@ export async function findCountDynPageVal(
     findCountDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+  
   const num = await findCountDynPageVal(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDynPageVal(
   const {
     findAllDynPageVal,
   } = await import("./dyn_page_val.service.ts");
+  
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
   
   checkSortDynPageVal(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDynPageVal(
     findOneDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+  
   checkSortDynPageVal(sort);
   
   const model = await findOneDynPageVal(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDynPageVal(
     findOneOkDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+  
   checkSortDynPageVal(sort);
   
   const model = await findOneOkDynPageVal(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDynPageVal(
     findByIdDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+  
   const model = await findByIdDynPageVal(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDynPageVal(
   const {
     findByIdOkDynPageVal,
   } = await import("./dyn_page_val.service.ts");
+  
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
   
   const model = await findByIdOkDynPageVal(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsDynPageVal(
     findByIdsDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+  
   const models = await findByIdsDynPageVal(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断动态页面值是否存在
+ */
+export async function existsDynPageVal(
+  search: DynPageValSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDynPageVal,
+  } = await import("./dyn_page_val.service.ts");
+  
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
+
+  return await existsDynPageVal(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkDynPageVal(
   const {
     findByIdsOkDynPageVal,
   } = await import("./dyn_page_val.service.ts");
+  
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
+  await usePermit(
+    getPagePathDynPageVal(),
+    "find",
+  );
   
   const models = await findByIdsOkDynPageVal(ids);
   

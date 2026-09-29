@@ -1008,9 +1008,9 @@ export async function findByIdsOkOptbiz(
   return models2;
 }
 
-// MARK: existOptbiz
+// MARK: existsOptbiz
 /** 根据搜索条件判断业务选项是否存在 */
-export async function existOptbiz(
+export async function existsOptbiz(
   search?: Readonly<OptbizSearch>,
   options?: {
     is_debug?: boolean;
@@ -1018,7 +1018,7 @@ export async function existOptbiz(
 ): Promise<boolean> {
   
   const table = getTableNameOptbiz();
-  const method = "existOptbiz";
+  const method = "existsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1772,7 +1772,7 @@ export async function updateByIdOptbiz(
   const oldModel = await findByIdOptbiz(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

@@ -287,6 +287,8 @@ type Query {
   findByIdUsr(id: UsrId!): UsrModel
   "根据 ids 查找用户"
   findByIdsUsr(ids: [UsrId!]!): [UsrModel]!
+  "根据搜索条件判断用户是否存在"
+  existsUsr(search: UsrSearch): Boolean!
   "查找用户 order_by 字段的最大值"
   findLastOrderByUsr(search: UsrSearch): Int!
 }

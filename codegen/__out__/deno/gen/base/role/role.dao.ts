@@ -1453,9 +1453,9 @@ export async function findByIdsOkRole(
   return models2;
 }
 
-// MARK: existRole
+// MARK: existsRole
 /** 根据搜索条件判断角色是否存在 */
-export async function existRole(
+export async function existsRole(
   search?: Readonly<RoleSearch>,
   options?: {
     is_debug?: boolean;
@@ -1463,7 +1463,7 @@ export async function existRole(
 ): Promise<boolean> {
   
   const table = getTableNameRole();
-  const method = "existRole";
+  const method = "existsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2389,7 +2389,7 @@ export async function updateByIdRole(
   const oldModel = await findByIdRole(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   {

@@ -181,6 +181,8 @@ type Query {
   findByIdMessageReceiver(id: MessageReceiverId!): MessageReceiverModel
   "根据 ids 查找消息接收人"
   findByIdsMessageReceiver(ids: [MessageReceiverId!]!): [MessageReceiverModel]!
+  "根据搜索条件判断消息接收人是否存在"
+  existsMessageReceiver(search: MessageReceiverSearch): Boolean!
 }
 type Mutation {
   "批量创建消息接收人"

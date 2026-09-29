@@ -29,6 +29,15 @@ export async function findCountDictbiz(
     findCountDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+  
   const num = await findCountDictbiz(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDictbiz(
   const {
     findAllDictbiz,
   } = await import("./dictbiz.service.ts");
+  
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
   
   checkSortDictbiz(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDictbiz(
     findOneDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+  
   checkSortDictbiz(sort);
   
   const model = await findOneDictbiz(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDictbiz(
     findOneOkDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+  
   checkSortDictbiz(sort);
   
   const model = await findOneOkDictbiz(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDictbiz(
     findByIdDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+  
   const model = await findByIdDictbiz(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDictbiz(
   const {
     findByIdOkDictbiz,
   } = await import("./dictbiz.service.ts");
+  
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
   
   const model = await findByIdOkDictbiz(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsDictbiz(
     findByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+  
   const models = await findByIdsDictbiz(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断业务字典是否存在
+ */
+export async function existsDictbiz(
+  search: DictbizSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDictbiz,
+  } = await import("./dictbiz.service.ts");
+  
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
+
+  return await existsDictbiz(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkDictbiz(
   const {
     findByIdsOkDictbiz,
   } = await import("./dictbiz.service.ts");
+  
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
+  await usePermit(
+    getPagePathDictbiz(),
+    "find",
+  );
   
   const models = await findByIdsOkDictbiz(ids);
   

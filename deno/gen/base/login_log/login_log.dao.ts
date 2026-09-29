@@ -907,9 +907,9 @@ export async function findByIdsOkLoginLog(
   return models2;
 }
 
-// MARK: existLoginLog
+// MARK: existsLoginLog
 /** 根据搜索条件判断登录日志是否存在 */
-export async function existLoginLog(
+export async function existsLoginLog(
   search?: Readonly<LoginLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -917,7 +917,7 @@ export async function existLoginLog(
 ): Promise<boolean> {
   
   const table = getTableNameLoginLog();
-  const method = "existLoginLog";
+  const method = "existsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1561,7 +1561,7 @@ export async function updateByIdLoginLog(
   const oldModel = await findByIdLoginLog(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

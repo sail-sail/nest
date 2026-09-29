@@ -803,9 +803,9 @@ export async function findByIdsOkFieldPermit(
   return models2;
 }
 
-// MARK: existFieldPermit
+// MARK: existsFieldPermit
 /** 根据搜索条件判断字段权限是否存在 */
-export async function existFieldPermit(
+export async function existsFieldPermit(
   search?: Readonly<FieldPermitSearch>,
   options?: {
     is_debug?: boolean;
@@ -813,7 +813,7 @@ export async function existFieldPermit(
 ): Promise<boolean> {
   
   const table = getTableNameFieldPermit();
-  const method = "existFieldPermit";
+  const method = "existsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1306,7 +1306,7 @@ export async function updateByIdFieldPermit(
   const oldModel = await findByIdFieldPermit(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

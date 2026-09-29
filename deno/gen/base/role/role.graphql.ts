@@ -243,6 +243,8 @@ type Query {
   findByIdRole(id: RoleId!): RoleModel
   "根据 ids 查找角色"
   findByIdsRole(ids: [RoleId!]!): [RoleModel]!
+  "根据搜索条件判断角色是否存在"
+  existsRole(search: RoleSearch): Boolean!
   "查找角色 order_by 字段的最大值"
   findLastOrderByRole(search: RoleSearch): Int!
 }

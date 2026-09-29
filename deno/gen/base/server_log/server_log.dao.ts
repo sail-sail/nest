@@ -823,9 +823,9 @@ export async function findByIdsOkServerLog(
   return models2;
 }
 
-// MARK: existServerLog
+// MARK: existsServerLog
 /** 根据搜索条件判断系统日志是否存在 */
-export async function existServerLog(
+export async function existsServerLog(
   search?: Readonly<ServerLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -833,7 +833,7 @@ export async function existServerLog(
 ): Promise<boolean> {
   
   const table = getTableNameServerLog();
-  const method = "existServerLog";
+  const method = "existsServerLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1285,7 +1285,7 @@ export async function updateByIdServerLog(
   const oldModel = await findByIdServerLog(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

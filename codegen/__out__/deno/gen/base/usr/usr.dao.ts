@@ -1545,9 +1545,9 @@ export async function findByIdsOkUsr(
   return models2;
 }
 
-// MARK: existUsr
+// MARK: existsUsr
 /** 根据搜索条件判断用户是否存在 */
-export async function existUsr(
+export async function existsUsr(
   search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -1555,7 +1555,7 @@ export async function existUsr(
 ): Promise<boolean> {
   
   const table = getTableNameUsr();
-  const method = "existUsr";
+  const method = "existsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2361,7 +2361,7 @@ export async function updateByIdUsr(
   const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

@@ -1014,9 +1014,9 @@ export async function findByIdsOkDictbizDetail(
   return models2;
 }
 
-// MARK: existDictbizDetail
+// MARK: existsDictbizDetail
 /** 根据搜索条件判断业务字典明细是否存在 */
-export async function existDictbizDetail(
+export async function existsDictbizDetail(
   search?: Readonly<DictbizDetailSearch>,
   options?: {
     is_debug?: boolean;
@@ -1024,7 +1024,7 @@ export async function existDictbizDetail(
 ): Promise<boolean> {
   
   const table = getTableNameDictbizDetail();
-  const method = "existDictbizDetail";
+  const method = "existsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1754,7 +1754,7 @@ export async function updateByIdDictbizDetail(
   const oldModel = await findByIdDictbizDetail(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

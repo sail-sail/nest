@@ -1043,9 +1043,9 @@ export async function findByIdsOkDataPermit(
   return models2;
 }
 
-// MARK: existDataPermit
+// MARK: existsDataPermit
 /** 根据搜索条件判断数据权限是否存在 */
-export async function existDataPermit(
+export async function existsDataPermit(
   search?: Readonly<DataPermitSearch>,
   options?: {
     is_debug?: boolean;
@@ -1053,7 +1053,7 @@ export async function existDataPermit(
 ): Promise<boolean> {
   
   const table = getTableNameDataPermit();
-  const method = "existDataPermit";
+  const method = "existsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1749,7 +1749,7 @@ export async function updateByIdDataPermit(
   const oldModel = await findByIdDataPermit(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

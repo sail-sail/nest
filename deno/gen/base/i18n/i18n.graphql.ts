@@ -153,6 +153,8 @@ type Query {
   findByIdI18n(id: I18nId!): I18nModel
   "根据 ids 查找国际化"
   findByIdsI18n(ids: [I18nId!]!): [I18nModel]!
+  "根据搜索条件判断国际化是否存在"
+  existsI18n(search: I18nSearch): Boolean!
 }
 type Mutation {
   "批量创建国际化"

@@ -135,6 +135,8 @@ type Query {
   findByIdLang(id: LangId!): LangModel
   "根据 ids 查找语言"
   findByIdsLang(ids: [LangId!]!): [LangModel]!
+  "根据搜索条件判断语言是否存在"
+  existsLang(search: LangSearch): Boolean!
   "查找语言 order_by 字段的最大值"
   findLastOrderByLang(search: LangSearch): Int!
 }

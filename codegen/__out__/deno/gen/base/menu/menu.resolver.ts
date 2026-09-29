@@ -29,6 +29,15 @@ export async function findCountMenu(
     findCountMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   const num = await findCountMenu(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllMenu(
   const {
     findAllMenu,
   } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   checkSortMenu(sort);
   
@@ -80,6 +98,15 @@ export async function findOneMenu(
     findOneMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   checkSortMenu(sort);
   
   const model = await findOneMenu(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkMenu(
     findOneOkMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   checkSortMenu(sort);
   
   const model = await findOneOkMenu(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdMenu(
     findByIdMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   const model = await findByIdMenu(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkMenu(
   const {
     findByIdOkMenu,
   } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   const model = await findByIdOkMenu(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsMenu(
     findByIdsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+  
   const models = await findByIdsMenu(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断菜单是否存在
+ */
+export async function existsMenu(
+  search: MenuSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMenu,
+  } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
+
+  return await existsMenu(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkMenu(
   const {
     findByIdsOkMenu,
   } = await import("./menu.service.ts");
+  
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
+  await usePermit(
+    getPagePathMenu(),
+    "find",
+  );
   
   const models = await findByIdsOkMenu(ids);
   

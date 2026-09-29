@@ -10,8 +10,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-  validateOptionUsr,
+  findByIdOkUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as messageDao from "./message.dao.ts";
@@ -20,13 +19,11 @@ async function setSearchQuery(
   search: MessageSearch,
 ) {
   
-  const usr_id = await get_usr_id(false);
+  const usr_id = search.auth_usr_id || await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
-  );
+  const usr_model = await findByIdOkUsr(usr_id);
   const org_ids: OrgId[] = [ ];
-  if (org_id) {
+  if (!search.auth_usr_id && org_id) {
     org_ids.push(org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
@@ -165,7 +162,7 @@ export async function findByIdsOkMessage(
 /**
  * 根据搜索条件查找消息是否存在
  */
-export async function existMessage(
+export async function existsMessage(
   search?: MessageSearch,
 ): Promise<boolean> {
   
@@ -173,7 +170,7 @@ export async function existMessage(
   
   await setSearchQuery(search);
   
-  const message_exist = await messageDao.existMessage(search);
+  const message_exist = await messageDao.existsMessage(search);
   
   return message_exist;
 }

@@ -33,9 +33,9 @@ declare global {
     home_url?: string;
     home_url_like?: string;
     /** 接收审核消息 */
-    is_audit_msg?: number[];
+    is_audit_msg?: number[] | null;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建时间 */

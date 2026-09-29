@@ -11,6 +11,18 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 ## 完整类型定义
 `codegen/src/config.ts`
 
+## 地址/经纬度固定规范
+
+如果表有地址字段且需要地图定位，必须同时处理：
+
+- `province_code` / `province_lbl`
+- `city_code` / `city_lbl`
+- `county_code` / `county_lbl`
+- `address`
+- `longitude` / `latitude`
+
+并且在详情页保留通用 `LngLatPickerDialog.vue`，按统一模式添加 “拾取经纬度” 按钮与 `showDialog({ address, longitude, latitude })` 回填逻辑。不要在页面里重复写地图选点代码，不要只保存一个坐标值。
+
 ---
 
 ## 必读：最容易漏掉的规则

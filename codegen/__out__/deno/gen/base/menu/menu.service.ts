@@ -9,7 +9,7 @@ import * as menuDao from "./menu.dao.ts";
 async function setSearchQuery(
   search: MenuSearch,
 ) {
-  if (!search) {
+  if (search.is_hidden == null) {
     search.is_hidden = [ 0 ];
   }
   
@@ -143,7 +143,7 @@ export async function findByIdsOkMenu(
 /**
  * 根据搜索条件查找菜单是否存在
  */
-export async function existMenu(
+export async function existsMenu(
   search?: MenuSearch,
 ): Promise<boolean> {
   
@@ -151,7 +151,7 @@ export async function existMenu(
   
   await setSearchQuery(search);
   
-  const menu_exist = await menuDao.existMenu(search);
+  const menu_exist = await menuDao.existsMenu(search);
   
   return menu_exist;
 }

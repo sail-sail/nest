@@ -1155,9 +1155,9 @@ export async function findByIdsOkMenu(
   return models2;
 }
 
-// MARK: existMenu
+// MARK: existsMenu
 /** 根据搜索条件判断菜单是否存在 */
-export async function existMenu(
+export async function existsMenu(
   search?: Readonly<MenuSearch>,
   options?: {
     is_debug?: boolean;
@@ -1165,7 +1165,7 @@ export async function existMenu(
 ): Promise<boolean> {
   
   const table = getTableNameMenu();
-  const method = "existMenu";
+  const method = "existsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1855,7 +1855,7 @@ export async function updateByIdMenu(
   const oldModel = await findByIdMenu(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

@@ -29,6 +29,15 @@ export async function findCountDict(
     findCountDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+  
   const num = await findCountDict(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDict(
   const {
     findAllDict,
   } = await import("./dict.service.ts");
+  
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
   
   checkSortDict(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDict(
     findOneDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+  
   checkSortDict(sort);
   
   const model = await findOneDict(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDict(
     findOneOkDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+  
   checkSortDict(sort);
   
   const model = await findOneOkDict(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDict(
     findByIdDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+  
   const model = await findByIdDict(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDict(
   const {
     findByIdOkDict,
   } = await import("./dict.service.ts");
+  
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
   
   const model = await findByIdOkDict(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsDict(
     findByIdsDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+  
   const models = await findByIdsDict(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断系统字典是否存在
+ */
+export async function existsDict(
+  search: DictSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDict,
+  } = await import("./dict.service.ts");
+  
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
+
+  return await existsDict(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkDict(
   const {
     findByIdsOkDict,
   } = await import("./dict.service.ts");
+  
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
+  await usePermit(
+    getPagePathDict(),
+    "find",
+  );
   
   const models = await findByIdsOkDict(ids);
   

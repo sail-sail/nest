@@ -168,6 +168,29 @@ export function removeClientTopics(
   }
 }
 
+export function closeAllSocketConnections(
+  message = "server shutdown",
+) {
+  for (const sockets of socketMap.values()) {
+    for (const socket of sockets.values()) {
+      if (
+        socket.readyState === WebSocket.CLOSED ||
+        socket.readyState === WebSocket.CLOSING
+      ) {
+        continue;
+      }
+      try {
+        socket.close(1001, message);
+      } catch (err) {
+        error(err);
+      }
+    }
+  }
+  socketMap.clear();
+  clientIdTopicsMap.clear();
+  topicClientIdsMap.clear();
+}
+
 /** 发布消息 */
 export async function publish<T>(
   topic: string,

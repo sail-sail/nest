@@ -140,7 +140,7 @@ export async function findByIdsOkOperationRecord(
 /**
  * 根据搜索条件查找操作记录是否存在
  */
-export async function existOperationRecord(
+export async function existsOperationRecord(
   search?: OperationRecordSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existOperationRecord(
   
   await setSearchQuery(search);
   
-  const operation_record_exist = await operation_recordDao.existOperationRecord(search);
+  const operation_record_exist = await operation_recordDao.existsOperationRecord(search);
   
   return operation_record_exist;
 }

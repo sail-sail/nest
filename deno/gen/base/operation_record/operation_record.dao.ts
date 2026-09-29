@@ -836,9 +836,9 @@ export async function findByIdsOkOperationRecord(
   return models2;
 }
 
-// MARK: existOperationRecord
+// MARK: existsOperationRecord
 /** 根据搜索条件判断操作记录是否存在 */
-export async function existOperationRecord(
+export async function existsOperationRecord(
   search?: Readonly<OperationRecordSearch>,
   options?: {
     is_debug?: boolean;
@@ -846,7 +846,7 @@ export async function existOperationRecord(
 ): Promise<boolean> {
   
   const table = getTableNameOperationRecord();
-  const method = "existOperationRecord";
+  const method = "existsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1538,7 +1538,7 @@ export async function updateByIdOperationRecord(
   const oldModel = await findByIdOperationRecord(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

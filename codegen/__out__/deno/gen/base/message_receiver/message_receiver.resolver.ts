@@ -29,6 +29,15 @@ export async function findCountMessageReceiver(
     findCountMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+  
   const num = await findCountMessageReceiver(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllMessageReceiver(
   const {
     findAllMessageReceiver,
   } = await import("./message_receiver.service.ts");
+  
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
   
   checkSortMessageReceiver(sort);
   
@@ -80,6 +98,15 @@ export async function findOneMessageReceiver(
     findOneMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+  
   checkSortMessageReceiver(sort);
   
   const model = await findOneMessageReceiver(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkMessageReceiver(
     findOneOkMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+  
   checkSortMessageReceiver(sort);
   
   const model = await findOneOkMessageReceiver(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdMessageReceiver(
     findByIdMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+  
   const model = await findByIdMessageReceiver(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkMessageReceiver(
   const {
     findByIdOkMessageReceiver,
   } = await import("./message_receiver.service.ts");
+  
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
   
   const model = await findByIdOkMessageReceiver(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsMessageReceiver(
     findByIdsMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+  
   const models = await findByIdsMessageReceiver(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断消息接收人是否存在
+ */
+export async function existsMessageReceiver(
+  search: MessageReceiverSearch,
+): Promise<boolean> {
+  
+  const {
+    existsMessageReceiver,
+  } = await import("./message_receiver.service.ts");
+  
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
+
+  return await existsMessageReceiver(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkMessageReceiver(
   const {
     findByIdsOkMessageReceiver,
   } = await import("./message_receiver.service.ts");
+  
+  const {
+    getPagePathMessageReceiver,
+  } = await import("./message_receiver.model.ts");
+  
+  await usePermit(
+    getPagePathMessageReceiver(),
+    "find",
+  );
   
   const models = await findByIdsOkMessageReceiver(ids);
   

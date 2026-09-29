@@ -977,9 +977,9 @@ export async function findByIdsOkOrg(
   return models2;
 }
 
-// MARK: existOrg
+// MARK: existsOrg
 /** 根据搜索条件判断组织是否存在 */
-export async function existOrg(
+export async function existsOrg(
   search?: Readonly<OrgSearch>,
   options?: {
     is_debug?: boolean;
@@ -987,7 +987,7 @@ export async function existOrg(
 ): Promise<boolean> {
   
   const table = getTableNameOrg();
-  const method = "existOrg";
+  const method = "existsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1692,7 +1692,7 @@ export async function updateByIdOrg(
   const oldModel = await findByIdOrg(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

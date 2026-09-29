@@ -1297,9 +1297,9 @@ export async function findByIdsOkDynPageField(
   return models2;
 }
 
-// MARK: existDynPageField
+// MARK: existsDynPageField
 /** 根据搜索条件判断动态页面字段是否存在 */
-export async function existDynPageField(
+export async function existsDynPageField(
   search?: Readonly<DynPageFieldSearch>,
   options?: {
     is_debug?: boolean;
@@ -1307,7 +1307,7 @@ export async function existDynPageField(
 ): Promise<boolean> {
   
   const table = getTableNameDynPageField();
-  const method = "existDynPageField";
+  const method = "existsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2154,7 +2154,7 @@ export async function updateByIdDynPageField(
   const oldModel = await findByIdDynPageField(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

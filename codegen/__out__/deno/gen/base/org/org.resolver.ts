@@ -29,6 +29,15 @@ export async function findCountOrg(
     findCountOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+  
   const num = await findCountOrg(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllOrg(
   const {
     findAllOrg,
   } = await import("./org.service.ts");
+  
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
   
   checkSortOrg(sort);
   
@@ -80,6 +98,15 @@ export async function findOneOrg(
     findOneOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+  
   checkSortOrg(sort);
   
   const model = await findOneOrg(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkOrg(
     findOneOkOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+  
   checkSortOrg(sort);
   
   const model = await findOneOkOrg(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdOrg(
     findByIdOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+  
   const model = await findByIdOrg(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkOrg(
   const {
     findByIdOkOrg,
   } = await import("./org.service.ts");
+  
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
   
   const model = await findByIdOkOrg(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsOrg(
     findByIdsOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+  
   const models = await findByIdsOrg(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断组织是否存在
+ */
+export async function existsOrg(
+  search: OrgSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOrg,
+  } = await import("./org.service.ts");
+  
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
+
+  return await existsOrg(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkOrg(
   const {
     findByIdsOkOrg,
   } = await import("./org.service.ts");
+  
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
+  await usePermit(
+    getPagePathOrg(),
+    "find",
+  );
   
   const models = await findByIdsOkOrg(ids);
   

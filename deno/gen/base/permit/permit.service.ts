@@ -140,7 +140,7 @@ export async function findByIdsOkPermit(
 /**
  * 根据搜索条件查找按钮权限是否存在
  */
-export async function existPermit(
+export async function existsPermit(
   search?: PermitSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existPermit(
   
   await setSearchQuery(search);
   
-  const permit_exist = await permitDao.existPermit(search);
+  const permit_exist = await permitDao.existsPermit(search);
   
   return permit_exist;
 }

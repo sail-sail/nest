@@ -44,8 +44,8 @@
     "@std/io": "jsr:@std/io@0.225.3",
     "@std/log": "jsr:@std/log@0.224.14",
     "@std/path": "jsr:@std/path@1.1.4",
-    "lru-cache": "npm:lru-cache@11.5.2",
-    "mysql2": "npm:mysql2@3.24.2",
+    "lru-cache": "npm:lru-cache@11.5.3",
+    "mysql2": "npm:mysql2@3.24.4",
     "xlsx-handlebars": "jsr:@sail/xlsx-handlebars@0.2.2",
     "docx-handlebars": "jsr:@sail/docx-handlebars@0.3.3",
     "dayjs": "npm:dayjs@1.11.23",
@@ -54,10 +54,10 @@
     "graphql": "npm:graphql@17.0.2",
     "mime": "npm:mime@4.1.0",
     "jose": "jsr:@panva/jose@6.2.3",
-    "mnemonist": "npm:mnemonist@0.40.4",
+    "mnemonist": "npm:mnemonist@0.40.5",
     "redis": "jsr:@db/redis@0.41.2",
     "sqlstring": "npm:sqlstring@2.3.3",
-    "sharp": "npm:sharp@0.35.3",
+    "sharp": "npm:sharp@0.35.4",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.22",
     "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"
   }

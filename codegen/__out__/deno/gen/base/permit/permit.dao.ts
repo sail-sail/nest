@@ -803,9 +803,9 @@ export async function findByIdsOkPermit(
   return models2;
 }
 
-// MARK: existPermit
+// MARK: existsPermit
 /** 根据搜索条件判断按钮权限是否存在 */
-export async function existPermit(
+export async function existsPermit(
   search?: Readonly<PermitSearch>,
   options?: {
     is_debug?: boolean;
@@ -813,7 +813,7 @@ export async function existPermit(
 ): Promise<boolean> {
   
   const table = getTableNamePermit();
-  const method = "existPermit";
+  const method = "existsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1306,7 +1306,7 @@ export async function updateByIdPermit(
   const oldModel = await findByIdPermit(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

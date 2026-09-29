@@ -6,11 +6,11 @@ defineGraphql(appResolver, /* GraphQL */ `
   
 type Query {
   "生成ID主键"
-  generateId(prex: SmolStr): SmolStr!
+  generateId(prex: String): String!
   "检查是否已经登录"
   checkLogin: Boolean!
   "根据 appid 获取 租户ID"
-  getTenantIdByAppid(platform: SmolStr!, appid: SmolStr!): TenantId!
+  getTenantIdByAppid(platform: String!, appid: String!): TenantId!
 }
 type Mutation {
   "清空缓存"

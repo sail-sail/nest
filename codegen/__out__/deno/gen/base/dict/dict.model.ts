@@ -34,7 +34,7 @@ declare global {
   /** 系统字典 */
   interface DictSearch extends DictSearchType {
     /** 数据类型 */
-    type?: DictType[];
+    type?: DictType[] | null;
     /** 可新增 */
     is_add?: number;
     is_add_like?: number;

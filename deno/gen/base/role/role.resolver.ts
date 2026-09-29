@@ -29,6 +29,15 @@ export async function findCountRole(
     findCountRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+  
   const num = await findCountRole(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllRole(
   const {
     findAllRole,
   } = await import("./role.service.ts");
+  
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
   
   checkSortRole(sort);
   
@@ -80,6 +98,15 @@ export async function findOneRole(
     findOneRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+  
   checkSortRole(sort);
   
   const model = await findOneRole(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkRole(
     findOneOkRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+  
   checkSortRole(sort);
   
   const model = await findOneOkRole(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdRole(
     findByIdRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+  
   const model = await findByIdRole(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkRole(
   const {
     findByIdOkRole,
   } = await import("./role.service.ts");
+  
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
   
   const model = await findByIdOkRole(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsRole(
     findByIdsRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+  
   const models = await findByIdsRole(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search: RoleSearch,
+): Promise<boolean> {
+  
+  const {
+    existsRole,
+  } = await import("./role.service.ts");
+  
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
+
+  return await existsRole(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkRole(
   const {
     findByIdsOkRole,
   } = await import("./role.service.ts");
+  
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
+  await usePermit(
+    getPagePathRole(),
+    "find",
+  );
   
   const models = await findByIdsOkRole(ids);
   

@@ -218,6 +218,8 @@ type Query {
   findByIdMessage(id: MessageId!): MessageModel
   "根据 ids 查找消息"
   findByIdsMessage(ids: [MessageId!]!): [MessageModel]!
+  "根据搜索条件判断消息是否存在"
+  existsMessage(search: MessageSearch): Boolean!
 }
 type Mutation {
   "批量创建消息"

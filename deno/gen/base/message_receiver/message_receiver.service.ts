@@ -10,8 +10,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-  validateOptionUsr,
+  findByIdOkUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as message_receiverDao from "./message_receiver.dao.ts";
@@ -20,13 +19,11 @@ async function setSearchQuery(
   search: MessageReceiverSearch,
 ) {
   
-  const usr_id = await get_usr_id(false);
+  const usr_id = search.auth_usr_id || await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
-  );
+  const usr_model = await findByIdOkUsr(usr_id);
   const org_ids: OrgId[] = [ ];
-  if (org_id) {
+  if (!search.auth_usr_id && org_id) {
     org_ids.push(org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
@@ -165,7 +162,7 @@ export async function findByIdsOkMessageReceiver(
 /**
  * 根据搜索条件查找消息接收人是否存在
  */
-export async function existMessageReceiver(
+export async function existsMessageReceiver(
   search?: MessageReceiverSearch,
 ): Promise<boolean> {
   
@@ -173,7 +170,7 @@ export async function existMessageReceiver(
   
   await setSearchQuery(search);
   
-  const message_receiver_exist = await message_receiverDao.existMessageReceiver(search);
+  const message_receiver_exist = await message_receiverDao.existsMessageReceiver(search);
   
   return message_receiver_exist;
 }

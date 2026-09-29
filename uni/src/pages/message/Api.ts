@@ -593,56 +593,6 @@ export async function getListOrg(
   return data;
 }
 
-/**
- * 获取 消息 字段注释
- */
-export async function getFieldCommentsMessage(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsMessage: Query["getFieldCommentsMessage"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsMessage {
-          id,
-          category,
-          category_lbl,
-          channel,
-          channel_lbl,
-          title,
-          content,
-          route_path,
-          route_query,
-          sender_usr_id,
-          sender_usr_id_lbl,
-          is_sys_msg,
-          is_sys_msg_lbl,
-          is_pinned,
-          is_pinned_lbl,
-          org_id,
-          org_id_lbl,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsMessage as MessageFieldComment;
-  
-  return field_comments;
-}
-
 export function getPagePathMessage() {
   return "/base/message";
 }
