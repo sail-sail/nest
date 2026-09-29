@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -343,6 +342,32 @@ export async function findByIdsBaiduApp(
 }
 
 /**
+ * 根据搜索条件判断百度应用是否存在
+ */
+export async function existsBaiduApp(
+  search?: BaiduAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsBaiduApp: Query["existsBaiduApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: BaiduAppSearch) {
+        existsBaiduApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsBaiduApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 百度应用, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkBaiduApp(
@@ -410,7 +435,7 @@ export async function deleteByIdsBaiduApp(
  */
 export async function enableByIdsBaiduApp(
   ids: BaiduAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -438,7 +463,7 @@ export async function enableByIdsBaiduApp(
  */
 export async function lockByIdsBaiduApp(
   ids: BaiduAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -580,23 +605,15 @@ export function useExportExcelBaiduApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: BaiduAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: BaiduAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllBaiduApp(search: $search, page: $page, sort: $sort) {
               ${ baiduAppQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

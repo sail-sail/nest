@@ -115,6 +115,18 @@ export function getScalars() {
       "output": "MenuId",
     },
     
+    // 消息
+    "MessageId": {
+      "input": "MessageId",
+      "output": "MessageId",
+    },
+    
+    // 消息接收人
+    "MessageReceiverId": {
+      "input": "MessageReceiverId",
+      "output": "MessageReceiverId",
+    },
+    
     // 操作记录
     "OperationRecordId": {
       "input": "OperationRecordId",

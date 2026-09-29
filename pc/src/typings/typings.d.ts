@@ -4,6 +4,7 @@ import type {
   AutocompleteFetchSuggestionsCallback as AutocompleteFetchSuggestionsCallback2,
   UploadProps as UploadProps2,
   Sort as Sort2,
+  TableSortOrder as TableSortOrder2,
   TableColumnCtx as TableColumnCtx2,
   FormItemRule as FormItemRule2,
 } from "element-plus";
@@ -24,6 +25,8 @@ declare module 'vue-router' {
 }
 
 declare global {
+  type CustomDialogType = "auto" | "medium" | "large" | "default";
+  
   type PartialNull<T> = { [P in keyof T]?: T[P] | null | undefined; }
   
   type InputMaybe<T> = Maybe<T>;
@@ -45,6 +48,7 @@ declare global {
     label: string;
     sortBy?: string;
     hide?: boolean;
+    forceHide?: boolean;
     width?: string | number;
     minWidth?: string | number;
     align?: "left" | "center" | "right";
@@ -71,6 +75,8 @@ declare global {
   
   interface Sort extends Sort2 {
   }
+  
+  type TableSortOrder = TableSortOrder2;
   
   interface SortableOptions extends SortableOptions2 {
   }

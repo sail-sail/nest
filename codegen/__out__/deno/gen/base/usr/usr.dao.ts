@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -39,10 +40,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deleteObject,
-} from "/lib/oss/oss.dao.ts";
-
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -54,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
   getPassword,
 } from "/lib/auth/auth.dao.ts";
@@ -109,6 +107,15 @@ async function getWhereQuery(
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
+  }
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.lbl like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.username like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.rem like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
   }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
@@ -176,6 +183,9 @@ async function getWhereQuery(
   if (search?.type != null) {
     whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
+  if (search?.is_reject_msg != null) {
+    whereQuery += ` and t.is_reject_msg in (${ args.push(search.is_reject_msg) })`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -195,6 +205,9 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.is_hidden != null) {
+    whereQuery += ` and t.is_hidden in (${ args.push(search.is_hidden) })`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -235,9 +248,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_hidden != null) {
-    whereQuery += ` and t.is_hidden in (${ args.push(search?.is_hidden) })`;
   }
   return whereQuery;
 }
@@ -390,6 +400,17 @@ export async function findCountUsr(
       throw new Error(`search.type.length > ${ ids_limit }`);
     }
   }
+  // 拒收消息
+  if (search && search.is_reject_msg != null) {
+    const len = search.is_reject_msg.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_reject_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -410,6 +431,17 @@ export async function findCountUsr(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 隐藏
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -434,17 +466,6 @@ export async function findCountUsr(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
-  // 隐藏记录
-  if (search && search.is_hidden != null) {
-    const len = search.is_hidden.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
-    }
-  }
   
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
@@ -454,8 +475,15 @@ export async function findCountUsr(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -563,6 +591,17 @@ export async function findAllUsr(
       throw new Error(`search.type.length > ${ ids_limit }`);
     }
   }
+  // 拒收消息
+  if (search && search.is_reject_msg != null) {
+    const len = search.is_reject_msg.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_reject_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -585,6 +624,17 @@ export async function findAllUsr(
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
+  // 隐藏
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -605,17 +655,6 @@ export async function findAllUsr(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 隐藏记录
-  if (search && search.is_hidden != null) {
-    const len = search.is_hidden.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
     }
   }
   
@@ -662,14 +701,19 @@ export async function findAllUsr(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -767,12 +811,16 @@ export async function findAllUsr(
   
   const [
     typeDict, // 类型
+    is_reject_msgDict, // 拒收消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -790,6 +838,16 @@ export async function findAllUsr(
       }
     }
     model.type_lbl = type_lbl || "";
+    
+    // 拒收消息
+    let is_reject_msg_lbl = model.is_reject_msg?.toString() || "";
+    if (model.is_reject_msg != null) {
+      const dictItem = is_reject_msgDict.find((dictItem) => dictItem.val === String(model.is_reject_msg));
+      if (dictItem) {
+        is_reject_msg_lbl = dictItem.lbl;
+      }
+    }
+    model.is_reject_msg_lbl = is_reject_msg_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -810,6 +868,16 @@ export async function findAllUsr(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 隐藏
+    let is_hidden_lbl = model.is_hidden?.toString() || "";
+    if (model.is_hidden != null) {
+      const dictItem = is_hiddenDict.find((dictItem) => dictItem.val === String(model.is_hidden));
+      if (dictItem) {
+        is_hidden_lbl = dictItem.lbl;
+      }
+    }
+    model.is_hidden_lbl = is_hidden_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -853,12 +921,16 @@ export async function setIdByLblUsr(
   
   const [
     typeDict, // 类型
+    is_reject_msgDict, // 拒收消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   // 所属角色
@@ -964,6 +1036,17 @@ export async function setIdByLblUsr(
     input.type_lbl = lbl;
   }
   
+  // 拒收消息
+  if (isNotEmpty(input.is_reject_msg_lbl) && input.is_reject_msg == null) {
+    const val = is_reject_msgDict.find((itemTmp) => itemTmp.lbl === input.is_reject_msg_lbl)?.val;
+    if (val != null) {
+      input.is_reject_msg = Number(val);
+    }
+  } else if (isEmpty(input.is_reject_msg_lbl) && input.is_reject_msg != null) {
+    const lbl = is_reject_msgDict.find((itemTmp) => itemTmp.val === String(input.is_reject_msg))?.lbl || "";
+    input.is_reject_msg_lbl = lbl;
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -985,6 +1068,17 @@ export async function setIdByLblUsr(
     const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
     input.is_enabled_lbl = lbl;
   }
+  
+  // 隐藏
+  if (isNotEmpty(input.is_hidden_lbl) && input.is_hidden == null) {
+    const val = is_hiddenDict.find((itemTmp) => itemTmp.lbl === input.is_hidden_lbl)?.val;
+    if (val != null) {
+      input.is_hidden = Number(val);
+    }
+  } else if (isEmpty(input.is_hidden_lbl) && input.is_hidden != null) {
+    const lbl = is_hiddenDict.find((itemTmp) => itemTmp.val === String(input.is_hidden))?.lbl || "";
+    input.is_hidden_lbl = lbl;
+  }
 }
 
 // MARK: getFieldCommentsUsr
@@ -1005,12 +1099,16 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
     default_org_id_lbl: "默认组织",
     type: "类型",
     type_lbl: "类型",
+    is_reject_msg: "拒收消息",
+    is_reject_msg_lbl: "拒收消息",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
     order_by: "排序",
     rem: "备注",
+    is_hidden: "隐藏",
+    is_hidden_lbl: "隐藏",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -1447,9 +1545,9 @@ export async function findByIdsOkUsr(
   return models2;
 }
 
-// MARK: existUsr
+// MARK: existsUsr
 /** 根据搜索条件判断用户是否存在 */
-export async function existUsr(
+export async function existsUsr(
   search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -1457,7 +1555,7 @@ export async function existUsr(
 ): Promise<boolean> {
   
   const table = getTableNameUsr();
-  const method = "existUsr";
+  const method = "existsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1510,8 +1608,15 @@ export async function existByIdUsr(
   const args = new QueryArgs();
   const sql = `select 1 e from base_usr t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1847,7 +1952,7 @@ async function _creates(
   await delCacheUsr();
   
   const args = new QueryArgs();
-  let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,type,is_locked,is_enabled,order_by,rem,is_hidden)values";
+  let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,type,is_reject_msg,is_locked,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1972,6 +2077,11 @@ async function _creates(
       }
       if (input.type != null) {
         sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_reject_msg != null) {
+        sql += `,${ args.push(input.is_reject_msg) }`;
       } else {
         sql += ",default";
       }
@@ -2251,12 +2361,7 @@ export async function updateByIdUsr(
   const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 用户 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();
@@ -2297,6 +2402,12 @@ export async function updateByIdUsr(
       updateFldNum++;
     }
   }
+  if (input.is_reject_msg != null) {
+    if (input.is_reject_msg != oldModel.is_reject_msg) {
+      sql += `is_reject_msg=${ args.push(input.is_reject_msg) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked=${ args.push(input.is_locked) },`;
@@ -2321,6 +2432,12 @@ export async function updateByIdUsr(
       updateFldNum++;
     }
   }
+  if (input.is_hidden != null) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden=${ args.push(input.is_hidden) },`;
+      updateFldNum++;
+    }
+  }
   if (isNotEmpty(input.create_usr_id_lbl)) {
     sql += `create_usr_id_lbl=?,`;
     args.push(input.create_usr_id_lbl);
@@ -2335,12 +2452,6 @@ export async function updateByIdUsr(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_hidden != null) {
-    if (input.is_hidden != oldModel.is_hidden) {
-      sql += `is_hidden=${ args.push(input.is_hidden) },`;
       updateFldNum++;
     }
   }
@@ -2474,13 +2585,6 @@ export async function updateByIdUsr(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
-  }
-  
-  // 头像
-  if (input.img != null && input.img !== oldModel?.img) {
-    await deleteObject(
-      oldModel?.img,
-    );
   }
   
   return id;
@@ -2993,11 +3097,6 @@ export async function forceDeleteByIdsUsr(
         },
       );
     }
-    
-    // 头像
-    await deleteObject(
-      oldModel?.img,
-    );
   }
   
   await delCacheUsr();

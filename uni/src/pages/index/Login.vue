@@ -103,18 +103,18 @@ import cfg from "@/utils/config";
 import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
-} from "./Api";
+} from "./Api.ts";
 
 import type {
+  GetLoginInfo,
   GetLoginTenants,
   LoginInput,
-} from "@/typings/types";
+} from "#/types.ts";
 
 const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
-// eslint-disable-next-line prefer-const
 let tenants: GetLoginTenants[] = [ ];
 
 const login_input = ref<LoginInput>({
@@ -167,6 +167,8 @@ async function onLogin(
   usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(loginModel.username);
   usrStore.setTenantId(loginModel.tenant_id);
+  usrStore.setLang(loginModel.lang || "");
+  usrStore.setLoginInfo(loginModel as GetLoginInfo);
   if (redirect_action === "navigateBack") {
     await uni.navigateBack();
     return;

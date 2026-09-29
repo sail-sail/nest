@@ -193,6 +193,8 @@ type Query {
   findByIdDynPageField(id: DynPageFieldId!): DynPageFieldModel
   "根据 ids 查找动态页面字段"
   findByIdsDynPageField(ids: [DynPageFieldId!]!): [DynPageFieldModel]!
+  "根据搜索条件判断动态页面字段是否存在"
+  existsDynPageField(search: DynPageFieldSearch): Boolean!
   "查找动态页面字段 order_by 字段的最大值"
   findLastOrderByDynPageField(search: DynPageFieldSearch): Int!
 }

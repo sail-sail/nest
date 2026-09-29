@@ -140,7 +140,7 @@ export async function findByIdsOkBaiduAppToken(
 /**
  * 根据搜索条件查找百度接口凭据是否存在
  */
-export async function existBaiduAppToken(
+export async function existsBaiduAppToken(
   search?: BaiduAppTokenSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existBaiduAppToken(
   
   await setSearchQuery(search);
   
-  const baidu_app_token_exist = await baidu_app_tokenDao.existBaiduAppToken(search);
+  const baidu_app_token_exist = await baidu_app_tokenDao.existsBaiduAppToken(search);
   
   return baidu_app_token_exist;
 }

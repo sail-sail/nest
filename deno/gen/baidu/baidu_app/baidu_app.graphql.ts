@@ -160,6 +160,8 @@ type Query {
   findByIdBaiduApp(id: BaiduAppId!): BaiduAppModel
   "根据 ids 查找百度应用"
   findByIdsBaiduApp(ids: [BaiduAppId!]!): [BaiduAppModel]!
+  "根据搜索条件判断百度应用是否存在"
+  existsBaiduApp(search: BaiduAppSearch): Boolean!
   "查找百度应用 order_by 字段的最大值"
   findLastOrderByBaiduApp(search: BaiduAppSearch): Int!
 }

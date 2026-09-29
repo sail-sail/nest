@@ -14,6 +14,7 @@ declare global {
     _type?: "add";
     /** 图标 */
     img_lbl: string;
+    img_lbls: string[];
   }
   
   /** 图标库 */
@@ -38,8 +39,8 @@ export const iconFields = [
   "id",
   // 图标
   "img",
-  // svg
-  "img_lbl_svg",
+  // 图标
+  "img_lbl",
   // 编码
   "code",
   // 名称

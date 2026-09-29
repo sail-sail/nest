@@ -29,8 +29,14 @@ export async function findCountUsr(
     findCountUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
   
   const num = await findCountUsr(search);
   
@@ -50,8 +56,14 @@ export async function findAllUsr(
     findAllUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
   
   checkSortUsr(sort);
   
@@ -91,8 +103,14 @@ export async function findOneUsr(
     findOneUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
   
   checkSortUsr(sort);
   
@@ -118,8 +136,14 @@ export async function findOneOkUsr(
     findOneOkUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
   
   checkSortUsr(sort);
   
@@ -142,6 +166,15 @@ export async function findByIdUsr(
     findByIdUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
+  
   const model = await findByIdUsr(id);
   
   if (model) {
@@ -163,6 +196,15 @@ export async function findByIdOkUsr(
     findByIdOkUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
+  
   const model = await findByIdOkUsr(id);
   
   // 密码
@@ -182,6 +224,15 @@ export async function findByIdsUsr(
     findByIdsUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
+  
   const models = await findByIdsUsr(ids);
   
   for (const model of models) {
@@ -190,6 +241,29 @@ export async function findByIdsUsr(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断用户是否存在
+ */
+export async function existsUsr(
+  search: UsrSearch,
+): Promise<boolean> {
+  
+  const {
+    existsUsr,
+  } = await import("./usr.service.ts");
+  
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
+
+  return await existsUsr(search);
 }
 
 /**
@@ -202,6 +276,15 @@ export async function findByIdsOkUsr(
   const {
     findByIdsOkUsr,
   } = await import("./usr.service.ts");
+  
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
+  await usePermit(
+    getPagePathUsr(),
+    "find",
+  );
   
   const models = await findByIdsOkUsr(ids);
   
@@ -261,10 +344,9 @@ export async function updateByIdUsr(
   input: UsrInput,
 ): Promise<UsrId> {
   
-  intoInputUsr(input);
-  
   const {
     setIdByLblUsr,
+    validateUsr,
     updateByIdUsr,
   } = await import("./usr.service.ts");
   
@@ -274,7 +356,11 @@ export async function updateByIdUsr(
   
   set_is_tran(true);
   
+  intoInputUsr(input);
+  
   await setIdByLblUsr(input);
+  
+  await validateUsr(input);
   
   await usePermit(
     getPagePathUsr(),

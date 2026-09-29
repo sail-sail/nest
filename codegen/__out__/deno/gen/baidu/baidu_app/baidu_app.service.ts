@@ -140,7 +140,7 @@ export async function findByIdsOkBaiduApp(
 /**
  * 根据搜索条件查找百度应用是否存在
  */
-export async function existBaiduApp(
+export async function existsBaiduApp(
   search?: BaiduAppSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existBaiduApp(
   
   await setSearchQuery(search);
   
-  const baidu_app_exist = await baidu_appDao.existBaiduApp(search);
+  const baidu_app_exist = await baidu_appDao.existsBaiduApp(search);
   
   return baidu_app_exist;
 }

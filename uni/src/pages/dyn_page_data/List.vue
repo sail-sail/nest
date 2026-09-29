@@ -106,7 +106,7 @@
             v-bind="field_model._attrs"
             @update:model-value="(val: any) => {
               search.dyn_page_data = search.dyn_page_data ?? { };
-              search.dyn_page_data[field_model.code + '_like'] = val;
+              (search.dyn_page_data as any)[field_model.code + '_like'] = val;
             }"
             @change="onSearch"
           ></CustomDynComp>
@@ -158,16 +158,19 @@
       (暂无{{ menu_model?.lbl }}数据)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="dyn_page_data_model of dyn_page_data_models_computed"
         :key="dyn_page_data_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -243,6 +246,7 @@
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             
@@ -252,10 +256,16 @@
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} {{ menu_model?.lbl }}数据
     </CustomDivider>
@@ -310,26 +320,33 @@ let pagePath = $ref("");
 let dyn_page_data_ids_selected = $ref<DynPageDataId[]>([ ]);
 let dyn_page_data_id_selected = $ref<DynPageDataId>();
 
-const dyn_page_data_models_key = "dyn_page_data.List.dyn_page_data_models";
 let dyn_page_data_models = $ref<DynPageDataModel[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(dyn_page_data_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblByIdDynPageData(model);
-  }
-  dyn_page_data_models = models;
-})();
 
 type SearchType = {
   ref_code?: string;
   dyn_page_data?: DynPageDataSearch["dyn_page_data"];
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<DynPageDataSearch>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/dyn_page_data/List:search";
-const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
-});
+
+function initSearch() {
+  const search: SearchType = {
+  };
+  return search;
+}
+
+let search = $ref<SearchType>(uni.getStorageSync(searchKey) || initSearch());
 
 type DynPageDataModelComputed = {
   id: DynPageDataId;
@@ -356,6 +373,20 @@ const {
   refreshDynPageFields,
 } = $(useDynPageFields($$(pagePath)));
 
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
+
 function onRadio(
   checked: boolean,
   dyn_page_data_id: DynPageDataId,
@@ -381,6 +412,7 @@ async function onDynPageData(
     return;
   }
   dyn_page_data_id_selected = dyn_page_data_id;
+  
   await uni.navigateTo({
     url: `/pages/dyn_page_data/Detail?dyn_page_data_id=${ encodeURIComponent(dyn_page_data_id) }`,
   });
@@ -391,12 +423,15 @@ async function onAddDynPageData() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/dyn_page_data/Detail",
+    url: `/pages/dyn_page_data/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
 async function onReset() {
-  search.ref_code = undefined;
+  search = initSearch();
   pgOffset = 0;
   await onSearch();
 }
@@ -486,7 +521,10 @@ function getSearchDynPageData() {
     ...search,
     ref_code: pagePath,
   };
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {
@@ -530,10 +568,6 @@ async function onRefresh() {
     const len = dyn_page_data_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: dyn_page_data_models_key,
-      data: dyn_page_data_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -571,10 +605,6 @@ async function onLoadMore() {
     if (!dyn_page_data_models.some((item) => item.id === dyn_page_data_id_selected)) {
       dyn_page_data_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: dyn_page_data_models_key,
-      data: dyn_page_data_models,
-    });
   } finally {
     isLoading = false;
   }

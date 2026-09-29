@@ -87,6 +87,8 @@ type Query {
   findByIdBaiduAppToken(id: BaiduAppTokenId!): BaiduAppTokenModel
   "根据 ids 查找百度接口凭据"
   findByIdsBaiduAppToken(ids: [BaiduAppTokenId!]!): [BaiduAppTokenModel]!
+  "根据搜索条件判断百度接口凭据是否存在"
+  existsBaiduAppToken(search: BaiduAppTokenSearch): Boolean!
 }
 type Mutation {
   "批量创建百度接口凭据"

@@ -29,6 +29,15 @@ export async function findCountBaiduApp(
     findCountBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+  
   const num = await findCountBaiduApp(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllBaiduApp(
   const {
     findAllBaiduApp,
   } = await import("./baidu_app.service.ts");
+  
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
   
   checkSortBaiduApp(sort);
   
@@ -80,6 +98,15 @@ export async function findOneBaiduApp(
     findOneBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+  
   checkSortBaiduApp(sort);
   
   const model = await findOneBaiduApp(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkBaiduApp(
     findOneOkBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+  
   checkSortBaiduApp(sort);
   
   const model = await findOneOkBaiduApp(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdBaiduApp(
     findByIdBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+  
   const model = await findByIdBaiduApp(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkBaiduApp(
   const {
     findByIdOkBaiduApp,
   } = await import("./baidu_app.service.ts");
+  
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
   
   const model = await findByIdOkBaiduApp(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsBaiduApp(
     findByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+  
   const models = await findByIdsBaiduApp(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断百度应用是否存在
+ */
+export async function existsBaiduApp(
+  search: BaiduAppSearch,
+): Promise<boolean> {
+  
+  const {
+    existsBaiduApp,
+  } = await import("./baidu_app.service.ts");
+  
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
+
+  return await existsBaiduApp(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkBaiduApp(
   const {
     findByIdsOkBaiduApp,
   } = await import("./baidu_app.service.ts");
+  
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduApp(),
+    "find",
+  );
   
   const models = await findByIdsOkBaiduApp(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdBaiduApp(
   input: BaiduAppInput,
 ): Promise<BaiduAppId> {
   
-  intoInputBaiduApp(input);
-  
   const {
     setIdByLblBaiduApp,
+    validateBaiduApp,
     updateByIdBaiduApp,
   } = await import("./baidu_app.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdBaiduApp(
   
   set_is_tran(true);
   
+  intoInputBaiduApp(input);
+  
   await setIdByLblBaiduApp(input);
+  
+  await validateBaiduApp(input);
   
   await usePermit(
     getPagePathBaiduApp(),

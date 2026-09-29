@@ -29,6 +29,15 @@ export async function findCountDomain(
     findCountDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+  
   const num = await findCountDomain(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllDomain(
   const {
     findAllDomain,
   } = await import("./domain.service.ts");
+  
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
   
   checkSortDomain(sort);
   
@@ -80,6 +98,15 @@ export async function findOneDomain(
     findOneDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+  
   checkSortDomain(sort);
   
   const model = await findOneDomain(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkDomain(
     findOneOkDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+  
   checkSortDomain(sort);
   
   const model = await findOneOkDomain(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdDomain(
     findByIdDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+  
   const model = await findByIdDomain(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkDomain(
   const {
     findByIdOkDomain,
   } = await import("./domain.service.ts");
+  
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
   
   const model = await findByIdOkDomain(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsDomain(
     findByIdsDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+  
   const models = await findByIdsDomain(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断域名是否存在
+ */
+export async function existsDomain(
+  search: DomainSearch,
+): Promise<boolean> {
+  
+  const {
+    existsDomain,
+  } = await import("./domain.service.ts");
+  
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
+
+  return await existsDomain(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkDomain(
   const {
     findByIdsOkDomain,
   } = await import("./domain.service.ts");
+  
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
+  await usePermit(
+    getPagePathDomain(),
+    "find",
+  );
   
   const models = await findByIdsOkDomain(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdDomain(
   input: DomainInput,
 ): Promise<DomainId> {
   
-  intoInputDomain(input);
-  
   const {
     setIdByLblDomain,
+    validateDomain,
     updateByIdDomain,
   } = await import("./domain.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdDomain(
   
   set_is_tran(true);
   
+  intoInputDomain(input);
+  
   await setIdByLblDomain(input);
+  
+  await validateDomain(input);
   
   await usePermit(
     getPagePathDomain(),

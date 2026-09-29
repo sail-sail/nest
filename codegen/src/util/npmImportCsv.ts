@@ -80,6 +80,9 @@ fileArr.forEach((file, i) => {
 fileArr = fileArr2;
 
 async function exec() {
+  
+  const context = await initContext();
+  
   console.time("csv");
   
   const csvFiles = [
@@ -93,7 +96,12 @@ async function exec() {
         const rows = [ ];
         const stream = parse({ headers: true })
           .on("error", (error) => reject(error))
-          .on("data", (row) => rows.push(row))
+          .on("data", (row) => {
+            if (isEmpty(row.id)) {
+              return;
+            }
+            rows.push(row);
+          })
           .on("end", () => resolve(rows));
         stream.write(str);
         stream.end();
@@ -143,8 +151,6 @@ async function exec() {
       }
     }
   }
-  
-  const context = await initContext();
   for (let i = 0; i < csvFiles.length; i++) {
     const item = csvFiles[i];
     await execCsvFile(context, item);
@@ -156,4 +162,5 @@ async function exec() {
 
 exec().catch((err) => {
   console.error(err);
+  process.exit(0);
 });

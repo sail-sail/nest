@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -50,6 +49,9 @@ export function intoInputMenu(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 隐藏
+    is_hidden: model?.is_hidden,
+    is_hidden_lbl: model?.is_hidden_lbl,
   };
   return input;
 }
@@ -367,6 +369,32 @@ export async function findByIdsMenu(
 }
 
 /**
+ * 根据搜索条件判断菜单是否存在
+ */
+export async function existsMenu(
+  search?: MenuSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMenu: Query["existsMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch) {
+        existsMenu(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMenu;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 菜单, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMenu(
@@ -434,7 +462,7 @@ export async function deleteByIdsMenu(
  */
 export async function enableByIdsMenu(
   ids: MenuId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -581,17 +609,7 @@ export function useDownloadImportTemplateMenu() {
             is_dyn_page_lbl
             order_by
             rem
-          }
-          findAllMenu {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
+            is_hidden_lbl
           }
         }
       `,
@@ -638,24 +656,15 @@ export function useExportExcelMenu() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: MenuSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMenu(search: $search, page: $page, sort: $sort) {
               ${ menuQueryField }
-            }
-            getDict(codes: [
-              "yes_no",
-              "yes_no",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -827,6 +836,7 @@ export async function getDefaultInputMenu() {
     is_dyn_page: 0,
     is_enabled: 1,
     order_by: 1,
+    is_hidden: 0,
   };
   return defaultInput;
 }

@@ -29,6 +29,15 @@ export async function findCountBaiduAppToken(
     findCountBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+  
   const num = await findCountBaiduAppToken(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllBaiduAppToken(
   const {
     findAllBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
+  
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
   
   checkSortBaiduAppToken(sort);
   
@@ -80,6 +98,15 @@ export async function findOneBaiduAppToken(
     findOneBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+  
   checkSortBaiduAppToken(sort);
   
   const model = await findOneBaiduAppToken(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkBaiduAppToken(
     findOneOkBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+  
   checkSortBaiduAppToken(sort);
   
   const model = await findOneOkBaiduAppToken(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdBaiduAppToken(
     findByIdBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+  
   const model = await findByIdBaiduAppToken(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkBaiduAppToken(
   const {
     findByIdOkBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
+  
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
   
   const model = await findByIdOkBaiduAppToken(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsBaiduAppToken(
     findByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+  
   const models = await findByIdsBaiduAppToken(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断百度接口凭据是否存在
+ */
+export async function existsBaiduAppToken(
+  search: BaiduAppTokenSearch,
+): Promise<boolean> {
+  
+  const {
+    existsBaiduAppToken,
+  } = await import("./baidu_app_token.service.ts");
+  
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
+
+  return await existsBaiduAppToken(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkBaiduAppToken(
   const {
     findByIdsOkBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
+  
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathBaiduAppToken(),
+    "find",
+  );
   
   const models = await findByIdsOkBaiduAppToken(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdBaiduAppToken(
   input: BaiduAppTokenInput,
 ): Promise<BaiduAppTokenId> {
   
-  intoInputBaiduAppToken(input);
-  
   const {
     setIdByLblBaiduAppToken,
+    validateBaiduAppToken,
     updateByIdBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdBaiduAppToken(
   
   set_is_tran(true);
   
+  intoInputBaiduAppToken(input);
+  
   await setIdByLblBaiduAppToken(input);
+  
+  await validateBaiduAppToken(input);
   
   await usePermit(
     getPagePathBaiduAppToken(),

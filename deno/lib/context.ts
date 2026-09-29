@@ -693,16 +693,21 @@ export function getNow() {
   return context.reqDate;
 }
 
+export function getCacheEnabled() {
+  const context = useMaybeContext();
+  if (!context) {
+    return false;
+  }
+  return context.cacheEnabled;
+}
+
 export async function getCache(
   cacheKey1: string | undefined,
   cacheKey2: string | undefined,
 // deno-lint-ignore no-explicit-any
 ): Promise<any> {
-  const context = useMaybeContext();
-  if (!context) {
-    return;
-  }
-  if (!context.cacheEnabled) {
+  const cacheEnabled = getCacheEnabled();
+  if (!cacheEnabled) {
     return;
   }
   if (!cacheKey1 || !cacheKey2) {
@@ -784,19 +789,21 @@ export async function commit(conn?: PoolConnection, opt?: { debug?: boolean }): 
   }
 }
 
-export async function close(context: Context) {
-  if (!context) {
-    context = useContext();
-  }
-  if (context.conn) {
-    const conn = context.conn;
-    context.conn = undefined;
+export async function close(context?: Context) {
+  const activeContext = context || useMaybeContext();
+  if (activeContext?.conn) {
+    const conn = activeContext.conn;
+    activeContext.conn = undefined;
     conn.release();
   }
-  for (const pool of mysql2PoolMap.values()) {
+  const pools = Array.from(mysql2PoolMap.values());
+  mysql2PoolMap.clear();
+  for (const pool of pools) {
     await pool?.end();
   }
-  const redisCln = await redisClient();
+  const redisCln = _redisClient;
+  _redisClient = undefined;
+  cache_ECONNREFUSED = false;
   redisCln?.close();
 }
 

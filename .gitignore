@@ -45,6 +45,8 @@ deno.lock
 pnpm-lock.yaml
 codegening.txt
 
+codegen/tmp
+
 publish_cnf.js
 
 /rust/target

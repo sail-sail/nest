@@ -27,6 +27,15 @@ export async function findCountPermit(
     findCountPermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+  
   const num = await findCountPermit(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllPermit(
   const {
     findAllPermit,
   } = await import("./permit.service.ts");
+  
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
   
   checkSortPermit(sort);
   
@@ -78,6 +96,15 @@ export async function findOnePermit(
     findOnePermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+  
   checkSortPermit(sort);
   
   const model = await findOnePermit(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkPermit(
     findOneOkPermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+  
   checkSortPermit(sort);
   
   const model = await findOneOkPermit(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdPermit(
     findByIdPermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+  
   const model = await findByIdPermit(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkPermit(
   const {
     findByIdOkPermit,
   } = await import("./permit.service.ts");
+  
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
   
   const model = await findByIdOkPermit(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsPermit(
     findByIdsPermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+  
   const models = await findByIdsPermit(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断按钮权限是否存在
+ */
+export async function existsPermit(
+  search: PermitSearch,
+): Promise<boolean> {
+  
+  const {
+    existsPermit,
+  } = await import("./permit.service.ts");
+  
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
+
+  return await existsPermit(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkPermit(
   const {
     findByIdsOkPermit,
   } = await import("./permit.service.ts");
+  
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
+  await usePermit(
+    getPagePathPermit(),
+    "find",
+  );
   
   const models = await findByIdsOkPermit(ids);
   
@@ -176,10 +271,9 @@ export async function updateByIdPermit(
   input: PermitInput,
 ): Promise<PermitId> {
   
-  intoInputPermit(input);
-  
   const {
     setIdByLblPermit,
+    validatePermit,
     updateByIdPermit,
   } = await import("./permit.service.ts");
   
@@ -189,7 +283,11 @@ export async function updateByIdPermit(
   
   set_is_tran(true);
   
+  intoInputPermit(input);
+  
   await setIdByLblPermit(input);
+  
+  await validatePermit(input);
   
   await usePermit(
     getPagePathPermit(),

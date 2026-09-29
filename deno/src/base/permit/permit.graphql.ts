@@ -19,7 +19,7 @@ defineGraphql(resolver, /* GraphQL */ `
   
   type Query {
     "根据当前用户获取权限列表"
-    getUsrPermits: [GetUsrPermits!]!
+    getUsrPermits(route_path: String): [GetUsrPermits!]!
   }
   
 `);

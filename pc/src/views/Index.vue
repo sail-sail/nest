@@ -84,16 +84,16 @@ defineOptions({
   name: "首页",
 });
 
-const route = useRoute();
+// const route = useRoute();
 const router = useRouter();
-const usrStore = useUsrStore();
+// const usrStore = useUsrStore();
 const tabStore = useTabsStore();
 
 let inited = $ref(false);
 
-const tabLen = $computed(() => tabStore.tabs.length);
+// const tabLen = $computed(() => tabStore.tabs.length);
 
-let errMsg = $ref("正在加载...");
+// let errMsg = $ref("正在加载...");
 
 let myComponents = $shallowRef<Component[]>([ ]);
 let homeUrls = $shallowRef<string[]>([ ]);
@@ -103,20 +103,24 @@ async function onGetHomeUrls() {
     notLoading: true,
   }) || [ ];
   config.indexIsEmpty = homeUrls.length === 0;
+  if (config.indexIsEmpty) {
+    tabStore.removeIndexTab();
+    router.replace("/empty");
+  }
   myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
 }
 
-async function closeCurrentTab() {
-  tabStore.closeCurrentTab(
-    {
-      path: route.path,
-      query: route.query,
-    },
-    true,
-    router,
-  );
-  await tabStore.refreshTab(route, router);
-}
+// async function closeCurrentTab() {
+//   tabStore.closeCurrentTab(
+//     {
+//       path: route.path,
+//       query: route.query,
+//     },
+//     true,
+//     router,
+//   );
+//   await tabStore.refreshTab(route, router);
+// }
 
 async function initFrame() {
   try {
@@ -124,7 +128,7 @@ async function initFrame() {
     inited = true;
   } catch(err) {
     console.log(err);
-    errMsg = "网络连接失败，请稍检查网络";
+    // errMsg = "网络连接失败，请稍检查网络";
   }
 }
 

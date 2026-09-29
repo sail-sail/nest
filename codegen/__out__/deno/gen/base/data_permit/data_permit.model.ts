@@ -30,7 +30,7 @@ declare global {
   /** 数据权限 */
   interface DataPermitSearch extends DataPermitSearchType {
     /** 类型 */
-    type?: DataPermitType[];
+    type?: DataPermitType[] | null;
     /** 备注 */
     rem?: string;
     rem_like?: string;

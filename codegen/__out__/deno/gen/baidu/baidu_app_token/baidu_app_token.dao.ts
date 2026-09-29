@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -46,6 +47,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -271,8 +273,15 @@ export async function findCountBaiduAppToken(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -389,14 +398,19 @@ export async function findAllBaiduAppToken(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -948,9 +962,9 @@ export async function findByIdsOkBaiduAppToken(
   return models2;
 }
 
-// MARK: existBaiduAppToken
+// MARK: existsBaiduAppToken
 /** 根据搜索条件判断百度接口凭据是否存在 */
-export async function existBaiduAppToken(
+export async function existsBaiduAppToken(
   search?: Readonly<BaiduAppTokenSearch>,
   options?: {
     is_debug?: boolean;
@@ -958,7 +972,7 @@ export async function existBaiduAppToken(
 ): Promise<boolean> {
   
   const table = getTableNameBaiduAppToken();
-  const method = "existBaiduAppToken";
+  const method = "existsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1011,8 +1025,15 @@ export async function existByIdBaiduAppToken(
   const args = new QueryArgs();
   const sql = `select 1 e from baidu_baidu_app_token t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1628,12 +1649,7 @@ export async function updateByIdBaiduAppToken(
   const oldModel = await findByIdBaiduAppToken(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 百度接口凭据 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

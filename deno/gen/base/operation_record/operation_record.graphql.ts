@@ -124,6 +124,8 @@ type Query {
   findByIdOperationRecord(id: OperationRecordId!): OperationRecordModel
   "根据 ids 查找操作记录"
   findByIdsOperationRecord(ids: [OperationRecordId!]!): [OperationRecordModel]!
+  "根据搜索条件判断操作记录是否存在"
+  existsOperationRecord(search: OperationRecordSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除操作记录"
