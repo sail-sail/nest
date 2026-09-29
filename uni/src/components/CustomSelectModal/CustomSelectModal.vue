@@ -301,9 +301,6 @@
                 <view
                   v-if="item.subLabel"
                   un-text="[var(--color-placeholder)]"
-                  :style="{
-                    'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-                  }"
                 >
                   {{ item.subLabel }}
                 </view>

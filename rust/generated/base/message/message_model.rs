@@ -420,6 +420,9 @@ impl std::fmt::Debug for MessageSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    if let Some(ref keyword) = self.keyword {
+      item = item.field("keyword", keyword);
+    }
     // 分类
     if let Some(ref category) = self.category {
       item = item.field("category", category);

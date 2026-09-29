@@ -339,6 +339,9 @@ impl std::fmt::Debug for DictbizSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    if let Some(ref keyword) = self.keyword {
+      item = item.field("keyword", keyword);
+    }
     // 编码
     if let Some(ref code) = self.code {
       item = item.field("code", code);
