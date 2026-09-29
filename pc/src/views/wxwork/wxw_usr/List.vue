@@ -144,7 +144,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -197,7 +199,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -253,7 +255,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -296,7 +300,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -308,7 +312,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -464,6 +468,7 @@
           
           <!-- 企微应用 -->
           <template v-if="'wxw_app_id_lbl' === col.prop && (showBuildIn || builtInSearch?.wxw_app_id == null)">
+            <!-- @vue-generic {WxwUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -473,6 +478,7 @@
           
           <!-- 姓名 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {WxwUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -480,8 +486,9 @@
             </el-table-column>
           </template>
           
-          <!-- 用户ID -->
+          <!-- 企微用户 -->
           <template v-else-if="'userid' === col.prop">
+            <!-- @vue-generic {WxwUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -491,6 +498,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {WxwUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -594,7 +602,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -873,7 +884,7 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "用户ID",
+      label: "企微用户",
       prop: "userid",
       width: 200,
       align: "center",
@@ -892,7 +903,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -906,6 +917,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1005,7 +1040,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxwUsrModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxwUsrModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1050,7 +1089,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1082,7 +1121,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1149,7 +1188,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ "企微应用" ]: "wxw_app_id_lbl",
     [ "姓名" ]: "lbl",
-    [ "用户ID" ]: "userid",
+    [ "企微用户" ]: "userid",
     [ "备注" ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1213,7 +1252,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1262,9 +1301,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxwUsrModel,
-  column: TableColumnCtx<WxwUsrModel>,
+  column: TableColumnCtx<WxwUsrModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1315,7 +1354,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1347,7 +1386,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1379,7 +1418,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1407,10 +1446,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1419,10 +1459,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

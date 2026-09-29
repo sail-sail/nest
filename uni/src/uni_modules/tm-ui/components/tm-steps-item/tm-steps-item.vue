@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, inject, nextTick, onBeforeMount, onBeforeUnmount } from 'vue'
-import { PropsTypes } from './../tm-steps/propsType'
-import { tmStepsItemPropsTypes } from './tmStepsItemPropsTypes'
+import type { PropsTypes } from './../tm-steps/propsType'
+import type { tmStepsItemPropsTypes } from './tmStepsItemPropsTypes'
 import tmSteps from '../tm-steps/tm-steps.vue'
 import { findParentView } from '@/uni_modules/tm-ui/useFun/toolUse'
 import { covetUniNumber } from '../../libs/tool'

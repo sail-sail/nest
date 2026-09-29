@@ -29,6 +29,15 @@ export async function findCountOptions(
     findCountOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+  
   const num = await findCountOptions(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllOptions(
   const {
     findAllOptions,
   } = await import("./options.service.ts");
+  
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
   
   checkSortOptions(sort);
   
@@ -80,6 +98,15 @@ export async function findOneOptions(
     findOneOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+  
   checkSortOptions(sort);
   
   const model = await findOneOptions(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkOptions(
     findOneOkOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+  
   checkSortOptions(sort);
   
   const model = await findOneOkOptions(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdOptions(
     findByIdOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+  
   const model = await findByIdOptions(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkOptions(
   const {
     findByIdOkOptions,
   } = await import("./options.service.ts");
+  
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
   
   const model = await findByIdOkOptions(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsOptions(
     findByIdsOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+  
   const models = await findByIdsOptions(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断系统选项是否存在
+ */
+export async function existsOptions(
+  search: OptionsSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOptions,
+  } = await import("./options.service.ts");
+  
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
+
+  return await existsOptions(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkOptions(
   const {
     findByIdsOkOptions,
   } = await import("./options.service.ts");
+  
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
+  await usePermit(
+    getPagePathOptions(),
+    "find",
+  );
   
   const models = await findByIdsOkOptions(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdOptions(
   input: OptionsInput,
 ): Promise<OptionsId> {
   
-  intoInputOptions(input);
-  
   const {
     setIdByLblOptions,
+    validateOptions,
     updateByIdOptions,
   } = await import("./options.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdOptions(
   
   set_is_tran(true);
   
+  intoInputOptions(input);
+  
   await setIdByLblOptions(input);
+  
+  await validateOptions(input);
   
   await usePermit(
     getPagePathOptions(),

@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -118,6 +117,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_audit_msg == null)">
+          <el-form-item
+            label="接收审核消息"
+            prop="is_audit_msg"
+          >
+            <DictSelect
+              v-model="dialogModel.is_audit_msg"
+              :set="dialogModel.is_audit_msg = dialogModel.is_audit_msg ?? undefined"
+              code="yes_no"
+              placeholder="请选择 接收审核消息"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -196,43 +210,44 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -282,7 +297,10 @@ const {
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -330,6 +348,13 @@ watchEffect(async () => {
         type: "string",
         max: 45,
         message: "名称 长度不能超过 45",
+      },
+    ],
+    // 接收审核消息
+    is_audit_msg: [
+      {
+        required: true,
+        message: "请选择 接收审核消息",
       },
     ],
     // 排序
@@ -417,15 +442,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -713,9 +730,10 @@ watch(
     dialogModel.permit_ids,
     dialogModel.data_permit_ids,
     dialogModel.field_permit_ids,
+    dialogModel.is_audit_msg,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.menu_ids || dialogModel.menu_ids.length === 0) {
@@ -726,6 +744,9 @@ watch(
     }
     if (!dialogModel.field_permit_ids || dialogModel.field_permit_ids.length === 0) {
       dialogModel.field_permit_ids_lbl = [ ];
+    }
+    if (!dialogModel.is_audit_msg) {
+      dialogModel.is_audit_msg_lbl = "";
     }
   },
 );
@@ -746,10 +767,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

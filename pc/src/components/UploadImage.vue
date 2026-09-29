@@ -243,15 +243,11 @@ import type {
 
 import {
   checkImageMaxSize,
-} from "@/utils/image_util";
+} from "@/utils/image_util.ts";
 
 const {
   nsAsync,
 } = useI18n();
-
-import type {
-  InputMaybe,
-} from "#/types";
 
 const emit = defineEmits<
   (e: "update:modelValue", value?: string | null) => void
@@ -259,7 +255,7 @@ const emit = defineEmits<
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: InputMaybe<string>;
+    modelValue?: string | null;
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;

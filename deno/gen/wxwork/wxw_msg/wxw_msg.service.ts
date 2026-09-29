@@ -140,7 +140,7 @@ export async function findByIdsOkWxwMsg(
 /**
  * 根据搜索条件查找企微消息是否存在
  */
-export async function existWxwMsg(
+export async function existsWxwMsg(
   search?: WxwMsgSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxwMsg(
   
   await setSearchQuery(search);
   
-  const wxw_msg_exist = await wxw_msgDao.existWxwMsg(search);
+  const wxw_msg_exist = await wxw_msgDao.existsWxwMsg(search);
   
   return wxw_msg_exist;
 }

@@ -28,7 +28,7 @@ declare global {
   /** 企微应用 */
   interface WxwAppSearch extends WxwAppSearchType {
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

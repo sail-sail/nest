@@ -165,6 +165,8 @@ type Query {
   findByIdDataPermit(id: DataPermitId!): DataPermitModel
   "根据 ids 查找数据权限"
   findByIdsDataPermit(ids: [DataPermitId!]!): [DataPermitModel]!
+  "根据搜索条件判断数据权限是否存在"
+  existsDataPermit(search: DataPermitSearch): Boolean!
 }
 type Mutation {
   "批量创建数据权限"

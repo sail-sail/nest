@@ -30,7 +30,7 @@ declare global {
 export const wxwAppFields = [
   // ID
   "id",
-  // 名称
+  // 应用名称
   "lbl",
   // 企业ID
   "corpid",

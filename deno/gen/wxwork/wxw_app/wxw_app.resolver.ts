@@ -29,6 +29,15 @@ export async function findCountWxwApp(
     findCountWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+  
   const num = await findCountWxwApp(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllWxwApp(
   const {
     findAllWxwApp,
   } = await import("./wxw_app.service.ts");
+  
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
   
   checkSortWxwApp(sort);
   
@@ -80,6 +98,15 @@ export async function findOneWxwApp(
     findOneWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+  
   checkSortWxwApp(sort);
   
   const model = await findOneWxwApp(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkWxwApp(
     findOneOkWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+  
   checkSortWxwApp(sort);
   
   const model = await findOneOkWxwApp(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdWxwApp(
     findByIdWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+  
   const model = await findByIdWxwApp(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkWxwApp(
   const {
     findByIdOkWxwApp,
   } = await import("./wxw_app.service.ts");
+  
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
   
   const model = await findByIdOkWxwApp(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsWxwApp(
     findByIdsWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+  
   const models = await findByIdsWxwApp(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断企微应用是否存在
+ */
+export async function existsWxwApp(
+  search: WxwAppSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxwApp,
+  } = await import("./wxw_app.service.ts");
+  
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
+
+  return await existsWxwApp(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkWxwApp(
   const {
     findByIdsOkWxwApp,
   } = await import("./wxw_app.service.ts");
+  
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
+  await usePermit(
+    getPagePathWxwApp(),
+    "find",
+  );
   
   const models = await findByIdsOkWxwApp(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdWxwApp(
   input: WxwAppInput,
 ): Promise<WxwAppId> {
   
-  intoInputWxwApp(input);
-  
   const {
     setIdByLblWxwApp,
+    validateWxwApp,
     updateByIdWxwApp,
   } = await import("./wxw_app.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdWxwApp(
   
   set_is_tran(true);
   
+  intoInputWxwApp(input);
+  
   await setIdByLblWxwApp(input);
+  
+  await validateWxwApp(input);
   
   await usePermit(
     getPagePathWxwApp(),

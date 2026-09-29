@@ -28,7 +28,7 @@ declare global {
   /** 业务选项 */
   interface OptbizSearch extends OptbizSearchType {
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建时间 */

@@ -33,7 +33,7 @@ declare global {
     /** 应用ID */
     agentid?: string;
     agentid_like?: string;
-    /** 用户ID */
+    /** 企微用户 */
     userid?: string;
     userid_like?: string;
     /** 手机号 */

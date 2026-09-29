@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -337,6 +336,32 @@ export async function findByIdsDomain(
 }
 
 /**
+ * 根据搜索条件判断域名是否存在
+ */
+export async function existsDomain(
+  search?: DomainSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDomain: Query["existsDomain"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DomainSearch) {
+        existsDomain(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDomain;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 域名, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDomain(
@@ -404,7 +429,7 @@ export async function deleteByIdsDomain(
  */
 export async function enableByIdsDomain(
   ids: DomainId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -432,7 +457,7 @@ export async function enableByIdsDomain(
  */
 export async function lockByIdsDomain(
   ids: DomainId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -571,23 +596,15 @@ export function useExportExcelDomain() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: DomainSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDomain(search: $search, page: $page, sort: $sort) {
               ${ domainQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

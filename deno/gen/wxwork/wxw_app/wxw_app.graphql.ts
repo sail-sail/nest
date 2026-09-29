@@ -9,7 +9,7 @@ scalar WxwAppId
 type WxwAppModel {
   "ID"
   id: WxwAppId!
-  "名称"
+  "应用名称"
   lbl: String!
   "企业ID"
   corpid: String!
@@ -41,7 +41,7 @@ type WxwAppModel {
 type WxwAppFieldComment {
   "ID"
   id: String!
-  "名称"
+  "应用名称"
   lbl: String!
   "企业ID"
   corpid: String!
@@ -71,7 +71,7 @@ type WxwAppFieldComment {
 input WxwAppInput {
   "ID"
   id: WxwAppId
-  "名称"
+  "应用名称"
   lbl: String
   "企业ID"
   corpid: String
@@ -105,7 +105,7 @@ input WxwAppSearch {
   ids: [WxwAppId!]
   "ID"
   id: WxwAppId
-  "名称"
+  "应用名称"
   lbl: String
   lbl_like: String
   "企业ID"
@@ -138,6 +138,8 @@ type Query {
   findByIdWxwApp(id: WxwAppId!): WxwAppModel
   "根据 ids 查找企微应用"
   findByIdsWxwApp(ids: [WxwAppId!]!): [WxwAppModel]!
+  "根据搜索条件判断企微应用是否存在"
+  existsWxwApp(search: WxwAppSearch): Boolean!
   "查找企微应用 order_by 字段的最大值"
   findLastOrderByWxwApp(search: WxwAppSearch): Int!
 }

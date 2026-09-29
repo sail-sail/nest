@@ -27,6 +27,15 @@ export async function findCountWxwMsg(
     findCountWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+  
   const num = await findCountWxwMsg(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllWxwMsg(
   const {
     findAllWxwMsg,
   } = await import("./wxw_msg.service.ts");
+  
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
   
   checkSortWxwMsg(sort);
   
@@ -78,6 +96,15 @@ export async function findOneWxwMsg(
     findOneWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+  
   checkSortWxwMsg(sort);
   
   const model = await findOneWxwMsg(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkWxwMsg(
     findOneOkWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+  
   checkSortWxwMsg(sort);
   
   const model = await findOneOkWxwMsg(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdWxwMsg(
     findByIdWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+  
   const model = await findByIdWxwMsg(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkWxwMsg(
   const {
     findByIdOkWxwMsg,
   } = await import("./wxw_msg.service.ts");
+  
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
   
   const model = await findByIdOkWxwMsg(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsWxwMsg(
     findByIdsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+  
   const models = await findByIdsWxwMsg(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断企微消息是否存在
+ */
+export async function existsWxwMsg(
+  search: WxwMsgSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxwMsg,
+  } = await import("./wxw_msg.service.ts");
+  
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
+
+  return await existsWxwMsg(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkWxwMsg(
   const {
     findByIdsOkWxwMsg,
   } = await import("./wxw_msg.service.ts");
+  
+  const {
+    getPagePathWxwMsg,
+  } = await import("./wxw_msg.model.ts");
+  
+  await usePermit(
+    getPagePathWxwMsg(),
+    "find",
+  );
   
   const models = await findByIdsOkWxwMsg(ids);
   

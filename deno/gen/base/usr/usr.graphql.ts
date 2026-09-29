@@ -45,6 +45,10 @@ type UsrModel {
   type: UsrType!
   "类型"
   type_lbl: String!
+  "拒收消息"
+  is_reject_msg: Int!
+  "拒收消息"
+  is_reject_msg_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -57,6 +61,10 @@ type UsrModel {
   order_by: Int!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: Int!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -105,6 +113,10 @@ type UsrFieldComment {
   type: String!
   "类型"
   type_lbl: String!
+  "拒收消息"
+  is_reject_msg: String!
+  "拒收消息"
+  is_reject_msg_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -117,6 +129,10 @@ type UsrFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: String!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -165,6 +181,10 @@ input UsrInput {
   type: UsrType
   "类型"
   type_lbl: String
+  "拒收消息"
+  is_reject_msg: Int
+  "拒收消息"
+  is_reject_msg_lbl: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -177,12 +197,18 @@ input UsrInput {
   order_by: Int
   "备注"
   rem: String
+  "隐藏"
+  is_hidden: Int
+  "隐藏"
+  is_hidden_lbl: String
 }
 input UsrSearch {
   "已删除"
   is_deleted: Int
   "ID列表"
   ids: [UsrId!]
+  ""
+  keyword: String
   "ID"
   id: UsrId
   "名称"
@@ -226,6 +252,11 @@ input UsrSearch {
   default_org_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
+  "隐藏"
+  is_hidden: [Int!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
@@ -256,6 +287,8 @@ type Query {
   findByIdUsr(id: UsrId!): UsrModel
   "根据 ids 查找用户"
   findByIdsUsr(ids: [UsrId!]!): [UsrModel]!
+  "根据搜索条件判断用户是否存在"
+  existsUsr(search: UsrSearch): Boolean!
   "查找用户 order_by 字段的最大值"
   findLastOrderByUsr(search: UsrSearch): Int!
 }

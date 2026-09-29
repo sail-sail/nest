@@ -140,7 +140,7 @@ export async function findByIdsOkWxwApp(
 /**
  * 根据搜索条件查找企微应用是否存在
  */
-export async function existWxwApp(
+export async function existsWxwApp(
   search?: WxwAppSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existWxwApp(
   
   await setSearchQuery(search);
   
-  const wxw_app_exist = await wxw_appDao.existWxwApp(search);
+  const wxw_app_exist = await wxw_appDao.existsWxwApp(search);
   
   return wxw_app_exist;
 }

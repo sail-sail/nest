@@ -32,8 +32,10 @@ declare global {
     /** 首页 */
     home_url?: string;
     home_url_like?: string;
+    /** 接收审核消息 */
+    is_audit_msg?: number[] | null;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建时间 */
@@ -85,6 +87,8 @@ declare global {
 
 /** 角色 前端允许排序的字段 */
 export const canSortInApiRole = {
+  // 编码
+  "code": true,
   // 排序
   "order_by": true,
   // 创建时间

@@ -1,10 +1,10 @@
 
-export async function getUsrPermits() {
+export async function getUsrPermits(route_path?: string) {
   const {
-    getUsrPermits,
+    getUsrPermits: getUsrPermitsService,
   } = await import("./permit.service.ts");
   
-  const data = await getUsrPermits();
+  const data = await getUsrPermitsService(route_path);
   
   return data;
 }

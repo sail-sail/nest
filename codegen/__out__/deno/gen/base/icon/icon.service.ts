@@ -140,7 +140,7 @@ export async function findByIdsOkIcon(
 /**
  * 根据搜索条件查找图标库是否存在
  */
-export async function existIcon(
+export async function existsIcon(
   search?: IconSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existIcon(
   
   await setSearchQuery(search);
   
-  const icon_exist = await iconDao.existIcon(search);
+  const icon_exist = await iconDao.existsIcon(search);
   
   return icon_exist;
 }

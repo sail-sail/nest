@@ -5,7 +5,7 @@ import type {
 
 /** 小程序升级检测 */
 export function appCheckUpgrade() {
-  const updateManager = uni.getUpdateManager();
+  const updateManager = uni.getUpdateManager?.();
   
   if (!updateManager) {
     return;
@@ -17,15 +17,6 @@ export function appCheckUpgrade() {
   });
 
   updateManager.onUpdateReady(async function (res) {
-    // const {
-    //   confirm,
-    // } = await uni.showModal({
-    //   title: "更新提示",
-    //   content: "新版本已经准备好，是否重启应用？",
-    // });
-    // if (confirm) {
-    //   updateManager.applyUpdate();
-    // }
     updateManager.applyUpdate();
   });
 
@@ -174,3 +165,17 @@ export function list2tree<
   treeFn("", treeData);
   return treeData as T[];
 }
+
+export function formatTimeRange(
+  range: [string | null, string | null],
+): [string | null, string | null] {
+  if (!range || !Array.isArray(range)) {
+    return [null, null];
+  }
+  const [start, end] = range;
+	return [
+		start ? dayjs(start).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+		end ? dayjs(end).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+	];
+}
+

@@ -374,7 +374,7 @@ export async function findByIdsOkTenant(
 /**
  * 根据搜索条件查找租户是否存在
  */
-export async function existTenant(
+export async function existsTenant(
   search?: TenantSearch,
 ): Promise<boolean> {
   
@@ -382,7 +382,7 @@ export async function existTenant(
   
   await setSearchQuery(search);
   
-  const tenant_exist = await tenantDao.existTenant(search);
+  const tenant_exist = await tenantDao.existsTenant(search);
   
   return tenant_exist;
 }

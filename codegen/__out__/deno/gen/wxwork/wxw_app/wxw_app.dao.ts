@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -50,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -318,8 +320,15 @@ export async function findCountWxwApp(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -465,14 +474,19 @@ export async function findAllWxwApp(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -634,7 +648,7 @@ export async function setIdByLblWxwApp(
 export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
   const field_comments: WxwAppFieldComment = {
     id: "ID",
-    lbl: "名称",
+    lbl: "应用名称",
     corpid: "企业ID",
     agentid: "应用ID",
     domain_id: "可信域名",
@@ -1110,9 +1124,9 @@ export async function findByIdsOkWxwApp(
   return models2;
 }
 
-// MARK: existWxwApp
+// MARK: existsWxwApp
 /** 根据搜索条件判断企微应用是否存在 */
-export async function existWxwApp(
+export async function existsWxwApp(
   search?: Readonly<WxwAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -1120,7 +1134,7 @@ export async function existWxwApp(
 ): Promise<boolean> {
   
   const table = getTableNameWxwApp();
-  const method = "existWxwApp";
+  const method = "existsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1173,8 +1187,15 @@ export async function existByIdWxwApp(
   const args = new QueryArgs();
   const sql = `select 1 e from wxwork_wxw_app t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1231,7 +1252,7 @@ export async function validateWxwApp(
     fieldComments.id,
   );
   
-  // 名称
+  // 应用名称
   await validators.chars_max_length(
     input.lbl,
     45,
@@ -1865,12 +1886,7 @@ export async function updateByIdWxwApp(
   const oldModel = await findByIdWxwApp(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 企微应用 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

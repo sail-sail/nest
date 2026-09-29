@@ -27,6 +27,15 @@ export async function findCountOperationRecord(
     findCountOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+  
   const num = await findCountOperationRecord(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllOperationRecord(
   const {
     findAllOperationRecord,
   } = await import("./operation_record.service.ts");
+  
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
   
   checkSortOperationRecord(sort);
   
@@ -78,6 +96,15 @@ export async function findOneOperationRecord(
     findOneOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+  
   checkSortOperationRecord(sort);
   
   const model = await findOneOperationRecord(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkOperationRecord(
     findOneOkOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+  
   checkSortOperationRecord(sort);
   
   const model = await findOneOkOperationRecord(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdOperationRecord(
     findByIdOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+  
   const model = await findByIdOperationRecord(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkOperationRecord(
   const {
     findByIdOkOperationRecord,
   } = await import("./operation_record.service.ts");
+  
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
   
   const model = await findByIdOkOperationRecord(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsOperationRecord(
     findByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+  
   const models = await findByIdsOperationRecord(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断操作记录是否存在
+ */
+export async function existsOperationRecord(
+  search: OperationRecordSearch,
+): Promise<boolean> {
+  
+  const {
+    existsOperationRecord,
+  } = await import("./operation_record.service.ts");
+  
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
+
+  return await existsOperationRecord(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkOperationRecord(
   const {
     findByIdsOkOperationRecord,
   } = await import("./operation_record.service.ts");
+  
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
+  await usePermit(
+    getPagePathOperationRecord(),
+    "find",
+  );
   
   const models = await findByIdsOkOperationRecord(ids);
   

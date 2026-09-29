@@ -163,6 +163,8 @@ type Query {
   findByIdWxwAppToken(id: WxwAppTokenId!): WxwAppTokenModel
   "根据 ids 查找企微应用接口凭据"
   findByIdsWxwAppToken(ids: [WxwAppTokenId!]!): [WxwAppTokenModel]!
+  "根据搜索条件判断企微应用接口凭据是否存在"
+  existsWxwAppToken(search: WxwAppTokenSearch): Boolean!
 }
 type Mutation {
   "批量创建企微应用接口凭据"

@@ -115,6 +115,8 @@ type Query {
   findByIdWxwMsg(id: WxwMsgId!): WxwMsgModel
   "根据 ids 查找企微消息"
   findByIdsWxwMsg(ids: [WxwMsgId!]!): [WxwMsgModel]!
+  "根据搜索条件判断企微消息是否存在"
+  existsWxwMsg(search: WxwMsgSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除企微消息"

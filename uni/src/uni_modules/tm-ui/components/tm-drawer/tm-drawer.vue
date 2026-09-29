@@ -688,6 +688,112 @@ export default {
 			<!-- #ifdef H5 -->
 		</teleport>
 		<!-- #endif -->
+		<!-- #ifdef H5 -->
+		<template
+		  v-else
+		>
+			<view @click="onClickOverflowy" @touchmove="maskerMove" v-if="showOverlay" :id="id" ref="tmDrawerWrap"
+				class="tmDrawerWrap tmDrawerWrapDisableTeleport" :class="[
+					status == 'open' ? 'tmModalWrap_on' : 'tmModalWrap_off',
+					(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidthWrapDir' : '',
+					'tmDrawerWrap_' + _position
+					, props.customClass
+				]" :style="[{
+					width: '100%',
+					top: (windtop + 'px'),
+					height: __height,
+					zIndex: zIndex,
+					'transition-timing-function': _animationFun
+				}, _customStyle]">
+
+				<view @click.stop="" ref="tmDrawerWrapContent" class="tmDrawerWrapContent" :class="[
+					(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidth' : '',
+					'tmDrawerWrapContent_' + _position + (status == 'open' ? '_on' : ''),
+					tantiaoTrue ? 'tmModalWrapContent_Tantiao' : ''
+				]" :id="wrapId" :style="{
+					width: _position == 'left' || _position == 'right' ? _size : '100%',
+					height: _position == 'left' || _position == 'right' ? '100%' : _size,
+					borderRadius: _round,
+					maxHeight: _maxHeight != '' ? _maxHeight : '100%',
+					minHeight:_size == 'auto'?'350rpx':'0px',
+					'transition-timing-function': _animationFun,
+					backgroundColor: _bgColor
+				}">
+
+					<view v-if="_showClose" class="tmDrawerXclose">
+						<tm-icon  @click="closeAlert" color="#dcdcdc" size="52"
+							name="close-circle-fill"></tm-icon>
+					</view>
+					<view>
+						<view v-if="_showTitle" class="tmDrawerTitleBox">
+							<!-- 
+							标题插槽
+							@slot {Boolean} show - 当前是否已显示
+							-->
+							<slot name="title" :show="show">
+								<text
+									:style="{ fontSize: _titleFontSize, color: _isDark ? 'white' : 'black', opacity: '0.64' }"
+									class="tmDrawertitleBox">{{ _title }}</text>
+							</slot>
+						</view>
+					</view>
+
+					<view v-if="!disabledScroll && _size != 'auto'" style="flex: 1;" class="tmModalWrapBoxContent">
+						<scroll-view style="height:100%;position:absolute;width:100%;" :scroll-y="true"
+							:rebound="false">
+							<!-- <view :style="{ padding: `0px ${_contentMargin}  0px ${_contentMargin}` }"> -->
+								<!--
+								@slot 默认插槽
+								-->
+								<slot></slot>
+							<!-- </view> -->
+						</scroll-view>
+					</view>
+					<template v-else
+					>
+						<!--
+						@slot 默认插槽
+						-->
+						<slot></slot>
+					</template>
+
+
+					<view v-if="showFooter && lazyShowModal" class="tmDrawerFooter"
+						:style="{ backgroundColor: _bgColor }">
+						<view :style="{ height: _contentMargin }"></view>
+
+						<!--
+						@slot 底部操作栏
+						-->
+						<slot name="footer">
+							<view
+								un-gap="x-sm"
+								style="flex-direction: row;align-items: center;justify-content: center;display:flex;">
+								<view
+									un-flex="[1_0_0]"
+									un-overflow="hidden"
+									
+								>
+									<tm-button :loading="isLoading" @click="cancelEvt" v-if="_showCancel" block
+										skin="thin" style="width: 100%">{{ _cancelText }}</tm-button>
+								</view>
+								<view
+									un-flex="[1_0_0]"
+									un-overflow="hidden"
+								>
+									<tm-button :loading="isLoading" @click="confirmEvt" style="width: 100%" block>{{
+										_confirmText
+										}}</tm-button>
+								</view>
+							</view>
+						</slot>
+						<view :style="{ height: (safeFooterHeight||20) + 'px' }"></view>
+					</view>
+				</view>
+
+			</view>
+		</template>
+		<!-- #endif -->
 	</view>
 </template>
 <style lang="scss" scoped>
@@ -871,5 +977,9 @@ export default {
 	height: 100vh;
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 9999;
+}
+
+.tmDrawerWrapDisableTeleport {
+	position: absolute;
 }
 </style>

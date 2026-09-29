@@ -140,7 +140,7 @@ export async function findByIdsOkDynPageVal(
 /**
  * 根据搜索条件查找动态页面值是否存在
  */
-export async function existDynPageVal(
+export async function existsDynPageVal(
   search?: DynPageValSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDynPageVal(
   
   await setSearchQuery(search);
   
-  const dyn_page_val_exist = await dyn_page_valDao.existDynPageVal(search);
+  const dyn_page_val_exist = await dyn_page_valDao.existsDynPageVal(search);
   
   return dyn_page_val_exist;
 }

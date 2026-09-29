@@ -140,7 +140,7 @@ export async function findByIdsOkDomain(
 /**
  * 根据搜索条件查找域名是否存在
  */
-export async function existDomain(
+export async function existsDomain(
   search?: DomainSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDomain(
   
   await setSearchQuery(search);
   
-  const domain_exist = await domainDao.existDomain(search);
+  const domain_exist = await domainDao.existsDomain(search);
   
   return domain_exist;
 }

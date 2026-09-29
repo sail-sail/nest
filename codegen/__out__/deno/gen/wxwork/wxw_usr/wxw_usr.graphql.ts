@@ -15,7 +15,7 @@ type WxwUsrModel {
   wxw_app_id_lbl: String!
   "姓名"
   lbl: String!
-  "用户ID"
+  "企微用户"
   userid: String!
   "备注"
   rem: String!
@@ -31,7 +31,7 @@ type WxwUsrFieldComment {
   wxw_app_id_lbl: String!
   "姓名"
   lbl: String!
-  "用户ID"
+  "企微用户"
   userid: String!
   "备注"
   rem: String!
@@ -45,7 +45,7 @@ input WxwUsrInput {
   wxw_app_id_lbl: String
   "姓名"
   lbl: String
-  "用户ID"
+  "企微用户"
   userid: String
   "备注"
   rem: String
@@ -82,6 +82,8 @@ type Query {
   findByIdWxwUsr(id: WxwUsrId!): WxwUsrModel
   "根据 ids 查找企微用户"
   findByIdsWxwUsr(ids: [WxwUsrId!]!): [WxwUsrModel]!
+  "根据搜索条件判断企微用户是否存在"
+  existsWxwUsr(search: WxwUsrSearch): Boolean!
 }
 type Mutation {
   "批量创建企微用户"

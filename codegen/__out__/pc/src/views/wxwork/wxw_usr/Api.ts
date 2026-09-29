@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -33,7 +32,7 @@ export function intoInputWxwUsr(
     wxw_app_id_lbl: model?.wxw_app_id_lbl,
     // 姓名
     lbl: model?.lbl,
-    // 用户ID
+    // 企微用户
     userid: model?.userid,
     // 备注
     rem: model?.rem,
@@ -332,6 +331,32 @@ export async function findByIdsWxwUsr(
 }
 
 /**
+ * 根据搜索条件判断企微用户是否存在
+ */
+export async function existsWxwUsr(
+  search?: WxwUsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxwUsr: Query["existsWxwUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwUsrSearch) {
+        existsWxwUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxwUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 企微用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxwUsr(
@@ -511,10 +536,6 @@ export function useDownloadImportTemplateWxwUsr() {
             userid
             rem
           }
-          findAllWxwApp {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -560,19 +581,15 @@ export function useExportExcelWxwUsr() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxwUsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxwUsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxwUsr(search: $search, page: $page, sort: $sort) {
               ${ wxwUsrQueryField }
-            }
-            findAllWxwApp {
-              lbl
             }
           }
         `,

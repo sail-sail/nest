@@ -8,24 +8,45 @@
   un-p="4"
   un-box-border
 >
-  <view
-    un-flex="[1_0_0]"
-    un-overflow-hidden
-    un-b="0 b-1 solid gray-200"
-    un-h="1"
-  ></view>
-  <view
-    un-text="gray-300"
-  >
-    <slot>
-      到底部了
-    </slot>
-  </view>
-  <view
-    un-flex="[1_0_0]"
-    un-overflow-hidden
-    un-b="0 b-1 solid gray-200"
-    un-h="1"
-  ></view>
+  <template v-if="showText">
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+      un-b="0 b-1 solid gray-200"
+      un-h="1"
+    ></view>
+    <view
+      un-text="gray-300"
+    >
+      <slot>
+        到底部了
+      </slot>
+    </view>
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+      un-b="0 b-1 solid gray-200"
+      un-h="1"
+    ></view>
+  </template>
+  
+  <template v-else>
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+      un-b="0 b-1 solid gray-200"
+      un-h="1"
+    ></view>
+  </template>
+  
 </view>
 </template>
+
+<script setup lang="ts">
+const props = defineProps({
+  showText: {
+    type: Boolean,
+    default: true
+  }
+})
+</script>

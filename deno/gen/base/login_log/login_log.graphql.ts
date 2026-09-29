@@ -107,6 +107,8 @@ type Query {
   findByIdLoginLog(id: LoginLogId!): LoginLogModel
   "根据 ids 查找登录日志"
   findByIdsLoginLog(ids: [LoginLogId!]!): [LoginLogModel]!
+  "根据搜索条件判断登录日志是否存在"
+  existsLoginLog(search: LoginLogSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除登录日志"

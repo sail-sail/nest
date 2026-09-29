@@ -3,16 +3,20 @@ import type {
 } from "/gen/types.ts"
 
 import {
+  getCacheEnabled,
+  delCache,
+  execute,
+  QueryArgs,
+} from "/lib/context.ts";
+
+import {
+  createToken,
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-} from "/gen/base/usr/usr.dao.ts";
-
-import {
-  createToken,
-} from "/lib/auth/auth.dao.ts";
+  getOrgIdsById,
+} from "/src/base/usr/usr.dao.ts";
 
 import {
   ns,
@@ -33,13 +37,21 @@ export async function orgLoginSelect(
     return "";
   }
   if (org_id) {
-    const usr_model = await findByIdUsr(authModel.id);
-    const org_ids = usr_model?.org_ids || [ ];
+    const org_ids = await getOrgIdsById(
+      authModel.id,
+      authModel.tenant_id,
+    );
     if (!org_ids.includes(org_id)) {
       throw await ns("无权限切换到该组织");
     }
   }
   authModel.org_id = org_id;
+  const args = new QueryArgs();
+  const sql = `update base_usr set default_org_id=${ args.push(org_id) } where id=${ args.push(authModel.id) } and tenant_id=${ args.push(authModel.tenant_id) } and is_deleted=0`;
+  await execute(sql, args);
+  if (getCacheEnabled()) {
+    await delCache("dao.sql.base_usr");
+  }
   // authModel.exp = undefined;
   const { authorization } = await createToken(authModel);
   return authorization;

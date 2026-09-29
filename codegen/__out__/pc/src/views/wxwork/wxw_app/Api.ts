@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -28,7 +27,7 @@ export function intoInputWxwApp(
   const input: WxwAppInput = {
     // ID
     id: model?.id,
-    // 名称
+    // 应用名称
     lbl: model?.lbl,
     // 企业ID
     corpid: model?.corpid,
@@ -346,6 +345,32 @@ export async function findByIdsWxwApp(
 }
 
 /**
+ * 根据搜索条件判断企微应用是否存在
+ */
+export async function existsWxwApp(
+  search?: WxwAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxwApp: Query["existsWxwApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwAppSearch) {
+        existsWxwApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxwApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 企微应用, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxwApp(
@@ -413,7 +438,7 @@ export async function deleteByIdsWxwApp(
  */
 export async function enableByIdsWxwApp(
   ids: WxwAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -441,7 +466,7 @@ export async function enableByIdsWxwApp(
  */
 export async function lockByIdsWxwApp(
   ids: WxwAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -585,10 +610,6 @@ export function useDownloadImportTemplateWxwApp() {
             order_by
             rem
           }
-          findAllDomain {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -634,26 +655,15 @@ export function useExportExcelWxwApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: WxwAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxwApp(search: $search, page: $page, sort: $sort) {
               ${ wxwAppQueryField }
-            }
-            findAllDomain {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

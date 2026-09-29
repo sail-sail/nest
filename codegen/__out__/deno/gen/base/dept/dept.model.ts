@@ -27,8 +27,9 @@ declare global {
   
   /** 部门 */
   interface DeptSearch extends DeptSearchType {
+    auth_usr_id?: UsrId | null;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

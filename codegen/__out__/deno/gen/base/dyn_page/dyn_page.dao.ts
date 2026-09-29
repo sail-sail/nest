@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -50,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -282,8 +284,15 @@ export async function findCountDynPage(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -385,8 +394,8 @@ export async function findAllDynPage(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "order_by",
-    order: SortOrderEnum.Asc,
+    prop: "code",
+    order: SortOrderEnum.Desc,
   });
   
   if (!sort.some((item) => item.prop === "create_time")) {
@@ -406,14 +415,19 @@ export async function findAllDynPage(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -978,9 +992,9 @@ export async function findByIdsOkDynPage(
   return models2;
 }
 
-// MARK: existDynPage
+// MARK: existsDynPage
 /** 根据搜索条件判断动态页面是否存在 */
-export async function existDynPage(
+export async function existsDynPage(
   search?: Readonly<DynPageSearch>,
   options?: {
     is_debug?: boolean;
@@ -988,7 +1002,7 @@ export async function existDynPage(
 ): Promise<boolean> {
   
   const table = getTableNameDynPage();
-  const method = "existDynPage";
+  const method = "existsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1041,8 +1055,15 @@ export async function existByIdDynPage(
   const args = new QueryArgs();
   const sql = `select 1 e from base_dyn_page t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1142,7 +1163,30 @@ export async function findAutoCodeDynPage(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  code_seq: number;
+  code: string;
+}>;
+export async function findAutoCodeDynPage(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  code_seq: number;
+  code: string;
+}[]>;
+export async function findAutoCodeDynPage(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableNameDynPage();
   const method = "findAutoCodeDynPage";
@@ -1157,6 +1201,10 @@ export async function findAutoCodeDynPage(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOneDynPage(
@@ -1187,12 +1235,20 @@ export async function findAutoCodeDynPage(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "/dyn/pg" + code_seq.toString();
-  
-  return {
-    code_seq,
-    code,
-  };
+
+  const code_seq_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const code_seq_i = code_seq + i;
+    const code_i = "/dyn/pg" + code_seq_i.toString();
+    code_seq_list.push({
+      code_seq: code_seq_i,
+      code: code_i,
+    });
+  }
+  if (legacyMode) {
+    return code_seq_list[0];
+  }
+  return code_seq_list;
 }
 
 // MARK: createReturnDynPage
@@ -1373,15 +1429,25 @@ async function _creates(
     return [ ];
   }
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.code == null || input.code === "";
+  }).length;
+  const autoCodes = await findAutoCodeDynPage(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.code) {
+    if (input.code != null && input.code !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {
       code_seq,
       code,
-    } = await findAutoCodeDynPage(options);
+    } = autoCode;
     input.code_seq = code_seq;
     input.code = code;
   }
@@ -1784,12 +1850,7 @@ export async function updateByIdDynPage(
   const oldModel = await findByIdDynPage(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 动态页面 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

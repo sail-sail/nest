@@ -29,6 +29,15 @@ export async function findCountWxwAppToken(
     findCountWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+  
   const num = await findCountWxwAppToken(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllWxwAppToken(
   const {
     findAllWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
+  
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
   
   checkSortWxwAppToken(sort);
   
@@ -80,6 +98,15 @@ export async function findOneWxwAppToken(
     findOneWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+  
   checkSortWxwAppToken(sort);
   
   const model = await findOneWxwAppToken(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkWxwAppToken(
     findOneOkWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+  
   checkSortWxwAppToken(sort);
   
   const model = await findOneOkWxwAppToken(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdWxwAppToken(
     findByIdWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+  
   const model = await findByIdWxwAppToken(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkWxwAppToken(
   const {
     findByIdOkWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
+  
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
   
   const model = await findByIdOkWxwAppToken(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsWxwAppToken(
     findByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+  
   const models = await findByIdsWxwAppToken(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断企微应用接口凭据是否存在
+ */
+export async function existsWxwAppToken(
+  search: WxwAppTokenSearch,
+): Promise<boolean> {
+  
+  const {
+    existsWxwAppToken,
+  } = await import("./wxw_app_token.service.ts");
+  
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
+
+  return await existsWxwAppToken(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkWxwAppToken(
   const {
     findByIdsOkWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
+  
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
+  await usePermit(
+    getPagePathWxwAppToken(),
+    "find",
+  );
   
   const models = await findByIdsOkWxwAppToken(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdWxwAppToken(
   input: WxwAppTokenInput,
 ): Promise<WxwAppTokenId> {
   
-  intoInputWxwAppToken(input);
-  
   const {
     setIdByLblWxwAppToken,
+    validateWxwAppToken,
     updateByIdWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdWxwAppToken(
   
   set_is_tran(true);
   
+  intoInputWxwAppToken(input);
+  
   await setIdByLblWxwAppToken(input);
+  
+  await validateWxwAppToken(input);
   
   await usePermit(
     getPagePathWxwAppToken(),

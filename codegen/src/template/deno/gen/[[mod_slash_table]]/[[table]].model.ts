@@ -4,7 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+/* const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden"); */
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -42,8 +42,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const data_type = column.DATA_TYPE;
   const column_comment = column.COLUMN_COMMENT;
@@ -253,6 +252,11 @@ declare global {
   
   /** <#=table_comment#> */
   interface <#=searchName#> extends <#=searchName#>Type {<#
+    if (opts.filterDataByCreateUsr || hasOrgId || !!opts?.audit) {
+    #>
+    auth_usr_id?: UsrId | null;<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -282,9 +286,6 @@ declare global {
         continue;
       }
       if (column_name === 'is_deleted') {
-        continue;
-      }
-      if (column_name === 'is_hidden') {
         continue;
       }
       if (column_name === 'id') {
@@ -336,7 +337,7 @@ declare global {
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_<#=foreignKey.lbl#>?: string[];
+    <#=column_name#>_<#=foreignKey.lbl#>?: string[] | null;
     /** <#=column_comment#> */
     <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       }
@@ -362,7 +363,7 @@ declare global {
         }
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=enumColumnName#>[];<#
+    <#=column_name#>?: <#=enumColumnName#>[] | null;<#
       } else if (column_name === "id") {
     #>
     /** ID */
@@ -394,11 +395,6 @@ declare global {
     #>
     tenant_id?: TenantId | null;<#
     }
-    #><#
-    if (hasIsHidden) {
-    #>
-    is_hidden?: (0|1)[];<#
-    }
     #>
   }
 
@@ -414,7 +410,6 @@ declare global {
         "update_usr_id",
         "update_time",
         "tenant_id",
-        "is_hidden",
       ].includes(column_name)) continue;
       let is_nullable = column.IS_NULLABLE === "YES";
       let data_type = column.DATA_TYPE;
@@ -561,11 +556,6 @@ declare global {
     #>
     tenant_id: TenantId;<#
     }
-    #><#
-    if (hasIsHidden) {
-    #>
-    is_hidden: 0|1;<#
-    }
     #>
   }
 
@@ -581,7 +571,6 @@ declare global {
         "update_usr_id",
         "update_time",
         "tenant_id",
-        "is_hidden",
       ].includes(column_name)) continue;
       let data_type = column.DATA_TYPE;
       const column_comment = column.COLUMN_COMMENT;
@@ -749,11 +738,6 @@ declare global {
     #>
     tenant_id?: TenantId | null;<#
     }
-    #><#
-    if (hasIsHidden) {
-    #>
-    is_hidden?: 0|1|null;<#
-    }
     #>
   }
 
@@ -844,7 +828,6 @@ export async function fieldPermitInput<#=Table_Up#>(
         "update_usr_id",
         "update_time",
         "tenant_id",
-        "is_hidden",
         "is_deleted",
         "is_sys",
       ].includes(column_name)) continue;
@@ -965,7 +948,6 @@ export async function fieldPermitModel<#=Table_Up#>(
         "update_usr_id",
         "update_time",
         "tenant_id",
-        "is_hidden",
         "is_deleted",
         "is_sys",
       ].includes(column_name)) continue;

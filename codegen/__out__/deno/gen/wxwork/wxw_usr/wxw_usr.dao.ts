@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -46,6 +47,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -333,8 +335,15 @@ export async function findCountWxwUsr(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -451,14 +460,19 @@ export async function findAllWxwUsr(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -561,7 +575,7 @@ export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
     wxw_app_id: "企微应用",
     wxw_app_id_lbl: "企微应用",
     lbl: "姓名",
-    userid: "用户ID",
+    userid: "企微用户",
     rem: "备注",
   };
   
@@ -1003,9 +1017,9 @@ export async function findByIdsOkWxwUsr(
   return models2;
 }
 
-// MARK: existWxwUsr
+// MARK: existsWxwUsr
 /** 根据搜索条件判断企微用户是否存在 */
-export async function existWxwUsr(
+export async function existsWxwUsr(
   search?: Readonly<WxwUsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -1013,7 +1027,7 @@ export async function existWxwUsr(
 ): Promise<boolean> {
   
   const table = getTableNameWxwUsr();
-  const method = "existWxwUsr";
+  const method = "existsWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1066,8 +1080,15 @@ export async function existByIdWxwUsr(
   const args = new QueryArgs();
   const sql = `select 1 e from wxwork_wxw_usr t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1128,7 +1149,7 @@ export async function validateWxwUsr(
     fieldComments.lbl,
   );
   
-  // 用户ID
+  // 企微用户
   await validators.chars_max_length(
     input.userid,
     64,
@@ -1752,12 +1773,7 @@ export async function updateByIdWxwUsr(
   const oldModel = await findByIdWxwUsr(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 企微用户 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

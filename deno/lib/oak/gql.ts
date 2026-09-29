@@ -39,10 +39,6 @@ import {
 
 const gqlRouter = new Router();
 
-declare global {
-  type SmolStr = string;
-}
-
 const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
 scalar JSONObject
@@ -55,7 +51,7 @@ scalar Date
 scalar Decimal
 scalar BigDecimal
 scalar Uuid
-scalar SmolStr
+scalar String
 "分页输入"
 input PageInput {
   pgOffset: Int

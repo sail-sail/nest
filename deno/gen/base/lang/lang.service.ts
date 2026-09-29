@@ -140,7 +140,7 @@ export async function findByIdsOkLang(
 /**
  * 根据搜索条件查找语言是否存在
  */
-export async function existLang(
+export async function existsLang(
   search?: LangSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existLang(
   
   await setSearchQuery(search);
   
-  const lang_exist = await langDao.existLang(search);
+  const lang_exist = await langDao.existsLang(search);
   
   return lang_exist;
 }

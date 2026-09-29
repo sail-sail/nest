@@ -155,6 +155,8 @@ type Query {
   findByIdDictbizDetail(id: DictbizDetailId!): DictbizDetailModel
   "根据 ids 查找业务字典明细"
   findByIdsDictbizDetail(ids: [DictbizDetailId!]!): [DictbizDetailModel]!
+  "根据搜索条件判断业务字典明细是否存在"
+  existsDictbizDetail(search: DictbizDetailSearch): Boolean!
   "查找业务字典明细 order_by 字段的最大值"
   findLastOrderByDictbizDetail(search: DictbizDetailSearch): Int!
 }

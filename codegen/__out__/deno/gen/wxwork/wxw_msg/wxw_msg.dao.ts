@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -433,7 +434,6 @@ export async function findAllWxwMsg(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -958,9 +958,9 @@ export async function findByIdsOkWxwMsg(
   return models2;
 }
 
-// MARK: existWxwMsg
+// MARK: existsWxwMsg
 /** 根据搜索条件判断企微消息是否存在 */
-export async function existWxwMsg(
+export async function existsWxwMsg(
   search?: Readonly<WxwMsgSearch>,
   options?: {
     is_debug?: boolean;
@@ -968,7 +968,7 @@ export async function existWxwMsg(
 ): Promise<boolean> {
   
   const table = getTableNameWxwMsg();
-  const method = "existWxwMsg";
+  const method = "existsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1672,12 +1672,7 @@ export async function updateByIdWxwMsg(
   const oldModel = await findByIdWxwMsg(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 企微消息 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

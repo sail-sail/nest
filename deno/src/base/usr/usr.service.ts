@@ -1,3 +1,5 @@
+import "/gen/base/usr/usr.model.ts";
+
 import {
   isEmpty,
 } from "/lib/util/string_util.ts";
@@ -165,6 +167,15 @@ export async function login(
     });
   }
   const usr_id = usr_model.id;
+  const usr_info_model = await findByIdUsr(
+    usr_id,
+    {
+      is_debug: false,
+    },
+  );
+  if (!usr_info_model) {
+    throw new ServiceException(await ns("用户不存在"), "user_not_found", false);
+  }
   // if (org_id === null) {
   //   org_id = undefined;
   // }
@@ -187,6 +198,36 @@ export async function login(
     tenant_id,
     lang,
   });
+  const role_ids = usr_info_model.role_ids || [ ];
+  const role_models = await findByIdsRole(
+    role_ids,
+    {
+      is_debug: false,
+    },
+  );
+  const role_codes = role_models
+    .map((item) => item.code);
+
+  const org_ids = usr_info_model.org_ids || [ ];
+  const orgModels = await findAllOrg(
+    undefined,
+    undefined,
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
+  const org_id_models: { id: OrgId, lbl: string }[] = [ ];
+  for (let i = 0; i < orgModels.length; i++) {
+    const orgModel = orgModels[i];
+    if (org_ids.includes(orgModel.id)) {
+      org_id_models.push({
+        id: orgModel.id,
+        lbl: orgModel.lbl,
+      });
+    }
+  }
+
   return {
     usr_id,
     username,
@@ -194,6 +235,9 @@ export async function login(
     authorization,
     org_id,
     lang,
+    lbl: usr_info_model.lbl,
+    role_codes,
+    org_id_models,
   };
 }
 
