@@ -67,7 +67,6 @@
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
     "pinia": "3.0.4",
-    "pinia-plugin-unistorage": "0.1.2",
     "vue": "3.5.43",
     "vue-demi": "0.14.10"
   },
