@@ -147,6 +147,8 @@ type Query {
   findByIdJob(id: JobId!): JobModel
   "根据 ids 查找任务"
   findByIdsJob(ids: [JobId!]!): [JobModel]!
+  "根据搜索条件判断任务是否存在"
+  existsJob(search: JobSearch): Boolean!
   "查找任务 order_by 字段的最大值"
   findLastOrderByJob(search: JobSearch): Int!
 }

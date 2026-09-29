@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -48,6 +47,9 @@ export function intoInputCronJob(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 所属组织
+    org_id: model?.org_id,
+    org_id_lbl: model?.org_id_lbl,
   };
   return input;
 }
@@ -343,6 +345,32 @@ export async function findByIdsCronJob(
 }
 
 /**
+ * 根据搜索条件判断定时任务是否存在
+ */
+export async function existsCronJob(
+  search?: CronJobSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsCronJob: Query["existsCronJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: CronJobSearch) {
+        existsCronJob(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsCronJob;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 定时任务, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkCronJob(
@@ -410,7 +438,7 @@ export async function deleteByIdsCronJob(
  */
 export async function enableByIdsCronJob(
   ids: CronJobId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -438,7 +466,7 @@ export async function enableByIdsCronJob(
  */
 export async function lockByIdsCronJob(
   ids: CronJobId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -559,6 +587,52 @@ export async function getListJob() {
   return data;
 }
 
+export async function findAllOrg(
+  search?: OrgSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllOrg: OrgModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const org_models = data.findAllOrg;
+  return org_models;
+}
+
+export async function getListOrg() {
+  const data = await findAllOrg(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 定时任务 导入模板
  */
@@ -579,16 +653,7 @@ export function useDownloadImportTemplateCronJob() {
             timezone_lbl
             order_by
             rem
-          }
-          findAllJob {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "cron_job_timezone",
-          ]) {
-            code
-            lbl
+            org_id_lbl
           }
         }
       `,
@@ -635,27 +700,15 @@ export function useExportExcelCronJob() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: CronJobSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: CronJobSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllCronJob(search: $search, page: $page, sort: $sort) {
               ${ cronJobQueryField }
-            }
-            findAllJob {
-              lbl
-            }
-            getDict(codes: [
-              "cron_job_timezone",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -803,6 +856,8 @@ export async function getFieldCommentsCronJob(
           update_usr_id_lbl,
           update_time,
           update_time_lbl,
+          org_id,
+          org_id_lbl,
         }
       }
     `,
@@ -821,11 +876,13 @@ export function getPagePathCronJob() {
 
 /** 新增时的默认值 */
 export async function getDefaultInputCronJob() {
+  const usrStore = useUsrStore();
   const defaultInput: CronJobInput = {
     timezone: "Asia/Shanghai",
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    org_id: usrStore.loginInfo?.org_id,
   };
   return defaultInput;
 }

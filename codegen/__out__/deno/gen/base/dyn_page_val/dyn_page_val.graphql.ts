@@ -123,6 +123,8 @@ type Query {
   findByIdDynPageVal(id: DynPageValId!): DynPageValModel
   "根据 ids 查找动态页面值"
   findByIdsDynPageVal(ids: [DynPageValId!]!): [DynPageValModel]!
+  "根据搜索条件判断动态页面值是否存在"
+  existsDynPageVal(search: DynPageValSearch): Boolean!
 }
 type Mutation {
   "批量创建动态页面值"

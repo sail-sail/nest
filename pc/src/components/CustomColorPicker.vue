@@ -51,9 +51,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  ColorPickerProps,
-} from "element-plus";
 
 const props = withDefaults(
   defineProps<{

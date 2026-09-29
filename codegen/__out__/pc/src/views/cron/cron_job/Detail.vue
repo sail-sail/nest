@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -98,6 +97,7 @@
             <CustomSelect
               v-model="dialogModel.job_id"
               :method="getListJob"
+              dirty-key="任务"
               :find-by-values="findByIdsJob"
               :options-map="((item: JobModel) => {
                 return {
@@ -173,6 +173,30 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+          <el-form-item
+            label="所属组织"
+            prop="org_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.org_id"
+              v-model:model-label="dialogModel.org_id_lbl"
+              :method="getListOrg"
+              dirty-key="组织"
+              :find-by-values="findByIdsOrg"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 所属组织"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
       </el-form>
     </div>
     <div
@@ -220,43 +244,44 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -283,11 +308,16 @@ import {
 
 import {
   getListJob,
+  getListOrg,
 } from "./Api.ts";
 
 import {
   findByIdsJob,
 } from "@/views/cron/job/Api.ts";
+
+import {
+  findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";
@@ -305,7 +335,10 @@ const pagePath = getPagePathCronJob();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -382,6 +415,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请输入 排序",
+      },
+    ],
+    // 所属组织
+    org_id: [
+      {
+        required: true,
+        message: "请选择 所属组织",
       },
     ],
   };
@@ -462,15 +502,7 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
   });
   dialogAction = action || "add";
   nextTick(() => formRef?.clearValidate());
@@ -604,7 +636,7 @@ const cron_lbl = $computed(() => {
 watch(
   () => [ inited, job_lbl, cron_lbl ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!job_lbl || !cron_lbl) {
@@ -787,9 +819,10 @@ watch(
   () => [
     dialogModel.job_id,
     dialogModel.timezone,
+    dialogModel.org_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.job_id) {
@@ -797,6 +830,9 @@ watch(
     }
     if (!dialogModel.timezone) {
       dialogModel.timezone_lbl = "";
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );
@@ -817,10 +853,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

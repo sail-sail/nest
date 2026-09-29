@@ -140,7 +140,7 @@ export async function findByIdsOkDataPermit(
 /**
  * 根据搜索条件查找数据权限是否存在
  */
-export async function existDataPermit(
+export async function existsDataPermit(
   search?: DataPermitSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDataPermit(
   
   await setSearchQuery(search);
   
-  const data_permit_exist = await data_permitDao.existDataPermit(search);
+  const data_permit_exist = await data_permitDao.existsDataPermit(search);
   
   return data_permit_exist;
 }

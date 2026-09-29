@@ -27,15 +27,16 @@ declare global {
   
   /** 定时任务 */
   interface CronJobSearch extends CronJobSearchType {
+    auth_usr_id?: UsrId | null;
     /** 序号 */
     seq?: [(number|undefined|null), (number|undefined|null)];
     /** Cron表达式 */
     cron?: string;
     cron_like?: string;
     /** 时区 */
-    timezone?: string[];
+    timezone?: string[] | null;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

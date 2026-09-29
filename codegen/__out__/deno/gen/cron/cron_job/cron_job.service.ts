@@ -4,11 +4,33 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  get_usr_id,
+  get_org_id,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findByIdOkUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as cron_jobDao from "./cron_job.dao.ts";
 
 async function setSearchQuery(
-  _search: CronJobSearch,
+  search: CronJobSearch,
 ) {
+  
+  const usr_id = search.auth_usr_id || await get_usr_id(false);
+  const org_id = await get_org_id();
+  const usr_model = await findByIdOkUsr(usr_id);
+  const org_ids: OrgId[] = [ ];
+  if (!search.auth_usr_id && org_id) {
+    org_ids.push(org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  
+  search.org_id = org_ids;
   
 }
 
@@ -140,7 +162,7 @@ export async function findByIdsOkCronJob(
 /**
  * 根据搜索条件查找定时任务是否存在
  */
-export async function existCronJob(
+export async function existsCronJob(
   search?: CronJobSearch,
 ): Promise<boolean> {
   
@@ -148,7 +170,7 @@ export async function existCronJob(
   
   await setSearchQuery(search);
   
-  const cron_job_exist = await cron_jobDao.existCronJob(search);
+  const cron_job_exist = await cron_jobDao.existsCronJob(search);
   
   return cron_job_exist;
 }

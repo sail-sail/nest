@@ -44,6 +44,7 @@ import * as validators from "/lib/validators/mod.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -361,7 +362,6 @@ export async function findAllCronJobLogDetail(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -818,9 +818,9 @@ export async function findByIdsOkCronJobLogDetail(
   return models2;
 }
 
-// MARK: existCronJobLogDetail
+// MARK: existsCronJobLogDetail
 /** 根据搜索条件判断定时任务日志明细是否存在 */
-export async function existCronJobLogDetail(
+export async function existsCronJobLogDetail(
   search?: Readonly<CronJobLogDetailSearch>,
   options?: {
     is_debug?: boolean;
@@ -828,7 +828,7 @@ export async function existCronJobLogDetail(
 ): Promise<boolean> {
   
   const table = getTableNameCronJobLogDetail();
-  const method = "existCronJobLogDetail";
+  const method = "existsCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1455,12 +1455,7 @@ export async function updateByIdCronJobLogDetail(
   const oldModel = await findByIdCronJobLogDetail(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 定时任务日志明细 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

@@ -95,9 +95,17 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.bpm_status_field;
+const bpmStatusFieldUp = bpmStatusField
+  ? bpmStatusField.split("_").map((item) => item.substring(0, 1).toUpperCase() + item.substring(1)).join("")
+  : "";
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -105,9 +113,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -167,7 +175,6 @@ for (let i = 0; i < columns.length; i++) {
   @keydown.page-up="onPageUp"<#
   if (opts?.noAdd !== true || opts?.noEdit !== true) {
   #>
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"<#
   }
   #>
@@ -354,7 +361,7 @@ for (let i = 0; i < columns.length; i++) {
           if (fieldPermit || !isVirtual || vIfStr) {
         #> v-if="<#
           if (fieldPermit) {
-        #>field_permit('<#=column_name#>') && <#
+        #>fieldPermit('<#=column_name#>') && <#
           }
         #><#
           if (!isVirtual) {
@@ -383,8 +390,11 @@ for (let i = 0; i < columns.length; i++) {
             }
             #><#
             if (
-              (column.isTextarea && detailFormCols > 1) ||
-              (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              column.isSpanFull !== false &&
+              (
+                (column.isTextarea && detailFormCols > 1) ||
+                (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              )
             ) {
             #>
             un-grid="col-span-full"<#
@@ -505,6 +515,7 @@ for (let i = 0; i < columns.length; i++) {
               :method="getList<#=Foreign_Table_Up#>"<#
               }
               #>
+              dirty-key="<#=foreignSchema.opts.table_comment#>"
               :find-by-values="findByIds<#=Foreign_Table_Up#>"
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
@@ -1424,6 +1435,11 @@ for (let i = 0; i < columns.length; i++) {
             const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
             const table = inlineForeignTab.table;
             const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+            const TableUp = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const modelName = TableUp + "Model";
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
@@ -1443,13 +1459,13 @@ for (let i = 0; i < columns.length; i++) {
           >
             <el-table
               ref="<#=inline_column_name#>Ref"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="<#=inline_column_name#>Data"
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {<#=modelName#>} -->
               <el-table-column
                 prop="_seq"<#
                 if (isUseI18n) {
@@ -1469,7 +1485,6 @@ for (let i = 0; i < columns.length; i++) {
                 if (column.ignoreCodegen) continue;
                 if (column.onlyCodegenDeno) continue;
                 if (column.noDetail) continue;
-                if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
                 if (column_name === "is_deleted") continue;
@@ -1477,6 +1492,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
+                if (column_name === "org_id") continue;
                 const data_type = column.DATA_TYPE;
                 let column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
@@ -1544,7 +1560,26 @@ for (let i = 0; i < columns.length; i++) {
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
-                    if (column.isImg) {
+                    if (column.isIcon) {
+                    #>
+                    <CustomIcon
+                      v-model="row.<#=column_name#>"
+                      v-model:model-label="row.<#=column_name#>_lbl"<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #>
+                      :page-inited="inited"
+                    ></CustomIcon><#
+                    } else if (column.isImg) {
                     #>
                     <UploadImage
                       v-model="row.<#=column_name#>"
@@ -1579,7 +1614,7 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly<#
                         if (hasIsSys && opts.sys_fields?.includes(column_name)) {
-                        #> || !!dialogModel.is_sys<#
+                        #> || !!row.is_sys<#
                         }
                         #>"<#
                       }
@@ -1588,6 +1623,43 @@ for (let i = 0; i < columns.length; i++) {
                       :item-height="48"
                       un-justify="center"
                     ></UploadImage><#
+                    } else if (column.isAtt) {
+                    #>
+                    <LinkAtt
+                      v-model="row.<#=column_name#>"<#
+                      if (column.attMaxSize > 1) {
+                      #>
+                      :max-size="<#=column.attMaxSize#>"<#
+                      }
+                      #><#
+                      if (column.maxFileSize) {
+                      #>
+                      :maxFileSize="<#=column.maxFileSize#>"<#
+                      }
+                      #><#
+                      if (column.attAccept) {
+                      #>
+                      accept="<#=column.attAccept#>"<#
+                      }
+                      #><#
+                      if (column.isPublicAtt) {
+                      #>
+                      :is-public="true"<#
+                      } else {
+                      #>
+                      :is-public="false"<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #>
+                      un-m="l-1"
+                    ></LinkAtt><#
                     } else if (
                       foreignKey
                       && (foreignKey.selectType === "select" || foreignKey.selectType == null)
@@ -1607,6 +1679,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -2191,6 +2264,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               
+              <!-- @vue-generic {<#=modelName#> & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&
@@ -2346,6 +2420,7 @@ for (let i = 0; i < columns.length; i++) {
                   if (column_name === "is_deleted") continue;
                   if (column_name === "version") continue;
                   if (column_name === "tenant_id") continue;
+                  if (column_name === "org_id") continue;
                   const data_type = column.DATA_TYPE;
                   const column_type = column.COLUMN_TYPE || "";
                   const column_comment = column.COLUMN_COMMENT || "";
@@ -2396,8 +2471,11 @@ for (let i = 0; i < columns.length; i++) {
                   #>
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
-                    (column.isTextarea && detailFormCols > 1) ||
-                    (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    column.isSpanFull !== false &&
+                    (
+                      (column.isTextarea && detailFormCols > 1) ||
+                      (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    )
                   ) {
                   #>
                   un-grid="col-span-full"<#
@@ -2495,6 +2573,7 @@ for (let i = 0; i < columns.length; i++) {
                     :method="getList<#=Foreign_Table_Up#>"<#
                     }
                     #>
+                    dirty-key="<#=foreignSchema.opts.table_comment#>"
                     :find-by-values="findByIds<#=Foreign_Table_Up#>"
                     :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                       return {
@@ -3207,6 +3286,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (many2many.column2 !== column_name) {
               #>
               
+              <!-- @vue-generic {<#=foreignTableUp#>Model} -->
               <el-table-column<#
                 if (column.noAdd === true) {
                 #>
@@ -3248,6 +3328,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -3868,6 +3949,30 @@ for (let i = 0; i < columns.length; i++) {
       </el-button><#
       }
       #><#
+      if (hasBpm && !opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        :disabled="is_form_hydrating"
+        @click="onSaveAndStart"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存并提交') }}</span><#
+        } else {
+        #>
+        <span>保存并提交</span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
       if (!opts.noEdit) {
       #>
       
@@ -3901,10 +4006,45 @@ for (let i = 0; i < columns.length; i++) {
       
       <template
         v-if="dialogAction === 'audit' && !isLocked"
-      >
+      ><#
+        if (opts?.audit?.hasReverse) {
+        #>
+
+        <el-button
+          v-if="permit('audit_reverse', '反审核') &&
+            (
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+              if (hasReviewed) {
+              #> ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+              }
+              #>
+            )
+          "
+          plain
+          type="warning"
+          @click="onAuditReverse"
+        >
+          <template #icon>
+            <ElIcon>
+              <div un-i="iconfont-undo"></div>
+            </ElIcon>
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('反审核') }}</span><#
+          } else {
+          #>
+          <span>反审核</span><#
+          }
+          #>
+        </el-button><#
+        }
+        #>
         
         <el-button
-          v-if="permit('audit_reject') &&
+          v-if="permit('audit_reject', '审核拒绝') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -3925,7 +4065,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_submit') &&
+          v-if="permit('audit_submit', '审核提交') &&
             (
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
@@ -3949,7 +4089,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -3972,7 +4112,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -3995,7 +4135,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_review') &&
+          v-if="permit('audit_review', '复核') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -4016,8 +4156,9 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_review') &&
-            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed
+          v-if="permit('audit_review', '复核') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+            !permit('audit_reverse', '反审核')
           "
           plain
           type="primary"
@@ -4043,43 +4184,44 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -4216,10 +4358,11 @@ import {<#
   if (hasAudit) {
   #>
   auditSubmit<#=Table_Up#>,
-  auditPass<#=Table_Up#>,<#
+  auditPass<#=Table_Up#>,
+  auditReverse<#=Table_Up#>,<#
   if (hasReviewed) {
   #>
-  auditReview,<#
+  auditReview<#=Table_Up#>,<#
   }
   #><#
   }
@@ -4231,7 +4374,12 @@ import {<#
   }
   #>
   getPagePath<#=Table_Up#>,
-  intoInput<#=Table_Up#>,
+  intoInput<#=Table_Up#>,<#
+  if (hasBpm && !opts.noAdd) {
+  #>
+  startProcess<#=Table_Up#>,<#
+  }
+  #>
 } from "./Api.ts";<#
 if (hasAudit) {
 #>
@@ -4462,7 +4610,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4727,7 +4875,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
-    if (!foreignSchema.opts?.list_tree) {
+    if (foreignSchema.opts?.list_tree !== true) {
       continue;
     }
     if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4897,10 +5045,16 @@ const fieldPermitStore = useFieldPermitStore();<#
 }
 #>
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+const {
+  fieldPermit,
+  fieldPermitAsync,
+} = fieldPermitStore.getFieldPermit(pagePath);<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -5763,26 +5917,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    oldIsLocked = toValue(arg?.isLocked) ?? false;
-    <#
+    oldIsLocked = toValue(arg?.isLocked) ?? false;<#
     if (hasLocked) {
     #>
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }<#
+    
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;<#
     } else {
     #>
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }<#
+    
+    isLocked = toValue(arg?.isLocked) ?? isLocked;<#
     }
     #>
   });
@@ -6247,8 +6390,30 @@ async function showDialog(
           if (!column.readonly) {
             continue;
           }
+          const bpm = opts?.bpm;
+        #><#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_usr_id_lbl_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>: undefined,<#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>_lbl: undefined,<#
+        }
+        #><#
+        } else {
         #>
         <#=column_name#>: defaultInput.<#=column_name#>,<#
+        }
+        #><#
         }
         #><#
         if (hasDefault) {
@@ -6484,7 +6649,7 @@ const cron_lbl = $computed(() => {
 watch(
   () => [ inited, job_lbl, cron_lbl ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!job_lbl || !cron_lbl) {
@@ -7083,7 +7248,7 @@ watch(
     #>
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }<#
     for (let i = 0; i < columns.length; i++) {
@@ -7222,7 +7387,7 @@ async function onAuditSubmit() {
   if (!id) {
     return;
   }
-  if (!permit("audit_submit")) {
+  if (!await permitAsync("audit_submit")) {
     return;
   }
   try {
@@ -7277,13 +7442,74 @@ async function onAuditSubmit() {
   });
 }
 
+/** 反审核 */
+async function onAuditReverse() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!await permitAsync("audit_reverse")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确认要反审核吗"),<#
+      } else {
+      #>
+      "确认要反审核吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("反审核成功"),<#
+    } else {
+    #>
+    message: "反审核成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}
+
 /** 审核通过 */
 async function onAuditPass() {
   const id = dialogModel.id;
   if (!id) {
     return;
   }
-  if (!permit("audit_pass")) {
+  if (!await permitAsync("audit_pass")) {
     return;
   }
   try {
@@ -7349,7 +7575,7 @@ async function onAuditReject() {
   if (!id) {
     return;
   }
-  if (!permit("audit_reject")) {
+  if (!await permitAsync("audit_reject")) {
     return;
   }
   const {
@@ -7406,7 +7632,7 @@ async function onAuditReview() {
   if (!id) {
     return;
   }
-  if (!permit("audit_review")) {
+  if (!await permitAsync("audit_review")) {
     return;
   }
   try {
@@ -7436,7 +7662,7 @@ async function onAuditReview() {
   } catch (err) {
     return;
   }
-  await auditReview(id);
+  await auditReview<#=Table_Up#>(id);
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -7473,10 +7699,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {
@@ -7755,6 +7981,35 @@ async function save() {
   }
   return id;
 }<#
+if (hasBpm && opts.noAdd !== true) {
+#>
+
+/** 保存并提交 */
+async function onSaveAndStart() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("保存并提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("保存并提交成功");<#
+  }
+  #>
+
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}<#
+}
+#><#
 if (opts.hideSaveAndCopy === false) {
 #>
 
@@ -7893,7 +8148,7 @@ async function onSave() {
   }<#
   if (hasAudit) {
   #>
-  if (permit("audit_submit")) {
+  if (await permitAsync("audit_submit")) {
     await onRefresh();
     if (dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
       dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
@@ -7992,8 +8247,12 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const inline_column_name = inlineForeignTab.column_name;
   const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  const inlineForeignColumns = inlineForeignSchema.columns;
+  const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+  const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+  const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
 #><#
-  if (inline_foreign_type === "one2many") {
+if (inline_foreign_type === "one2many") {
 #>
 
 // <#=inlineForeignTab.label#>
@@ -8034,7 +8293,6 @@ function <#=inline_column_name#>Remove(row: <#=Table_Up#>Model) {
 
 watch(
   () => [
-    dialogModel.<#=inline_column_name#>,
     dialogModel.<#=inline_column_name#>?.length,
   ],
   () => {
@@ -8048,7 +8306,39 @@ watch(
     }
   },
 );<#
-  }
+if (hasOrgId && inlineForeignHasOrgId) {
+#>
+
+watch(
+  () => [
+    dialogModel.org_id,<#
+    if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+    #>
+    dialogModel.org_id_lbl,<#
+    }
+    #>
+    dialogModel.<#=inline_column_name#>?.length,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.<#=inline_column_name#>) {
+      return;
+    }
+    for (const item of dialogModel.<#=inline_column_name#>) {
+      item.org_id = dialogModel.org_id;<#
+      if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+      #>
+      item.org_id_lbl = dialogModel.org_id_lbl;<#
+      }
+      #>
+    }
+  },
+);<#
+}
+#><#
+}
 #><#
 }
 #><#
@@ -8344,6 +8634,23 @@ async function onDynPageFields() {
   await refreshDynPageFields();
   
 }<#
+}
+#><#
+if (hasBpm) {
+#>
+
+watch(
+  () => dialogModel.<#=bpmStatusField#>,
+  (val) => {
+    if (!val) {
+      isLocked = false;
+    } else if (val === "draft") {
+      isLocked = false;
+    } else {
+      isLocked = true;
+    }
+  },
+);<#
 }
 #>
 

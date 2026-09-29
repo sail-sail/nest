@@ -8,20 +8,20 @@ type GetLoginTenants {
   "ID"
   id: TenantId!
   "名称"
-  lbl: SmolStr!
+  lbl: String!
   "标题"
-  title: SmolStr!
+  title: String!
   "描述"
-  info: SmolStr!
+  info: String!
   "语言"
-  lang: SmolStr!
+  lang: String!
 }
 
 input SetTenantAdminPwdInput {
   "租户ID"
   tenant_id: TenantId!
   "新密码"
-  pwd: SmolStr!
+  pwd: String!
 }
 
 #type GetHostTenant {
@@ -31,7 +31,7 @@ input SetTenantAdminPwdInput {
 
 type Query {
   "根据 当前网址的域名+端口 获取 租户列表"
-  getLoginTenants(domain: SmolStr!): [GetLoginTenants!]!
+  getLoginTenants(domain: String!): [GetLoginTenants!]!
   # getHostTenant: GetHostTenant!
   
   "根据 租户ids 获取 租户信息"

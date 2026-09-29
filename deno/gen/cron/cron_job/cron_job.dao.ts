@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -59,6 +60,8 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
+  getAuthModel,
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -84,6 +87,10 @@ import type {
 import {
   findOneJob,
 } from "/gen/cron/job/job.dao.ts";
+
+import {
+  findOneOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   findByIdUsr,
@@ -218,6 +225,18 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
+  }
+  if (search?.org_id_is_null) {
+    whereQuery += ` and t.org_id is null`;
+  }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and t.org_id_lbl in (${ args.push(search.org_id_lbl) })`;
+  }
+  if (isNotEmpty(search?.org_id_lbl_like)) {
+    whereQuery += ` and t.org_id_lbl like ${ args.push("%" + sqlLike(search.org_id_lbl_like) + "%") }`;
+  }
   return whereQuery;
 }
 
@@ -333,6 +352,17 @@ export async function findCountCronJob(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
+  // 所属组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
@@ -342,8 +372,15 @@ export async function findCountCronJob(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -462,6 +499,17 @@ export async function findAllCronJob(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
+  // 所属组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
@@ -500,14 +548,19 @@ export async function findAllCronJob(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -683,6 +736,32 @@ export async function setIdByLblCronJob(
     const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
     input.is_enabled_lbl = lbl;
   }
+  
+  // 所属组织
+  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
+    input.org_id_lbl = String(input.org_id_lbl).trim();
+    const orgModel = await findOneOrg(
+      {
+        lbl: input.org_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (orgModel) {
+      input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
 }
 
 // MARK: getFieldCommentsCronJob
@@ -710,6 +789,8 @@ export async function getFieldCommentsCronJob(): Promise<CronJobFieldComment> {
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
+    org_id: "所属组织",
+    org_id_lbl: "所属组织",
   };
   
   return field_comments;
@@ -1125,9 +1206,9 @@ export async function findByIdsOkCronJob(
   return models2;
 }
 
-// MARK: existCronJob
+// MARK: existsCronJob
 /** 根据搜索条件判断定时任务是否存在 */
-export async function existCronJob(
+export async function existsCronJob(
   search?: Readonly<CronJobSearch>,
   options?: {
     is_debug?: boolean;
@@ -1135,7 +1216,7 @@ export async function existCronJob(
 ): Promise<boolean> {
   
   const table = getTableNameCronJob();
-  const method = "existCronJob";
+  const method = "existsCronJob";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1188,8 +1269,15 @@ export async function existByIdCronJob(
   const args = new QueryArgs();
   const sql = `select 1 e from cron_cron_job t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1474,6 +1562,14 @@ async function _creates(
   if (inputs.length === 0) {
     return [ ];
   }
+
+  const authModel = await getAuthModel();
+  const auth_org_id = authModel?.org_id;
+  for (const input of inputs) {
+    if (!input.org_id || input.org_id as unknown as string === "-") {
+      input.org_id = auth_org_id;
+    }
+  }
   
   const table = getTableNameCronJob();
   
@@ -1486,6 +1582,22 @@ async function _creates(
   
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+
+    // 所属组织
+    if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+      const org_model = await findOneOrg(
+        {
+          id: input.org_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (org_model) {
+        input.org_id_lbl = org_model.lbl;
+      }
     }
     
     const oldModels = await findByUniqueCronJob(input, options);
@@ -1525,7 +1637,7 @@ async function _creates(
   await delCacheCronJob();
   
   const args = new QueryArgs();
-  let sql = "insert into cron_cron_job(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,seq,lbl,job_id,cron,timezone,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into cron_cron_job(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,seq,lbl,job_id,cron,timezone,is_locked,is_enabled,order_by,rem,org_id_lbl,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1668,6 +1780,16 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.org_id_lbl != null) {
+        sql += `,${ args.push(input.org_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        sql += ",default";
+      }
       sql += ")";
       if (i !== inputs2.length - 1) {
         sql += ",";
@@ -1696,6 +1818,7 @@ async function _creates(
 export async function delCacheCronJob() {
   await delCacheCtx(`dao.sql.cron_cron_job`);
   await delCacheCtx(`dao.sql.cron_job`);
+  await delCacheCtx(`dao.sql.base_org`);
 }
 
 // MARK: updateTenantByIdCronJob
@@ -1858,6 +1981,22 @@ export async function updateByIdCronJob(
   if (!input) {
     throw new Error("updateByIdCronJob: input cannot be null");
   }
+
+  // 所属组织
+  if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
@@ -1883,12 +2022,7 @@ export async function updateByIdCronJob(
   const oldModel = await findByIdCronJob(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 定时任务 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();
@@ -1962,6 +2096,17 @@ export async function updateByIdCronJob(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (isNotEmpty(input.org_id_lbl)) {
+    sql += `org_id_lbl=?,`;
+    args.push(input.org_id_lbl);
+    updateFldNum++;
+  }
+  if (input.org_id != null) {
+    if (input.org_id != oldModel.org_id) {
+      sql += `org_id=${ args.push(input.org_id) },`;
       updateFldNum++;
     }
   }

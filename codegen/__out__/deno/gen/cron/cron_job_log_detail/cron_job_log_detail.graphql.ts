@@ -72,6 +72,8 @@ type Query {
   findByIdCronJobLogDetail(id: CronJobLogDetailId!): CronJobLogDetailModel
   "根据 ids 查找定时任务日志明细"
   findByIdsCronJobLogDetail(ids: [CronJobLogDetailId!]!): [CronJobLogDetailModel]!
+  "根据搜索条件判断定时任务日志明细是否存在"
+  existsCronJobLogDetail(search: CronJobLogDetailSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除定时任务日志明细"

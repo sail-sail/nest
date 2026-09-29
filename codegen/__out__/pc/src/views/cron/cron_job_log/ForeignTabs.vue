@@ -24,10 +24,20 @@
         <template
           v-if="tabGroup === 'exec_state'"
         >
-        
-          <el-tab-pane
-            :label="'任务执行日志明细' + (cron_job_log_detail_total != null ? ` (${ cron_job_log_detail_total })` : '')"
-          >
+          
+          <el-tab-pane>
+            
+            <template #label>
+              <el-badge
+                :value="cron_job_log_detail_total"
+                :show-zero="false"
+                type="info"
+                :offset="[8, 0]"
+              >
+                任务执行日志明细
+              </el-badge>
+            </template>
+            
             <CronJobLogDetailList
               :cron_job_log_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
@@ -36,6 +46,7 @@
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
             ></CronJobLogDetailList>
+            
           </el-tab-pane>
           
         </template>
@@ -71,7 +82,7 @@ import CronJobLogDetailList from "@/views/cron/cron_job_log_detail/List.vue";
 
 import {
   findCountCronJobLogDetail,
-} from "@/views/cron/cron_job_log_detail/Api";
+} from "@/views/cron/cron_job_log_detail/Api.ts";
 
 let inited = $ref(false);
 
@@ -136,6 +147,7 @@ async function showDialog(
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "default",
     title,
+    pointerPierce: true,
   });
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;

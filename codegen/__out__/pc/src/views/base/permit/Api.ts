@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -292,6 +291,32 @@ export async function findByIdsPermit(
   }
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断按钮权限是否存在
+ */
+export async function existsPermit(
+  search?: PermitSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsPermit: Query["existsPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: PermitSearch) {
+        existsPermit(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsPermit;
+  
+  return res;
 }
 
 /**

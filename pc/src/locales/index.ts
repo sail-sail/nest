@@ -1,8 +1,8 @@
 import elementEnLocale from "element-plus/es/locale/lang/en";
 import elementZhLocale from "element-plus/es/locale/lang/zh-cn";
 
-import enLocale from "./en";
-import zhLocale from "./zh-cn";
+import enLocale from "./en.ts";
+import zhLocale from "./zh-cn.ts";
 
 const messages = {
   [elementEnLocale.name]: {

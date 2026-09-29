@@ -27,6 +27,15 @@ export async function findCountCronJobLogDetail(
     findCountCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+  
   const num = await findCountCronJobLogDetail(search);
   
   return num;
@@ -44,6 +53,15 @@ export async function findAllCronJobLogDetail(
   const {
     findAllCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
+  
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
   
   checkSortCronJobLogDetail(sort);
   
@@ -78,6 +96,15 @@ export async function findOneCronJobLogDetail(
     findOneCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+  
   checkSortCronJobLogDetail(sort);
   
   const model = await findOneCronJobLogDetail(search, sort);
@@ -97,6 +124,15 @@ export async function findOneOkCronJobLogDetail(
     findOneOkCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+  
   checkSortCronJobLogDetail(sort);
   
   const model = await findOneOkCronJobLogDetail(search, sort);
@@ -115,6 +151,15 @@ export async function findByIdCronJobLogDetail(
     findByIdCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+  
   const model = await findByIdCronJobLogDetail(id);
   
   return model;
@@ -130,6 +175,15 @@ export async function findByIdOkCronJobLogDetail(
   const {
     findByIdOkCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
+  
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
   
   const model = await findByIdOkCronJobLogDetail(id);
   
@@ -147,9 +201,41 @@ export async function findByIdsCronJobLogDetail(
     findByIdsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+  
   const models = await findByIdsCronJobLogDetail(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断定时任务日志明细是否存在
+ */
+export async function existsCronJobLogDetail(
+  search: CronJobLogDetailSearch,
+): Promise<boolean> {
+  
+  const {
+    existsCronJobLogDetail,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
+
+  return await existsCronJobLogDetail(search);
 }
 
 /**
@@ -162,6 +248,15 @@ export async function findByIdsOkCronJobLogDetail(
   const {
     findByIdsOkCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
+  
+  const {
+    getPagePathCronJobLogDetail,
+  } = await import("./cron_job_log_detail.model.ts");
+  
+  await usePermit(
+    getPagePathCronJobLogDetail(),
+    "find",
+  );
   
   const models = await findByIdsOkCronJobLogDetail(ids);
   

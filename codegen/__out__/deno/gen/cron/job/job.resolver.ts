@@ -29,6 +29,15 @@ export async function findCountJob(
     findCountJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+  
   const num = await findCountJob(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllJob(
   const {
     findAllJob,
   } = await import("./job.service.ts");
+  
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
   
   checkSortJob(sort);
   
@@ -80,6 +98,15 @@ export async function findOneJob(
     findOneJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+  
   checkSortJob(sort);
   
   const model = await findOneJob(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkJob(
     findOneOkJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+  
   checkSortJob(sort);
   
   const model = await findOneOkJob(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdJob(
     findByIdJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+  
   const model = await findByIdJob(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkJob(
   const {
     findByIdOkJob,
   } = await import("./job.service.ts");
+  
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
   
   const model = await findByIdOkJob(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsJob(
     findByIdsJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+  
   const models = await findByIdsJob(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断任务是否存在
+ */
+export async function existsJob(
+  search: JobSearch,
+): Promise<boolean> {
+  
+  const {
+    existsJob,
+  } = await import("./job.service.ts");
+  
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
+
+  return await existsJob(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkJob(
   const {
     findByIdsOkJob,
   } = await import("./job.service.ts");
+  
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
+  await usePermit(
+    getPagePathJob(),
+    "find",
+  );
   
   const models = await findByIdsOkJob(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdJob(
   input: JobInput,
 ): Promise<JobId> {
   
-  intoInputJob(input);
-  
   const {
     setIdByLblJob,
+    validateJob,
     updateByIdJob,
   } = await import("./job.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdJob(
   
   set_is_tran(true);
   
+  intoInputJob(input);
+  
   await setIdByLblJob(input);
+  
+  await validateJob(input);
   
   await usePermit(
     getPagePathJob(),

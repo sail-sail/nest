@@ -72,10 +72,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type CustomDialogType,
-} from "@/components/CustomDialog.vue";
-
 const {
   ns,
 } = useI18n("/base/usr");
@@ -85,7 +81,7 @@ let inited = $ref(false);
 let dialogAction = $ref<"print">("print");
 
 let dialogModel = $ref(getDefaultModel());
-
+  
 /** 增加时的默认值 */
 function getDefaultModel() {
   return {
@@ -99,7 +95,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 /** 打开对话框 */
 async function showDialog(

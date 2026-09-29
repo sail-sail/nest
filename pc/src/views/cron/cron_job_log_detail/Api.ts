@@ -255,6 +255,32 @@ export async function findByIdsCronJobLogDetail(
 }
 
 /**
+ * 根据搜索条件判断定时任务日志明细是否存在
+ */
+export async function existsCronJobLogDetail(
+  search?: CronJobLogDetailSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsCronJobLogDetail: Query["existsCronJobLogDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: CronJobLogDetailSearch) {
+        existsCronJobLogDetail(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsCronJobLogDetail;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 定时任务日志明细, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkCronJobLogDetail(
@@ -431,14 +457,13 @@ export function useExportExcelCronJobLogDetail() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: CronJobLogDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: CronJobLogDetailSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllCronJobLogDetail(search: $search, page: $page, sort: $sort) {
               ${ cronJobLogDetailQueryField }
             }

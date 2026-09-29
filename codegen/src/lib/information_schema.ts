@@ -8,12 +8,47 @@ import { isEmpty, pushEnumMsg } from "./StringUitl.ts";
 
 // const chalk = new Chalk();
 
+import { createInterface } from "node:readline";
+
 export class Context {
   pool: Pool;
   conn: PoolConnection;
 }
 
-function getPool(): Pool {
+async function confirmDatabaseTarget(db: typeof nestConfig.database) {
+  if (!process.stdin.isTTY || process.env.CI) {
+    throw new Error("需要人工确认，当前环境不支持交互式确认");
+  }
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    while (true) {
+      const answer = await new Promise<string>((resolve) => {
+        rl.question(
+          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 }，请输入 yes 才继续；其他输入将取消执行： `,
+          resolve,
+        );
+      });
+
+      const normalized = answer.trim().toLowerCase();
+      if (!normalized || (normalized !== "yes" && normalized !== "y")) {
+        console.log();
+        throw new Error("已取消执行，未连接数据库");
+      }
+      return;
+    }
+  } finally {
+    rl.close();
+  }
+}
+
+async function getPool(
+  isConfirm = false,
+): Promise<Pool> {
   const db = nestConfig.database;
   console.log({
     host: db.host,
@@ -21,6 +56,11 @@ function getPool(): Pool {
     database: db.database,
     port: Number(db.port) || 3306,
   });
+  
+  if (isConfirm) {
+    await confirmDatabaseTarget(db);
+  }
+  
   const pool0 = mysql.createPool({
     host: db.host,
     user: db.username,
@@ -33,9 +73,11 @@ function getPool(): Pool {
   return pool;
 }
 
-export async function initContext() {
+export async function initContext(
+  isConfirm = false,
+) {
   const context = new Context();
-  const pool = getPool();
+  const pool = await getPool(isConfirm);
   context.pool = pool;
   const conn = await pool.getConnection();
   context.conn = conn;
@@ -238,7 +280,7 @@ async function getSchema0(
       COLUMN_NAME: "is_hidden",
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
-      COLUMN_COMMENT: "隐藏记录",
+      COLUMN_COMMENT: "隐藏",
       onlyCodegenDeno: true,
     });
   }
@@ -247,9 +289,11 @@ async function getSchema0(
     tables[table_name].columns.push({
       COLUMN_NAME: "org_id",
       COLUMN_TYPE: "varchar(22)",
+      COLUMN_DEFAULT: "CURRENT_ORG_ID",
+      modelLabel: hasOrgIdLbl ? "org_id_lbl" : undefined,
+      require: true,
       DATA_TYPE: "varchar",
-      COLUMN_COMMENT: "组织",
-      onlyCodegenDeno: true,
+      COLUMN_COMMENT: "所属组织",
       canSearch: true,
       foreignKey: {
         mod: "base",
@@ -263,6 +307,7 @@ async function getSchema0(
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "create_usr_id",
+      modelLabel: hasCreateUsrIdLbl ? "create_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "创建人",
@@ -284,6 +329,7 @@ async function getSchema0(
   if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "update_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "update_usr_id",
+      modelLabel: hasUpdateUsrIdLbl ? "update_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "更新人",
@@ -308,11 +354,6 @@ async function getSchema0(
       item.canSearch = true;
     }
     const record = records2.find((item: TableColumn) => item.COLUMN_NAME === column_name);
-    if (column_name === "is_hidden") {
-      if (item.onlyCodegenDeno != null) {
-        item.onlyCodegenDeno = true;
-      }
-    }
     if (column_name === "org_id") {
       if (!item.COLUMN_DEFAULT) {
         item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
@@ -322,6 +363,18 @@ async function getSchema0(
       }
       if (item.require == null) {
         item.require = true;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.foreignKey == null) {
+        item.foreignKey = { };
+      }
+      if (item.foreignKey.mod == null) {
+        item.foreignKey.mod = "base";
+      }
+      if (item.foreignKey.table == null) {
+        item.foreignKey.table = "org";
       }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
@@ -464,6 +517,20 @@ async function getSchema0(
         item.noDetail = true;
       }
     }
+    if (column_name === "is_hidden") {
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.onlyCodegenDeno == null) {
+        item.onlyCodegenDeno = true;
+      }
+      if (item.onlyCodegenDenoButApi == null) {
+        item.onlyCodegenDenoButApi = true;
+      }
+      if (item.dict == null) {
+        item.dict = "yes_no";
+      }
+    }
     if (column_name.startsWith("is_")
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint(1) unsigned"
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint unsigned"
@@ -537,6 +604,12 @@ async function getSchema0(
         if (item.isPublicAtt == null) {
           item.isPublicAtt = true;
         }
+        if (item.attAccept == null) {
+          item.attAccept = "image/svg+xml,image/png,image/jpeg,image/webp";
+        }
+        if (item.isImg == null) {
+          item.isImg = false;
+        }
       }
       if (item.width == null) {
         let column_comment = item.COLUMN_COMMENT || "";
@@ -590,11 +663,8 @@ async function getSchema0(
         item.sortable = true;
       }
     }
-    // 是否不显示导入导出中的下拉框, 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-    if (
-      (item.COLUMN_NAME === "create_usr_id" || item.COLUMN_NAME === "update_usr_id") &&
-      item.notImportExportList == null
-    ) {
+    // 是否不显示导入导出中的下拉框, 默认为 true
+    if (item.notImportExportList == null) {
       item.notImportExportList = true;
     }
     if (record && record.DATA_TYPE === "date") {
@@ -671,9 +741,6 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "left";
       }
-      if (item.isTextarea == null) {
-        item.isTextarea = true;
-      }
     }
     
     // 自动编码
@@ -717,6 +784,23 @@ async function getSchema0(
           tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
         }
       }
+      if (item.search == null) {
+        item.search = true;
+        item.canSearch = true;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.sortable == null) {
+        item.sortable = true;
+      }
+      if (tables[table_name].opts?.defaultSort == null) {
+        tables[table_name].opts = tables[table_name].opts || { };
+        tables[table_name].opts.defaultSort = {
+          prop: column_name,
+          order: "descending",
+        };
+      }
     }
     
     if (item.isFluentEditor) {
@@ -735,6 +819,81 @@ async function getSchema0(
       }
     }
     
+    // bpm工作流
+    if (tables[table_name]?.opts?.bpm && tables[table_name]?.opts?.bpm?.biz_code) {
+      const bpm = tables[table_name].opts.bpm;
+      if (!bpm.bpm_status_field) {
+        bpm.bpm_status_field = "bpm_status";
+      }
+      if (!bpm.apply_usr_id_field) {
+        bpm.apply_usr_id_field = "apply_usr_id";
+      }
+      if (!bpm.apply_usr_id_lbl_field) {
+        bpm.apply_usr_id_lbl_field = "apply_usr_id_lbl";
+      }
+      if (!bpm.apply_time_field) {
+        bpm.apply_time_field = "apply_time";
+      }
+    }
+    
+    if (item.searchDefaultValue == null) {
+      if (item.searchRangeMax) {
+        item.searchDefaultValue = "subtract:" + item.searchRangeMax;
+      }
+    }
+    
+  }
+  
+  // bpm工作流
+  if (tables[table_name]?.opts?.bpm && tables[table_name]?.opts?.bpm?.biz_code) {
+    for (let i = 0; i < records2.length; i++) {
+      const record = records2[i];
+      const bpm = tables[table_name].opts.bpm;
+      if (record.COLUMN_NAME === bpm.bpm_status_field) {
+        if (record.search === undefined) {
+          record.search = true;
+        }
+        if (record.width === undefined) {
+          record.width = 100;
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      } else if (record.COLUMN_NAME === bpm.apply_usr_id_field) {
+        const apply_usr_id_lbl_field = bpm.apply_usr_id_lbl_field;
+        if (!record.modelLabel && apply_usr_id_lbl_field) {
+          record.modelLabel = apply_usr_id_lbl_field;
+        }
+        if (!record.foreignKey) {
+          record.foreignKey = {
+            mod: "base",
+            table: "usr",
+          };
+        }
+        if (record.search === undefined) {
+          record.search = true;
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      } else if (record.COLUMN_NAME === bpm.apply_time_field) {
+        if (record.COLUMN_DEFAULT === undefined) {
+          record.COLUMN_DEFAULT = "CURRENT_DATETIME";
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      }
+    }
   }
   
   // 校验
@@ -1057,32 +1216,37 @@ export async function getSchema(
         }
       }
       let defaultValue = record.COLUMN_DEFAULT;
-      // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
-      let isMatch = true;
-      if (!enumItemsDict.includes(defaultValue)) {
-        isMatch = false;
-      } else if (enumItems.length !== enumItemsDict.length) {
-        isMatch = false;
-      } else {
-        for (let i = 0; i < enumItems.length; i++) {
-          if (!enumItemsDict.includes(enumItems[i])) {
-            isMatch = false;
-            break;
+      
+      if (record.isDictEnum !== false) {
+        
+        // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
+        let isMatch = true;
+        if (!enumItemsDict.includes(defaultValue)) {
+          isMatch = false;
+        } else if (enumItems.length !== enumItemsDict.length) {
+          isMatch = false;
+        } else {
+          for (let i = 0; i < enumItems.length; i++) {
+            if (!enumItemsDict.includes(enumItems[i])) {
+              isMatch = false;
+              break;
+            }
           }
         }
-      }
-      if (!isMatch) {
-        if (!enumItemsDict.includes(defaultValue)) {
-          defaultValue = enumItemsDict[0];
-        }
+        if (!isMatch) {
+          if (!enumItemsDict.includes(defaultValue)) {
+            defaultValue = enumItemsDict[0];
+          }
 //         let errMsg = `
 // 错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
         let errMsg = `ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
 \`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';`;
-        // throw chalk.red(errMsg);
-        pushEnumMsg(errMsg);
+          // throw chalk.red(errMsg);
+          pushEnumMsg(errMsg);
+        }
       }
     }
+    
     if (data_type === "enum") {
       record.DATA_TYPE = "varchar";
       record.COLUMN_TYPE = `varchar(${ record.CHARACTER_MAXIMUM_LENGTH })`;
@@ -1411,6 +1575,9 @@ export async function getSchema(
   // 审核
   if (tables[table_name].opts.audit) {
     const audit = tables[table_name].opts.audit;
+    if (audit.sendAuditMessage == null) {
+      audit.sendAuditMessage = true;
+    }
     if (audit.auditTable) {
       const auditMod = audit.auditMod || mod;
       const auditTable = audit.auditTable;
@@ -1423,6 +1590,9 @@ export async function getSchema(
     // 复核
     const auditColumnName = audit.column;
     const auditColumn = tables[table_name].columns.find((item) => item.COLUMN_NAME === auditColumnName);
+    if (!auditColumn) {
+      throw new Error(`表: ${ table_name }, 审核字段: ${ auditColumnName } 不存在!`);
+    }
     const dict_models = auditColumn.dict_models;
     if (dict_models && dict_models.some((item) => item.val === "reviewed")) {
       audit.hasReviewed = true;
@@ -1430,6 +1600,16 @@ export async function getSchema(
     // 审核字段默认为不可改
     if (auditColumn && auditColumn.readonly == null) {
       auditColumn.readonly = true;
+    }
+    // 如果有审核并且 isUniPage 或者 isUniApi 为 true, 则找到对应的审核表 isUniApi=true
+    if (tables[table_name].opts.isUniPage || tables[table_name].opts.isUniApi) {
+      const auditTableSchema = tables[table_name].opts.audit?.auditTableSchema;
+      if (auditTableSchema) {
+        auditTableSchema.opts = auditTableSchema.opts || { };
+        if (auditTableSchema.opts.isUniApi == null) {
+          auditTableSchema.opts.isUniApi = true;
+        }
+      }
     }
   }
   

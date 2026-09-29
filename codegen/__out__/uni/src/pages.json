@@ -44,6 +44,18 @@
       "style": {
         "navigationBarTitleText": "动态页面字段详情"
       }
+    },
+    {
+      "path": "pages/message/List",
+      "style": {
+        "navigationBarTitleText": "消息列表"
+      }
+    },
+    {
+      "path": "pages/message/Detail",
+      "style": {
+        "navigationBarTitleText": "消息详情"
+      }
     }
   ],
   "tabBar": {

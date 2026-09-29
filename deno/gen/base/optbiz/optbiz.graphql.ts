@@ -165,6 +165,8 @@ type Query {
   findByIdOptbiz(id: OptbizId!): OptbizModel
   "根据 ids 查找业务选项"
   findByIdsOptbiz(ids: [OptbizId!]!): [OptbizModel]!
+  "根据搜索条件判断业务选项是否存在"
+  existsOptbiz(search: OptbizSearch): Boolean!
   "查找业务选项 order_by 字段的最大值"
   findLastOrderByOptbiz(search: OptbizSearch): Int!
 }

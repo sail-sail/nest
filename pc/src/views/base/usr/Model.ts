@@ -12,6 +12,7 @@ declare global {
   interface UsrModel extends UsrModelType {
     /** 头像 */
     img_lbl: string;
+    img_lbls: string[];
   }
   
   /** 用户 */
@@ -53,6 +54,9 @@ export const usrFields = [
   // 类型
   "type",
   "type_lbl",
+  // 拒收消息
+  "is_reject_msg",
+  "is_reject_msg_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",
@@ -63,6 +67,9 @@ export const usrFields = [
   "order_by",
   // 备注
   "rem",
+  // 隐藏
+  "is_hidden",
+  "is_hidden_lbl",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

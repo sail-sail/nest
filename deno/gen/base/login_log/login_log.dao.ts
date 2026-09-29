@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -389,7 +390,6 @@ export async function findAllLoginLog(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -907,9 +907,9 @@ export async function findByIdsOkLoginLog(
   return models2;
 }
 
-// MARK: existLoginLog
+// MARK: existsLoginLog
 /** 根据搜索条件判断登录日志是否存在 */
-export async function existLoginLog(
+export async function existsLoginLog(
   search?: Readonly<LoginLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -917,7 +917,7 @@ export async function existLoginLog(
 ): Promise<boolean> {
   
   const table = getTableNameLoginLog();
-  const method = "existLoginLog";
+  const method = "existsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1561,12 +1561,7 @@ export async function updateByIdLoginLog(
   const oldModel = await findByIdLoginLog(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 登录日志 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

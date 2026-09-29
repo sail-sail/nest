@@ -12,6 +12,7 @@ declare global {
   interface IconModel extends IconModelType {
     /** 图标 */
     img_lbl: string;
+    img_lbls: string[];
   }
   
   /** 图标库 */
@@ -34,6 +35,8 @@ export const iconFields = [
   "id",
   // 图标
   "img",
+  // 图标
+  "img_lbl",
   // 编码
   "code",
   // 名称

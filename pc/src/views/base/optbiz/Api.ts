@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -340,6 +339,32 @@ export async function findByIdsOptbiz(
 }
 
 /**
+ * 根据搜索条件判断业务选项是否存在
+ */
+export async function existsOptbiz(
+  search?: OptbizSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOptbiz: Query["existsOptbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OptbizSearch) {
+        existsOptbiz(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOptbiz;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 业务选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptbiz(
@@ -407,7 +432,7 @@ export async function deleteByIdsOptbiz(
  */
 export async function enableByIdsOptbiz(
   ids: OptbizId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -435,7 +460,7 @@ export async function enableByIdsOptbiz(
  */
 export async function lockByIdsOptbiz(
   ids: OptbizId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -575,23 +600,15 @@ export function useExportExcelOptbiz() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: OptbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

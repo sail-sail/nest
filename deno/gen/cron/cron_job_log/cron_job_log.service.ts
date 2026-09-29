@@ -140,7 +140,7 @@ export async function findByIdsOkCronJobLog(
 /**
  * 根据搜索条件查找定时任务日志是否存在
  */
-export async function existCronJobLog(
+export async function existsCronJobLog(
   search?: CronJobLogSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existCronJobLog(
   
   await setSearchQuery(search);
   
-  const cron_job_log_exist = await cron_job_logDao.existCronJobLog(search);
+  const cron_job_log_exist = await cron_job_logDao.existsCronJobLog(search);
   
   return cron_job_log_exist;
 }

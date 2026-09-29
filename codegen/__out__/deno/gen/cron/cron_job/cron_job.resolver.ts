@@ -31,6 +31,15 @@ export async function findCountCronJob(
     findCountCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+  
   const num = await findCountCronJob(search);
   
   return num;
@@ -48,6 +57,15 @@ export async function findAllCronJob(
   const {
     findAllCronJob,
   } = await import("./cron_job.service.ts");
+  
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
   
   checkSortCronJob(sort);
   
@@ -82,6 +100,15 @@ export async function findOneCronJob(
     findOneCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+  
   checkSortCronJob(sort);
   
   const model = await findOneCronJob(search, sort);
@@ -101,6 +128,15 @@ export async function findOneOkCronJob(
     findOneOkCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+  
   checkSortCronJob(sort);
   
   const model = await findOneOkCronJob(search, sort);
@@ -119,6 +155,15 @@ export async function findByIdCronJob(
     findByIdCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+  
   const model = await findByIdCronJob(id);
   
   return model;
@@ -134,6 +179,15 @@ export async function findByIdOkCronJob(
   const {
     findByIdOkCronJob,
   } = await import("./cron_job.service.ts");
+  
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
   
   const model = await findByIdOkCronJob(id);
   
@@ -151,9 +205,41 @@ export async function findByIdsCronJob(
     findByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+  
   const models = await findByIdsCronJob(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断定时任务是否存在
+ */
+export async function existsCronJob(
+  search: CronJobSearch,
+): Promise<boolean> {
+  
+  const {
+    existsCronJob,
+  } = await import("./cron_job.service.ts");
+  
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
+
+  return await existsCronJob(search);
 }
 
 /**
@@ -166,6 +252,15 @@ export async function findByIdsOkCronJob(
   const {
     findByIdsOkCronJob,
   } = await import("./cron_job.service.ts");
+  
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
+  await usePermit(
+    getPagePathCronJob(),
+    "find",
+  );
   
   const models = await findByIdsOkCronJob(ids);
   
@@ -220,10 +315,9 @@ export async function updateByIdCronJob(
   input: CronJobInput,
 ): Promise<CronJobId> {
   
-  intoInputCronJob(input);
-  
   const {
     setIdByLblCronJob,
+    validateCronJob,
     updateByIdCronJob,
   } = await import("./cron_job.service.ts");
   
@@ -233,7 +327,11 @@ export async function updateByIdCronJob(
   
   set_is_tran(true);
   
+  intoInputCronJob(input);
+  
   await setIdByLblCronJob(input);
+  
+  await validateCronJob(input);
   
   await usePermit(
     getPagePathCronJob(),

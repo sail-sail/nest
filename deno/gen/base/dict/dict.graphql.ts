@@ -178,6 +178,8 @@ type Query {
   findByIdDict(id: DictId!): DictModel
   "根据 ids 查找系统字典"
   findByIdsDict(ids: [DictId!]!): [DictModel]!
+  "根据搜索条件判断系统字典是否存在"
+  existsDict(search: DictSearch): Boolean!
   "查找系统字典 order_by 字段的最大值"
   findLastOrderByDict(search: DictSearch): Int!
 }

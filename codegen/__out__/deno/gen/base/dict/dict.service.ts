@@ -140,7 +140,7 @@ export async function findByIdsOkDict(
 /**
  * 根据搜索条件查找系统字典是否存在
  */
-export async function existDict(
+export async function existsDict(
   search?: DictSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existDict(
   
   await setSearchQuery(search);
   
-  const dict_exist = await dictDao.existDict(search);
+  const dict_exist = await dictDao.existsDict(search);
   
   return dict_exist;
 }

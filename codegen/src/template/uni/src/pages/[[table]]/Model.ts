@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
@@ -6,7 +5,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+/* const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden"); */
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -135,7 +134,8 @@ declare global {
       } else if (column.isImg) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_lbl: string;<#
+    <#=column_name#>_lbl: string;
+    <#=column_name#>_lbls: string[];<#
       }
     #><#
     }

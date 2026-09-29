@@ -29,6 +29,15 @@ export async function findCountI18n(
     findCountI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+  
   const num = await findCountI18n(search);
   
   return num;
@@ -46,6 +55,15 @@ export async function findAllI18n(
   const {
     findAllI18n,
   } = await import("./i18n.service.ts");
+  
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
   
   checkSortI18n(sort);
   
@@ -80,6 +98,15 @@ export async function findOneI18n(
     findOneI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+  
   checkSortI18n(sort);
   
   const model = await findOneI18n(search, sort);
@@ -99,6 +126,15 @@ export async function findOneOkI18n(
     findOneOkI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+  
   checkSortI18n(sort);
   
   const model = await findOneOkI18n(search, sort);
@@ -117,6 +153,15 @@ export async function findByIdI18n(
     findByIdI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+  
   const model = await findByIdI18n(id);
   
   return model;
@@ -132,6 +177,15 @@ export async function findByIdOkI18n(
   const {
     findByIdOkI18n,
   } = await import("./i18n.service.ts");
+  
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
   
   const model = await findByIdOkI18n(id);
   
@@ -149,9 +203,41 @@ export async function findByIdsI18n(
     findByIdsI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+  
   const models = await findByIdsI18n(ids);
   
   return models;
+}
+
+/**
+ * 根据搜索条件判断国际化是否存在
+ */
+export async function existsI18n(
+  search: I18nSearch,
+): Promise<boolean> {
+  
+  const {
+    existsI18n,
+  } = await import("./i18n.service.ts");
+  
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
+
+  return await existsI18n(search);
 }
 
 /**
@@ -164,6 +250,15 @@ export async function findByIdsOkI18n(
   const {
     findByIdsOkI18n,
   } = await import("./i18n.service.ts");
+  
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
+  await usePermit(
+    getPagePathI18n(),
+    "find",
+  );
   
   const models = await findByIdsOkI18n(ids);
   
@@ -218,10 +313,9 @@ export async function updateByIdI18n(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  intoInputI18n(input);
-  
   const {
     setIdByLblI18n,
+    validateI18n,
     updateByIdI18n,
   } = await import("./i18n.service.ts");
   
@@ -231,7 +325,11 @@ export async function updateByIdI18n(
   
   set_is_tran(true);
   
+  intoInputI18n(input);
+  
   await setIdByLblI18n(input);
+  
+  await validateI18n(input);
   
   await usePermit(
     getPagePathI18n(),

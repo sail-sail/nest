@@ -6,6 +6,16 @@ import * as resolver from "./cron_job_log.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobLogId
 
+"定时任务日志执行状态"
+enum CronJobLogExecState {
+  "执行中"
+  running
+  "成功"
+  success
+  "失败"
+  fail
+}
+
 type CronJobLogModel {
   "ID"
   id: CronJobLogId!
@@ -14,7 +24,7 @@ type CronJobLogModel {
   "定时任务"
   cron_job_id_lbl: String!
   "执行状态"
-  exec_state: String!
+  exec_state: CronJobLogExecState!
   "执行状态"
   exec_state_lbl: String!
   "执行结果"
@@ -72,7 +82,7 @@ input CronJobLogInput {
   "定时任务"
   cron_job_id_lbl: String
   "执行状态"
-  exec_state: String
+  exec_state: CronJobLogExecState
   "执行状态"
   exec_state_lbl: String
   "执行结果"
@@ -108,7 +118,7 @@ input CronJobLogSearch {
   "定时任务"
   cron_job_id_lbl_like: String
   "执行状态"
-  exec_state: [String!]
+  exec_state: [CronJobLogExecState!]
   "开始时间"
   begin_time: [NaiveDateTime]
 }
@@ -125,6 +135,8 @@ type Query {
   findByIdCronJobLog(id: CronJobLogId!): CronJobLogModel
   "根据 ids 查找定时任务日志"
   findByIdsCronJobLog(ids: [CronJobLogId!]!): [CronJobLogModel]!
+  "根据搜索条件判断定时任务日志是否存在"
+  existsCronJobLog(search: CronJobLogSearch): Boolean!
 }
 type Mutation {
   "根据 ids 删除定时任务日志"

@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -48,6 +47,9 @@ export function intoInputRole(
     // 字段权限
     field_permit_ids: model?.field_permit_ids,
     field_permit_ids_lbl: model?.field_permit_ids_lbl,
+    // 接收审核消息
+    is_audit_msg: model?.is_audit_msg,
+    is_audit_msg_lbl: model?.is_audit_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -353,6 +355,32 @@ export async function findByIdsRole(
 }
 
 /**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search?: RoleSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsRole: Query["existsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch) {
+        existsRole(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsRole;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 角色, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkRole(
@@ -420,7 +448,7 @@ export async function deleteByIdsRole(
  */
 export async function enableByIdsRole(
   ids: RoleId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -448,7 +476,7 @@ export async function enableByIdsRole(
  */
 export async function lockByIdsRole(
   ids: RoleId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -550,19 +578,26 @@ export async function findAllMenu(
   return menu_models;
 }
 
-export async function getListMenu() {
+export async function getListMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllMenu(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -596,17 +631,23 @@ export async function getListMenu() {
 //   return permit_models;
 // }
 
-// export async function getListPermit() {
+// export async function getListPermit(
+//   search?: PermitSearch,
+//   page?: PageInput,
+//   sort?: Sort[],
+//   opt?: GqlOpt,
+// ) {
 //   const data = await findAllPermit(
-//     undefined,
-//     undefined,
-//     [
+//     search,
+//     page,
+//     (sort || [ ]).concat([
 //       {
 //         prop: "order_by",
 //         order: "ascending",
 //       },
-//     ],
+//     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );
@@ -640,17 +681,23 @@ export async function getListMenu() {
 //   return data_permit_models;
 // }
 
-// export async function getListDataPermit() {
+// export async function getListDataPermit(
+//   search?: DataPermitSearch,
+//   page?: PageInput,
+//   sort?: Sort[],
+//   opt?: GqlOpt,
+// ) {
 //   const data = await findAllDataPermit(
-//     undefined,
-//     undefined,
-//     [
+//     search,
+//     page,
+//     (sort || [ ]).concat([
 //       {
 //         prop: "",
 //         order: "ascending",
 //       },
-//     ],
+//     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );
@@ -684,17 +731,23 @@ export async function getListMenu() {
 //   return field_permit_models;
 // }
 
-// export async function getListFieldPermit() {
+// export async function getListFieldPermit(
+//   search?: FieldPermitSearch,
+//   page?: PageInput,
+//   sort?: Sort[],
+//   opt?: GqlOpt,
+// ) {
 //   const data = await findAllFieldPermit(
-//     undefined,
-//     undefined,
-//     [
+//     search,
+//     page,
+//     (sort || [ ]).concat([
 //       {
 //         prop: "order_by",
 //         order: "ascending",
 //       },
-//     ],
+//     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );
@@ -742,57 +795,6 @@ export async function findLastOrderByRole(
   return order_by;
 }
 
-/**
- * 获取 角色 字段注释
- */
-export async function getFieldCommentsRole(
-  opt?: GqlOpt,
-) {
-  
-  const data: {
-    getFieldCommentsRole: Query["getFieldCommentsRole"];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getFieldCommentsRole {
-          id,
-          code,
-          lbl,
-          home_url,
-          menu_ids,
-          menu_ids_lbl,
-          permit_ids,
-          permit_ids_lbl,
-          data_permit_ids,
-          data_permit_ids_lbl,
-          field_permit_ids,
-          field_permit_ids_lbl,
-          is_locked,
-          is_locked_lbl,
-          is_enabled,
-          is_enabled_lbl,
-          order_by,
-          rem,
-          create_usr_id,
-          create_usr_id_lbl,
-          create_time,
-          create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
-          update_time_lbl,
-        }
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  const field_comments = data.getFieldCommentsRole as RoleFieldComment;
-  
-  return field_comments;
-}
-
 export function getPagePathRole() {
   return "/base/role";
 }
@@ -800,6 +802,7 @@ export function getPagePathRole() {
 /** 新增时的默认值 */
 export async function getDefaultInputRole() {
   const defaultInput: RoleInput = {
+    is_audit_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

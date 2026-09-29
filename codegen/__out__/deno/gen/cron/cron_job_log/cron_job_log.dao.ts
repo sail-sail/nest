@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -68,6 +69,7 @@ import type {
   InputMaybe,
   PageInput,
   SortInput,
+  CronJobLogExecState,
 } from "/gen/types.ts";
 
 import {
@@ -419,7 +421,6 @@ export async function findAllCronJobLog(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -602,7 +603,7 @@ export async function setIdByLblCronJobLog(
   if (isNotEmpty(input.exec_state_lbl) && input.exec_state == null) {
     const val = exec_stateDict.find((itemTmp) => itemTmp.lbl === input.exec_state_lbl)?.val;
     if (val != null) {
-      input.exec_state = val;
+      input.exec_state = val as CronJobLogExecState;
     }
   } else if (isEmpty(input.exec_state_lbl) && input.exec_state != null) {
     const lbl = exec_stateDict.find((itemTmp) => itemTmp.val === input.exec_state)?.lbl || "";
@@ -1019,9 +1020,9 @@ export async function findByIdsOkCronJobLog(
   return models2;
 }
 
-// MARK: existCronJobLog
+// MARK: existsCronJobLog
 /** 根据搜索条件判断定时任务日志是否存在 */
-export async function existCronJobLog(
+export async function existsCronJobLog(
   search?: Readonly<CronJobLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -1029,7 +1030,7 @@ export async function existCronJobLog(
 ): Promise<boolean> {
   
   const table = getTableNameCronJobLog();
-  const method = "existCronJobLog";
+  const method = "existsCronJobLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1683,12 +1684,7 @@ export async function updateByIdCronJobLog(
   const oldModel = await findByIdCronJobLog(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 定时任务日志 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return id;
   }
   
   const args = new QueryArgs();

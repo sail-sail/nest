@@ -4,6 +4,7 @@ import Vue from "@vitejs/plugin-vue";
 import VueJsx from "@vitejs/plugin-vue-jsx";
 // import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
+import { fileViewerRenderers } from "@file-viewer/vite-plugin";
 
 import Inspector from "vite-plugin-vue-inspector";
 
@@ -33,7 +34,9 @@ import TurboConsole from "unplugin-turbo-console/vite";
 import VueDevtoolsJson from "vite-plugin-devtools-json";
 
 // https://vitejs.dev/config/
+// @ts-ignore
 export default defineConfig({
+// @ts-ignore
   optimizeDeps: {
     exclude: [
       "@jsquash/webp",
@@ -48,6 +51,7 @@ export default defineConfig({
     TurboConsole({
       inspector: false,
     }),
+    // @ts-ignore
     Inspector({
       toggleButtonPos: "top-left",
       lazyLoad: 500,
@@ -66,6 +70,36 @@ export default defineConfig({
       customCollections: {
         font: FileSystemIconLoader("src/assets/iconfont/"),
       },
+    }),
+    fileViewerRenderers({
+      scan: false,
+      preset: "office",
+      formats: [
+        "xls",
+        "doc",
+        "ppt",
+        "xlsx",
+        "docx",
+        "pptx",
+        "pdf",
+        "image",
+        "video",
+        "audio",
+        "text",
+      ],
+      renderers: [
+        "xls",
+        "doc",
+        "ppt",
+        "xlsx",
+        "docx",
+        "pptx",
+        "pdf",
+        "image",
+        "video",
+        "audio",
+        "text",
+      ],
     }),
     AutoImport({
       imports: [
@@ -284,6 +318,7 @@ export default defineConfig({
       versionType: "build_timestamp",
     }),
   ],
+  // @ts-ignore
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

@@ -7,6 +7,11 @@ description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、�
 
 按 GraphQL 定义 -> Resolver 转发 -> Service 业务处理 -> 模块注册 的顺序开发, 每次只处理当前层职责。
 
+## 验证顺序
+
+- deno 后端类型检查为：执行 `npm run typecheck`
+- 不要把 `deno check` 当作等价替代流程
+
 ## 分层架构
 
 | 层 | 文件 | 职责 |

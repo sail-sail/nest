@@ -140,7 +140,7 @@ export async function findByIdsOkServerLog(
 /**
  * 根据搜索条件查找系统日志是否存在
  */
-export async function existServerLog(
+export async function existsServerLog(
   search?: ServerLogSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_exist = await server_logDao.existServerLog(search);
+  const server_log_exist = await server_logDao.existsServerLog(search);
   
   return server_log_exist;
 }

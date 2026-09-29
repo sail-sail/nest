@@ -140,7 +140,7 @@ export async function findByIdsOkJob(
 /**
  * 根据搜索条件查找任务是否存在
  */
-export async function existJob(
+export async function existsJob(
   search?: JobSearch,
 ): Promise<boolean> {
   
@@ -148,7 +148,7 @@ export async function existJob(
   
   await setSearchQuery(search);
   
-  const job_exist = await jobDao.existJob(search);
+  const job_exist = await jobDao.existsJob(search);
   
   return job_exist;
 }

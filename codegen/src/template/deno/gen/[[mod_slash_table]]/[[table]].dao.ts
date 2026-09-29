@@ -13,6 +13,9 @@ const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
 const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
+const orgIdColumn = columns.find((column) => column.COLUMN_NAME === "org_id");
+const hasOrgId = !!orgIdColumn;
+const orgIdModelLabel = orgIdColumn?.modelLabel;
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -41,7 +44,6 @@ const hasDict = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   return column.dict;
 });
 const hasDictbiz = columns.some((column) => {
@@ -52,7 +54,6 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
 const hasDictModelLabel = columns.some((column) => {
@@ -63,7 +64,6 @@ const hasDictModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dict;
@@ -76,7 +76,6 @@ const hasDictbizModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dictbiz;
@@ -154,6 +153,7 @@ const searchByKeyword = opts?.searchByKeyword;
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -161,9 +161,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -192,7 +192,12 @@ if (!(hasDataPermit() && hasCreateUsrId)) {
 import {
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,
+  get_is_creating,<#
+  if (cache) {
+  #>
+  getCacheEnabled,<#
+  }
+  #>
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -295,7 +300,7 @@ for (let i = 0; i < columns.length; i++) {
   break;
 }
 #><#
-if (hasAttOrImg) {
+if (hasAttOrImg && false) {
 #>
 
 import {
@@ -354,6 +359,12 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+<#
+  if (hasOrgId) {
+  #>
+  getAuthModel,<#
+  }
+  #>
   get_usr_id,<#
   if (hasPassword) {
   #>
@@ -1468,7 +1479,6 @@ export async function findCount<#=Table_Up#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -1501,8 +1511,15 @@ export async function findCount<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }<#
   }
   #>
   
@@ -1708,7 +1725,6 @@ export async function findAll<#=Table_Up#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -1890,16 +1906,21 @@ export async function findAll<#=Table_Up#>(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }<#
   if (cache) {
   #>
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }<#
   }
   #>
   
@@ -2079,7 +2100,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2099,7 +2119,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2124,7 +2143,6 @@ export async function findAll<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2143,7 +2161,6 @@ export async function findAll<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2259,7 +2276,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
@@ -2308,7 +2324,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
@@ -2565,7 +2580,6 @@ export async function setIdByLbl<#=Table_Up#>(
         "update_time",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2689,7 +2703,6 @@ export async function setIdByLbl<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
@@ -2707,7 +2720,6 @@ export async function setIdByLbl<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
@@ -2730,7 +2742,6 @@ export async function setIdByLbl<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
@@ -2747,7 +2758,6 @@ export async function setIdByLbl<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
@@ -2772,7 +2782,6 @@ export async function setIdByLbl<#=Table_Up#>(
       "update_time",
       "is_sys",
       "is_deleted",
-      "is_hidden",
     ].includes(column_name)) continue;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -2923,7 +2932,6 @@ export async function setIdByLbl<#=Table_Up#>(
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
-    if (column_name === "is_hidden") continue;
     const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
@@ -2980,7 +2988,6 @@ export async function setIdByLbl<#=Table_Up#>(
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
-    if (column_name === "is_hidden") continue;
     const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
@@ -3051,9 +3058,6 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
       if (column_name === "tenant_id") {
         continue;
       }
-      if (column_name === "is_hidden") {
-        continue;
-      }
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
@@ -3094,9 +3098,6 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
         continue;
       }
       if (column_name === "tenant_id") {
-        continue;
-      }
-      if (column_name === "is_hidden") {
         continue;
       }
       const isPassword = column.isPassword;
@@ -3215,7 +3216,6 @@ export async function findByUnique<#=Table_Up#>(
           "tenant_id",
           "is_sys",
           "is_deleted",
-          "is_hidden",
         ].includes(column_name)
       ) {
         continue;
@@ -3477,8 +3477,15 @@ export async function findSummary<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = JSON.stringify({ sql, args });
+  }<#
   }
   #>
   
@@ -3838,9 +3845,9 @@ export async function findByIdsOk<#=Table_Up#>(
   return models2;
 }
 
-// MARK: exist<#=Table_Up#>
+// MARK: exists<#=Table_Up#>
 /** 根据搜索条件判断<#=table_comment#>是否存在 */
-export async function exist<#=Table_Up#>(
+export async function exists<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;<#
@@ -3853,7 +3860,7 @@ export async function exist<#=Table_Up#>(
 ): Promise<boolean> {
   
   const table = getTableName<#=Table_Up#>();
-  const method = "exist<#=Table_Up#>";
+  const method = "exists<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3917,8 +3924,15 @@ export async function existById<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -4003,9 +4017,6 @@ export async function validate<#=Table_Up#>(
       continue;
     }
     if (column_name === "tenant_id") {
-      continue;
-    }
-    if (column_name === 'is_hidden') {
       continue;
     }
     const data_type = column.DATA_TYPE;
@@ -4164,7 +4175,30 @@ export async function findAutoCode<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}>;
+export async function findAutoCode<#=Table_Up#>(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}[]>;
+export async function findAutoCode<#=Table_Up#>(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableName<#=Table_Up#>();
   const method = "findAutoCode<#=Table_Up#>";
@@ -4179,6 +4213,10 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOne<#=Table_Up#>(
@@ -4212,42 +4250,47 @@ export async function findAutoCode<#=Table_Up#>(
     <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
   }<#
   }
-  #><#
-  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
-  } else {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
+
+  const <#=autoCodeColumn.autoCode.seq#>_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const <#=autoCodeColumn.autoCode.seq#>_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    const <#=autoCodeColumn.COLUMN_NAME#>_i = <#
+      if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #><#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+      #><#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      } else {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      }
+      #>;
+    <#=autoCodeColumn.autoCode.seq#>_list.push({
+      <#=autoCodeColumn.autoCode.seq#>: <#=autoCodeColumn.autoCode.seq#>_i,
+      <#=autoCodeColumn.COLUMN_NAME#>: <#=autoCodeColumn.COLUMN_NAME#>_i,
+    });
   }
-  #>
-  
-  return {
-    <#=autoCodeColumn.autoCode.seq#>,
-    <#=autoCodeColumn.COLUMN_NAME#>,
-  };
+  if (legacyMode) {
+    return <#=autoCodeColumn.autoCode.seq#>_list[0];
+  }
+  return <#=autoCodeColumn.autoCode.seq#>_list;
 }<#
 } else if (autoCodeColumn && dateSeq) {
   const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
@@ -4259,7 +4302,32 @@ export async function findAutoCode<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  <#=dateSeq#>: string;
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}>;
+export async function findAutoCode<#=Table_Up#>(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  <#=dateSeq#>: string;
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}[]>;
+export async function findAutoCode<#=Table_Up#>(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableName<#=Table_Up#>();
   const method = "findAutoCode<#=Table_Up#>";
@@ -4274,6 +4342,10 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOne<#=Table_Up#>(
@@ -4329,43 +4401,46 @@ export async function findAutoCode<#=Table_Up#>(
   const <#=autoCodeColumn.autoCode.seq#> = seq_from_normal + 1;<#
   }
   #>
-<#
-  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
-  } else {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.autoCode.seq#>_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const <#=autoCodeColumn.autoCode.seq#>_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    const <#=autoCodeColumn.COLUMN_NAME#>_i = <#
+      if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #><#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+      #><#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      } else {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      }
+      #>;
+    <#=autoCodeColumn.autoCode.seq#>_list.push({
+      <#=dateSeq#>,
+      <#=autoCodeColumn.autoCode.seq#>: <#=autoCodeColumn.autoCode.seq#>_i,
+      <#=autoCodeColumn.COLUMN_NAME#>: <#=autoCodeColumn.COLUMN_NAME#>_i,
+    });
   }
-  #>
-  
-  return {
-    <#=dateSeq#>,
-    <#=autoCodeColumn.autoCode.seq#>,
-    <#=autoCodeColumn.COLUMN_NAME#>,
-  };
+  if (legacyMode) {
+    return <#=autoCodeColumn.autoCode.seq#>_list[0];
+  }
+  return <#=autoCodeColumn.autoCode.seq#>_list;
 }<#
 }
 #>
@@ -4551,11 +4626,21 @@ async function _creates(
     const dateSeq = autoCodeColumn.autoCode.dateSeq;
   #>
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.<#=autoCodeColumn.COLUMN_NAME#> == null || input.<#=autoCodeColumn.COLUMN_NAME#> === "";
+  }).length;
+  const autoCodes = await findAutoCode<#=Table_Up#>(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
+    if (input.<#=autoCodeColumn.COLUMN_NAME#> != null && input.<#=autoCodeColumn.COLUMN_NAME#> !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {<#
       if (dateSeq) {
       #>
@@ -4564,7 +4649,7 @@ async function _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    } = await findAutoCode<#=Table_Up#>(options);<#
+    } = autoCode;<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = <#=dateSeq#>;<#
@@ -4647,6 +4732,59 @@ async function _creates(
     #>
   }<#
   }
+  #><#
+  if (hasOrgId) {
+  #>
+
+  const authModel = await getAuthModel();
+  const auth_org_id = authModel?.org_id;
+  for (const input of inputs) {
+    if (!input.org_id || input.org_id as unknown as string === "-") {
+      input.org_id = auth_org_id;
+    }
+  }<#
+  }
+  #><#
+  if (hasInlineForeignTabs && hasOrgId) {
+  #>
+  
+  for (const input of inputs) {<#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      if (!inlineForeignSchema) continue;
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inlineForeignOrgIdColumn = inlineForeignSchema.columns.find((item) => item.COLUMN_NAME === "org_id");
+      const inlineForeignOrgIdModelLabel = inlineForeignOrgIdColumn?.modelLabel;
+      if (!inlineForeignOrgIdColumn) continue;
+    #>
+    if (input.<#=inline_column_name#>) {<#
+      if (inline_foreign_type === "one2many") {
+      #>
+      for (const model of input.<#=inline_column_name#>) {
+        model.org_id = input.org_id;<#
+        if (orgIdModelLabel && inlineForeignOrgIdModelLabel) {
+        #>
+        model.<#=inlineForeignOrgIdModelLabel#> = input.<#=orgIdModelLabel#>;<#
+        }
+        #>
+      }<#
+      } else if (inline_foreign_type === "one2one") {
+      #>
+      input.<#=inline_column_name#>.org_id = input.org_id;<#
+        if (orgIdModelLabel && inlineForeignOrgIdModelLabel) {
+        #>
+      input.<#=inline_column_name#>.<#=inlineForeignOrgIdModelLabel#> = input.<#=orgIdModelLabel#>;<#
+        }
+        #>
+    }<#
+      }
+    #>
+    }<#
+    }
+  #>
+  }<#
+  }
   #>
   
   const table = getTableName<#=Table_Up#>();
@@ -4670,8 +4808,7 @@ async function _creates(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       if (
         column_name === "create_usr_id" ||
@@ -5950,7 +6087,6 @@ export async function updateById<#=Table_Up#>(
         "tenant_id",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     if (
@@ -6105,25 +6241,8 @@ export async function updateById<#=Table_Up#>(
   
   const oldModel = await findById<#=Table_Up#>(id, options);
   
-  if (!oldModel) {<#
-    if (isUseI18n) {
-    #>
-    throw throw new ServiceException(
-      await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>")),
-      "500",
-      true,
-      true,
-    );<#
-    } else {
-    #>
-    throw new ServiceException(
-      "编辑失败, 此 <#=table_comment#> 已被删除",
-      "500",
-      true,
-      true,
-    );<#
-    }
-    #>
+  if (!oldModel) {
+    return id;
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -7113,6 +7232,8 @@ export async function updateById<#=Table_Up#>(
   }<#
   }
   #><#
+  if (false) {
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -7137,6 +7258,8 @@ export async function updateById<#=Table_Up#>(
       oldModel?.<#=column_name_rust#>,
     );
   }<#
+  }
+  #><#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -7496,6 +7619,7 @@ export async function deleteByIds<#=Table_Up#>(
     const optTable = optTables[table_name];
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
+      if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
       if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
@@ -7544,7 +7668,7 @@ export async function deleteByIds<#=Table_Up#>(
     #><#
     }
     #><#
-    if (!hasIsDeleted) {
+    if (!hasIsDeleted && false) {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -8327,6 +8451,8 @@ export async function forceDeleteByIds<#=Table_Up#>(
     #><#
     }
     #><#
+    if (false) {
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -8343,6 +8469,8 @@ export async function forceDeleteByIds<#=Table_Up#>(
     await deleteObject(
       oldModel?.<#=column_name#>,
     );<#
+    }
+    #><#
     }
     #>
   }<#

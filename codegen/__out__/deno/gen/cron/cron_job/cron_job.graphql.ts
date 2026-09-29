@@ -49,6 +49,10 @@ type CronJobModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "所属组织"
+  org_id: OrgId!
+  "所属组织"
+  org_id_lbl: String!
   "已删除"
   is_deleted: Int!
 }
@@ -95,6 +99,10 @@ type CronJobFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
+  "所属组织"
+  org_id: String!
+  "所属组织"
+  org_id_lbl: String!
 }
 input CronJobInput {
   "ID"
@@ -123,6 +131,10 @@ input CronJobInput {
   order_by: Int
   "备注"
   rem: String
+  "所属组织"
+  org_id: OrgId
+  "所属组织"
+  org_id_lbl: String
 }
 input CronJobSearch {
   "已删除"
@@ -160,6 +172,14 @@ input CronJobSearch {
   update_usr_id_lbl: [String!]
   "更新人"
   update_usr_id_lbl_like: String
+  "所属组织"
+  org_id: [OrgId!]
+  "所属组织"
+  org_id_is_null: Boolean
+  "所属组织"
+  org_id_lbl: [String!]
+  "所属组织"
+  org_id_lbl_like: String
 }
 type Query {
   "根据条件查找定时任务总数"
@@ -174,6 +194,8 @@ type Query {
   findByIdCronJob(id: CronJobId!): CronJobModel
   "根据 ids 查找定时任务"
   findByIdsCronJob(ids: [CronJobId!]!): [CronJobModel]!
+  "根据搜索条件判断定时任务是否存在"
+  existsCronJob(search: CronJobSearch): Boolean!
   "查找定时任务 order_by 字段的最大值"
   findLastOrderByCronJob(search: CronJobSearch): Int!
 }

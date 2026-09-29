@@ -49,6 +49,7 @@
           <CustomSelect
             v-model="job_id_search"
             :method="getListJob"
+            dirty-key="任务"
             :options-map="((item: JobModel) => {
               return {
                 label: item.lbl,
@@ -180,7 +181,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -221,7 +224,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -277,7 +280,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -352,7 +357,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '还原') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -364,7 +369,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -536,6 +541,7 @@
           
           <!-- 名称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -543,7 +549,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, 'lbl', row[column.property] + ' - ' + row.lbl)"
+                  @click="openForeignTabs(row.id, 'lbl', row[column.property])"
                 >
                   {{ row[column.property] }}
                 </el-link>
@@ -553,6 +559,7 @@
           
           <!-- 任务 -->
           <template v-else-if="'job_id_lbl' === col.prop && (showBuildIn || builtInSearch?.job_id == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -562,6 +569,7 @@
           
           <!-- Cron表达式 -->
           <template v-else-if="'cron' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -571,6 +579,7 @@
           
           <!-- 时区 -->
           <template v-else-if="'timezone_lbl' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -580,6 +589,7 @@
           
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -596,6 +606,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -612,6 +623,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -638,6 +650,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -647,6 +660,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -656,6 +670,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -665,6 +680,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -674,6 +690,17 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {CronJobModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 所属组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
+            <!-- @vue-generic {CronJobModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -790,7 +817,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -823,6 +853,8 @@ const props = defineProps<{
   job_id?: string|string[]; // 任务
   job_id_lbl?: string; // 任务
   is_enabled?: string|string[]; // 启用
+  org_id?: string|string[]; // 所属组织
+  org_id_lbl?: string; // 所属组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -842,6 +874,8 @@ const builtInSearchType: { [key: string]: string } = {
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
   update_usr_id_lbl: "string[]",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -1185,11 +1219,20 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
     },
+    {
+      label: "所属组织",
+      prop: "org_id_lbl",
+      sortBy: "org_id_lbl",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
   ];
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1203,6 +1246,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1302,7 +1369,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<CronJobModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<CronJobModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1347,7 +1418,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1379,7 +1450,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1452,6 +1523,7 @@ async function onImportExcel() {
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
+    [ "所属组织" ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1481,6 +1553,7 @@ async function onImportExcel() {
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
+          "org_id_lbl": "string",
         },
       },
     );
@@ -1511,7 +1584,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: CronJobId, is_locked: 0 | 1) {
+async function onIs_locked(id: CronJobId, is_locked: number) {
   if (isLocked) {
     return;
   }
@@ -1533,7 +1606,7 @@ async function onIs_locked(id: CronJobId, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: CronJobId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: CronJobId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1562,7 +1635,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1611,9 +1684,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: CronJobModel,
-  column: TableColumnCtx<CronJobModel>,
+  column: TableColumnCtx<CronJobModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1664,7 +1737,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1696,7 +1769,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1723,12 +1796,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1757,12 +1830,12 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1782,7 +1855,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 定时任务 成功`;
     } else {
-      msg = `解锋 ${ num } 定时任务 成功`;
+      msg = `解锁 ${ num } 定时任务 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1796,7 +1869,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1864,10 +1937,11 @@ async function openForeignTabs(
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1876,10 +1950,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
