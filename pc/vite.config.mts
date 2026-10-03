@@ -33,6 +33,23 @@ import TurboConsole from "unplugin-turbo-console/vite";
 
 import VueDevtoolsJson from "vite-plugin-devtools-json";
 
+const commonProxy = {
+  target: "http://localhost:4001",
+  changeOrigin: true,
+  secure: false,
+};
+
+const makeProxy = (paths: string[], extra: Record<string, any> = {}) =>
+  Object.fromEntries(
+    paths.map((path) => [
+      path,
+      {
+        ...commonProxy,
+        ...extra[path],
+      },
+    ]),
+  );
+
 // https://vitejs.dev/config/
 // @ts-ignore
 export default defineConfig({
@@ -340,18 +357,7 @@ export default defineConfig({
     open: false,
     cors: true,
     strictPort: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:4001",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/graphql": {
-        target: "http://localhost:4001",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    proxy: makeProxy(["/api", "/graphql"]),
   },
   server: {
     port: 4000,
@@ -359,18 +365,11 @@ export default defineConfig({
     open: false,
     cors: true,
     strictPort: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:4001",
-        changeOrigin: true,
-        secure: false,
-        ws: true,
+    proxy: makeProxy(
+      ["/api", "/graphql", "/mcp", "/.well-known", "/authorize", "/token", "/revoke", "/register"],
+      {
+        "/api": { ws: true },
       },
-      "/graphql": {
-        target: "http://localhost:4001",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    ),
   },
 });

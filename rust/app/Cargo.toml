@@ -12,6 +12,7 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender.workspace = true
 tracing-attributes.workspace = true
+async-trait.workspace = true
 tokio.workspace = true
 poem.workspace = true
 async-graphql.workspace = true
@@ -56,6 +57,7 @@ delay_timer.workspace = true
 num-traits.workspace = true
 fast_chemail.workspace = true
 http.workspace = true
+http-body-util.workspace = true
 futures.workspace = true
 sha1.workspace = true
 aes.workspace = true
@@ -79,6 +81,7 @@ calamine.workspace = true
 wecom-crypto.workspace = true
 rumqttc-v5-next.workspace = true
 coordtransform.workspace = true
+rmcp.workspace = true
 
 generated = { path = "../generated" }
 

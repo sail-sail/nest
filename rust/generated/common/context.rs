@@ -41,12 +41,43 @@ use crate::base::org::org_model::OrgId;
 pub const FIND_ALL_IDS_LIMIT: usize = 5000;
 const FIND_ALL_RESULT_LIMIT: usize = 1000;
 pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;
+pub const PAGE_SIZE_DEFAULT: i64 = 20;
+pub const PAGE_SIZE_MAX: i64 = 200;
+
+#[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
+pub struct NormalizedPageQuery {
+  pub pg_offset: i64,
+  pub pg_size: i64,
+  pub pg_size_capped: bool,
+  pub pg_size_defaulted: bool,
+}
 
 pub fn get_find_all_result_limit() -> usize {
   env::var("server_find_all_result_limit")
     .ok()
     .and_then(|x| x.parse::<usize>().ok())
     .unwrap_or(FIND_ALL_RESULT_LIMIT)
+}
+
+#[must_use]
+#[allow(dead_code)]
+pub fn normalize_page_query_values(
+  pg_offset: Option<i64>,
+  pg_size: Option<i64>,
+) -> NormalizedPageQuery {
+  let pg_offset = pg_offset.unwrap_or(0).max(0);
+  let requested_pg_size = pg_size.filter(|value| *value > 0);
+  let pg_size_defaulted = requested_pg_size.is_none();
+  let requested_pg_size = requested_pg_size.unwrap_or(PAGE_SIZE_DEFAULT);
+  let pg_size_capped = requested_pg_size > PAGE_SIZE_MAX;
+  let pg_size = requested_pg_size.min(PAGE_SIZE_MAX);
+  NormalizedPageQuery {
+    pg_offset,
+    pg_size,
+    pg_size_capped,
+    pg_size_defaulted,
+  }
 }
 
 static SERVER_TOKEN_TIMEOUT: OnceLock<i64> = OnceLock::new();
@@ -1972,6 +2003,9 @@ impl <'a> CtxBuilder<'a> {
     }
     let auth_token = auth_token
       .ok_or_else(|| eyre!("token_empty"))?;
+    if auth_token.starts_with("mcp_at_") || auth_token.starts_with("mcp_rt_") {
+      return Err(eyre!("oauth_token_invalid"));
+    }
     self.old_auth_token = Some(auth_token.clone());
     let mut auth_model = match get_auth_model_by_token(auth_token) {
       Ok(item) => item,
@@ -2015,6 +2049,9 @@ impl <'a> CtxBuilder<'a> {
     }
     let auth_token = auth_token
       .ok_or_else(|| eyre!("token_empty"))?;
+    if auth_token.starts_with("mcp_at_") || auth_token.starts_with("mcp_rt_") {
+      return Ok(self);
+    }
     self.old_auth_token = Some(auth_token.clone());
     self.auth_model = get_auth_model_by_token(auth_token).ok();
     Ok(self)
