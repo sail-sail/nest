@@ -42,6 +42,7 @@ fn get_can_sort_in_api_domain() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DOMAIN
 }
 
+/// 域名
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DomainModel")]
 #[allow(dead_code)]
@@ -158,6 +159,7 @@ impl FromRow<'_, MySqlRow> for DomainModel {
   }
 }
 
+/// 域名
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DomainFieldComment")]
 #[allow(dead_code)]
@@ -215,6 +217,7 @@ pub struct DomainFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 域名
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DomainSearch")]
 #[allow(dead_code)]
@@ -368,6 +371,7 @@ impl std::fmt::Debug for DomainSearch {
   }
 }
 
+/// 域名
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DomainInput")]
 #[allow(dead_code)]

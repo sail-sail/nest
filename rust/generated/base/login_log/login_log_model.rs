@@ -43,6 +43,7 @@ fn get_can_sort_in_api_login_log() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_LOGIN_LOG
 }
 
+/// 登录日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogModel")]
 #[allow(dead_code)]
@@ -160,6 +161,7 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
   }
 }
 
+/// 登录日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogFieldComment")]
 #[allow(dead_code)]
@@ -193,6 +195,7 @@ pub struct LoginLogFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 登录日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogSearch")]
 #[allow(dead_code)]
@@ -331,6 +334,7 @@ impl std::fmt::Debug for LoginLogSearch {
   }
 }
 
+/// 登录日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogInput")]
 #[allow(dead_code)]

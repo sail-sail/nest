@@ -43,6 +43,7 @@ fn get_can_sort_in_api_i18n() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_I18N
 }
 
+/// 国际化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nModel")]
 #[allow(dead_code)]
@@ -155,6 +156,7 @@ impl FromRow<'_, MySqlRow> for I18nModel {
   }
 }
 
+/// 国际化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nFieldComment")]
 #[allow(dead_code)]
@@ -209,6 +211,7 @@ pub struct I18nFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 国际化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "I18nSearch")]
 #[allow(dead_code)]
@@ -391,6 +394,7 @@ impl std::fmt::Debug for I18nSearch {
   }
 }
 
+/// 国际化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "I18nInput")]
 #[allow(dead_code)]

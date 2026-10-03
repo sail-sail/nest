@@ -43,6 +43,7 @@ fn get_can_sort_in_api_operation_record() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_OPERATION_RECORD
 }
 
+/// 操作记录
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordModel")]
 #[allow(dead_code)]
@@ -171,6 +172,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
   }
 }
 
+/// 操作记录
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordFieldComment")]
 #[allow(dead_code)]
@@ -216,6 +218,7 @@ pub struct OperationRecordFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 操作记录
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordSearch")]
 #[allow(dead_code)]
@@ -412,6 +415,7 @@ impl std::fmt::Debug for OperationRecordSearch {
   }
 }
 
+/// 操作记录
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordInput")]
 #[allow(dead_code)]

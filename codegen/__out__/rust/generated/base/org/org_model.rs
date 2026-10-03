@@ -44,6 +44,7 @@ fn get_can_sort_in_api_org() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_ORG
 }
 
+/// 组织
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OrgModel")]
 #[allow(dead_code)]
@@ -160,6 +161,7 @@ impl FromRow<'_, MySqlRow> for OrgModel {
   }
 }
 
+/// 组织
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OrgFieldComment")]
 #[allow(dead_code)]
@@ -214,6 +216,7 @@ pub struct OrgFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 组织
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OrgSearch")]
 #[allow(dead_code)]
@@ -359,6 +362,7 @@ impl std::fmt::Debug for OrgSearch {
   }
 }
 
+/// 组织
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OrgInput")]
 #[allow(dead_code)]

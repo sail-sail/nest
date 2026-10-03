@@ -337,6 +337,7 @@ fn get_can_sort_in_api_<#=table#>() -> &'static [&'static str; <#=can_sort_in_ap
   &CAN_SORT_IN_API_<#=table.toUpperCase()#>
 }
 
+/// <#=table_comment#>
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Model")]
 #[allow(dead_code)]
@@ -1706,6 +1707,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   }
 }
 
+/// <#=table_comment#>
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>FieldComment")]
 #[allow(dead_code)]
@@ -1801,6 +1803,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
 }
 
+/// <#=table_comment#>
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Search")]
 #[allow(dead_code)]
@@ -2266,6 +2269,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
   }
 }
 
+/// <#=table_comment#>
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Input")]
 #[allow(dead_code)]
@@ -3151,6 +3155,7 @@ impl From<<#=tableUP#>Model> for crate::<#=mod#>::<#=historyTable#>::<#=historyT
 if (hasSummary) {
 #>
 
+/// <#=table_comment#>
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "<#=Table_Up#>Summary")]
 pub struct <#=Table_Up#>Summary {
