@@ -1,5 +1,5 @@
 use color_eyre::eyre::{Result, eyre};
-use tracing::info;
+use tracing::{debug, info};
 
 use generated::common::context::Options;
 
@@ -45,7 +45,11 @@ pub async fn run_job(
     &job_model,
   ).await?;
   
-  info!("cron_job begin: {cron_job_id}: {cron}");
+  let cron_log_options = Options::from(options)
+    .set_is_debug(Some(false))
+    .set_is_silent_mode(Some(true));
+  
+  debug!("cron_job begin: {cron_job_id}: {cron}");
   
   let begin_time = chrono::Local::now().naive_local();
   let id = create_cron_job_log(
@@ -56,7 +60,7 @@ pub async fn run_job(
       tenant_id: Some(tenant_id),
       ..Default::default()
     },
-    options,
+    Some(cron_log_options),
   ).await?;
   
   let code = job_model.code;
@@ -70,7 +74,7 @@ pub async fn run_job(
     _ => None,
   };
   
-  info!("cron_job end: {cron_job_id}: {cron}");
+  debug!("cron_job end: {cron_job_id}: {cron}");
   
   let end_time = chrono::Local::now().naive_local();
   
@@ -88,7 +92,7 @@ pub async fn run_job(
           end_time: Some(end_time),
           ..Default::default()
         },
-        options,
+        Some(cron_log_options),
       ).await?;
     }
     
@@ -107,7 +111,7 @@ pub async fn run_job(
         end_time: Some(end_time),
         ..Default::default()
       },
-      options,
+      Some(cron_log_options),
     ).await?;
     
     return Ok(exec_result.clone());
