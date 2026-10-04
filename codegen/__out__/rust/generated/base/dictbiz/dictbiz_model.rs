@@ -49,6 +49,7 @@ fn get_can_sort_in_api_dictbiz() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DICTBIZ
 }
 
+/// 业务字典
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizModel")]
 #[allow(dead_code)]
@@ -187,6 +188,7 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
   }
 }
 
+/// 业务字典
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizFieldComment")]
 #[allow(dead_code)]
@@ -247,6 +249,7 @@ pub struct DictbizFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 业务字典
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictbizSearch")]
 #[allow(dead_code)]
@@ -417,6 +420,7 @@ impl std::fmt::Debug for DictbizSearch {
   }
 }
 
+/// 业务字典
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictbizInput")]
 #[allow(dead_code)]

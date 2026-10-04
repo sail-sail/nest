@@ -44,6 +44,7 @@ fn get_can_sort_in_api_data_permit() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_DATA_PERMIT
 }
 
+/// 数据权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
 #[allow(dead_code)]
@@ -167,6 +168,7 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
   }
 }
 
+/// 数据权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitFieldComment")]
 #[allow(dead_code)]
@@ -221,6 +223,7 @@ pub struct DataPermitFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 数据权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitSearch")]
 #[allow(dead_code)]
@@ -371,6 +374,7 @@ impl std::fmt::Debug for DataPermitSearch {
   }
 }
 
+/// 数据权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitInput")]
 #[allow(dead_code)]

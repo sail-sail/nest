@@ -49,6 +49,7 @@ fn get_can_sort_in_api_role() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_ROLE
 }
 
+/// 角色
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "RoleModel")]
 #[allow(dead_code)]
@@ -368,6 +369,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
   }
 }
 
+/// 角色
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "RoleFieldComment")]
 #[allow(dead_code)]
@@ -458,6 +460,7 @@ pub struct RoleFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 角色
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "RoleSearch")]
 #[allow(dead_code)]
@@ -700,6 +703,7 @@ impl std::fmt::Debug for RoleSearch {
   }
 }
 
+/// 角色
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "RoleInput")]
 #[allow(dead_code)]

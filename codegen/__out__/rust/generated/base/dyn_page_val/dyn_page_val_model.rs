@@ -43,6 +43,7 @@ fn get_can_sort_in_api_dyn_page_val() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_DYN_PAGE_VAL
 }
 
+/// 动态页面值
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageValModel")]
 #[allow(dead_code)]
@@ -143,6 +144,7 @@ impl FromRow<'_, MySqlRow> for DynPageValModel {
   }
 }
 
+/// 动态页面值
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageValFieldComment")]
 #[allow(dead_code)]
@@ -188,6 +190,7 @@ pub struct DynPageValFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 动态页面值
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageValSearch")]
 #[allow(dead_code)]
@@ -341,6 +344,7 @@ impl std::fmt::Debug for DynPageValSearch {
   }
 }
 
+/// 动态页面值
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageValInput")]
 #[allow(dead_code)]
