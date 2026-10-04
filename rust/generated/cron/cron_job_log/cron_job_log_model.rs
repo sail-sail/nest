@@ -44,6 +44,7 @@ fn get_can_sort_in_api_cron_job_log() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_CRON_JOB_LOG
 }
 
+/// 定时任务日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogModel")]
 #[allow(dead_code)]
@@ -190,6 +191,7 @@ impl FromRow<'_, MySqlRow> for CronJobLogModel {
   }
 }
 
+/// 定时任务日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogFieldComment")]
 #[allow(dead_code)]
@@ -235,6 +237,7 @@ pub struct CronJobLogFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 定时任务日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogSearch")]
 #[allow(dead_code)]
@@ -405,6 +408,7 @@ impl std::fmt::Debug for CronJobLogSearch {
   }
 }
 
+/// 定时任务日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogInput")]
 #[allow(dead_code)]

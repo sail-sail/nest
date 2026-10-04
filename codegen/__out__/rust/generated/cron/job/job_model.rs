@@ -44,6 +44,7 @@ fn get_can_sort_in_api_job() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_JOB
 }
 
+/// 任务
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "JobModel")]
 #[allow(dead_code)]
@@ -171,6 +172,7 @@ impl FromRow<'_, MySqlRow> for JobModel {
   }
 }
 
+/// 任务
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "JobFieldComment")]
 #[allow(dead_code)]
@@ -228,6 +230,7 @@ pub struct JobFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 任务
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "JobSearch")]
 #[allow(dead_code)]
@@ -386,6 +389,7 @@ impl std::fmt::Debug for JobSearch {
   }
 }
 
+/// 任务
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "JobInput")]
 #[allow(dead_code)]
