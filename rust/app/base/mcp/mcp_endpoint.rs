@@ -75,7 +75,7 @@ use super::mcp_service;
 use super::rmcp_session_store::RmcpSessionStore;
 use super::schema_search;
 
-const INSTRUCTIONS: &str = "这是内嵌在 rust 后端里的 MCP 调试入口。先调用 session_me 确认当前登录态；如果不清楚 GraphQL 的 Query、Mutation、Input 或返回类型，先用 schema_search 搜索 schema；如果已经定位到精确类型名，再用 schema_get 查看完整 SDL；过大的聚合类型不会直接返回；最后再用 graphql_execute 调试业务接口。对任何 findAll* 查询，都要显式传 page；缺 page 会被直接拒绝，pgSize 缺省按 20，超过 200 自动降到 200。附件上传走 oss_upload，下载和图片预览分别用 oss_download_url / oss_image_url。标准客户端可直接走 OAuth 授权码流程；手工调试也可以先调用 POST /mcp/login，得到 authorization 后放到 Authorization: Bearer <token> 请求头里。";
+const INSTRUCTIONS: &str = "这是内嵌在 rust 后端里的 MCP 调试入口。先调用 session_me 确认当前登录态；如果不清楚 GraphQL 的 Query、Mutation、Input 或返回类型，先用 schema_search 搜索 schema；如果已经定位到精确类型名，再用 schema_get 查看完整 SDL；过大的聚合类型不会直接返回；最后再用 graphql_execute 调试业务接口。对任何 findAll* 查询，都要显式传 page；缺 page 会被直接拒绝，pgSize 缺省按 20，超过 2000 自动降到 2000。附件上传走 oss_upload，下载和图片预览分别用 oss_download_url / oss_image_url。标准客户端可直接走 OAuth 授权码流程；手工调试也可以先调用 POST /mcp/login，得到 authorization 后放到 Authorization: Bearer <token> 请求头里。";
 const SESSION_SWEEP_INTERVAL: Duration = Duration::from_secs(5);
 
 type McpHttpService = StreamableHttpService<McpServer, McpSessionManager>;
@@ -823,7 +823,7 @@ fn tool_definitions() -> Vec<Tool> {
     ),
     Tool::new(
       "graphql_execute",
-      "直接在 rust 进程内执行 GraphQL query 或 mutation，用于调试后端接口。顶层 findAll* 缺 page 会被直接拒绝；pgSize 缺省按 20，超过 200 自动降到 200。",
+      "直接在 rust 进程内执行 GraphQL query 或 mutation，用于调试后端接口。顶层 findAll* 缺 page 会被直接拒绝；pgSize 缺省按 20，超过 2000 自动降到 2000。",
       schema_object(json!({
         "type": "object",
         "properties": {

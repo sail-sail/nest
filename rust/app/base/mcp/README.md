@@ -64,7 +64,7 @@
 - `session_me`: 查看当前登录态和 token 相关信息
 - `schema_search`: 搜索当前服务的 GraphQL schema，定位 Query、Mutation、Input、返回类型和字段签名；会过滤 `findOneOk*` / `findByIdOk*` / `findByIdsOk*`、`getFieldComments*` 和 `*FieldComment`
 - `schema_get`: 按类型名精确返回完整 SDL，适合在搜索后查看某个类型的完整定义；过大的聚合类型会直接拒绝返回
-- `graphql_execute`: 直接在进程内执行 GraphQL query / mutation；顶层 `findAll*` 缺 `page` 会拒绝执行，`pgSize` 缺省按 20，超过 200 自动降到 200
+- `graphql_execute`: 直接在进程内执行 GraphQL query / mutation；顶层 `findAll*` 缺 `page` 会拒绝执行，`pgSize` 缺省按 20，超过 2000 自动降到 2000
 - `oss_upload`: 上传附件
 - `oss_download_url`: 生成附件下载链接
 - `oss_image_url`: 生成图片预览链接
@@ -74,7 +74,7 @@
 1. 先调用 `session_me` 验证身份是否正确
 2. 不清楚 GraphQL 名称时先用 `schema_search` 搜索 Query、Mutation 和相关 Input/Model
 3. 已经定位到精确类型名后，用 `schema_get` 拉该类型的完整 SDL
-4. 如果是 `findAll*` 列表查询，务必显式传 `page: { pgOffset, pgSize, isResultLimit: true }`；缺 page 会被直接拒绝，`pgSize` 缺省按 20、超过 200 自动降到 200，并优先先查对应的 `findCount*`
+4. 如果是 `findAll*` 列表查询，务必显式传 `page: { pgOffset, pgSize, isResultLimit: true }`；缺 page 会被直接拒绝，`pgSize` 缺省按 20、超过 2000 自动降到 2000，并优先先查对应的 `findCount*`
 5. 再用 `graphql_execute` 调试业务接口
 6. 附件相关场景再调用 `oss_*`
 
@@ -108,7 +108,7 @@ Redis key 前缀统一为:
 ## 可选过期配置
 
 ```dotenv
-mcp_oauth_access_token_timeout = 3600
+mcp_oauth_access_token_timeout = 315360000
 mcp_oauth_refresh_token_timeout = 2592000
 mcp_oauth_authorization_code_timeout = 300
 mcp_rmcp_session_timeout = 300
@@ -116,7 +116,7 @@ mcp_rmcp_session_timeout = 300
 
 默认值:
 
-- access token: 3600 秒
+- access token: 10 年（315360000 秒）
 - refresh token: 30 天
 - authorization code: 300 秒
 - rmcp session 空闲超时: 300 秒

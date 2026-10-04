@@ -140,6 +140,30 @@ impl OAuthStore {
     }
   }
 
+  pub async fn ensure_client(
+    &self,
+    client: OAuthClient,
+  ) -> Result<OAuthClient> {
+    if let Some(existing) = self.get_client(&client.client_id).await? {
+      return Ok(existing);
+    }
+    match self.store_type {
+      OAuthStoreType::Memory => {
+        let mut memory = self.memory.lock().await;
+        memory.clients.insert(client.client_id.clone(), client.clone());
+        Ok(client)
+      },
+      OAuthStoreType::Redis => {
+        self.redis_set_json(
+          &client_key(&client.client_id),
+          &client,
+          None,
+        ).await?;
+        Ok(client)
+      },
+    }
+  }
+
   pub async fn create_authorization_code(
     &self,
     client_id: String,
@@ -735,7 +759,7 @@ fn now_sec() -> i64 {
 }
 
 fn access_token_ttl_sec() -> i64 {
-  env_ttl("mcp_oauth_access_token_timeout", 60 * 60)
+  env_ttl("mcp_oauth_access_token_timeout", 10 * 365 * 24 * 60 * 60)
 }
 
 fn refresh_token_ttl_sec() -> i64 {

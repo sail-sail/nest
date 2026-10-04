@@ -42,7 +42,7 @@ pub const FIND_ALL_IDS_LIMIT: usize = 5000;
 const FIND_ALL_RESULT_LIMIT: usize = 1000;
 pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;
 pub const PAGE_SIZE_DEFAULT: i64 = 20;
-pub const PAGE_SIZE_MAX: i64 = 200;
+pub const PAGE_SIZE_MAX: i64 = 2000;
 
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]

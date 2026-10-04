@@ -28,6 +28,7 @@ use super::oauth_store;
 
 const MCP_SCOPE_TOOLS: &str = "mcp:tools";
 const LEGACY_DYNAMIC_CLIENT_ID_PREFIX: &str = "mcp_client_";
+const MCP_CLIENT_ID_MAX_LENGTH: usize = 256;
 const VSCODE_CLIENT_METADATA_URL: &str = "https://vscode.dev/oauth/client-metadata.json";
 const GENERIC_CUSTOM_SCHEME_ALLOWLIST: [&str; 2] = ["workbuddy", "cursor"];
 
@@ -236,6 +237,15 @@ pub async fn oauth_authorize_get(
   };
   let tenants = load_login_tenants(req).await;
   let tenant_id = default_tenant_id(&tenants, None);
+  if tenant_id.trim().is_empty() {
+    return html_response(
+      StatusCode::BAD_REQUEST,
+      render_error_page(
+        "无法继续授权",
+        "当前环境没有可用的 tenant_id，无法登录 MCP。请联系管理员确认租户配置后再试。",
+      ),
+    );
+  }
   html_response(
     StatusCode::OK,
     render_authorize_page(req, &ctx, &tenants, None, &tenant_id, ""),
@@ -268,7 +278,7 @@ pub async fn oauth_authorize_post(
   if tenant_id.trim().is_empty() {
     return html_response(
       StatusCode::BAD_REQUEST,
-      render_authorize_page(req, &ctx, &tenants, Some("请选择或输入 tenant_id"), "", form.username.as_str()),
+      render_authorize_page(req, &ctx, &tenants, Some("请选择或输入有效的 tenant_id，当前租户信息为空，无法登录"), "", form.username.as_str()),
     );
   }
   if form.username.trim().is_empty() || form.password.is_empty() {
@@ -876,11 +886,25 @@ async fn resolve_authorize_client(
   if client.is_some() {
     return Ok(client);
   }
-  Ok(recover_legacy_dynamic_client(
+  if let Some(client) = recover_legacy_dynamic_client(
     &query.client_id,
     &query.redirect_uri,
     query.scope.as_deref(),
-  ))
+  ) {
+    let client = oauth_store::oauth_store()
+      .ensure_client(client)
+      .await
+      .map_err(|err| format!("client 注册回填失败: {err}"))?;
+    return Ok(Some(client));
+  }
+  let Some(client) = recover_dynamic_client(&query.client_id, &query.redirect_uri, query.scope.as_deref()) else {
+    return Ok(None);
+  };
+  let client = oauth_store::oauth_store()
+    .ensure_client(client)
+    .await
+    .map_err(|err| format!("client 注册回填失败: {err}"))?;
+  Ok(Some(client))
 }
 
 async fn resolve_token_client(
@@ -894,7 +918,21 @@ async fn resolve_token_client(
   let Some(redirect_uri) = redirect_uri else {
     return Ok(None);
   };
-  Ok(recover_legacy_dynamic_client(client_id, redirect_uri, None))
+  if let Some(client) = recover_legacy_dynamic_client(client_id, redirect_uri, None) {
+    let client = oauth_store::oauth_store()
+      .ensure_client(client)
+      .await
+      .map_err(|err| format!("client 注册回填失败: {err}"))?;
+    return Ok(Some(client));
+  }
+  let Some(client) = recover_dynamic_client(client_id, redirect_uri, None) else {
+    return Ok(None);
+  };
+  let client = oauth_store::oauth_store()
+    .ensure_client(client)
+    .await
+    .map_err(|err| format!("client 注册回填失败: {err}"))?;
+  Ok(Some(client))
 }
 
 async fn lookup_oauth_client(
@@ -996,6 +1034,39 @@ fn resolve_known_client_metadata_document(
   }
 
   None
+}
+
+fn recover_dynamic_client(
+  client_id: &str,
+  redirect_uri: &str,
+  scope: Option<&str>,
+) -> Option<oauth_store::OAuthClient> {
+  if !is_acceptable_client_id(client_id) || redirect_uri.trim().is_empty() {
+    return None;
+  }
+  Some(oauth_store::OAuthClient {
+    client_id: client_id.to_owned(),
+    client_id_issued_at: get_now_sec(),
+    client_name: Some("Recovered public client".to_owned()),
+    redirect_uris: vec![redirect_uri.to_owned()],
+    grant_types: vec!["authorization_code".to_owned(), "refresh_token".to_owned()],
+    response_types: vec!["code".to_owned()],
+    token_endpoint_auth_method: "none".to_owned(),
+    scope: scope
+      .map(str::trim)
+      .filter(|item| !item.is_empty())
+      .map(ToOwned::to_owned),
+    client_uri: None,
+  })
+}
+
+fn is_acceptable_client_id(
+  client_id: &str,
+) -> bool {
+  if client_id.is_empty() || client_id.len() > MCP_CLIENT_ID_MAX_LENGTH {
+    return false;
+  }
+  client_id.bytes().all(|byte| (0x21..=0x7E).contains(&byte))
 }
 
 fn recover_legacy_dynamic_client(
@@ -1162,8 +1233,16 @@ fn default_tenant_id(
     && !tenant_id.trim().is_empty() {
       return tenant_id.trim().to_owned();
     }
-  tenants.first()
-    .map(|item| item.id.to_string())
+  tenants.iter()
+    .find_map(|item| {
+      let tenant_id = item.id.to_string();
+      let tenant_id = tenant_id.trim();
+      if tenant_id.is_empty() {
+        None
+      } else {
+        Some(tenant_id.to_owned())
+      }
+    })
     .unwrap_or_default()
 }
 

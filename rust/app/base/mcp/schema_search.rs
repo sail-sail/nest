@@ -8,7 +8,7 @@ use serde_json::{Map, Value, json};
 use super::mcp_model::{McpSchemaGetInput, McpSchemaSearchInput};
 
 static SCHEMA_SEARCH_INDEX: OnceLock<std::result::Result<SchemaSearchIndex, String>> = OnceLock::new();
-const SCHEMA_GET_MAX_MEMBER_COUNT: usize = 200;
+const SCHEMA_GET_MAX_MEMBER_COUNT: usize = 2000;
 const SCHEMA_GET_MAX_SDL_CHARS: usize = 20_000;
 
 pub fn search_schema(
