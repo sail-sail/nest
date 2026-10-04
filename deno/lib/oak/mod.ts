@@ -8,6 +8,7 @@ import tmpfileRouter from "/lib/tmpfile/tmpfile.router.ts";
 import ossRouter from "/lib/oss/oss.router.ts";
 import websocketRouter from "../websocket/websocket.router.ts";
 import healthRouter from "/lib/health/health.router.ts";
+import mcpRouter from "/lib/mcp/mcp.router.ts";
 
 export function initApp() {
   const app = new Application();
@@ -20,6 +21,7 @@ export function initApp() {
   app.use(ossRouter.routes());
   app.use(websocketRouter.routes());
   app.use(healthRouter.routes());
+  app.use(mcpRouter.routes());
   
   return app;
 }

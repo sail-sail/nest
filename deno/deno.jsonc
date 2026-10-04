@@ -34,6 +34,8 @@
     "./": "./",
     "/": "./",
     "@hexagon/croner": "jsr:@hexagon/croner@10.0.1",
+    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.32.0",
+    "zod": "npm:zod@4.6.5",
     "@oak/oak": "jsr:@oak/oak@17.2.0",
     "@std/assert": "jsr:@std/assert@1.0.19",
     "@std/crypto": "jsr:@std/crypto@1.0.5",
@@ -44,7 +46,7 @@
     "@std/log": "jsr:@std/log@0.224.14",
     "@std/path": "jsr:@std/path@1.1.4",
     "lru-cache": "npm:lru-cache@11.5.3",
-    "mysql2": "npm:mysql2@3.24.4",
+    "mysql2": "npm:mysql2@3.24.5",
     "xlsx-handlebars": "jsr:@sail/xlsx-handlebars@0.2.2",
     "docx-handlebars": "jsr:@sail/docx-handlebars@0.3.3",
     "dayjs": "npm:dayjs@1.11.23",
@@ -56,7 +58,7 @@
     "mnemonist": "npm:mnemonist@0.40.5",
     "redis": "jsr:@db/redis@0.41.2",
     "sqlstring": "npm:sqlstring@2.3.3",
-    "sharp": "npm:sharp@0.35.4",
+    "sharp": "npm:sharp@0.35.5",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.22",
     "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"
   }

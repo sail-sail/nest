@@ -188,15 +188,80 @@ const queryCacheMap = new LRUCache<string, {
   max: 10000,
 });
 
+export interface GraphqlExecutionOptions {
+  oakCtx?: OakContext;
+  authorization?: string;
+  notVerifyToken?: boolean;
+}
+
+export function getGraphqlSchemaSDL() {
+  return mergeSchema(gqlSchemaStr);
+}
+
+function createExecutionRootValue(
+  options: GraphqlExecutionOptions = {},
+) {
+  return new Proxy(
+    gqlRootValue,
+    {
+      get(target: typeof gqlRootValue, prop: string) {
+        // deno-lint-ignore no-explicit-any
+        return function(...args: any[]) {
+          const callback = target[prop];
+          if (!callback || typeof callback !== "function") {
+            throw new Error(`方法 ${ prop } 不存在!`);
+          }
+          const args2 = args[2].fieldNodes[0].arguments;
+          // deno-lint-ignore no-explicit-any
+          const cbArgs = args2?.map((item: any) => args[0][item.name.value]);
+          const context = newContext(options.oakCtx);
+          if (options.authorization) {
+            context.authorization = options.authorization;
+          }
+          if (options.notVerifyToken != null) {
+            context.notVerifyToken = options.notVerifyToken;
+          }
+          return runInAsyncHooks(context, async function() {
+            log("");
+            log(`resolver: ${ prop }: ${ JSON.stringify(cbArgs) }`);
+            // deno-lint-ignore no-explicit-any
+            let res: any;
+            let isRollback = false;
+            try {
+              res = await callback.apply(null, cbArgs);
+            } catch (err) {
+              if (err instanceof ServiceException) {
+                if (err._rollback !== false) {
+                  isRollback = true;
+                }
+              } else {
+                isRollback = true;
+              }
+              throw err;
+            } finally {
+              if (isRollback) {
+                await rollback();
+              } else {
+                await commit();
+              }
+            }
+            return res;
+          });
+        };
+      },
+    },
+  );
+}
+
 async function handleGraphql(
-  oakCtx: OakContext,
   gqlObj: {
     query: string,
     variables?: { [key: string]: unknown; },
   },
+  options: GraphqlExecutionOptions = {},
 ) {
   if (gqlSchema === undefined) {
-    const document = parse(mergeSchema(gqlSchemaStr), {
+    const document = parse(getGraphqlSchemaSDL(), {
       noLocation: true,
     });
     gqlSchema = buildASTSchema(
@@ -249,50 +314,7 @@ async function handleGraphql(
       result = await execute({
         schema: gqlSchema!,
         document,
-        rootValue: new Proxy(
-          gqlRootValue,
-          {
-            get(target: typeof gqlRootValue, prop: string) {
-              // deno-lint-ignore no-explicit-any
-              return function(...args: any[]) {
-                const callback = target[prop];
-                if (!callback || typeof callback !== "function") {
-                  throw new Error(`方法 ${ prop } 不存在!`);
-                }
-                const args2 = args[2].fieldNodes[0].arguments;
-                // deno-lint-ignore no-explicit-any
-                const cbArgs = args2?.map((item: any) => args[0][item.name.value]);
-                const context = newContext(oakCtx);
-                return runInAsyncHooks(context, async function() {
-                  log("");
-                  log(`resolver: ${ prop }: ${ JSON.stringify(cbArgs) }`);
-                  // deno-lint-ignore no-explicit-any
-                  let res: any;
-                  let isRollback = false;
-                  try {
-                    res = await callback.apply(null, cbArgs);
-                  } catch (err) {
-                    if (err instanceof ServiceException) {
-                      if (err._rollback !== false) {
-                        isRollback = true;
-                      }
-                    } else {
-                      isRollback = true;
-                    }
-                    throw err;
-                  } finally {
-                    if (isRollback) {
-                      await rollback();
-                    } else {
-                      await commit();
-                    }
-                  }
-                  return res;
-                });
-              };
-            },
-          },
-        ),
+        rootValue: createExecutionRootValue(options),
         variableValues: variables,
         // operationName: undefined,
         // fieldResolver: undefined,
@@ -354,6 +376,16 @@ async function handleGraphql(
   return result;
 }
 
+export async function executeGraphql(
+  gqlObj: {
+    query: string,
+    variables?: { [key: string]: unknown; },
+  },
+  options: GraphqlExecutionOptions = {},
+) {
+  return await handleGraphql(gqlObj, options);
+}
+
 gqlRouter.post("/graphql", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
@@ -373,7 +405,12 @@ gqlRouter.post("/graphql", async function(ctx) {
   const body = request.body;
   const gqlObj = await body.json();
   try {
-    response.body = await handleGraphql(ctx, gqlObj);
+    response.body = await handleGraphql(
+      gqlObj,
+      {
+        oakCtx: ctx,
+      },
+    );
   } catch (err0) {
     const err = err0 as Error;
     error(err);
@@ -407,13 +444,12 @@ gqlRouter.get("/graphql", async function(ctx) {
     variables = JSON.parse(variablesStr);
   }
   try {
-    response.body = await handleGraphql(
-      ctx,
-      {
-        query,
-        variables,
-      },
-    );
+    response.body = await handleGraphql({
+      query,
+      variables,
+    }, {
+      oakCtx: ctx,
+    });
   } catch (err0) {
     const err = err0 as Error;
     error(err);

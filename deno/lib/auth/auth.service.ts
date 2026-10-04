@@ -8,6 +8,12 @@ export async function getAuthModel<T extends AuthModel>(
   return await authDao.getAuthModel<T>(notVerifyToken);
 }
 
+export async function getAuthModelByAuthorization<T extends AuthModel>(
+  authorization: string,
+) {
+  return await authDao.getAuthModelByAuthorization<T>(authorization);
+}
+
 /**
  * 创建 authorization
  * @param {T} obj 对象
