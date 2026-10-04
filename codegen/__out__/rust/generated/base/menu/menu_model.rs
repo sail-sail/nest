@@ -43,6 +43,7 @@ fn get_can_sort_in_api_menu() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_MENU
 }
 
+/// 菜单
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MenuModel")]
 #[allow(dead_code)]
@@ -199,6 +200,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   }
 }
 
+/// 菜单
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MenuFieldComment")]
 #[allow(dead_code)]
@@ -277,6 +279,7 @@ pub struct MenuFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 菜单
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MenuSearch")]
 #[allow(dead_code)]
@@ -482,6 +485,7 @@ impl std::fmt::Debug for MenuSearch {
   }
 }
 
+/// 菜单
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MenuInput")]
 #[allow(dead_code)]

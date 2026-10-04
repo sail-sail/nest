@@ -42,6 +42,7 @@ fn get_can_sort_in_api_icon() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_ICON
 }
 
+/// 图标库
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "IconModel")]
 #[allow(dead_code)]
@@ -157,6 +158,7 @@ impl FromRow<'_, MySqlRow> for IconModel {
   }
 }
 
+/// 图标库
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "IconFieldComment")]
 #[allow(dead_code)]
@@ -211,6 +213,7 @@ pub struct IconFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 图标库
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "IconSearch")]
 #[allow(dead_code)]
@@ -370,6 +373,7 @@ impl std::fmt::Debug for IconSearch {
   }
 }
 
+/// 图标库
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "IconInput")]
 #[allow(dead_code)]

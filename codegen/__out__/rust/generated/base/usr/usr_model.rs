@@ -47,6 +47,7 @@ fn get_can_sort_in_api_usr() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_USR
 }
 
+/// 用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "UsrModel")]
 #[allow(dead_code)]
@@ -374,6 +375,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
   }
 }
 
+/// 用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "UsrFieldComment")]
 #[allow(dead_code)]
@@ -476,6 +478,7 @@ pub struct UsrFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "UsrSearch")]
 #[allow(dead_code)]
@@ -750,6 +753,7 @@ impl std::fmt::Debug for UsrSearch {
   }
 }
 
+/// 用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "UsrInput")]
 #[allow(dead_code)]

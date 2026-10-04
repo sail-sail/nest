@@ -42,6 +42,7 @@ fn get_can_sort_in_api_lang() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_LANG
 }
 
+/// 语言
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LangModel")]
 #[allow(dead_code)]
@@ -152,6 +153,7 @@ impl FromRow<'_, MySqlRow> for LangModel {
   }
 }
 
+/// 语言
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LangFieldComment")]
 #[allow(dead_code)]
@@ -203,6 +205,7 @@ pub struct LangFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 语言
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LangSearch")]
 #[allow(dead_code)]
@@ -349,6 +352,7 @@ impl std::fmt::Debug for LangSearch {
   }
 }
 
+/// 语言
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LangInput")]
 #[allow(dead_code)]

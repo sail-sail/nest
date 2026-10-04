@@ -44,6 +44,7 @@ fn get_can_sort_in_api_optbiz() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_OPTBIZ
 }
 
+/// 业务选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptbizModel")]
 #[allow(dead_code)]
@@ -182,6 +183,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
   }
 }
 
+/// 业务选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptbizFieldComment")]
 #[allow(dead_code)]
@@ -242,6 +244,7 @@ pub struct OptbizFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 业务选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptbizSearch")]
 #[allow(dead_code)]
@@ -418,6 +421,7 @@ impl std::fmt::Debug for OptbizSearch {
   }
 }
 
+/// 业务选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptbizInput")]
 #[allow(dead_code)]

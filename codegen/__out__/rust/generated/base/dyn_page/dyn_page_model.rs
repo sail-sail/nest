@@ -52,6 +52,7 @@ fn get_can_sort_in_api_dyn_page() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_DYN_PAGE
 }
 
+/// 动态页面
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageModel")]
 #[allow(dead_code)]
@@ -195,6 +196,7 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
   }
 }
 
+/// 动态页面
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageFieldComment")]
 #[allow(dead_code)]
@@ -258,6 +260,7 @@ pub struct DynPageFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 动态页面
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageSearch")]
 #[allow(dead_code)]
@@ -437,6 +440,7 @@ impl std::fmt::Debug for DynPageSearch {
   }
 }
 
+/// 动态页面
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageInput")]
 #[allow(dead_code)]

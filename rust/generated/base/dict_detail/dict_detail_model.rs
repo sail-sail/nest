@@ -43,6 +43,7 @@ fn get_can_sort_in_api_dict_detail() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DICT_DETAIL
 }
 
+/// 系统字典明细
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailModel")]
 #[allow(dead_code)]
@@ -165,6 +166,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
   }
 }
 
+/// 系统字典明细
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailFieldComment")]
 #[allow(dead_code)]
@@ -222,6 +224,7 @@ pub struct DictDetailFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 系统字典明细
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailSearch")]
 #[allow(dead_code)]
@@ -393,6 +396,7 @@ impl std::fmt::Debug for DictDetailSearch {
   }
 }
 
+/// 系统字典明细
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailInput")]
 #[allow(dead_code)]

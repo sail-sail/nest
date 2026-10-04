@@ -46,6 +46,7 @@ fn get_can_sort_in_api_message_receiver() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_MESSAGE_RECEIVER
 }
 
+/// 消息接收人
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverModel")]
 #[allow(dead_code)]
@@ -183,6 +184,7 @@ impl FromRow<'_, MySqlRow> for MessageReceiverModel {
   }
 }
 
+/// 消息接收人
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverFieldComment")]
 #[allow(dead_code)]
@@ -246,6 +248,7 @@ pub struct MessageReceiverFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 消息接收人
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverSearch")]
 #[allow(dead_code)]
@@ -441,6 +444,7 @@ impl std::fmt::Debug for MessageReceiverSearch {
   }
 }
 
+/// 消息接收人
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverInput")]
 #[allow(dead_code)]

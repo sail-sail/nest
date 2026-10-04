@@ -1,3 +1,4 @@
+pub mod mcp;
 pub mod menu;
 pub mod message;
 
@@ -5,6 +6,7 @@ use async_graphql::MergedObject;
 
 pub fn init() {
   
+  mcp::init();
   menu::init();
   message::init();
   

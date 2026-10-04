@@ -46,6 +46,7 @@ fn get_can_sort_in_api_dept() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DEPT
 }
 
+/// 部门
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DeptModel")]
 #[allow(dead_code)]
@@ -235,6 +236,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
   }
 }
 
+/// 部门
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DeptFieldComment")]
 #[allow(dead_code)]
@@ -307,6 +309,7 @@ pub struct DeptFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 部门
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DeptSearch")]
 #[allow(dead_code)]
@@ -517,6 +520,7 @@ impl std::fmt::Debug for DeptSearch {
   }
 }
 
+/// 部门
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DeptInput")]
 #[allow(dead_code)]
