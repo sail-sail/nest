@@ -44,6 +44,7 @@ fn get_can_sort_in_api_wxw_usr() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WXW_USR
 }
 
+/// 企微用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrModel")]
 #[allow(dead_code)]
@@ -224,6 +225,7 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
   }
 }
 
+/// 企微用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrFieldComment")]
 #[allow(dead_code)]
@@ -248,6 +250,7 @@ pub struct WxwUsrFieldComment {
   pub rem: String,
 }
 
+/// 企微用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrSearch")]
 #[allow(dead_code)]
@@ -553,6 +556,7 @@ impl std::fmt::Debug for WxwUsrSearch {
   }
 }
 
+/// 企微用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrInput")]
 #[allow(dead_code)]

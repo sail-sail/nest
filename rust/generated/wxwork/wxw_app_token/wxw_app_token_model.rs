@@ -44,6 +44,7 @@ fn get_can_sort_in_api_wxw_app_token() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WXW_APP_TOKEN
 }
 
+/// 企微应用接口凭据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenModel")]
 #[allow(dead_code)]
@@ -242,6 +243,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
   }
 }
 
+/// 企微应用接口凭据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenFieldComment")]
 #[allow(dead_code)]
@@ -305,6 +307,7 @@ pub struct WxwAppTokenFieldComment {
   pub jsapi_ticket_agent_config_expires_in: String,
 }
 
+/// 企微应用接口凭据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenSearch")]
 #[allow(dead_code)]
@@ -561,6 +564,7 @@ impl std::fmt::Debug for WxwAppTokenSearch {
   }
 }
 
+/// 企微应用接口凭据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenInput")]
 #[allow(dead_code)]
