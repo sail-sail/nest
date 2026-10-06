@@ -1,6 +1,7 @@
 import { defineConfig } from "../../config.ts";
 
 export default defineConfig({
+  
   // 企微应用
   wxwork_wxw_app: {
     opts: {
@@ -100,6 +101,7 @@ export default defineConfig({
       },
     ],
   },
+  
   // 企微应用接口凭据
   wxwork_wxw_app_token: {
     opts: {
@@ -155,6 +157,7 @@ export default defineConfig({
       },
     ],
   },
+  
   // 企微用户
   wxwork_wxw_usr: {
     opts: {
@@ -227,6 +230,7 @@ export default defineConfig({
       },
     ],
   },
+  
   // 企微消息
   wxwork_wxw_msg: {
     opts: {
@@ -285,4 +289,108 @@ export default defineConfig({
       },
     ],
   },
+
+  // 审批模板
+  wxwork_wxw_oa_template: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "lbl" ],
+        [ "template_id" ],
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+      },
+      {
+        COLUMN_NAME: "template_id",
+        notForeignKeyById: true,
+        width: 360,
+        search: true,
+        require: true,
+      },
+      {
+        COLUMN_NAME: "business_type",
+        width: 140,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+
+  // 审批申请详情
+  wxwork_wxw_oa_approval_detail: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      defaultSort: {
+        prop: "apply_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "sp_no",
+        width: 220,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "sp_name",
+        width: 220,
+        search: true,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "sp_status",
+        width: 140,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "template_id",
+        notForeignKeyById: true,
+        width: 220,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "apply_time",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "applyer_userid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "batch_applyer_userid",
+        width: 200,
+      },
+      {
+        COLUMN_NAME: "raw_data",
+        onlyCodegenDeno: true,
+        onlyCodegenDenoButApi: true,
+      },
+    ],
+  },
+  
 });

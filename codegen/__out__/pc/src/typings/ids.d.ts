@@ -123,6 +123,14 @@ declare const wxw_msgId: unique symbol;
 /** 企微消息 */
 type WxwMsgId = Distinct<string, typeof wxw_msgId>;
 
+declare const wxw_oa_approval_detailId: unique symbol;
+/** 审批申请详情 */
+type WxwOaApprovalDetailId = Distinct<string, typeof wxw_oa_approval_detailId>;
+
+declare const wxw_oa_templateId: unique symbol;
+/** 审批模板 */
+type WxwOaTemplateId = Distinct<string, typeof wxw_oa_templateId>;
+
 declare const wxw_usrId: unique symbol;
 /** 企微用户 */
 type WxwUsrId = Distinct<string, typeof wxw_usrId>;

@@ -1,6 +1,8 @@
 pub mod wxw_app;
 pub mod wxw_app_token;
 pub mod wxw_msg;
+pub mod wxw_oa_approval_detail;
+pub mod wxw_oa_template;
 pub mod wxw_usr;
 
 use async_graphql::MergedObject;
@@ -9,6 +11,8 @@ pub fn init() {
   self::wxw_app::init();
   self::wxw_app_token::init();
   self::wxw_msg::init();
+  self::wxw_oa_approval_detail::init();
+  self::wxw_oa_template::init();
   self::wxw_usr::init();
 }
 
@@ -17,6 +21,8 @@ pub struct WxworkGenQuery(
   self::wxw_app::wxw_app_graphql::WxwAppGenQuery,
   self::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenQuery,
   self::wxw_msg::wxw_msg_graphql::WxwMsgGenQuery,
+  self::wxw_oa_approval_detail::wxw_oa_approval_detail_graphql::WxwOaApprovalDetailGenQuery,
+  self::wxw_oa_template::wxw_oa_template_graphql::WxwOaTemplateGenQuery,
   self::wxw_usr::wxw_usr_graphql::WxwUsrGenQuery,
 );
 
@@ -25,5 +31,7 @@ pub struct WxworkGenMutation(
   self::wxw_app::wxw_app_graphql::WxwAppGenMutation,
   self::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenMutation,
   self::wxw_msg::wxw_msg_graphql::WxwMsgGenMutation,
+  self::wxw_oa_approval_detail::wxw_oa_approval_detail_graphql::WxwOaApprovalDetailGenMutation,
+  self::wxw_oa_template::wxw_oa_template_graphql::WxwOaTemplateGenMutation,
   self::wxw_usr::wxw_usr_graphql::WxwUsrGenMutation,
 );

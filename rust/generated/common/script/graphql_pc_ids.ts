@@ -188,6 +188,18 @@ export function getScalars() {
       "output": "WxwMsgId",
     },
     
+    // 审批申请详情
+    "WxwOaApprovalDetailId": {
+      "input": "WxwOaApprovalDetailId",
+      "output": "WxwOaApprovalDetailId",
+    },
+    
+    // 审批模板
+    "WxwOaTemplateId": {
+      "input": "WxwOaTemplateId",
+      "output": "WxwOaTemplateId",
+    },
+    
     // 企微用户
     "WxwUsrId": {
       "input": "WxwUsrId",

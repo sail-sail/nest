@@ -129,3 +129,53 @@ CREATE TABLE `wxwork_wxw_msg` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微消息';
+
+-- 审批模板
+drop table if exists `wxwork_wxw_oa_template`;
+CREATE TABLE `wxwork_wxw_oa_template` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '模板名称',
+  `template_id` varchar(60) NOT NULL DEFAULT '' COMMENT '模板ID',
+  `business_type` varchar(45) NOT NULL DEFAULT '' COMMENT '业务类型',
+  `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='审批模板';
+
+-- https://developer.work.weixin.qq.com/document/path/91983
+-- 审批申请详情
+drop table if exists `wxwork_wxw_oa_approval_detail`;
+CREATE TABLE if not exists `wxwork_wxw_oa_approval_detail` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `sp_no` varchar(60) NOT NULL DEFAULT '' COMMENT '审批编号',
+  `sp_name` varchar(100) NOT NULL DEFAULT '' COMMENT '审批申请类型名称',
+  -- 申请单状态：1-审批中；2-已通过；3-已驳回；4-已撤销；6-通过后撤销；7-已删除；10-已支付 (is_sys=0, is_add=0)
+  `sp_status` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '审批申请状态,dict:wxw_oa_approval_detail_sp_status',
+  `template_id` varchar(60) NOT NULL DEFAULT '' COMMENT '模板ID',
+  `apply_time` datetime DEFAULT NULL COMMENT '审批申请提交时间',
+  `applyer_userid` varchar(60) NOT NULL DEFAULT '' COMMENT '申请人',
+  `batch_applyer_userid` varchar(60) NOT NULL DEFAULT '' COMMENT '批量申请人',
+  `raw_data` json DEFAULT NULL COMMENT '原始数据',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  INDEX (`tenant_id`, `org_id`, `sp_no`),
+  INDEX (`tenant_id`, `org_id`, `template_id`),
+  INDEX (`tenant_id`, `org_id`, `apply_time`),
+  INDEX (`tenant_id`, `org_id`, `applyer_userid`),
+  PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='审批申请详情';

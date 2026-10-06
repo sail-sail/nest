@@ -447,6 +447,36 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/wxwork/wxw_oa_approval_detail",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "审批申请详情",
+        component: () => import("@/views/wxwork/wxw_oa_approval_detail/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "审批申请详情",
+        },
+      },
+    ],
+  },
+  {
+    path: "/wxwork/wxw_oa_template",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "审批模板",
+        component: () => import("@/views/wxwork/wxw_oa_template/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "审批模板",
+        },
+      },
+    ],
+  },
+  {
     path: "/wxwork/wxw_usr",
     component: Layout1,
     children: [

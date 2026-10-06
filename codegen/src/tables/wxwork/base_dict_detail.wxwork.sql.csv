@@ -1,1 +1,8 @@
 id,dict_id,_dict_lbl,lbl,val,order_by,is_sys
+bWm4AL3aRNivNtfk7ozi1A,Vn6z81QvSziUfYHv0mUjTw,审批申请状态,审批中,1,1,0
+A8gU+7f0QH2L2vr5dP7JmQ,Vn6z81QvSziUfYHv0mUjTw,,已通过,2,2,0
+nM7l0CLHTKe8D2d6S4rQ4Q,Vn6z81QvSziUfYHv0mUjTw,,已驳回,3,3,0
+vQKEl1jJS9qdP2gYzX5vQQ,Vn6z81QvSziUfYHv0mUjTw,,已撤销,4,4,0
+a0P5bKcHSc2dE4dLwQ8o7A,Vn6z81QvSziUfYHv0mUjTw,,通过后撤销,6,5,0
+b7FjC8QQS6S2Y8d8w7Ia6A,Vn6z81QvSziUfYHv0mUjTw,,已删除,7,6,0
+X9pF1fM7T9m3N8sY8n2k4A,Vn6z81QvSziUfYHv0mUjTw,,已支付,10,7,0
