@@ -839,10 +839,10 @@ fn tool_definitions() -> Vec<Tool> {
             "type": "string",
             "description": "可选 operationName"
           },
-          "clientTenantId": {
-            "type": "string",
-            "description": "可选 client_tenant_id，只有需要覆盖当前租户上下文时才传"
-          }
+          // "clientTenantId": {
+          //   "type": "string",
+          //   "description": "可选 client_tenant_id，只有需要覆盖当前租户上下文时才传"
+          // }
         },
         "required": ["query"],
       })),

@@ -14,9 +14,9 @@
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "7.4.3",
-    "@graphql-codegen/typescript": "6.1.0",
-    "@graphql-codegen/typescript-operations": "6.1.9",
+    "@graphql-codegen/cli": "7.4.4",
+    "@graphql-codegen/typescript": "6.1.1",
+    "@graphql-codegen/typescript-operations": "6.1.10",
     "@parcel/watcher": "2.6.0",
     "@types/fs-extra": "11.0.4",
     "@types/minimist": "1.2.5",

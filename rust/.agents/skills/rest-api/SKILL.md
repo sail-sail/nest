@@ -43,6 +43,8 @@ app/{mod}/{table}/
 |----|------|------|
 | Router | `*_router.rs` | `#[handler]` 构建 Ctx, 调用 resful |
 | Resful | `*_resful.rs` | 参数校验、业务逻辑、错误响应、返回 Response |
+| Resolver | `*_resolver.rs` | Resolver 层, 日志打印, 权限控制等 |
+| Service | `*_service.rs` | Service 层, 封装业务逻辑, 可被 Resolver 调用 |
 | Model | `*_model.rs` | 类型定义 |
 
 ## Router 模板
