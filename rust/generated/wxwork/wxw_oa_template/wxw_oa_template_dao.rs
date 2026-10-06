@@ -76,7 +76,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 14 * 6);
+  let mut where_query = String::with_capacity(80 * 15 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -122,6 +122,25 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
+    }
+  }
+  // 流程图
+  {
+    let flow_img = match search {
+      Some(item) => item.flow_img.clone(),
+      None => None,
+    };
+    if let Some(flow_img) = flow_img {
+      where_query.push_str(" and t.flow_img=?");
+      args.push(flow_img.into());
+    }
+    let flow_img_like = match search {
+      Some(item) => item.flow_img_like.clone(),
+      None => None,
+    };
+    if let Some(flow_img_like) = flow_img_like && !flow_img_like.is_empty() {
+      where_query.push_str(" and t.flow_img like ?");
+      args.push(format!("%{}%", sql_like(&flow_img_like)).into());
     }
   }
   // 模板名称
@@ -878,6 +897,7 @@ pub async fn get_field_comments_wxw_oa_template(
   
   let mut field_comments = WxwOaTemplateFieldComment {
     id: "ID".into(),
+    flow_img: "流程图".into(),
     lbl: "模板名称".into(),
     template_id: "模板ID".into(),
     business_type: "业务类型".into(),
@@ -1890,7 +1910,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 * 3 + 60);
+  let mut sql_fields = String::with_capacity(80 * 15 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1900,6 +1920,8 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
+  // 流程图
+  sql_fields += ",flow_img";
   // 模板名称
   sql_fields += ",lbl";
   // 模板ID
@@ -1918,7 +1940,7 @@ async fn _creates(
   sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity(((2 * 14 + 3) * inputs2_len) * 3);
+  let mut sql_values = String::with_capacity(((2 * 15 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2041,6 +2063,13 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 流程图
+    if let Some(flow_img) = input.flow_img {
+      sql_values += ",?";
+      args.push(flow_img.into());
     } else {
       sql_values += ",default";
     }
@@ -2444,7 +2473,7 @@ pub async fn update_by_id_wxw_oa_template(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity((80 * 14 + 20) * 3);
+  let mut sql_fields = String::with_capacity((80 * 15 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2452,6 +2481,12 @@ pub async fn update_by_id_wxw_oa_template(
     field_num += 1;
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
+  }
+  // 流程图
+  if let Some(flow_img) = input.flow_img.clone() {
+    field_num += 1;
+    sql_fields += "flow_img=?,";
+    args.push(flow_img.into());
   }
   // 模板名称
   if let Some(lbl) = input.lbl.clone() {

@@ -19,6 +19,22 @@ export async function setLblByIdWxwOaTemplate(
   if (!model) {
     return;
   }
+  
+  // 流程图
+  if (model.flow_img) {
+    const flow_img_lbls: string[] = [ ];
+    const flow_imgs = model.flow_img.split(",");
+    for (let i = 0; i < flow_imgs.length; i++) {
+      const img = flow_imgs[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }) || "";
+      flow_img_lbls.push(img_lbl);
+    }
+    model.flow_img_lbls = flow_img_lbls;
+    model.flow_img_lbl = flow_img_lbls[0] || "";
+  }
 }
 
 export function intoInputWxwOaTemplate(
@@ -27,6 +43,8 @@ export function intoInputWxwOaTemplate(
   const input: WxwOaTemplateInput = {
     // ID
     id: model?.id,
+    // 流程图
+    flow_img: model?.flow_img,
     // 模板名称
     lbl: model?.lbl,
     // 模板ID
@@ -566,6 +584,7 @@ export function useDownloadImportTemplateWxwOaTemplate() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxwOaTemplate {
+            flow_img
             lbl
             template_id
             business_type
@@ -754,6 +773,7 @@ export async function getFieldCommentsWxwOaTemplate(
       query {
         getFieldCommentsWxwOaTemplate {
           id,
+          flow_img,
           lbl,
           template_id,
           business_type,

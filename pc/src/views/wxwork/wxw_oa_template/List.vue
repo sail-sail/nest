@@ -514,8 +514,25 @@
           :key="col.prop"
         >
           
+          <!-- 流程图 -->
+          <template v-if="'flow_img' === col.prop">
+            <!-- @vue-generic {WxwOaTemplateModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                  un-justify="center"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 模板名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <!-- @vue-generic {WxwOaTemplateModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -1013,13 +1030,19 @@ let tableData = $ref<WxwOaTemplateModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "流程图",
+      prop: "flow_img",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       label: "模板名称",
       prop: "lbl",
       width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "模板ID",
@@ -1397,6 +1420,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "流程图" ]: "flow_img",
     [ "模板名称" ]: "lbl",
     [ "模板ID" ]: "template_id",
     [ "业务类型" ]: "business_type",
@@ -1425,6 +1449,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "flow_img": "string",
           "lbl": "string",
           "template_id": "string",
           "business_type": "string",

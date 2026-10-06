@@ -76,6 +76,21 @@
         @submit.prevent
       >
         
+        <template v-if="(showBuildIn || builtInModel?.flow_img == null)">
+          <el-form-item
+            label="流程图"
+            prop="flow_img"
+          >
+            <UploadImage
+              v-model="dialogModel.flow_img"
+              db="wxwork_wxw_oa_template.flow_img"
+              :is-public="false"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></UploadImage>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             label="模板名称"

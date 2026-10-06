@@ -301,8 +301,12 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "flow_img",
+      },
+      {
         COLUMN_NAME: "lbl",
         require: true,
+        fixed: false,
       },
       {
         COLUMN_NAME: "template_id",

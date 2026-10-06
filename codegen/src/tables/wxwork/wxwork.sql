@@ -134,6 +134,7 @@ CREATE TABLE `wxwork_wxw_msg` (
 drop table if exists `wxwork_wxw_oa_template`;
 CREATE TABLE `wxwork_wxw_oa_template` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `flow_img` varchar(22) NOT NULL DEFAULT '' COMMENT '流程图',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '模板名称',
   `template_id` varchar(60) NOT NULL DEFAULT '' COMMENT '模板ID',
   `business_type` varchar(45) NOT NULL DEFAULT '' COMMENT '业务类型',

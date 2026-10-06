@@ -56,6 +56,9 @@ pub struct WxwOaTemplateModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: WxwOaTemplateId,
+  /// 流程图
+  #[graphql(name = "flow_img")]
+  pub flow_img: String,
   /// 模板名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -109,6 +112,8 @@ impl FromRow<'_, MySqlRow> for WxwOaTemplateModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: WxwOaTemplateId = row.try_get("id")?;
+    // 流程图
+    let flow_img: String = row.try_get("flow_img")?;
     // 模板名称
     let lbl: String = row.try_get("lbl")?;
     // 模板ID
@@ -153,6 +158,7 @@ impl FromRow<'_, MySqlRow> for WxwOaTemplateModel {
       tenant_id,
       is_deleted,
       id,
+      flow_img,
       lbl,
       template_id,
       business_type,
@@ -184,6 +190,9 @@ pub struct WxwOaTemplateFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
+  /// 流程图
+  #[graphql(name = "flow_img")]
+  pub flow_img: String,
   /// 模板名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -251,6 +260,12 @@ pub struct WxwOaTemplateSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  /// 流程图
+  #[graphql(skip)]
+  pub flow_img: Option<String>,
+  /// 流程图
+  #[graphql(skip)]
+  pub flow_img_like: Option<String>,
   /// 模板名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -341,6 +356,13 @@ impl std::fmt::Debug for WxwOaTemplateSearch {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
       }
+    }
+    // 流程图
+    if let Some(ref flow_img) = self.flow_img {
+      item = item.field("flow_img", flow_img);
+    }
+    if let Some(ref flow_img_like) = self.flow_img_like {
+      item = item.field("flow_img_like", flow_img_like);
     }
     // 模板名称
     if let Some(ref lbl) = self.lbl {
@@ -442,6 +464,9 @@ pub struct WxwOaTemplateInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
+  /// 流程图
+  #[graphql(name = "flow_img")]
+  pub flow_img: Option<String>,
   /// 模板名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -515,6 +540,9 @@ impl std::fmt::Debug for WxwOaTemplateInput {
     if let Some(ref tenant_id) = self.tenant_id {
       item = item.field("tenant_id", tenant_id);
     }
+    if let Some(ref flow_img) = self.flow_img {
+      item = item.field("flow_img", flow_img);
+    }
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);
     }
@@ -567,6 +595,8 @@ impl From<WxwOaTemplateModel> for WxwOaTemplateInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      // 流程图
+      flow_img: model.flow_img.into(),
       // 模板名称
       lbl: model.lbl.into(),
       // 模板ID
@@ -609,6 +639,8 @@ impl From<WxwOaTemplateInput> for WxwOaTemplateSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
+      // 流程图
+      flow_img: input.flow_img,
       // 模板名称
       lbl: input.lbl,
       // 模板ID

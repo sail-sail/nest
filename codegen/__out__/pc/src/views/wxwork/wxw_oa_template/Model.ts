@@ -10,6 +10,9 @@ declare global {
   
   /** 审批模板 */
   interface WxwOaTemplateModel extends WxwOaTemplateModelType {
+    /** 流程图 */
+    flow_img_lbl: string;
+    flow_img_lbls: string[];
   }
   
   /** 审批模板 */
@@ -30,6 +33,8 @@ declare global {
 export const wxwOaTemplateFields = [
   // ID
   "id",
+  // 流程图
+  "flow_img",
   // 模板名称
   "lbl",
   // 模板ID
