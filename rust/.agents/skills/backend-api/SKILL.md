@@ -251,7 +251,7 @@ pub fn app_routes() -> Route {
 ```rust
 use generated::common::context::{
   get_auth_id_ok,
-  get_tenant_id_ok,
+  get_auth_tenant_id_ok,
   get_now,
   get_short_uuid,
   get_req_id,

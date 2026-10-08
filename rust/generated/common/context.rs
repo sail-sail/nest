@@ -279,6 +279,18 @@ pub fn get_auth_tenant_id() -> Option<TenantId> {
   })
 }
 
+/// 获取当前登录用户的租户id
+pub fn get_auth_tenant_id_ok() -> Result<TenantId> {
+  get_auth_tenant_id()
+    .ok_or_else(|| {
+      eyre!(ServiceException {
+        message: "get_auth_tenant_id_ok".into(),
+        trace: true,
+        ..Default::default()
+      })
+    })
+}
+
 /// 获取当前登录用户的组织id
 pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
@@ -293,11 +305,11 @@ pub fn get_auth_org_id() -> Option<OrgId> {
 pub fn get_auth_org_id_ok() -> Result<OrgId> {
   get_auth_org_id()
     .ok_or_else(|| {
-      error!(
-        "{req_id} get_auth_org_id_ok - Not login!",
-        req_id = get_req_id(),
-      );
-      eyre!("Not login!")
+      eyre!(ServiceException {
+        message: "get_auth_org_id_ok".into(),
+        trace: true,
+        ..Default::default()
+      })
     })
 }
 
