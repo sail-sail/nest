@@ -235,7 +235,7 @@ pub struct CronJobFieldComment {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 任务
+  /// 任务 [@fk:cron_job.id]
   #[graphql(name = "job_id")]
   pub job_id: String,
   /// 任务
@@ -244,7 +244,7 @@ pub struct CronJobFieldComment {
   /// Cron表达式
   #[graphql(name = "cron")]
   pub cron: String,
-  /// 执行用户
+  /// 执行用户 [@fk:base_usr.id]
   #[graphql(name = "exec_usr_id")]
   pub exec_usr_id: String,
   /// 执行用户
@@ -274,7 +274,7 @@ pub struct CronJobFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -286,7 +286,7 @@ pub struct CronJobFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -298,7 +298,7 @@ pub struct CronJobFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 所属组织
@@ -329,7 +329,7 @@ pub struct CronJobSearch {
   /// 名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
-  /// 任务
+  /// 任务 [@fk:cron_job.id]
   #[graphql(name = "job_id")]
   pub job_id: Option<Vec<JobId>>,
   /// 任务
@@ -347,7 +347,7 @@ pub struct CronJobSearch {
   /// Cron表达式
   #[graphql(skip)]
   pub cron_like: Option<String>,
-  /// 执行用户
+  /// 执行用户 [@fk:base_usr.id]
   #[graphql(name = "exec_usr_id")]
   pub exec_usr_id: Option<Vec<UsrId>>,
   /// 执行用户
@@ -377,7 +377,7 @@ pub struct CronJobSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -392,7 +392,7 @@ pub struct CronJobSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -407,7 +407,7 @@ pub struct CronJobSearch {
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 所属组织
@@ -575,7 +575,7 @@ pub struct CronJobInput {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
-  /// 任务
+  /// 任务 [@fk:cron_job.id]
   #[graphql(name = "job_id")]
   pub job_id: Option<JobId>,
   /// 任务
@@ -584,7 +584,7 @@ pub struct CronJobInput {
   /// Cron表达式
   #[graphql(name = "cron")]
   pub cron: Option<String>,
-  /// 执行用户
+  /// 执行用户 [@fk:base_usr.id]
   #[graphql(name = "exec_usr_id")]
   pub exec_usr_id: Option<UsrId>,
   /// 执行用户
@@ -614,7 +614,7 @@ pub struct CronJobInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织

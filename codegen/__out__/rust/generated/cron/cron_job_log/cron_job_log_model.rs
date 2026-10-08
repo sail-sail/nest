@@ -199,7 +199,7 @@ pub struct CronJobLogFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 定时任务
+  /// 定时任务 [@fk:cron_cron_job.id]
   #[graphql(name = "cron_job_id")]
   pub cron_job_id: String,
   /// 定时任务
@@ -249,7 +249,7 @@ pub struct CronJobLogSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 定时任务
+  /// 定时任务 [@fk:cron_cron_job.id]
   #[graphql(name = "cron_job_id")]
   pub cron_job_id: Option<Vec<CronJobId>>,
   /// 定时任务
@@ -285,7 +285,7 @@ pub struct CronJobLogSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -297,7 +297,7 @@ pub struct CronJobLogSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_lbl_like: Option<String>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -421,7 +421,7 @@ pub struct CronJobLogInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 定时任务
+  /// 定时任务 [@fk:cron_cron_job.id]
   #[graphql(name = "cron_job_id")]
   pub cron_job_id: Option<CronJobId>,
   /// 定时任务
