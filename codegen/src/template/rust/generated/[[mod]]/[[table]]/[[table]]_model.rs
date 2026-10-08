@@ -1759,6 +1759,10 @@ pub struct <#=tableUP#>FieldComment {<#
     ) {
   #>
   /// <#=column_comment#><#
+  if (foreignKey) {
+  #> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#><#
+  }
+  #><#
   if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
@@ -1898,6 +1902,10 @@ pub struct <#=tableUP#>Search {<#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
+  if (foreignKey) {
+  #> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#><#
+  }
+  #><#
   if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
@@ -2058,6 +2066,10 @@ pub struct <#=tableUP#>Search {<#
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
+  if (foreignKey) {
+  #> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#><#
+  }
+  #><#
   if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
@@ -2460,6 +2472,10 @@ pub struct <#=tableUP#>Input {
   } else if (foreignKey && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#><#
+  if (foreignKey) {
+  #> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#><#
+  }
+  #><#
   if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#

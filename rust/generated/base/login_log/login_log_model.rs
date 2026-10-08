@@ -228,7 +228,7 @@ pub struct LoginLogSearch {
   /// 登录时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -240,7 +240,7 @@ pub struct LoginLogSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_lbl_like: Option<String>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人

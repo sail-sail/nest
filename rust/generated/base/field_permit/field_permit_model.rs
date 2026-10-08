@@ -111,7 +111,7 @@ pub struct FieldPermitFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: String,
   /// 菜单
@@ -140,7 +140,7 @@ pub struct FieldPermitSearch {
   pub id: Option<FieldPermitId>,
   /// ID列表
   pub ids: Option<Vec<FieldPermitId>>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
@@ -235,7 +235,7 @@ pub struct FieldPermitInput {
   pub id: Option<FieldPermitId>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单

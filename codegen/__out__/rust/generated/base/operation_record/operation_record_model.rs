@@ -204,7 +204,7 @@ pub struct OperationRecordFieldComment {
   /// 操作后数据
   #[graphql(name = "new_data")]
   pub new_data: String,
-  /// 操作人
+  /// 操作人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 操作人
@@ -275,7 +275,7 @@ pub struct OperationRecordSearch {
   /// 操作后数据
   #[graphql(skip)]
   pub new_data_like: Option<String>,
-  /// 操作人
+  /// 操作人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 操作人
@@ -290,7 +290,7 @@ pub struct OperationRecordSearch {
   /// 操作时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人

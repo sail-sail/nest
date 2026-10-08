@@ -392,25 +392,25 @@ pub struct UsrFieldComment {
   /// 用户名
   #[graphql(name = "username")]
   pub username: String,
-  /// 所属角色
+  /// 所属角色 [@fk:base_role.id]
   #[graphql(name = "role_ids")]
   pub role_ids: String,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: String,
-  /// 所属部门
+  /// 所属部门 [@fk:base_dept.id]
   #[graphql(name = "dept_ids")]
   pub dept_ids: String,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_ids")]
   pub org_ids: String,
   /// 所属组织
   #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: String,
-  /// 默认组织
+  /// 默认组织 [@fk:base_org.id]
   #[graphql(name = "default_org_id")]
   pub default_org_id: String,
   /// 默认组织
@@ -452,7 +452,7 @@ pub struct UsrFieldComment {
   /// 隐藏
   #[graphql(name = "is_hidden_lbl")]
   pub is_hidden_lbl: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -464,7 +464,7 @@ pub struct UsrFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -546,7 +546,7 @@ pub struct UsrSearch {
   /// 所属组织
   #[graphql(name = "org_ids_lbl_like")]
   pub org_ids_lbl_like: Option<String>,
-  /// 默认组织
+  /// 默认组织 [@fk:base_org.id]
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,
   /// 默认组织
@@ -582,7 +582,7 @@ pub struct UsrSearch {
   /// 隐藏
   #[graphql(name = "is_hidden")]
   pub is_hidden: Option<Vec<u8>>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -597,7 +597,7 @@ pub struct UsrSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -798,7 +798,7 @@ pub struct UsrInput {
   /// 所属组织
   #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: Option<Vec<String>>,
-  /// 默认组织
+  /// 默认组织 [@fk:base_org.id]
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<OrgId>,
   /// 默认组织
