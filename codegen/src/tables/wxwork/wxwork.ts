@@ -349,10 +349,14 @@ export default defineConfig({
     opts: {
       noAdd: true,
       noEdit: true,
+      uniques: [
+        [ "sp_no" ],
+      ],
       defaultSort: {
         prop: "apply_time",
         order: "descending",
       },
+      lbl_field: "sp_no",
     },
     columns: [
       {

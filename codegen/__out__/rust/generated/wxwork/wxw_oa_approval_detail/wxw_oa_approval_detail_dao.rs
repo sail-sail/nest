@@ -1116,7 +1116,29 @@ pub async fn find_by_unique_wxw_oa_approval_detail(
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
-  Ok(vec![])
+  let mut models: Vec<WxwOaApprovalDetailModel> = vec![];
+  
+  let mut models_tmp = if
+    search.sp_no.is_none()
+  {
+    vec![]
+  } else {
+    let search = WxwOaApprovalDetailSearch {
+      tenant_id: search.tenant_id,
+      sp_no: search.sp_no.clone(),
+      ..Default::default()
+    };
+    
+    find_all_wxw_oa_approval_detail(
+      search.into(),
+      None,
+      sort.clone(),
+      options,
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
+  Ok(models)
 }
 
 /// 根据唯一约束对比对象是否相等
@@ -1131,6 +1153,12 @@ pub fn equals_by_unique(
   }
   
   let is_silent_mode = get_is_silent_mode(options);
+  
+  if
+    input.sp_no.as_ref().is_some() && input.sp_no.as_ref().unwrap() == &model.sp_no
+  {
+    return true;
+  }
   false
 }
 

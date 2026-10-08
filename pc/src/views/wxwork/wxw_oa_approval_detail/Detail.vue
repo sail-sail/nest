@@ -522,6 +522,7 @@ async function onRefresh() {
       dialogModel = intoInputWxwOaApprovalDetail({
         ...data,
       });
+      dialogTitle = `${ oldDialogTitle } - ${ dialogModel.sp_no }`;
     }
     wxw_oa_approval_detail_model = data;
   } finally {
