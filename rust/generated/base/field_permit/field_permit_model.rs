@@ -40,6 +40,7 @@ fn get_can_sort_in_api_field_permit() -> &'static [&'static str; 1] {
   &CAN_SORT_IN_API_FIELD_PERMIT
 }
 
+/// 字段权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "FieldPermitModel")]
 #[allow(dead_code)]
@@ -102,6 +103,7 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
   }
 }
 
+/// 字段权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "FieldPermitFieldComment")]
 #[allow(dead_code)]
@@ -109,7 +111,7 @@ pub struct FieldPermitFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: String,
   /// 菜单
@@ -129,6 +131,7 @@ pub struct FieldPermitFieldComment {
   pub rem: String,
 }
 
+/// 字段权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "FieldPermitSearch")]
 #[allow(dead_code)]
@@ -137,7 +140,7 @@ pub struct FieldPermitSearch {
   pub id: Option<FieldPermitId>,
   /// ID列表
   pub ids: Option<Vec<FieldPermitId>>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
@@ -223,6 +226,7 @@ impl std::fmt::Debug for FieldPermitSearch {
   }
 }
 
+/// 字段权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "FieldPermitInput")]
 #[allow(dead_code)]
@@ -231,7 +235,7 @@ pub struct FieldPermitInput {
   pub id: Option<FieldPermitId>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单

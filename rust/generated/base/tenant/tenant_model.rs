@@ -46,6 +46,7 @@ fn get_can_sort_in_api_tenant() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_TENANT
 }
 
+/// 租户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "TenantModel")]
 #[allow(dead_code)]
@@ -295,6 +296,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
   }
 }
 
+/// 租户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "TenantFieldComment")]
 #[allow(dead_code)]
@@ -308,13 +310,13 @@ pub struct TenantFieldComment {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 所属域名
+  /// 所属域名 [@fk:base_domain.id]
   #[graphql(name = "domain_ids")]
   pub domain_ids: String,
   /// 所属域名
   #[graphql(name = "domain_ids_lbl")]
   pub domain_ids_lbl: String,
-  /// 菜单权限
+  /// 菜单权限 [@fk:base_menu.id]
   #[graphql(name = "menu_ids")]
   pub menu_ids: String,
   /// 菜单权限
@@ -326,7 +328,7 @@ pub struct TenantFieldComment {
   /// 简介
   #[graphql(name = "info")]
   pub info: String,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: String,
   /// 语言
@@ -350,7 +352,7 @@ pub struct TenantFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -362,7 +364,7 @@ pub struct TenantFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -376,6 +378,7 @@ pub struct TenantFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 租户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "TenantSearch")]
 #[allow(dead_code)]
@@ -432,7 +435,7 @@ pub struct TenantSearch {
   /// 简介
   #[graphql(skip)]
   pub info_like: Option<String>,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
   /// 语言
@@ -459,7 +462,7 @@ pub struct TenantSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -474,7 +477,7 @@ pub struct TenantSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -618,6 +621,7 @@ impl std::fmt::Debug for TenantSearch {
   }
 }
 
+/// 租户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "TenantInput")]
 #[allow(dead_code)]
@@ -656,7 +660,7 @@ pub struct TenantInput {
   /// 简介
   #[graphql(name = "info")]
   pub info: Option<String>,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
   /// 语言

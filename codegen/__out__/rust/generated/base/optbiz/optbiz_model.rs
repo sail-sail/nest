@@ -44,6 +44,7 @@ fn get_can_sort_in_api_optbiz() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_OPTBIZ
 }
 
+/// 业务选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptbizModel")]
 #[allow(dead_code)]
@@ -182,6 +183,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
   }
 }
 
+/// 业务选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptbizFieldComment")]
 #[allow(dead_code)]
@@ -216,7 +218,7 @@ pub struct OptbizFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -228,7 +230,7 @@ pub struct OptbizFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -242,6 +244,7 @@ pub struct OptbizFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 业务选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptbizSearch")]
 #[allow(dead_code)]
@@ -288,7 +291,7 @@ pub struct OptbizSearch {
   /// 备注
   #[graphql(name = "rem_like")]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -303,7 +306,7 @@ pub struct OptbizSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -418,6 +421,7 @@ impl std::fmt::Debug for OptbizSearch {
   }
 }
 
+/// 业务选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptbizInput")]
 #[allow(dead_code)]

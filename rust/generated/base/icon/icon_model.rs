@@ -42,6 +42,7 @@ fn get_can_sort_in_api_icon() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_ICON
 }
 
+/// 图标库
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "IconModel")]
 #[allow(dead_code)]
@@ -157,6 +158,7 @@ impl FromRow<'_, MySqlRow> for IconModel {
   }
 }
 
+/// 图标库
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "IconFieldComment")]
 #[allow(dead_code)]
@@ -185,7 +187,7 @@ pub struct IconFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -197,7 +199,7 @@ pub struct IconFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -211,6 +213,7 @@ pub struct IconFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 图标库
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "IconSearch")]
 #[allow(dead_code)]
@@ -250,7 +253,7 @@ pub struct IconSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -265,7 +268,7 @@ pub struct IconSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -370,6 +373,7 @@ impl std::fmt::Debug for IconSearch {
   }
 }
 
+/// 图标库
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "IconInput")]
 #[allow(dead_code)]

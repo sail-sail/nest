@@ -43,6 +43,7 @@ fn get_can_sort_in_api_menu() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_MENU
 }
 
+/// 菜单
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MenuModel")]
 #[allow(dead_code)]
@@ -199,6 +200,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   }
 }
 
+/// 菜单
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MenuFieldComment")]
 #[allow(dead_code)]
@@ -206,7 +208,7 @@ pub struct MenuFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_id")]
   pub parent_id: String,
   /// 父菜单
@@ -251,7 +253,7 @@ pub struct MenuFieldComment {
   /// 隐藏
   #[graphql(name = "is_hidden_lbl")]
   pub is_hidden_lbl: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -263,7 +265,7 @@ pub struct MenuFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -277,6 +279,7 @@ pub struct MenuFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 菜单
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MenuSearch")]
 #[allow(dead_code)]
@@ -286,7 +289,7 @@ pub struct MenuSearch {
   /// ID列表
   pub ids: Option<Vec<MenuId>>,
   pub is_deleted: Option<u8>,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_id")]
   pub parent_id: Option<Vec<MenuId>>,
   /// 父菜单
@@ -340,7 +343,7 @@ pub struct MenuSearch {
   /// 隐藏
   #[graphql(name = "is_hidden")]
   pub is_hidden: Option<Vec<u8>>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -355,7 +358,7 @@ pub struct MenuSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -484,6 +487,7 @@ impl std::fmt::Debug for MenuSearch {
   }
 }
 
+/// 菜单
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MenuInput")]
 #[allow(dead_code)]
@@ -493,7 +497,7 @@ pub struct MenuInput {
   /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
   /// 父菜单

@@ -52,6 +52,7 @@ fn get_can_sort_in_api_dyn_page() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_DYN_PAGE
 }
 
+/// 动态页面
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageModel")]
 #[allow(dead_code)]
@@ -195,6 +196,7 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
   }
 }
 
+/// 动态页面
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageFieldComment")]
 #[allow(dead_code)]
@@ -208,13 +210,13 @@ pub struct DynPageFieldComment {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: String,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
   pub parent_menu_id_lbl: String,
-  /// 所属角色
+  /// 所属角色 [@fk:base_role.id]
   #[graphql(name = "role_ids")]
   pub role_ids: String,
   /// 所属角色
@@ -232,7 +234,7 @@ pub struct DynPageFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -244,7 +246,7 @@ pub struct DynPageFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -258,6 +260,7 @@ pub struct DynPageFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 动态页面
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageSearch")]
 #[allow(dead_code)]
@@ -284,7 +287,7 @@ pub struct DynPageSearch {
   /// 名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: Option<Vec<MenuId>>,
   /// 父菜单
@@ -317,7 +320,7 @@ pub struct DynPageSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -332,7 +335,7 @@ pub struct DynPageSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -437,6 +440,7 @@ impl std::fmt::Debug for DynPageSearch {
   }
 }
 
+/// 动态页面
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageInput")]
 #[allow(dead_code)]
@@ -458,7 +462,7 @@ pub struct DynPageInput {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
-  /// 父菜单
+  /// 父菜单 [@fk:base_menu.id]
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: Option<MenuId>,
   /// 父菜单
