@@ -17,6 +17,20 @@ use super::mcp_model::OAuthRegisterInput;
 pub const ACCESS_TOKEN_PREFIX: &str = "mcp_at_";
 pub const REFRESH_TOKEN_PREFIX: &str = "mcp_rt_";
 
+/// 内存模式下过期 authorization code 的清理间隔。
+///
+/// Redis 模式靠 key TTL 自动过期，不需要清理；内存模式没有后台清理任务，
+/// 而未被兑换的 code 不会走 `take_authorization_code` 的删除分支，
+/// 只增不减，会一直堆在 HashMap 里。这里改为写入时按间隔顺带回收。
+const MEMORY_CODE_SWEEP_INTERVAL_SEC: i64 = 60;
+
+/// 内存模式下过期 OAuth session 的清理间隔。
+///
+/// session 只在 revoke / rotate 时被移除，从不按 `refresh_expires_at` 回收，
+/// 而默认 access token 有效期远长于 refresh token，
+/// 于是一条成功授权会留下一条几乎永久的记录。这里同样改为写入时按间隔回收。
+const MEMORY_SESSION_SWEEP_INTERVAL_SEC: i64 = 300;
+
 static OAUTH_STORE: OnceLock<OAuthStore> = OnceLock::new();
 
 pub fn oauth_store() -> &'static OAuthStore {
@@ -80,6 +94,10 @@ struct OAuthMemoryStore {
   sessions_by_id: HashMap<String, OAuthSession>,
   sessions_by_access_token: HashMap<String, String>,
   sessions_by_refresh_token: HashMap<String, String>,
+  /// 下一次允许清理过期 authorization code 的时间戳，0 表示可以立即清理
+  next_code_sweep_at: i64,
+  /// 下一次允许清理过期 session 的时间戳，0 表示可以立即清理
+  next_session_sweep_at: i64,
 }
 
 impl OAuthStore {
@@ -184,6 +202,7 @@ impl OAuthStore {
     match self.store_type {
       OAuthStoreType::Memory => {
         let mut memory = self.memory.lock().await;
+        memory.sweep_authorization_codes_if_due();
         memory.authorization_codes.insert(code.code.clone(), code.clone());
         Ok(code)
       },
@@ -248,6 +267,7 @@ impl OAuthStore {
     match self.store_type {
       OAuthStoreType::Memory => {
         let mut memory = self.memory.lock().await;
+        memory.sweep_sessions_if_due();
         memory.attach_session(session.clone());
         Ok(session)
       },
@@ -532,6 +552,45 @@ impl OAuthStore {
 }
 
 impl OAuthMemoryStore {
+  /// 按间隔顺带清理过期的 authorization code。
+  ///
+  /// 未被兑换的 code 不会走 `take_authorization_code` 的删除分支，
+  /// 只能靠这里的定期回收，避免内存模式下无限增长。
+  /// 只剔除已过期的记录，未过期的 code 不受影响。
+  fn sweep_authorization_codes_if_due(
+    &mut self,
+  ) {
+    let now = now_sec();
+    if self.next_code_sweep_at > now {
+      return;
+    }
+    self.next_code_sweep_at = now + MEMORY_CODE_SWEEP_INTERVAL_SEC;
+    self.authorization_codes.retain(|_, code| now < code.expires_at);
+  }
+
+  /// 按间隔顺带清理 refresh token 已过期的 session。
+  ///
+  /// 判定条件与 `find_session_by_access_token` / `find_session_by_refresh_token`
+  /// 已有的过期处理保持一致：refresh 过期后 session 无法再续期，等同失效，
+  /// 因此这里整条移除(连带两个 token 索引)，而不是只删索引项。
+  /// access 过期但 refresh 仍有效的 session 会保留，它还能被续期。
+  fn sweep_sessions_if_due(
+    &mut self,
+  ) {
+    let now = now_sec();
+    if self.next_session_sweep_at > now {
+      return;
+    }
+    self.next_session_sweep_at = now + MEMORY_SESSION_SWEEP_INTERVAL_SEC;
+    let expired_session_ids = self.sessions_by_id.values()
+      .filter(|session| now >= session.refresh_expires_at)
+      .map(|session| session.session_id.clone())
+      .collect::<Vec<_>>();
+    for session_id in expired_session_ids {
+      self.revoke_session(&session_id);
+    }
+  }
+
   fn attach_session(
     &mut self,
     session: OAuthSession,
