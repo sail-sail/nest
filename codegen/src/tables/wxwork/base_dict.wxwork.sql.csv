@@ -1,2 +1,3 @@
 id,code,lbl,type,order_by,is_sys,is_add
 Vn6z81QvSziUfYHv0mUjTw,wxw_oa_approval_detail_sp_status,审批申请状态,number,1,0,0
+3kQ7nL2xR5wP8mD1vT9bC2,wxw_oa_biz_sp_status,业务审批状态,number,1,0,0

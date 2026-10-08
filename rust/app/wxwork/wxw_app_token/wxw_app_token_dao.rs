@@ -33,6 +33,8 @@ use super::wxw_app_token_model::{
   GetuserDetailRes,
   GetJsapiTicketRes,
   GetuserinfoModel,
+  SubmitApprovalApplyReq,
+  SubmitApprovalApplyRes,
   WxwGetConfigSignature,
 };
 
@@ -61,6 +63,191 @@ struct Userlist {
   userid: String,
   // #[serde(default)]
   // department: i32,
+}
+
+#[cfg(test)]
+mod tests {
+  use super::{
+    should_retry_submit_approval_apply,
+    validate_submit_approval_apply_req,
+  };
+  use crate::wxwork::wxw_app_token::wxw_app_token_model::{
+    SubmitApprovalApplyContent,
+    SubmitApprovalApplyData,
+    SubmitApprovalApplyReq,
+    SubmitApprovalApplyRes,
+    SubmitApprovalApplySummary,
+    SubmitApprovalNode,
+    SubmitApprovalProcess,
+    SubmitApprovalSummaryInfo,
+  };
+
+  #[test]
+  fn submit_approval_apply_payload_serializes_expected_fields() {
+    let req = SubmitApprovalApplyReq {
+      creator_userid: "WangXiaoMing".into(),
+      template_id: "template-1".into(),
+      use_template_approver: 0,
+      choose_department: 2,
+      apply_data: SubmitApprovalApplyData {
+        contents: vec![SubmitApprovalApplyContent {
+          control: "Text".into(),
+          id: "Text-1".into(),
+          value: serde_json::json!({ "text": "文本填写的内容" }),
+        }],
+      },
+      summary_list: vec![SubmitApprovalApplySummary {
+        summary_info: vec![SubmitApprovalSummaryInfo {
+          text: "摘要第1行".into(),
+          lang: "zh_CN".into(),
+        }],
+      }],
+      process: Some(SubmitApprovalProcess {
+        node_list: vec![SubmitApprovalNode {
+          r#type: 1,
+          apv_rel: Some(1),
+          userid: vec!["abc".into()],
+        }],
+      }),
+    };
+
+    let json = serde_json::to_value(&req).unwrap();
+    assert_eq!(json["creator_userid"], "WangXiaoMing");
+    assert_eq!(json["template_id"], "template-1");
+    assert_eq!(json["apply_data"]["contents"][0]["control"], "Text");
+
+    let res = SubmitApprovalApplyRes {
+      errcode: 0,
+      errmsg: "ok".into(),
+      sp_no: "202001010001".into(),
+    };
+    let json = serde_json::to_value(&res).unwrap();
+    assert_eq!(json["sp_no"], "202001010001");
+  }
+
+  #[test]
+  fn submit_approval_apply_retries_on_expired_access_token() {
+    assert!(should_retry_submit_approval_apply(42001));
+    assert!(!should_retry_submit_approval_apply(0));
+  }
+
+  #[test]
+  fn submit_approval_apply_requires_process_when_not_using_template_approver() {
+    let req = SubmitApprovalApplyReq {
+      creator_userid: "WangXiaoMing".into(),
+      template_id: "template-1".into(),
+      use_template_approver: 0,
+      choose_department: 2,
+      apply_data: SubmitApprovalApplyData {
+        contents: vec![SubmitApprovalApplyContent {
+          control: "Text".into(),
+          id: "Text-1".into(),
+          value: serde_json::json!({ "text": "文本填写的内容" }),
+        }],
+      },
+      summary_list: vec![SubmitApprovalApplySummary {
+        summary_info: vec![SubmitApprovalSummaryInfo {
+          text: "摘要第1行".into(),
+          lang: "zh_CN".into(),
+        }],
+      }],
+      process: None,
+    };
+
+    assert!(validate_submit_approval_apply_req(&req).is_err());
+  }
+
+  #[test]
+  fn submit_approval_apply_allows_template_process_to_be_omitted() {
+    let req = SubmitApprovalApplyReq {
+      creator_userid: "WangXiaoMing".into(),
+      template_id: "template-1".into(),
+      use_template_approver: 1,
+      choose_department: 2,
+      apply_data: SubmitApprovalApplyData {
+        contents: vec![SubmitApprovalApplyContent {
+          control: "Text".into(),
+          id: "Text-1".into(),
+          value: serde_json::json!({ "text": "文本填写的内容" }),
+        }],
+      },
+      summary_list: vec![SubmitApprovalApplySummary {
+        summary_info: vec![SubmitApprovalSummaryInfo {
+          text: "摘要第1行".into(),
+          lang: "zh_CN".into(),
+        }],
+      }],
+      process: None,
+    };
+
+    assert!(validate_submit_approval_apply_req(&req).is_ok());
+  }
+}
+
+fn should_retry_submit_approval_apply(errcode: i32) -> bool {
+  errcode == 42001
+}
+
+fn validate_submit_approval_apply_req(payload: &SubmitApprovalApplyReq) -> Result<()> {
+  if payload.use_template_approver == 0 {
+    let process = payload.process.as_ref();
+    let has_node = process
+      .map(|process| !process.node_list.is_empty())
+      .unwrap_or(false);
+    if !has_node {
+      return Err(eyre!(
+        "提交企业微信审批申请失败: use_template_approver=0 时 process.node_list 必填"
+      ));
+    }
+  }
+
+  Ok(())
+}
+
+async fn submit_approval_apply_request(
+  wxw_app_id: WxwAppId,
+  payload: &SubmitApprovalApplyReq,
+  force: bool,
+) -> Result<SubmitApprovalApplyRes> {
+  let access_token = get_access_token(wxw_app_id, force.into()).await?;
+  let url = format!(
+    "https://qyapi.weixin.qq.com/cgi-bin/oa/applyevent?access_token={access_token}",
+    access_token = urlencoding::encode(&access_token),
+  );
+
+  let client = reqwest::Client::new();
+  let res = client
+    .post(&url)
+    .json(payload)
+    .send()
+    .await?;
+  let res = res.error_for_status()?;
+  let data_str = res.text().await?;
+  let data: SubmitApprovalApplyRes = serde_json::from_str(&data_str)?;
+  Ok(data)
+}
+
+/// 提交企业微信审批申请
+pub async fn submit_approval_apply(
+  wxw_app_id: WxwAppId,
+  payload: SubmitApprovalApplyReq,
+) -> Result<SubmitApprovalApplyRes> {
+  validate_submit_approval_apply_req(&payload)?;
+  let mut data = submit_approval_apply_request(wxw_app_id, &payload, false).await?;
+  if should_retry_submit_approval_apply(data.errcode) {
+    data = submit_approval_apply_request(wxw_app_id, &payload, true).await?;
+  }
+
+  if data.errcode != 0 {
+    let msg = format!(
+      "提交审批申请失败: {} {}",
+      data.errcode,
+      data.errmsg,
+    );
+    return Err(eyre!(msg));
+  }
+
+  Ok(data)
 }
 
 /// 从企业微信获取 access_token

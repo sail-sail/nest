@@ -372,7 +372,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "sp_status",
-        width: 140,
+        width: 130,
         search: true,
       },
       {

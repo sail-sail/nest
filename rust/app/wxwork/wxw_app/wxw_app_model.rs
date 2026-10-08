@@ -12,4 +12,5 @@ pub struct NotifyQuery {
   pub echostr: String,
   pub corpid: String,
   pub agentid: String,
+  pub org_lbl: Option<String>,
 }

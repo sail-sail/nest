@@ -11,6 +11,7 @@ use generated::wxwork::wxw_app::wxw_app_dao::find_one_ok_wxw_app;
 use generated::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_dao::create_wxw_oa_approval_detail;
 use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_model::WxwOaApprovalDetailInput;
+use generated::base::org::org_model::OrgId;
 
 #[derive(Debug, Default, Deserialize)]
 #[serde(rename = "xml")]
@@ -89,6 +90,7 @@ pub async fn wxwork_app_notify_get(
     echostr,
     corpid,
     agentid,
+    org_lbl: _,
   } = notify_query;
   
   let wxw_app_model = find_one_ok_wxw_app(
@@ -138,6 +140,7 @@ pub async fn wxwork_app_notify_post(
   body: String,
   options: Option<Options>,
 ) -> Result<Response> {
+  
   let NotifyQuery {
     msg_signature: _,
     timestamp: _,
@@ -145,6 +148,7 @@ pub async fn wxwork_app_notify_post(
     echostr: _,
     corpid,
     agentid,
+    org_lbl,
   } = notify_query;
 
   let wxw_app_model = find_one_ok_wxw_app(
@@ -221,6 +225,26 @@ pub async fn wxwork_app_notify_post(
   let apply_time = parse_approval_apply_time(&approval_info.apply_time).unwrap_or_default();
   let applyer_userid = parse_applyer_userid(approval_info.applyer.as_ref());
   let batch_applyer_userid = parse_applyer_userid(approval_info.batch_applyer.as_ref());
+  
+  let mut org_id: Option<OrgId> = None;
+  let mut org_id_lbl: Option<String> = None;
+  
+  if let Some(org_lbl) = org_lbl && !org_lbl.is_empty() {
+    org_id_lbl = Some(org_lbl);
+    let org_model = generated::base::org::org_dao::find_one_org(
+      Some(generated::base::org::org_model::OrgSearch {
+        lbl: org_id_lbl.clone(),
+        ..Default::default()
+      }),
+      None,
+      None,
+    ).await?;
+    if let Some(org) = org_model {
+      org_id = Some(org.id);
+    } else {
+      error!("wxwork_app_notify_post: org not found for lbl: {:?}", org_id_lbl);
+    }
+  }
 
   let input = WxwOaApprovalDetailInput {
     id: Some(get_short_uuid().into()),
@@ -236,8 +260,8 @@ pub async fn wxwork_app_notify_post(
     applyer_userid: Some(applyer_userid),
     batch_applyer_userid: Some(batch_applyer_userid),
     raw_data: Some(decrypted_xml.clone()),
-    org_id: None,
-    org_id_lbl: None,
+    org_id,
+    org_id_lbl,
   };
 
   match create_wxw_oa_approval_detail(input, options).await {

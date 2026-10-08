@@ -892,7 +892,7 @@ function getTableColumns(): ColumnType[] {
       label: "审批申请状态",
       prop: "sp_status_lbl",
       sortBy: "sp_status",
-      width: 140,
+      width: 130,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,

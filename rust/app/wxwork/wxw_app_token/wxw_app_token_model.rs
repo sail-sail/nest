@@ -89,6 +89,95 @@ pub struct GetJsapiTicketRes {
   pub expires_in: u32,
 }
 
+/// 企业微信审批申请请求体。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalApplyReq {
+  /// 申请人 userid。
+  pub creator_userid: String,
+  /// 审批模板 ID。
+  pub template_id: String,
+  /// 0=按接口指定流程；1=使用模板默认流程。
+  #[serde(default)]
+  pub use_template_approver: i32,
+  /// 提单者提单部门 ID，默认使用主部门。
+  #[serde(default)]
+  pub choose_department: i32,
+  /// 审批表单控件内容。
+  pub apply_data: SubmitApprovalApplyData,
+  /// 审批摘要列表，最多 3 行。
+  pub summary_list: Vec<SubmitApprovalApplySummary>,
+  /// 审批节点列表，use_template_approver=0 时必填。
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub process: Option<SubmitApprovalProcess>,
+}
+
+/// 审批表单内容集合。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalApplyData {
+  /// 表单控件列表。
+  pub contents: Vec<SubmitApprovalApplyContent>,
+}
+
+/// 单个审批表单控件。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalApplyContent {
+  /// 控件类型，例如 Text、Number、Selector。
+  pub control: String,
+  /// 控件唯一 ID。
+  pub id: String,
+  /// 控件填写值，按控件类型不同而不同。
+  pub value: serde_json::Value,
+}
+
+/// 审批摘要行。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalApplySummary {
+  /// 摘要信息列表。
+  pub summary_info: Vec<SubmitApprovalSummaryInfo>,
+}
+
+/// 摘要行详情。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalSummaryInfo {
+  /// 摘要文本。
+  pub text: String,
+  /// 语言代码，常见值为 zh_CN / en。
+  pub lang: String,
+}
+
+/// 审批流程节点列表。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalProcess {
+  /// 流程节点。
+  pub node_list: Vec<SubmitApprovalNode>,
+}
+
+/// 单个流程节点。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalNode {
+  /// 节点类型：1 审批人，2 抄送人，3 办理人。
+  pub r#type: i32,
+  /// 会签/或签/依次审批方式。
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub apv_rel: Option<i32>,
+  /// 节点用户 ID 列表。
+  #[serde(default)]
+  pub userid: Vec<String>,
+}
+
+/// 企业微信审批申请返回值。
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SubmitApprovalApplyRes {
+  /// 错误码，0 为成功。
+  pub errcode: i32,
+  /// 错误消息。
+  #[serde(default)]
+  pub errmsg: String,
+  /// 审批单号。
+  #[serde(default)]
+  pub sp_no: String,
+}
+
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwGetConfigSignature {
