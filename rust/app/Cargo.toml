@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
+serde-xml-rs.workspace = true
 mime.workspace = true
 futures-util.workspace = true
 tracing.workspace = true

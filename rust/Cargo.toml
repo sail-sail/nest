@@ -7,6 +7,7 @@ default-run = "rust"
 [workspace.dependencies]
 serde_json = "1.0.151"
 serde = { version = "1.0.229", features = ["derive"] }
+serde-xml-rs = "0.8.2"
 mime = "0.3.17"
 futures-util = "0.3.34"
 tracing = "0.1.44"
@@ -93,6 +94,7 @@ tikv-jemallocator = "0.7.0"
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
+serde-xml-rs.workspace = true
 mime.workspace = true
 futures-util.workspace = true
 tracing.workspace = true
