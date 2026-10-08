@@ -184,7 +184,7 @@ pub struct WxwOaApprovalDetailFieldComment {
   /// 原始数据
   #[graphql(name = "raw_data")]
   pub raw_data: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 所属组织
@@ -244,7 +244,7 @@ pub struct WxwOaApprovalDetailSearch {
   /// 原始数据
   #[graphql(skip)]
   pub raw_data: Option<String>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 所属组织
@@ -377,7 +377,7 @@ pub struct WxwOaApprovalDetailInput {
   /// 原始数据
   #[graphql(name = "raw_data")]
   pub raw_data: Option<String>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织

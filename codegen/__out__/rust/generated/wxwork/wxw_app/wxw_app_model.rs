@@ -258,7 +258,7 @@ pub struct WxwAppFieldComment {
   /// 应用ID
   #[graphql(name = "agentid")]
   pub agentid: String,
-  /// 可信域名
+  /// 可信域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: String,
   /// 可信域名
@@ -306,7 +306,7 @@ pub struct WxwAppFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -318,7 +318,7 @@ pub struct WxwAppFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -362,7 +362,7 @@ pub struct WxwAppSearch {
   /// 应用ID
   #[graphql(name = "agentid_like")]
   pub agentid_like: Option<String>,
-  /// 可信域名
+  /// 可信域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
   /// 可信域名
@@ -392,7 +392,7 @@ pub struct WxwAppSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -407,7 +407,7 @@ pub struct WxwAppSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -558,7 +558,7 @@ pub struct WxwAppInput {
   /// 应用ID
   #[graphql(name = "agentid")]
   pub agentid: Option<String>,
-  /// 可信域名
+  /// 可信域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 可信域名

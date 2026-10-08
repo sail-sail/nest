@@ -233,7 +233,7 @@ pub struct WxwUsrFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: String,
   /// 企微应用
@@ -262,7 +262,7 @@ pub struct WxwUsrSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
@@ -358,7 +358,7 @@ pub struct WxwUsrSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -373,7 +373,7 @@ pub struct WxwUsrSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -569,7 +569,7 @@ pub struct WxwUsrInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用

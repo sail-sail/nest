@@ -214,7 +214,7 @@ pub struct WxwOaTemplateFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -226,7 +226,7 @@ pub struct WxwOaTemplateFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -238,7 +238,7 @@ pub struct WxwOaTemplateFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 所属组织
@@ -296,7 +296,7 @@ pub struct WxwOaTemplateSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -311,7 +311,7 @@ pub struct WxwOaTemplateSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -326,7 +326,7 @@ pub struct WxwOaTemplateSearch {
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 所属组织
@@ -488,7 +488,7 @@ pub struct WxwOaTemplateInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织

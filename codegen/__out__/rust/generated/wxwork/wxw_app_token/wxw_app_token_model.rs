@@ -251,7 +251,7 @@ pub struct WxwAppTokenFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: String,
   /// 企微应用
@@ -319,7 +319,7 @@ pub struct WxwAppTokenSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
@@ -391,7 +391,7 @@ pub struct WxwAppTokenSearch {
   /// 应用jsapi_ticket超时时间
   #[graphql(skip)]
   pub jsapi_ticket_agent_config_expires_in: Option<[Option<u32>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -406,7 +406,7 @@ pub struct WxwAppTokenSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -577,7 +577,7 @@ pub struct WxwAppTokenInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 企微应用
+  /// 企微应用 [@fk:wxwork_wxw_app.id]
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
