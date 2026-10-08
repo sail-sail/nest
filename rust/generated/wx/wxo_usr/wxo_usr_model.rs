@@ -43,6 +43,7 @@ fn get_can_sort_in_api_wxo_usr() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WXO_USR
 }
 
+/// 公众号用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoUsrModel")]
 #[allow(dead_code)]
@@ -202,6 +203,7 @@ impl FromRow<'_, MySqlRow> for WxoUsrModel {
   }
 }
 
+/// 公众号用户
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoUsrFieldComment")]
 #[allow(dead_code)]
@@ -215,7 +217,7 @@ pub struct WxoUsrFieldComment {
   /// 头像
   #[graphql(name = "head_img")]
   pub head_img: String,
-  /// 绑定用户
+  /// 绑定用户 [@fk:base_usr.id]
   #[graphql(name = "usr_id")]
   pub usr_id: String,
   /// 绑定用户
@@ -248,7 +250,7 @@ pub struct WxoUsrFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -260,7 +262,7 @@ pub struct WxoUsrFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -274,6 +276,7 @@ pub struct WxoUsrFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 公众号用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoUsrSearch")]
 #[allow(dead_code)]
@@ -297,7 +300,7 @@ pub struct WxoUsrSearch {
   /// 头像
   #[graphql(skip)]
   pub head_img_like: Option<String>,
-  /// 绑定用户
+  /// 绑定用户 [@fk:base_usr.id]
   #[graphql(name = "usr_id")]
   pub usr_id: Option<Vec<UsrId>>,
   /// 绑定用户
@@ -360,7 +363,7 @@ pub struct WxoUsrSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -375,7 +378,7 @@ pub struct WxoUsrSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -534,6 +537,7 @@ impl std::fmt::Debug for WxoUsrSearch {
   }
 }
 
+/// 公众号用户
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoUsrInput")]
 #[allow(dead_code)]
@@ -552,7 +556,7 @@ pub struct WxoUsrInput {
   /// 头像
   #[graphql(name = "head_img")]
   pub head_img: Option<String>,
-  /// 绑定用户
+  /// 绑定用户 [@fk:base_usr.id]
   #[graphql(name = "usr_id")]
   pub usr_id: Option<UsrId>,
   /// 绑定用户

@@ -42,6 +42,7 @@ fn get_can_sort_in_api_wxo_app_token() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WXO_APP_TOKEN
 }
 
+/// 小程序接口凭据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppTokenModel")]
 #[allow(dead_code)]
@@ -170,6 +171,7 @@ impl FromRow<'_, MySqlRow> for WxoAppTokenModel {
   }
 }
 
+/// 小程序接口凭据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppTokenFieldComment")]
 #[allow(dead_code)]
@@ -177,7 +179,7 @@ pub struct WxoAppTokenFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 小程序设置
+  /// 小程序设置 [@fk:wx_wxo_app.id]
   #[graphql(name = "wxo_app_id")]
   pub wxo_app_id: String,
   /// 小程序设置
@@ -203,6 +205,7 @@ pub struct WxoAppTokenFieldComment {
   pub expires_in: String,
 }
 
+/// 小程序接口凭据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppTokenSearch")]
 #[allow(dead_code)]
@@ -212,7 +215,7 @@ pub struct WxoAppTokenSearch {
   /// ID列表
   pub ids: Option<Vec<WxoAppTokenId>>,
   pub is_deleted: Option<u8>,
-  /// 小程序设置
+  /// 小程序设置 [@fk:wx_wxo_app.id]
   #[graphql(name = "wxo_app_id")]
   pub wxo_app_id: Option<Vec<WxoAppId>>,
   /// 小程序设置
@@ -248,7 +251,7 @@ pub struct WxoAppTokenSearch {
   /// 令牌超时时间
   #[graphql(skip)]
   pub expires_in: Option<[Option<u32>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -263,7 +266,7 @@ pub struct WxoAppTokenSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -374,6 +377,7 @@ impl std::fmt::Debug for WxoAppTokenSearch {
   }
 }
 
+/// 小程序接口凭据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppTokenInput")]
 #[allow(dead_code)]
@@ -383,7 +387,7 @@ pub struct WxoAppTokenInput {
   /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 小程序设置
+  /// 小程序设置 [@fk:wx_wxo_app.id]
   #[graphql(name = "wxo_app_id")]
   pub wxo_app_id: Option<WxoAppId>,
   /// 小程序设置

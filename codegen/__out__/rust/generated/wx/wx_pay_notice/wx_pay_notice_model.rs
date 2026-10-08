@@ -42,6 +42,7 @@ fn get_can_sort_in_api_wx_pay_notice() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WX_PAY_NOTICE
 }
 
+/// 微信支付通知
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxPayNoticeModel")]
 #[allow(dead_code)]
@@ -215,6 +216,7 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
   }
 }
 
+/// 微信支付通知
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxPayNoticeFieldComment")]
 #[allow(dead_code)]
@@ -296,6 +298,7 @@ pub struct WxPayNoticeFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 微信支付通知
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxPayNoticeSearch")]
 #[allow(dead_code)]
@@ -510,6 +513,7 @@ impl std::fmt::Debug for WxPayNoticeSearch {
   }
 }
 
+/// 微信支付通知
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxPayNoticeInput")]
 #[allow(dead_code)]

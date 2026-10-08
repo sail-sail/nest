@@ -46,6 +46,7 @@ fn get_can_sort_in_api_wxo_app() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_WXO_APP
 }
 
+/// 公众号设置
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppModel")]
 #[allow(dead_code)]
@@ -242,6 +243,7 @@ impl FromRow<'_, MySqlRow> for WxoAppModel {
   }
 }
 
+/// 公众号设置
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppFieldComment")]
 #[allow(dead_code)]
@@ -279,7 +281,7 @@ pub struct WxoAppFieldComment {
   /// 授权作用域
   #[graphql(name = "scope_lbl")]
   pub scope_lbl: String,
-  /// 网页授权域名
+  /// 网页授权域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: String,
   /// 网页授权域名
@@ -306,7 +308,7 @@ pub struct WxoAppFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -318,7 +320,7 @@ pub struct WxoAppFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -332,6 +334,7 @@ pub struct WxoAppFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 公众号设置
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppSearch")]
 #[allow(dead_code)]
@@ -385,7 +388,7 @@ pub struct WxoAppSearch {
   /// 授权作用域
   #[graphql(skip)]
   pub scope: Option<Vec<WxoAppScope>>,
-  /// 网页授权域名
+  /// 网页授权域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
   /// 网页授权域名
@@ -418,7 +421,7 @@ pub struct WxoAppSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -433,7 +436,7 @@ pub struct WxoAppSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -594,6 +597,7 @@ impl std::fmt::Debug for WxoAppSearch {
   }
 }
 
+/// 公众号设置
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppInput")]
 #[allow(dead_code)]
@@ -636,7 +640,7 @@ pub struct WxoAppInput {
   /// 授权作用域
   #[graphql(name = "scope_lbl")]
   pub scope_lbl: Option<String>,
-  /// 网页授权域名
+  /// 网页授权域名 [@fk:base_domain.id]
   #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 网页授权域名

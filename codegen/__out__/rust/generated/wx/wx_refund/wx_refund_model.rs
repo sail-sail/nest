@@ -42,6 +42,7 @@ fn get_can_sort_in_api_wx_refund() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_WX_REFUND
 }
 
+/// 微信退款申请
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxRefundModel")]
 #[allow(dead_code)]
@@ -251,6 +252,7 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
   }
 }
 
+/// 微信退款申请
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxRefundFieldComment")]
 #[allow(dead_code)]
@@ -344,6 +346,7 @@ pub struct WxRefundFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 微信退款申请
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxRefundSearch")]
 #[allow(dead_code)]
@@ -606,6 +609,7 @@ impl std::fmt::Debug for WxRefundSearch {
   }
 }
 
+/// 微信退款申请
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxRefundInput")]
 #[allow(dead_code)]
