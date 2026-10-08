@@ -192,13 +192,13 @@ pub struct MessageReceiverFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 消息
+  /// 消息 [@fk:base_message.id]
   #[graphql(name = "message_id")]
   pub message_id: String,
   /// 消息
   #[graphql(name = "message_id_lbl")]
   pub message_id_lbl: String,
-  /// 接收人
+  /// 接收人 [@fk:base_usr.id]
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: String,
   /// 接收人
@@ -216,13 +216,13 @@ pub struct MessageReceiverFieldComment {
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
   pub read_time_lbl: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -234,7 +234,7 @@ pub struct MessageReceiverFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -262,7 +262,7 @@ pub struct MessageReceiverSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 消息
+  /// 消息 [@fk:base_message.id]
   #[graphql(name = "message_id")]
   pub message_id: Option<Vec<MessageId>>,
   /// 消息
@@ -274,7 +274,7 @@ pub struct MessageReceiverSearch {
   /// 消息
   #[graphql(name = "message_id_content_like")]
   pub message_id_content_like: Option<String>,
-  /// 接收人
+  /// 接收人 [@fk:base_usr.id]
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<Vec<UsrId>>,
   /// 接收人
@@ -292,7 +292,7 @@ pub struct MessageReceiverSearch {
   /// 阅读时间
   #[graphql(name = "read_time")]
   pub read_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 所属组织
@@ -304,7 +304,7 @@ pub struct MessageReceiverSearch {
   /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
   pub org_id_lbl_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -319,7 +319,7 @@ pub struct MessageReceiverSearch {
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -451,13 +451,13 @@ pub struct MessageReceiverInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 消息
+  /// 消息 [@fk:base_message.id]
   #[graphql(name = "message_id")]
   pub message_id: Option<MessageId>,
   /// 消息
   #[graphql(name = "message_id_content")]
   pub message_id_content: Option<String>,
-  /// 接收人
+  /// 接收人 [@fk:base_usr.id]
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<UsrId>,
   /// 接收人
@@ -478,7 +478,7 @@ pub struct MessageReceiverInput {
   /// 阅读时间
   #[graphql(name = "read_time_save_null")]
   pub read_time_save_null: Option<bool>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织

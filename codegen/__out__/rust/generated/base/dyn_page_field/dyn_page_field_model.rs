@@ -269,7 +269,7 @@ pub struct DynPageFieldFieldComment {
   /// 编码
   #[graphql(name = "code")]
   pub code: String,
-  /// 动态页面
+  /// 动态页面 [@fk:base_dyn_page.id]
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: String,
   /// 动态页面
@@ -352,7 +352,7 @@ pub struct DynPageFieldSearch {
   /// 编码
   #[graphql(name = "code_like")]
   pub code_like: Option<String>,
-  /// 动态页面
+  /// 动态页面 [@fk:base_dyn_page.id]
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<Vec<DynPageId>>,
   /// 动态页面
@@ -412,7 +412,7 @@ pub struct DynPageFieldSearch {
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -427,7 +427,7 @@ pub struct DynPageFieldSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -602,7 +602,7 @@ pub struct DynPageFieldInput {
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<String>,
-  /// 动态页面
+  /// 动态页面 [@fk:base_dyn_page.id]
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<DynPageId>,
   /// 动态页面

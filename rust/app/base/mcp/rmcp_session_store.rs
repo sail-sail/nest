@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::env;
-use std::time::{Duration, Instant};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use async_trait::async_trait;
 use color_eyre::eyre::{Result, eyre};
@@ -12,6 +13,12 @@ use rmcp::transport::streamable_http_server::session::store::{
 };
 use tokio::sync::RwLock;
 
+/// 内存模式下过期 rmcp session 的清理间隔。
+///
+/// Redis 模式靠 SETEX 的 TTL 自动过期；内存模式原先只在 load 命中单条时才删除，
+/// 之后再没人访问的 session 会一直留在 HashMap 里。
+const MEMORY_SESSION_SWEEP_INTERVAL: Duration = Duration::from_secs(60);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum StoreType {
   Memory,
@@ -21,12 +28,15 @@ enum StoreType {
 #[derive(Clone)]
 struct MemorySessionState {
   state: SessionState,
-  expires_at: Instant,
+  /// 绝对过期时间戳（毫秒），使用 Unix epoch 基线，和 sweep / TTL 判定保持一致。
+  expires_at: u64,
 }
 
 pub struct RmcpSessionStore {
   store_type: StoreType,
   memory: RwLock<HashMap<String, MemorySessionState>>,
+  /// 下一次允许清理内存 session 的时间戳(毫秒)，0 表示可以立即清理
+  next_memory_sweep_at: AtomicU64,
   redis_pool: Option<Pool>,
   session_timeout: Duration,
 }
@@ -41,6 +51,7 @@ impl RmcpSessionStore {
     Self {
       store_type,
       memory: RwLock::new(HashMap::new()),
+      next_memory_sweep_at: AtomicU64::new(0),
       redis_pool,
       session_timeout: session_timeout(),
     }
@@ -58,7 +69,7 @@ impl RmcpSessionStore {
       StoreType::Memory => {
         let mut memory = self.memory.write().await;
         if let Some(record) = memory.get_mut(session_id) {
-          record.expires_at = Instant::now() + self.session_timeout;
+          record.expires_at = now_millis() + self.session_timeout.as_millis() as u64;
         }
         Ok(())
       },
@@ -94,6 +105,32 @@ impl RmcpSessionStore {
     }
   }
 
+  /// 按间隔顺带清理过期的内存 session。
+  ///
+  /// 只在内存模式生效，且由写入侧触发：内存模式没有后台清理任务，
+  /// 长时间没人访问的 session 不会自己消失。只剔除已过期的记录。
+  async fn sweep_memory_if_due(
+    &self,
+  ) {
+    if !matches!(self.store_type, StoreType::Memory) {
+      return;
+    }
+    let now_ms = now_millis();
+    let next = self.next_memory_sweep_at.load(Ordering::Relaxed);
+    if next > now_ms {
+      return;
+    }
+    let next_at = now_ms + MEMORY_SESSION_SWEEP_INTERVAL.as_millis() as u64;
+    if self.next_memory_sweep_at
+      .compare_exchange(next, next_at, Ordering::Relaxed, Ordering::Relaxed)
+      .is_err() {
+        return;
+      }
+    let now = now_millis();
+    self.memory.write().await
+      .retain(|_, record| now < record.expires_at);
+  }
+
   async fn redis_conn(&self) -> Result<deadpool_redis::Connection> {
     let pool = self.redis_pool.as_ref()
       .ok_or_else(|| eyre!("rmcp session redis pool 未初始化"))?;
@@ -119,7 +156,7 @@ impl SessionStore for RmcpSessionStore {
         let Some(record) = memory.get(session_id).cloned() else {
           return Ok(None);
         };
-        if Instant::now() >= record.expires_at {
+        if now_millis() >= record.expires_at {
           memory.remove(session_id);
           return Ok(None);
         }
@@ -147,11 +184,12 @@ impl SessionStore for RmcpSessionStore {
   ) -> Result<(), SessionStoreError> {
     match self.store_type {
       StoreType::Memory => {
+        self.sweep_memory_if_due().await;
         self.memory.write().await.insert(
           session_id.to_owned(),
           MemorySessionState {
             state: state.clone(),
-            expires_at: Instant::now() + self.session_timeout,
+            expires_at: now_millis() + self.session_timeout.as_millis() as u64,
           },
         );
         Ok(())
@@ -227,4 +265,11 @@ fn init_redis_pool() -> Pool {
 
 fn session_key(session_id: &str) -> String {
   format!("mcp:rmcp:session:{session_id}")
+}
+
+fn now_millis() -> u64 {
+  SystemTime::now()
+    .duration_since(UNIX_EPOCH)
+    .unwrap_or_default()
+    .as_millis() as u64
 }

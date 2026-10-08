@@ -174,7 +174,7 @@ pub struct DictDetailFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: String,
   /// 系统字典
@@ -198,7 +198,7 @@ pub struct DictDetailFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -210,7 +210,7 @@ pub struct DictDetailFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -234,7 +234,7 @@ pub struct DictDetailSearch {
   /// ID列表
   pub ids: Option<Vec<DictDetailId>>,
   pub is_deleted: Option<u8>,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: Option<Vec<DictId>>,
   /// 系统字典
@@ -270,7 +270,7 @@ pub struct DictDetailSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -285,7 +285,7 @@ pub struct DictDetailSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -408,7 +408,7 @@ pub struct DictDetailInput {
   pub is_deleted: Option<u8>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: Option<DictId>,
   /// 系统字典
