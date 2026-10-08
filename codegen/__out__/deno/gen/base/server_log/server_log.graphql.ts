@@ -20,6 +20,7 @@ enum ServerLogLevel {
   ERROR
 }
 
+"系统日志"
 type ServerLogModel {
   "ID"
   id: ServerLogId!
@@ -42,6 +43,7 @@ type ServerLogModel {
   "日志内容"
   content: String
 }
+"系统日志"
 type ServerLogFieldComment {
   "ID"
   id: String!
@@ -64,6 +66,7 @@ type ServerLogFieldComment {
   "日志内容"
   content: String!
 }
+"系统日志"
 input ServerLogInput {
   "ID"
   id: ServerLogId

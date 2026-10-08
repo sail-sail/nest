@@ -6,6 +6,7 @@ import * as resolver from "./operation_record.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar OperationRecordId
 
+"操作记录"
 type OperationRecordModel {
   "ID"
   id: OperationRecordId!
@@ -25,7 +26,7 @@ type OperationRecordModel {
   old_data: String
   "操作后数据"
   new_data: String
-  "操作人"
+  "操作人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "操作人"
   create_usr_id_lbl: String!
@@ -36,6 +37,7 @@ type OperationRecordModel {
   "已删除"
   is_deleted: Int!
 }
+"操作记录"
 type OperationRecordFieldComment {
   "ID"
   id: String!
@@ -55,7 +57,7 @@ type OperationRecordFieldComment {
   old_data: String!
   "操作后数据"
   new_data: String!
-  "操作人"
+  "操作人 [@fk:base_usr.id]"
   create_usr_id: String!
   "操作人"
   create_usr_id_lbl: String!
@@ -64,6 +66,7 @@ type OperationRecordFieldComment {
   "操作时间"
   create_time_lbl: String!
 }
+"操作记录"
 input OperationRecordInput {
   "ID"
   id: OperationRecordId

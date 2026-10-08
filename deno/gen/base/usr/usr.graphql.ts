@@ -14,6 +14,7 @@ enum UsrType {
   api
 }
 
+"用户"
 type UsrModel {
   "ID"
   id: UsrId!
@@ -25,19 +26,19 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: [RoleId!]!
   "所属角色"
   role_ids_lbl: [String!]!
-  "所属部门"
+  "所属部门 [@fk:base_dept.id]"
   dept_ids: [DeptId!]!
   "所属部门"
   dept_ids_lbl: [String!]!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_ids: [OrgId!]!
   "所属组织"
   org_ids_lbl: [String!]!
-  "默认组织"
+  "默认组织 [@fk:base_org.id]"
   default_org_id: OrgId!
   "默认组织"
   default_org_id_lbl: String!
@@ -65,7 +66,7 @@ type UsrModel {
   is_hidden: Int!
   "隐藏"
   is_hidden_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -73,7 +74,7 @@ type UsrModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -84,6 +85,7 @@ type UsrModel {
   "已删除"
   is_deleted: Int!
 }
+"用户"
 type UsrFieldComment {
   "ID"
   id: String!
@@ -93,19 +95,19 @@ type UsrFieldComment {
   lbl: String!
   "用户名"
   username: String!
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: String!
   "所属角色"
   role_ids_lbl: String!
-  "所属部门"
+  "所属部门 [@fk:base_dept.id]"
   dept_ids: String!
   "所属部门"
   dept_ids_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_ids: String!
   "所属组织"
   org_ids_lbl: String!
-  "默认组织"
+  "默认组织 [@fk:base_org.id]"
   default_org_id: String!
   "默认组织"
   default_org_id_lbl: String!
@@ -133,7 +135,7 @@ type UsrFieldComment {
   is_hidden: String!
   "隐藏"
   is_hidden_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -141,7 +143,7 @@ type UsrFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -150,6 +152,7 @@ type UsrFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"用户"
 input UsrInput {
   "ID"
   id: UsrId
@@ -161,19 +164,19 @@ input UsrInput {
   username: String
   "密码"
   password: String
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: [RoleId!]
   "所属角色"
   role_ids_lbl: [String!]
-  "所属部门"
+  "所属部门 [@fk:base_dept.id]"
   dept_ids: [DeptId!]
   "所属部门"
   dept_ids_lbl: [String!]
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_ids: [OrgId!]
   "所属组织"
   org_ids_lbl: [String!]
-  "默认组织"
+  "默认组织 [@fk:base_org.id]"
   default_org_id: OrgId
   "默认组织"
   default_org_id_lbl: String

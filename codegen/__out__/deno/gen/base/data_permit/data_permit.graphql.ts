@@ -28,10 +28,11 @@ enum DataPermitType {
   editable
 }
 
+"数据权限"
 type DataPermitModel {
   "ID"
   id: DataPermitId!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId!
   "菜单"
   menu_id_lbl: String!
@@ -45,7 +46,7 @@ type DataPermitModel {
   type_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -53,7 +54,7 @@ type DataPermitModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -66,10 +67,11 @@ type DataPermitModel {
   "系统字段"
   is_sys: Int!
 }
+"数据权限"
 type DataPermitFieldComment {
   "ID"
   id: String!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: String!
   "菜单"
   menu_id_lbl: String!
@@ -83,7 +85,7 @@ type DataPermitFieldComment {
   type_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -91,7 +93,7 @@ type DataPermitFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -100,10 +102,11 @@ type DataPermitFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"数据权限"
 input DataPermitInput {
   "ID"
   id: DataPermitId
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId
   "菜单"
   menu_id_lbl: String

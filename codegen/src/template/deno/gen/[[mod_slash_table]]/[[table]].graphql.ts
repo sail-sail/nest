@@ -138,6 +138,7 @@ enum <#=enumColumnName#> {<#
 }
 #>
 
+"<#=table_comment#>"
 type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -278,7 +279,7 @@ type <#=modelName#> {<#
     } else if (foreignKey) {
       const foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
   #>
-  "<#=column_comment#>"
+  "<#=column_comment#> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#>"
   <#=column_name#>: <#=data_type#><#
     if (foreignKey.lbl) {
   #>
@@ -454,6 +455,7 @@ type <#=modelName#> {<#
   }
   #>
 }
+"<#=table_comment#>"
 type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -482,7 +484,7 @@ type <#=fieldCommentName#> {<#
   #><#
     if (foreignKey) {
   #>
-  "<#=column_comment#>"
+  "<#=column_comment#> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#>"
   <#=column_name#>: String!
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
@@ -512,6 +514,7 @@ type <#=fieldCommentName#> {<#
   }
   #>
 }
+"<#=table_comment#>"
 input <#=inputName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -612,7 +615,7 @@ input <#=inputName#> {<#
   <#=column_name#>_lbl: String<#
     } else if (foreignKey) {
   #>
-  "<#=column_comment#>"
+  "<#=column_comment#> <#=`[@fk:${ foreignKey.mod }_${ foreignKey.table }.id]`#>"
   <#=column_name#>: <#=data_type#><#
     if (hasModelLabel) {
   #>
@@ -950,6 +953,7 @@ input <#=searchName#> {<#
 }<#
 if (hasSummary) {
 #>
+"<#=table_comment#>"
 type <#=Table_Up2#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];

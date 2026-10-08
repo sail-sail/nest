@@ -6,10 +6,11 @@ import * as resolver from "./menu.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar MenuId
 
+"菜单"
 type MenuModel {
   "ID"
   id: MenuId!
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_id: MenuId!
   "父菜单"
   parent_id_lbl: String!
@@ -39,7 +40,7 @@ type MenuModel {
   is_hidden: Int!
   "隐藏"
   is_hidden_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -47,7 +48,7 @@ type MenuModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -58,10 +59,11 @@ type MenuModel {
   "已删除"
   is_deleted: Int!
 }
+"菜单"
 type MenuFieldComment {
   "ID"
   id: String!
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_id: String!
   "父菜单"
   parent_id_lbl: String!
@@ -91,7 +93,7 @@ type MenuFieldComment {
   is_hidden: String!
   "隐藏"
   is_hidden_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -99,7 +101,7 @@ type MenuFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -108,10 +110,11 @@ type MenuFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"菜单"
 input MenuInput {
   "ID"
   id: MenuId
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_id: MenuId
   "父菜单"
   parent_id_lbl: String

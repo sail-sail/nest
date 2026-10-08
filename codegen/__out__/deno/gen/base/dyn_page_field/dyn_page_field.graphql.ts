@@ -16,12 +16,13 @@ enum DynPageFieldAlign {
   right
 }
 
+"动态页面字段"
 type DynPageFieldModel {
   "ID"
   id: DynPageFieldId!
   "编码"
   code: String!
-  "动态页面"
+  "动态页面 [@fk:base_dyn_page.id]"
   dyn_page_id: DynPageId!
   "动态页面"
   dyn_page_id_lbl: String!
@@ -64,12 +65,13 @@ type DynPageFieldModel {
   "已删除"
   is_deleted: Int!
 }
+"动态页面字段"
 type DynPageFieldFieldComment {
   "ID"
   id: String!
   "编码"
   code: String!
-  "动态页面"
+  "动态页面 [@fk:base_dyn_page.id]"
   dyn_page_id: String!
   "动态页面"
   dyn_page_id_lbl: String!
@@ -110,12 +112,13 @@ type DynPageFieldFieldComment {
   "排序"
   order_by: String!
 }
+"动态页面字段"
 input DynPageFieldInput {
   "ID"
   id: DynPageFieldId
   "编码"
   code: String
-  "动态页面"
+  "动态页面 [@fk:base_dyn_page.id]"
   dyn_page_id: DynPageId
   "动态页面"
   dyn_page_id_lbl: String
