@@ -68,6 +68,8 @@ const ACCESS_TOKEN_PREFIX = "mcp_at_";
 const REFRESH_TOKEN_PREFIX = "mcp_rt_";
 const AUTHORIZATION_CODE_PREFIX = "mcp_code_";
 const DEFAULT_MCP_ACCESS_TOKEN_TTL_SECONDS = 10 * 365 * 24 * 60 * 60;
+const MEMORY_AUTHORIZATION_CODE_SWEEP_INTERVAL_MS = 60 * 1000;
+const MEMORY_SESSION_SWEEP_INTERVAL_MS = 5 * 60 * 1000;
 
 export class McpOAuthStore {
   private readonly clientsById = new Map<string, RegisteredOAuthClient>();
@@ -75,6 +77,8 @@ export class McpOAuthStore {
   private readonly sessionsById = new Map<string, StoredOAuthSession>();
   private readonly sessionsByAccessToken = new Map<string, StoredOAuthSession>();
   private readonly sessionsByRefreshToken = new Map<string, StoredOAuthSession>();
+  private nextAuthorizationCodeSweepAt = 0;
+  private nextSessionSweepAt = 0;
 
   private configPromise?: Promise<StoreConfig>;
   private redisPromise?: Promise<Redis | undefined>;
@@ -186,6 +190,7 @@ export class McpOAuthStore {
       return record.code;
     }
 
+    this.sweepExpiredAuthorizationCodesIfDue();
     this.authorizationCodes.set(record.code, record);
     return record.code;
   }
@@ -434,9 +439,38 @@ export class McpOAuthStore {
       return;
     }
 
+    this.sweepExpiredSessionsIfDue();
     this.sessionsById.set(session.id, session);
     this.sessionsByAccessToken.set(session.accessToken, session);
     this.sessionsByRefreshToken.set(session.refreshToken, session);
+  }
+
+  private sweepExpiredAuthorizationCodesIfDue() {
+    const now = Date.now();
+    if (this.nextAuthorizationCodeSweepAt > now) {
+      return;
+    }
+    this.nextAuthorizationCodeSweepAt = now + MEMORY_AUTHORIZATION_CODE_SWEEP_INTERVAL_MS;
+    for (const [code, record] of this.authorizationCodes.entries()) {
+      if (record.expiresAt <= now) {
+        this.authorizationCodes.delete(code);
+      }
+    }
+  }
+
+  private sweepExpiredSessionsIfDue() {
+    const now = Date.now();
+    if (this.nextSessionSweepAt > now) {
+      return;
+    }
+    this.nextSessionSweepAt = now + MEMORY_SESSION_SWEEP_INTERVAL_MS;
+    for (const [sessionId, session] of this.sessionsById.entries()) {
+      if (session.refreshExpiresAt <= now) {
+        this.sessionsById.delete(sessionId);
+        this.sessionsByAccessToken.delete(session.accessToken);
+        this.sessionsByRefreshToken.delete(session.refreshToken);
+      }
+    }
   }
 
   private async normalizeSession(
