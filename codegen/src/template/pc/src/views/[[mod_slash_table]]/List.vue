@@ -467,7 +467,7 @@ if (searchByKeyword) {
           prop="<#=column_name#>"
         >
           <CustomInput
-            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            v-model="search.<#=column_name#>_lbl_like"<#
             if (isUseI18n) {
             #>
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
