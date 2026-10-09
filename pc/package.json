@@ -39,7 +39,7 @@
     "@vue/shared": "3.5.43",
     "@vueuse/core": "15.0.0",
     "@wecom/jssdk": "2.4.4",
-    "cronstrue": "3.30.0",
+    "cronstrue": "3.31.0",
     "danmu": "0.20.0",
     "dayjs": "1.11.23",
     "decimal.js": "10.6.0",
@@ -90,18 +90,18 @@
     "unocss": "66.10.5",
     "unplugin-auto-import": "21.1.0",
     "unplugin-icons": "24.0.0",
-    "unplugin-turbo-console": "2.3.3",
+    "unplugin-turbo-console": "3.0.0-beta.1",
     "unplugin-vue-components": "32.1.0",
     "unplugin-vue-define-options": "3.1.4",
-    "vite": "8.3.3",
-    "vite-plugin-devtools-json": "1.1.0",
-    "vite-plugin-inspect": "12.0.2",
+    "vite": "8.3.4",
+    "vite-plugin-devtools-json": "1.1.1",
+    "vite-plugin-inspect": "12.1.0",
     "vite-plugin-pwa": "2.0.0",
     "vite-plugin-vue-devtools": "8.2.1",
     "vite-plugin-vue-inspector": "7.0.0",
     "vite-plugin-wasm": "3.6.0",
     "vite-plus": "latest",
     "vitest": "5.0.3",
-    "vue-tsc": "3.3.12"
+    "vue-tsc": "3.3.11"
   }
 }
