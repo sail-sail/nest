@@ -1798,6 +1798,35 @@ pub struct <#=tableUP#>FieldComment {<#
   #><#
   }
   #><#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  #[graphql(name = "<#=inline_column_name#>")]
+  pub <#=inline_column_name#>: String,<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  /// <#=inlineForeignTab.label#>
+  #[graphql(name = "<#=inline_column_name#>")]
+  pub <#=inline_column_name#>: String,<#
+    }
+  #><#
+  }
+  #><#
   if (opts?.isUseDynPageFields) {
   #>
   /// 动态页面数据字段说明

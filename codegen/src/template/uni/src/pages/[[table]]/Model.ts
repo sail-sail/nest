@@ -198,6 +198,12 @@ export const <#=fieldsName#> = [<#
       }
     }
     const isIcon = column.isIcon;
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
   #><#
     if (isIcon) {
   #>
@@ -209,7 +215,7 @@ export const <#=fieldsName#> = [<#
   #>
   // <#=column_comment#>
   "<#=column_name#>",<#
-    if (foreignKey.lbl) {
+    if (hasModelLabel) {
   #>
   "<#=column_name#>_lbl",<#
     }
