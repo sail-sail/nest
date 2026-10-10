@@ -17,6 +17,8 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -162,7 +164,7 @@ CREATE TABLE `wxwork_wxw_oa_template` (
 drop table if exists `wxwork_wxw_oa_approval_detail`;
 CREATE TABLE if not exists `wxwork_wxw_oa_approval_detail` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `sp_no` varchar(60) NOT NULL DEFAULT '' COMMENT '审批编号',
+  `sp_no` varchar(45) NOT NULL DEFAULT '' COMMENT '审批编号',
   `sp_name` varchar(100) NOT NULL DEFAULT '' COMMENT '审批申请类型名称',
   -- 申请单状态：1-审批中；2-已通过；3-已驳回；4-已撤销；6-通过后撤销；7-已删除；10-已支付 (is_sys=0, is_add=0)
   `sp_status` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '审批申请状态,dict:wxw_oa_approval_detail_sp_status',

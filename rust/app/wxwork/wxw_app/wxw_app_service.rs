@@ -3,15 +3,41 @@ use poem::{IntoResponse, Response, http::StatusCode};
 use serde::Deserialize;
 use tracing::{error, info};
 
-use generated::common::context::{Options, get_short_uuid};
+use generated::common::context::Options;
 
 use super::wxw_app_model::NotifyQuery;
 
 use generated::wxwork::wxw_app::wxw_app_dao::find_one_ok_wxw_app;
 use generated::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
-use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_dao::create_wxw_oa_approval_detail;
-use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_model::WxwOaApprovalDetailInput;
-use generated::base::org::org_model::OrgId;
+use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_dao::{
+  create_wxw_oa_approval_detail,
+  find_one_wxw_oa_approval_detail,
+  update_by_id_wxw_oa_approval_detail,
+};
+use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_model::{
+  WxwOaApprovalDetailInput,
+  WxwOaApprovalDetailSearch,
+};
+use generated::scrm::expense_reimbursement::expense_reimbursement_dao::{
+  find_all_expense_reimbursement,
+  update_by_id_expense_reimbursement,
+};
+use generated::scrm::expense_reimbursement::expense_reimbursement_model::{
+  ExpenseReimbursementInput,
+  ExpenseReimbursementSearch,
+};
+
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename = "xml")]
+#[allow(dead_code)]
+struct WxworkAppNotifyEnvelopeXml {
+  #[serde(rename = "ToUserName", default)]
+  to_user_name: String,
+  #[serde(rename = "AgentID", default)]
+  agent_id: String,
+  #[serde(rename = "Encrypt", default)]
+  encrypt: String,
+}
 
 #[derive(Debug, Default, Deserialize)]
 #[serde(rename = "xml")]
@@ -88,15 +114,12 @@ pub async fn wxwork_app_notify_get(
     timestamp: _,
     nonce: _,
     echostr,
-    corpid,
-    agentid,
-    org_lbl: _,
+    lbl,
   } = notify_query;
   
   let wxw_app_model = find_one_ok_wxw_app(
     Some(WxwAppSearch {
-      corpid: Some(corpid),
-      agentid: Some(agentid),
+      lbl: Some(lbl),
       ..Default::default()
     }),
     None,
@@ -141,20 +164,36 @@ pub async fn wxwork_app_notify_post(
   options: Option<Options>,
 ) -> Result<Response> {
   
+  info!("wxwork_app_notify_post: notify_query: {notify_query:?}, body: {body:?}");
+  
   let NotifyQuery {
     msg_signature: _,
     timestamp: _,
     nonce: _,
     echostr: _,
-    corpid,
-    agentid,
-    org_lbl,
+    lbl,
   } = notify_query;
 
+  let notify_body: WxworkAppNotifyEnvelopeXml = match serde_xml_rs::from_str(body.trim()) {
+    Ok(item) => item,
+    Err(e) => {
+      error!("wxwork_app_notify_post body xml parse: {e:#?}");
+      return Ok(
+        Response::builder()
+          .status(StatusCode::BAD_REQUEST)
+          .body(e.to_string())
+          .into_response(),
+      );
+    }
+  };
+
+  // let corpid = notify_body.to_user_name.trim().to_string();
+  // let agentid = notify_body.agent_id.trim().to_string();
+  let encrypt = notify_body.encrypt.trim().to_string();
+  
   let wxw_app_model = find_one_ok_wxw_app(
     Some(WxwAppSearch {
-      corpid: Some(corpid),
-      agentid: Some(agentid),
+      lbl: Some(lbl),
       ..Default::default()
     }),
     None,
@@ -164,12 +203,14 @@ pub async fn wxwork_app_notify_post(
   let notify_token = wxw_app_model.notify_token.clone();
   let notify_aeskey = wxw_app_model.notify_aeskey.clone();
   let tenant_id = wxw_app_model.tenant_id;
+  let org_id = wxw_app_model.org_id;
+  let org_id_lbl = wxw_app_model.org_id_lbl.clone();
 
   let agent = wecom_crypto::Agent::new(
     notify_token.as_str(),
     notify_aeskey.as_str(),
   );
-  let dec = agent.decrypt(body.trim());
+  let dec = agent.decrypt(encrypt.as_str());
   let dec = match dec {
     Ok(d) => d,
     Err(e) => {
@@ -184,7 +225,7 @@ pub async fn wxwork_app_notify_post(
   };
 
   let decrypted_xml = dec.text;
-  info!("企业微信应用回调通知 POST 解密后原始消息: {decrypted_xml}");
+  info!("wxwork_app_notify_post: decrypted_xml: {decrypted_xml}");
 
   let notify_xml: WxworkAppNotifyXml = match serde_xml_rs::from_str(&decrypted_xml) {
     Ok(item) => item,
@@ -198,87 +239,98 @@ pub async fn wxwork_app_notify_post(
       );
     }
   };
-
-  if !notify_xml.event.eq_ignore_ascii_case("sys_approval_change") {
-    return Ok(
-      Response::builder()
-        .status(StatusCode::OK)
-        .body("success")
-        .into_response(),
-    );
-  }
-
-  let Some(approval_info) = notify_xml.approval_info else {
-    error!("wxwork_app_notify_post: sys_approval_change without ApprovalInfo");
-    return Ok(
-      Response::builder()
-        .status(StatusCode::OK)
-        .body("success")
-        .into_response(),
-    );
-  };
-
-  let sp_no = approval_info.sp_no.trim().to_string();
-  let sp_name = approval_info.sp_name.trim().to_string();
-  let sp_status = approval_info.sp_status.trim().parse::<u8>().unwrap_or_default();
-  let template_id = approval_info.template_id.trim().to_string();
-  let apply_time = parse_approval_apply_time(&approval_info.apply_time).unwrap_or_default();
-  let applyer_userid = parse_applyer_userid(approval_info.applyer.as_ref());
-  let batch_applyer_userid = parse_applyer_userid(approval_info.batch_applyer.as_ref());
   
-  let mut org_id: Option<OrgId> = None;
-  let mut org_id_lbl: Option<String> = None;
+  info!("wxwork_app_notify_post: notify_xml: {notify_xml:?}");
+
+  if notify_xml.event.eq_ignore_ascii_case("sys_approval_change") {
+    
+    info!("wxwork_app_notify_post: sys_approval_change event received");
+    
+    let Some(approval_info) = notify_xml.approval_info else {
+      error!("wxwork_app_notify_post: sys_approval_change without ApprovalInfo");
+      return Ok(
+        Response::builder()
+          .status(StatusCode::OK)
+          .body("success")
+          .into_response(),
+      );
+    };
   
-  if let Some(org_lbl) = org_lbl && !org_lbl.is_empty() {
-    org_id_lbl = Some(org_lbl);
-    let org_model = generated::base::org::org_dao::find_one_org(
-      Some(generated::base::org::org_model::OrgSearch {
-        lbl: org_id_lbl.clone(),
+    let sp_no = approval_info.sp_no.trim().to_string();
+    let sp_no_for_callback = sp_no.clone();
+    let sp_name = approval_info.sp_name.trim().to_string();
+    let sp_status = approval_info.sp_status.trim().parse::<u8>().unwrap_or_default();
+    let template_id = approval_info.template_id.trim().to_string();
+    let apply_time = parse_approval_apply_time(&approval_info.apply_time).unwrap_or_default();
+    let applyer_userid = parse_applyer_userid(approval_info.applyer.as_ref());
+    let batch_applyer_userid = parse_applyer_userid(approval_info.batch_applyer.as_ref());
+  
+    let existing = find_one_wxw_oa_approval_detail(
+      Some(WxwOaApprovalDetailSearch {
+        sp_no: Some(sp_no.clone()),
         ..Default::default()
       }),
       None,
-      None,
+      options,
     ).await?;
-    if let Some(org) = org_model {
-      org_id = Some(org.id);
+
+    let input = WxwOaApprovalDetailInput {
+      id: existing.as_ref().map(|model| model.id),
+      tenant_id: Some(tenant_id),
+      sp_no: Some(sp_no.clone()),
+      sp_name: Some(sp_name.clone()),
+      sp_status: Some(sp_status),
+      sp_status_lbl: Some(sp_status.to_string()),
+      template_id: Some(template_id.clone()),
+      apply_time: Some(apply_time),
+      apply_time_lbl: Some(apply_time.format("%Y-%m-%d %H:%M:%S").to_string()),
+      apply_time_save_null: None,
+      applyer_userid: Some(applyer_userid.clone()),
+      batch_applyer_userid: Some(batch_applyer_userid.clone()),
+      raw_data: Some(decrypted_xml.clone()),
+      org_id: Some(org_id),
+      org_id_lbl: Some(org_id_lbl.clone()),
+    };
+
+    if let Some(model) = existing {
+      update_by_id_wxw_oa_approval_detail(
+        model.id,
+        input,
+        options,
+      ).await?;
     } else {
-      error!("wxwork_app_notify_post: org not found for lbl: {:?}", org_id_lbl);
+      create_wxw_oa_approval_detail(
+        input,
+        options,
+      ).await?;
     }
-  }
 
-  let input = WxwOaApprovalDetailInput {
-    id: Some(get_short_uuid().into()),
-    tenant_id: Some(tenant_id),
-    sp_no: Some(sp_no),
-    sp_name: Some(sp_name),
-    sp_status: Some(sp_status),
-    sp_status_lbl: None,
-    template_id: Some(template_id),
-    apply_time: Some(apply_time),
-    apply_time_lbl: None,
-    apply_time_save_null: None,
-    applyer_userid: Some(applyer_userid),
-    batch_applyer_userid: Some(batch_applyer_userid),
-    raw_data: Some(decrypted_xml.clone()),
-    org_id,
-    org_id_lbl,
-  };
-
-  match create_wxw_oa_approval_detail(input, options).await {
-    Ok(_) => Ok(
-      Response::builder()
-        .status(StatusCode::OK)
-        .body("success")
-        .into_response(),
-    ),
-    Err(e) => {
-      error!("wxwork_app_notify_post save approval detail: {e:#?}");
-      Ok(
-        Response::builder()
-          .status(StatusCode::INTERNAL_SERVER_ERROR)
-          .body(e.to_string())
-          .into_response(),
-      )
-    }
+    sys_approval_change_callback(
+      sp_no_for_callback.as_str(),
+      sp_status,
+      options,
+    ).await?;
+    
   }
+  
+  Ok(
+    Response::builder()
+      .status(StatusCode::OK)
+      .body("success")
+      .into_response(),
+  )
+}
+
+/// 根据企微审批单号同步更新相关业务状态
+pub async fn sys_approval_change_callback(
+  sp_no: &str,
+  sp_status: u8,
+  options: Option<Options>,
+) -> Result<()> {
+  let sp_no = sp_no.trim();
+  if sp_no.is_empty() {
+    return Ok(());
+  }
+  
+  Ok(())
 }

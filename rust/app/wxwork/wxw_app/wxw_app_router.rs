@@ -22,8 +22,7 @@ pub async fn wxwork_app_notify_get(
         notify_query,
         None,
       )
-    })
-    .await
+    }).await
 }
 
 #[handler]
@@ -40,6 +39,5 @@ pub async fn wxwork_app_notify_post(
         body,
         None,
       )
-    })
-    .await
+    }).await
 }

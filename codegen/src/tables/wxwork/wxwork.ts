@@ -9,7 +9,6 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
         [ "corpid", "agentid" ],
-        [ "domain_id" ],
       ],
       detailFormWidth: "440px",
     },
@@ -306,6 +305,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         require: true,
+        align: "center",
         fixed: false,
       },
       {

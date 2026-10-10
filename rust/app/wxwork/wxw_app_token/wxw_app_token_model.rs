@@ -78,6 +78,61 @@ pub struct GetuserDetailRes {
   pub address: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TemplateName {
+  #[serde(default)]
+  pub text: String,
+  #[serde(default)]
+  pub lang: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TemplateProperty {
+  #[serde(default)]
+  pub control: String,
+  #[serde(default)]
+  pub id: String,
+  #[serde(default)]
+  pub title: Vec<TemplateName>,
+  #[serde(default)]
+  pub placeholder: Vec<TemplateName>,
+  #[serde(default)]
+  pub require: i32,
+  #[serde(default)]
+  pub un_print: i32,
+  #[serde(default)]
+  pub inner_id: String,
+  #[serde(default)]
+  pub un_replace: i32,
+  #[serde(default)]
+  pub display: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TemplateControl {
+  #[serde(default)]
+  pub property: TemplateProperty,
+  #[serde(default)]
+  pub config: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TemplateContent {
+  #[serde(default)]
+  pub controls: Vec<TemplateControl>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetTemplateDetailRes {
+  pub errcode: i32,
+  #[serde(default)]
+  pub errmsg: String,
+  #[serde(default)]
+  pub template_names: Vec<TemplateName>,
+  #[serde(default)]
+  pub template_content: TemplateContent,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct GetJsapiTicketRes {
   pub errcode: i32,
