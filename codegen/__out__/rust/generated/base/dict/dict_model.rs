@@ -239,6 +239,9 @@ pub struct DictFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 系统字典明细
+  #[graphql(name = "dict_detail")]
+  pub dict_detail: String,
 }
 
 /// 系统字典

@@ -905,6 +905,7 @@ pub async fn get_field_comments_dict(
     update_usr_id_lbl: "更新人".into(),
     update_time: "更新时间".into(),
     update_time_lbl: "更新时间".into(),
+    dict_detail: "系统字典明细".into(),
   };
   Ok(field_comments)
 }
