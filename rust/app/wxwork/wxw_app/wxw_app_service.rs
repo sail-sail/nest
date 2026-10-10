@@ -18,14 +18,6 @@ use generated::wxwork::wxw_oa_approval_detail::wxw_oa_approval_detail_model::{
   WxwOaApprovalDetailInput,
   WxwOaApprovalDetailSearch,
 };
-use generated::scrm::expense_reimbursement::expense_reimbursement_dao::{
-  find_all_expense_reimbursement,
-  update_by_id_expense_reimbursement,
-};
-use generated::scrm::expense_reimbursement::expense_reimbursement_model::{
-  ExpenseReimbursementInput,
-  ExpenseReimbursementSearch,
-};
 
 #[derive(Debug, Default, Deserialize)]
 #[serde(rename = "xml")]
