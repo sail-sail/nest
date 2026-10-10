@@ -1040,7 +1040,7 @@ function getTableColumns(): ColumnType[] {
       label: "模板名称",
       prop: "lbl",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

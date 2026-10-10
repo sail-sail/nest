@@ -758,6 +758,16 @@
             </el-table-column>
           </template>
           
+          <!-- 所属组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
@@ -883,6 +893,8 @@ const props = defineProps<{
   domain_id?: string|string[]; // 可信域名
   domain_id_lbl?: string; // 可信域名
   is_enabled?: string|string[]; // 启用
+  org_id?: string|string[]; // 所属组织
+  org_id_lbl?: string; // 所属组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -902,6 +914,8 @@ const builtInSearchType: { [key: string]: string } = {
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
   update_usr_id_lbl: "string[]",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -1287,6 +1301,15 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
     },
+    {
+      label: "所属组织",
+      prop: "org_id_lbl",
+      sortBy: "org_id_lbl",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
   ];
 }
 
@@ -1589,6 +1612,7 @@ async function onImportExcel() {
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
+    [ "所属组织" ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1625,6 +1649,7 @@ async function onImportExcel() {
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
+          "org_id_lbl": "string",
         },
       },
     );

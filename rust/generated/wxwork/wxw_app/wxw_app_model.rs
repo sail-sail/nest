@@ -33,8 +33,10 @@ use crate::common::exceptions::service_exception::ServiceException;
 use crate::common::util::dao::decrypt;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::domain::domain_model::DomainId;
+
 use crate::base::usr::usr_model::UsrId;
+use crate::base::domain::domain_model::DomainId;
+use crate::base::org::org_model::OrgId;
 
 static CAN_SORT_IN_API_WXW_APP: [&str; 3] = [
   "order_by",
@@ -114,6 +116,12 @@ pub struct WxwAppModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
+  /// 所属组织
+  #[graphql(name = "org_id")]
+  pub org_id: OrgId,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -181,6 +189,10 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 所属组织
+    let org_id: OrgId = row.try_get("org_id")?;
+    let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
+    let org_id_lbl = String::from(org_id_lbl.unwrap_or_default());
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -227,6 +239,8 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
       is_enabled_lbl,
       order_by,
       rem,
+      org_id,
+      org_id_lbl,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -330,6 +344,12 @@ pub struct WxwAppFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 所属组织 [@fk:base_org.id]
+  #[graphql(name = "org_id")]
+  pub org_id: String,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: String,
 }
 
 /// 企微应用
@@ -337,6 +357,8 @@ pub struct WxwAppFieldComment {
 #[graphql(rename_fields = "snake_case", name = "WxwAppSearch")]
 #[allow(dead_code)]
 pub struct WxwAppSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<WxwAppId>,
   /// ID列表
@@ -422,6 +444,18 @@ pub struct WxwAppSearch {
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  /// 所属组织 [@fk:base_org.id]
+  #[graphql(name = "org_id")]
+  pub org_id: Option<Vec<OrgId>>,
+  /// 所属组织
+  #[graphql(name = "org_id_is_null")]
+  pub org_id_is_null: Option<bool>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<Vec<String>>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl_like")]
+  pub org_id_lbl_like: Option<String>,
 }
 
 impl std::fmt::Debug for WxwAppSearch {
@@ -532,6 +566,19 @@ impl std::fmt::Debug for WxwAppSearch {
     if let Some(ref update_time) = self.update_time {
       item = item.field("update_time", update_time);
     }
+    // 所属组织
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
+    if let Some(ref org_id_lbl_like) = self.org_id_lbl_like {
+      item = item.field("org_id_lbl_like", org_id_lbl_like);
+    }
+    if let Some(ref org_id_is_null) = self.org_id_is_null {
+      item = item.field("org_id_is_null", org_id_is_null);
+    }
     item.finish()
   }
 }
@@ -606,6 +653,12 @@ pub struct WxwAppInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
+  /// 所属组织 [@fk:base_org.id]
+  #[graphql(name = "org_id")]
+  pub org_id: Option<OrgId>,
+  /// 所属组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -697,6 +750,12 @@ impl std::fmt::Debug for WxwAppInput {
     if let Some(ref update_time) = self.update_time {
       item = item.field("update_time", update_time);
     }
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
     item.finish()
   }
 }
@@ -741,6 +800,9 @@ impl From<WxwAppModel> for WxwAppInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
+      // 所属组织
+      org_id: model.org_id.into(),
+      org_id_lbl: model.org_id_lbl.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -797,6 +859,10 @@ impl From<WxwAppInput> for WxwAppSearch {
       update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
+      // 所属组织
+      org_id: input.org_id.map(|x| vec![x]),
+      // 所属组织
+      org_id_lbl: input.org_id_lbl.map(|x| vec![x]),
       ..Default::default()
     }
   }

@@ -262,6 +262,30 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+          <el-form-item
+            label="所属组织"
+            prop="org_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.org_id"
+              v-model:model-label="dialogModel.org_id_lbl"
+              :method="getListOrg"
+              dirty-key="组织"
+              :find-by-values="findByIdsOrg"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 所属组织"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
       </el-form>
     </div>
     <div
@@ -373,11 +397,16 @@ import {
 
 import {
   getListDomain,
+  getListOrg,
 } from "./Api.ts";
 
 import {
   findByIdsDomain,
 } from "@/views/base/domain/Api.ts";
+
+import {
+  findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -496,6 +525,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请输入 排序",
+      },
+    ],
+    // 所属组织
+    org_id: [
+      {
+        required: true,
+        message: "请选择 所属组织",
       },
     ],
   };
@@ -855,6 +891,7 @@ watch(
   () => [
     dialogModel.domain_id,
     dialogModel.is_send_msg,
+    dialogModel.org_id,
   ],
   () => {
     if (!inited) {
@@ -865,6 +902,9 @@ watch(
     }
     if (!dialogModel.is_send_msg) {
       dialogModel.is_send_msg_lbl = "";
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );

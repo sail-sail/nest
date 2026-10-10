@@ -61,6 +61,9 @@ export function intoInputWxwApp(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 所属组织
+    org_id: model?.org_id,
+    org_id_lbl: model?.org_id_lbl,
   };
   return input;
 }
@@ -598,6 +601,52 @@ export async function getListDomain() {
   return data;
 }
 
+export async function findAllOrg(
+  search?: OrgSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllOrg: OrgModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const org_models = data.findAllOrg;
+  return org_models;
+}
+
+export async function getListOrg() {
+  const data = await findAllOrg(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 企微应用 导入模板
  */
@@ -625,6 +674,7 @@ export function useDownloadImportTemplateWxwApp() {
             is_send_msg_lbl
             order_by
             rem
+            org_id_lbl
           }
         }
       `,
@@ -834,6 +884,8 @@ export async function getFieldCommentsWxwApp(
           update_usr_id_lbl,
           update_time,
           update_time_lbl,
+          org_id,
+          org_id_lbl,
         }
       }
     `,
@@ -852,11 +904,13 @@ export function getPagePathWxwApp() {
 
 /** 新增时的默认值 */
 export async function getDefaultInputWxwApp() {
+  const usrStore = useUsrStore();
   const defaultInput: WxwAppInput = {
     is_send_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    org_id: usrStore.loginInfo?.org_id,
   };
   return defaultInput;
 }
