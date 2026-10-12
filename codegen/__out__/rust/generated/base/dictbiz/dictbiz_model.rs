@@ -247,6 +247,9 @@ pub struct DictbizFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 业务字典明细
+  #[graphql(name = "dictbiz_detail")]
+  pub dictbiz_detail: String,
 }
 
 /// 业务字典

@@ -258,6 +258,9 @@ pub struct DynPageFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 动态页面字段
+  #[graphql(name = "dyn_page_field")]
+  pub dyn_page_field: String,
 }
 
 /// 动态页面
