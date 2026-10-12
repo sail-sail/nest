@@ -93,6 +93,9 @@ export async function findAllWxRefund(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllWxRefund: WxRefundModel[];
   } = await query({
@@ -125,6 +128,9 @@ export async function findOneWxRefund(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneWxRefund?: WxRefundModel;
@@ -157,6 +163,9 @@ export async function findOneOkWxRefund(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneOkWxRefund?: WxRefundModel;
@@ -188,6 +197,9 @@ export async function findCountWxRefund(
   search?: WxRefundSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findCountWxRefund: Query["findCountWxRefund"];
   } = await query({
