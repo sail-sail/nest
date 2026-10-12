@@ -258,6 +258,14 @@ async fn get_where_query(
       where_query.push_str(" and t.raw_data=?");
       args.push(raw_data.into());
     }
+    let raw_data_like = match search {
+      Some(item) => item.raw_data_like.clone(),
+      None => None,
+    };
+    if let Some(raw_data_like) = raw_data_like && !raw_data_like.is_empty() {
+      where_query.push_str(" and t.raw_data like ?");
+      args.push(format!("%{}%", sql_like(&raw_data_like)).into());
+    }
   }
   // 所属组织
   {
@@ -1935,7 +1943,7 @@ pub async fn update_by_id_wxw_oa_approval_detail(
     args.push(batch_applyer_userid.into());
   }
   // 原始数据
-  if let Some(raw_data) = input.raw_data {
+  if let Some(raw_data) = input.raw_data.clone() {
     field_num += 1;
     sql_fields += "raw_data=?,";
     args.push(raw_data.into());

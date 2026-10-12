@@ -56,18 +56,9 @@ struct WxworkApprovalInfo {
   #[serde(rename = "ApplyTime", default)]
   apply_time: String,
   #[serde(rename = "Applyer", default)]
-  applyer: Option<WxworkApprovalUser>,
+  applyer: Option<WxworkApprovalUserObj>,
   #[serde(rename = "BatchApplyer", default)]
-  batch_applyer: Option<WxworkApprovalUser>,
-}
-
-#[derive(Debug, Default, Deserialize, Clone)]
-#[serde(untagged)]
-enum WxworkApprovalUser {
-  #[default]
-  Empty,
-  Object(WxworkApprovalUserObj),
-  String(String),
+  batch_applyer: Option<WxworkApprovalUserObj>,
 }
 
 #[derive(Debug, Default, Deserialize, Clone)]
@@ -76,12 +67,8 @@ struct WxworkApprovalUserObj {
   user_id: String,
 }
 
-fn parse_applyer_userid(value: Option<&WxworkApprovalUser>) -> String {
-  match value {
-    Some(WxworkApprovalUser::Object(item)) => item.user_id.clone(),
-    Some(WxworkApprovalUser::String(item)) => item.clone(),
-    _ => String::new(),
-  }
+fn parse_applyer_userid(value: Option<&WxworkApprovalUserObj>) -> String {
+  value.map(|item| item.user_id.clone()).unwrap_or_default()
 }
 
 fn parse_approval_apply_time(value: &str) -> Option<chrono::NaiveDateTime> {
@@ -112,6 +99,7 @@ pub async fn wxwork_app_notify_get(
   let wxw_app_model = find_one_ok_wxw_app(
     Some(WxwAppSearch {
       lbl: Some(lbl),
+      is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
@@ -186,6 +174,7 @@ pub async fn wxwork_app_notify_post(
   let wxw_app_model = find_one_ok_wxw_app(
     Some(WxwAppSearch {
       lbl: Some(lbl),
+      is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,

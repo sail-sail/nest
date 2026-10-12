@@ -118,8 +118,7 @@ impl FromRow<'_, MySqlRow> for WxwOaApprovalDetailModel {
     // 批量申请人
     let batch_applyer_userid: String = row.try_get("batch_applyer_userid")?;
     // 原始数据
-    let raw_data: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("raw_data")?;
-    let raw_data = raw_data.map(|v| v.to_string());
+    let raw_data: Option<String> = row.try_get("raw_data")?;
     // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
@@ -244,6 +243,9 @@ pub struct WxwOaApprovalDetailSearch {
   /// 原始数据
   #[graphql(skip)]
   pub raw_data: Option<String>,
+  /// 原始数据
+  #[graphql(skip)]
+  pub raw_data_like: Option<String>,
   /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
@@ -316,6 +318,9 @@ impl std::fmt::Debug for WxwOaApprovalDetailSearch {
     // 原始数据
     if let Some(ref raw_data) = self.raw_data {
       item = item.field("raw_data", raw_data);
+    }
+    if let Some(ref raw_data_like) = self.raw_data_like {
+      item = item.field("raw_data_like", raw_data_like);
     }
     // 所属组织
     if let Some(ref org_id) = self.org_id {

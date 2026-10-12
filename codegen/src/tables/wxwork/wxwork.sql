@@ -172,7 +172,7 @@ CREATE TABLE if not exists `wxwork_wxw_oa_approval_detail` (
   `apply_time` datetime DEFAULT NULL COMMENT '审批申请提交时间',
   `applyer_userid` varchar(60) NOT NULL DEFAULT '' COMMENT '申请人',
   `batch_applyer_userid` varchar(60) NOT NULL DEFAULT '' COMMENT '批量申请人',
-  `raw_data` json DEFAULT NULL COMMENT '原始数据',
+  `raw_data` text DEFAULT NULL COMMENT '原始数据',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
