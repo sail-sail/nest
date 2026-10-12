@@ -604,6 +604,9 @@ export async function findAllPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllPermit: PermitModel[];
   } = await query({
@@ -692,6 +695,9 @@ export async function findAllFieldPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllFieldPermit: FieldPermitModel[];
   } = await query({
