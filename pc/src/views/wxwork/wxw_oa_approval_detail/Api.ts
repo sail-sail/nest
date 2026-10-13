@@ -60,6 +60,9 @@ export async function findAllWxwOaApprovalDetail(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllWxwOaApprovalDetail: WxwOaApprovalDetailModel[];
   } = await query({
@@ -92,6 +95,9 @@ export async function findOneWxwOaApprovalDetail(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneWxwOaApprovalDetail?: WxwOaApprovalDetailModel;
@@ -124,6 +130,9 @@ export async function findOneOkWxwOaApprovalDetail(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneOkWxwOaApprovalDetail?: WxwOaApprovalDetailModel;
@@ -155,6 +164,9 @@ export async function findCountWxwOaApprovalDetail(
   search?: WxwOaApprovalDetailSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findCountWxwOaApprovalDetail: Query["findCountWxwOaApprovalDetail"];
   } = await query({
