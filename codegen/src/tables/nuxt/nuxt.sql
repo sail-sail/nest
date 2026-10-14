@@ -1,11 +1,10 @@
--- ---------------------------------------------------------------------- SEO优化
+-- SEO优化
 drop table if exists `nuxt_seo`;
 CREATE TABLE if not exists `nuxt_seo` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `ico` varchar(22) NOT NULL DEFAULT '' COMMENT '图标',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
   `description` varchar(120) NOT NULL DEFAULT '' COMMENT '描述',
-  `keywords` varchar(120) NOT NULL DEFAULT '' COMMENT '关键词',
   `og_image` varchar(22) NOT NULL DEFAULT '' COMMENT '分享图片',
   `og_title` varchar(45) NOT NULL DEFAULT '' COMMENT '分享标题',
   `og_description` varchar(120) NOT NULL DEFAULT '' COMMENT '分享描述',
@@ -25,7 +24,7 @@ CREATE TABLE if not exists `nuxt_seo` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='SEO优化';
 
--- ---------------------------------------------------------------------- 组件配置
+-- 组件配置
 drop table if exists `nuxt_comp_cnf`;
 CREATE TABLE if not exists `nuxt_comp_cnf` (
   `id` varchar(22) NOT NULL COMMENT 'ID',

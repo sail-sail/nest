@@ -42,8 +42,6 @@ export const seoFields = [
   "lbl",
   // 描述
   "description",
-  // 关键词
-  "keywords",
   // 分享图片
   "og_image",
   // 分享标题

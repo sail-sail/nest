@@ -44,6 +44,7 @@ fn get_can_sort_in_api_comp_cnf() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_COMP_CNF
 }
 
+/// 组件配置
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "CompCnfModel")]
 #[allow(dead_code)]
@@ -163,6 +164,7 @@ impl FromRow<'_, MySqlRow> for CompCnfModel {
   }
 }
 
+/// 组件配置
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "CompCnfFieldComment")]
 #[allow(dead_code)]
@@ -191,7 +193,7 @@ pub struct CompCnfFieldComment {
   /// 值
   #[graphql(name = "val")]
   pub val: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -203,7 +205,7 @@ pub struct CompCnfFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -217,6 +219,7 @@ pub struct CompCnfFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 组件配置
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CompCnfSearch")]
 #[allow(dead_code)]
@@ -255,7 +258,7 @@ pub struct CompCnfSearch {
   /// 值
   #[graphql(skip)]
   pub val: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -270,7 +273,7 @@ pub struct CompCnfSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -375,6 +378,7 @@ impl std::fmt::Debug for CompCnfSearch {
   }
 }
 
+/// 组件配置
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CompCnfInput")]
 #[allow(dead_code)]

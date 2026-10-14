@@ -24,11 +24,6 @@ export default defineConfig({
         require: true,
       },
       {
-        COLUMN_NAME: "keywords",
-        width: 180,
-        align: "left",
-      },
-      {
         COLUMN_NAME: "og_image",
         isImg: true,
         isPublicAtt: true,

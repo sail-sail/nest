@@ -69,8 +69,6 @@ export function intoInputSeo(
     lbl: model?.lbl,
     // 描述
     description: model?.description,
-    // 关键词
-    keywords: model?.keywords,
     // 分享图片
     og_image: model?.og_image,
     // 分享标题
@@ -533,7 +531,6 @@ export function useDownloadImportTemplateSeo() {
             ico
             lbl
             description
-            keywords
             og_image
             og_title
             og_description
@@ -724,7 +721,6 @@ export async function getFieldCommentsSeo(
           ico,
           lbl,
           description,
-          keywords,
           og_image,
           og_title,
           og_description,

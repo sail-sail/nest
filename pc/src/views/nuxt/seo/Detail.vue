@@ -117,19 +117,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.keywords == null)">
-          <el-form-item
-            label="关键词"
-            prop="keywords"
-          >
-            <CustomInput
-              v-model="dialogModel.keywords"
-              placeholder="请输入 关键词"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.og_image == null)">
           <el-form-item
             label="分享图片"

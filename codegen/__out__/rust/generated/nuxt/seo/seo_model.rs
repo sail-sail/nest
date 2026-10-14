@@ -44,6 +44,7 @@ fn get_can_sort_in_api_seo() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_SEO
 }
 
+/// SEO优化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "SeoModel")]
 #[allow(dead_code)]
@@ -62,9 +63,6 @@ pub struct SeoModel {
   /// 描述
   #[graphql(name = "description")]
   pub description: String,
-  /// 关键词
-  #[graphql(name = "keywords")]
-  pub keywords: String,
   /// 分享图片
   #[graphql(name = "og_image")]
   pub og_image: String,
@@ -112,8 +110,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
     let lbl: String = row.try_get("lbl")?;
     // 描述
     let description: String = row.try_get("description")?;
-    // 关键词
-    let keywords: String = row.try_get("keywords")?;
     // 分享图片
     let og_image: String = row.try_get("og_image")?;
     // 分享标题
@@ -154,7 +150,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
       ico,
       lbl,
       description,
-      keywords,
       og_image,
       og_title,
       og_description,
@@ -174,6 +169,7 @@ impl FromRow<'_, MySqlRow> for SeoModel {
   }
 }
 
+/// SEO优化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "SeoFieldComment")]
 #[allow(dead_code)]
@@ -190,9 +186,6 @@ pub struct SeoFieldComment {
   /// 描述
   #[graphql(name = "description")]
   pub description: String,
-  /// 关键词
-  #[graphql(name = "keywords")]
-  pub keywords: String,
   /// 分享图片
   #[graphql(name = "og_image")]
   pub og_image: String,
@@ -208,7 +201,7 @@ pub struct SeoFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -220,7 +213,7 @@ pub struct SeoFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -234,6 +227,7 @@ pub struct SeoFieldComment {
   pub update_time_lbl: String,
 }
 
+/// SEO优化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "SeoSearch")]
 #[allow(dead_code)]
@@ -263,12 +257,6 @@ pub struct SeoSearch {
   /// 描述
   #[graphql(skip)]
   pub description_like: Option<String>,
-  /// 关键词
-  #[graphql(skip)]
-  pub keywords: Option<String>,
-  /// 关键词
-  #[graphql(skip)]
-  pub keywords_like: Option<String>,
   /// 分享图片
   #[graphql(skip)]
   pub og_image: Option<String>,
@@ -296,7 +284,7 @@ pub struct SeoSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -311,7 +299,7 @@ pub struct SeoSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -365,13 +353,6 @@ impl std::fmt::Debug for SeoSearch {
     }
     if let Some(ref description_like) = self.description_like {
       item = item.field("description_like", description_like);
-    }
-    // 关键词
-    if let Some(ref keywords) = self.keywords {
-      item = item.field("keywords", keywords);
-    }
-    if let Some(ref keywords_like) = self.keywords_like {
-      item = item.field("keywords_like", keywords_like);
     }
     // 分享图片
     if let Some(ref og_image) = self.og_image {
@@ -443,6 +424,7 @@ impl std::fmt::Debug for SeoSearch {
   }
 }
 
+/// SEO优化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "SeoInput")]
 #[allow(dead_code)]
@@ -464,9 +446,6 @@ pub struct SeoInput {
   /// 描述
   #[graphql(name = "description")]
   pub description: Option<String>,
-  /// 关键词
-  #[graphql(name = "keywords")]
-  pub keywords: Option<String>,
   /// 分享图片
   #[graphql(name = "og_image")]
   pub og_image: Option<String>,
@@ -537,9 +516,6 @@ impl std::fmt::Debug for SeoInput {
     if let Some(ref description) = self.description {
       item = item.field("description", description);
     }
-    if let Some(ref keywords) = self.keywords {
-      item = item.field("keywords", keywords);
-    }
     if let Some(ref og_image) = self.og_image {
       item = item.field("og_image", og_image);
     }
@@ -589,8 +565,6 @@ impl From<SeoModel> for SeoInput {
       lbl: model.lbl.into(),
       // 描述
       description: model.description.into(),
-      // 关键词
-      keywords: model.keywords.into(),
       // 分享图片
       og_image: model.og_image.into(),
       // 分享标题
@@ -633,8 +607,6 @@ impl From<SeoInput> for SeoSearch {
       lbl: input.lbl,
       // 描述
       description: input.description,
-      // 关键词
-      keywords: input.keywords,
       // 分享图片
       og_image: input.og_image,
       // 分享标题

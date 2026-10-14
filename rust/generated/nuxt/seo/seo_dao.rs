@@ -71,7 +71,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 16 * 6);
+  let mut where_query = String::with_capacity(80 * 15 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -174,25 +174,6 @@ async fn get_where_query(
     if let Some(description_like) = description_like && !description_like.is_empty() {
       where_query.push_str(" and t.description like ?");
       args.push(format!("%{}%", sql_like(&description_like)).into());
-    }
-  }
-  // 关键词
-  {
-    let keywords = match search {
-      Some(item) => item.keywords.clone(),
-      None => None,
-    };
-    if let Some(keywords) = keywords {
-      where_query.push_str(" and t.keywords=?");
-      args.push(keywords.into());
-    }
-    let keywords_like = match search {
-      Some(item) => item.keywords_like.clone(),
-      None => None,
-    };
-    if let Some(keywords_like) = keywords_like && !keywords_like.is_empty() {
-      where_query.push_str(" and t.keywords like ?");
-      args.push(format!("%{}%", sql_like(&keywords_like)).into());
     }
   }
   // 分享图片
@@ -798,7 +779,6 @@ pub async fn get_field_comments_seo(
     ico: "图标".into(),
     lbl: "标题".into(),
     description: "描述".into(),
-    keywords: "关键词".into(),
     og_image: "分享图片".into(),
     og_title: "分享标题".into(),
     og_description: "分享描述".into(),
@@ -1620,7 +1600,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 16 * 3 + 60);
+  let mut sql_fields = String::with_capacity(80 * 15 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1636,8 +1616,6 @@ async fn _creates(
   sql_fields += ",lbl";
   // 描述
   sql_fields += ",description";
-  // 关键词
-  sql_fields += ",keywords";
   // 分享图片
   sql_fields += ",og_image";
   // 分享标题
@@ -1650,7 +1628,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity(((2 * 16 + 3) * inputs2_len) * 3);
+  let mut sql_values = String::with_capacity(((2 * 15 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1794,13 +1772,6 @@ async fn _creates(
     if let Some(description) = input.description {
       sql_values += ",?";
       args.push(description.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 关键词
-    if let Some(keywords) = input.keywords {
-      sql_values += ",?";
-      args.push(keywords.into());
     } else {
       sql_values += ",default";
     }
@@ -2169,7 +2140,7 @@ pub async fn update_by_id_seo(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity((80 * 16 + 20) * 3);
+  let mut sql_fields = String::with_capacity((80 * 15 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2195,12 +2166,6 @@ pub async fn update_by_id_seo(
     field_num += 1;
     sql_fields += "description=?,";
     args.push(description.into());
-  }
-  // 关键词
-  if let Some(keywords) = input.keywords.clone() {
-    field_num += 1;
-    sql_fields += "keywords=?,";
-    args.push(keywords.into());
   }
   // 分享图片
   if let Some(og_image) = input.og_image.clone() {

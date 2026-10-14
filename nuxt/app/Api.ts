@@ -40,7 +40,6 @@ export async function useMySeoMeta() {
   useSeoMeta({
     title: seo_model.lbl || undefined,
     description: seo_model.description || undefined,
-    keywords: seo_model.keywords || undefined,
     ogTitle: seo_model.og_title || undefined,
     ogDescription: seo_model.og_description || undefined,
     ogImage: ogImage || undefined,
@@ -93,7 +92,7 @@ export async function getLoginTenants(
     getLoginTenants: GetLoginTenants[];
   } = await query({
     query: /* GraphQL */ `
-      query($domain: SmolStr!) {
+      query($domain: String!) {
         getLoginTenants(domain: $domain) {
           id
           lbl

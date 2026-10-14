@@ -7,6 +7,9 @@
   un-p="l-1.5 r-1.5 t-1.5"
   un-box-border
 >
+  <template
+    v-if="permit('find', '查看')"
+  ></template>
   <div
     un-m="x-1.5"
     un-overflow-auto
@@ -490,16 +493,6 @@
             </el-table-column>
           </template>
           
-          <!-- 关键词 -->
-          <template v-else-if="'keywords' === col.prop">
-            <!-- @vue-generic {SeoModel} -->
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 分享图片 -->
           <template v-else-if="'og_image' === col.prop">
             <!-- @vue-generic {SeoModel} -->
@@ -975,14 +968,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "关键词",
-      prop: "keywords",
-      width: 180,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "分享图片",
       prop: "og_image",
       width: 80,
@@ -1350,7 +1335,6 @@ async function onImportExcel() {
     [ "图标" ]: "ico",
     [ "标题" ]: "lbl",
     [ "描述" ]: "description",
-    [ "关键词" ]: "keywords",
     [ "分享图片" ]: "og_image",
     [ "分享标题" ]: "og_title",
     [ "分享描述" ]: "og_description",
@@ -1380,7 +1364,6 @@ async function onImportExcel() {
           "ico": "string",
           "lbl": "string",
           "description": "string",
-          "keywords": "string",
           "og_image": "string",
           "og_title": "string",
           "og_description": "string",
