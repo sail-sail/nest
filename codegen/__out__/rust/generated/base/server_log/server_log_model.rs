@@ -39,6 +39,7 @@ fn get_can_sort_in_api_server_log() -> &'static [&'static str; 1] {
   &CAN_SORT_IN_API_SERVER_LOG
 }
 
+/// 系统日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "ServerLogModel")]
 #[allow(dead_code)]
@@ -112,6 +113,7 @@ impl FromRow<'_, MySqlRow> for ServerLogModel {
   }
 }
 
+/// 系统日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "ServerLogFieldComment")]
 #[allow(dead_code)]
@@ -148,6 +150,7 @@ pub struct ServerLogFieldComment {
   pub content: String,
 }
 
+/// 系统日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "ServerLogSearch")]
 #[allow(dead_code)]
@@ -231,6 +234,7 @@ impl std::fmt::Debug for ServerLogSearch {
   }
 }
 
+/// 系统日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "ServerLogInput")]
 #[allow(dead_code)]

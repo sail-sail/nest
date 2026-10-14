@@ -786,7 +786,14 @@ export async function findAll<#=Table_Up#>(
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findAll<#=Table_Up2#>: <#=modelName#>[];
   } = await query({
@@ -830,7 +837,14 @@ export async function findOne<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   
   const data: {
     findOne<#=Table_Up2#>?: <#=modelName#>;
@@ -874,7 +888,14 @@ export async function findOneOk<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   
   const data: {
     findOneOk<#=Table_Up2#>?: <#=modelName#>;
@@ -970,7 +991,14 @@ export async function findTree<#=Table_Up#>(
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findCount<#=Table_Up2#>: Query["findCount<#=Table_Up2#>"];
   } = await query({
@@ -1674,7 +1702,14 @@ export async function findAll<#=Foreign_Table_Up#>(
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
@@ -1998,7 +2033,14 @@ if (hasOrderBy) {
 export async function findLastOrderBy<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({

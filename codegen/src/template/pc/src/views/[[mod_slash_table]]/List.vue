@@ -154,6 +154,9 @@ if (searchByKeyword) {
   un-p="l-1.5 r-1.5 t-1.5"
   un-box-border
 >
+  <template
+    v-if="permit('find', '查看')"
+  ></template>
   <div
     un-m="x-1.5"
     un-overflow-auto
@@ -464,7 +467,7 @@ if (searchByKeyword) {
           prop="<#=column_name#>"
         >
           <CustomInput
-            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            v-model="search.<#=column_name#>_lbl_like"<#
             if (isUseI18n) {
             #>
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#

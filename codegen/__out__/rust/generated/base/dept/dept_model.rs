@@ -46,6 +46,7 @@ fn get_can_sort_in_api_dept() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DEPT
 }
 
+/// 部门
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DeptModel")]
 #[allow(dead_code)]
@@ -235,6 +236,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
   }
 }
 
+/// 部门
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DeptFieldComment")]
 #[allow(dead_code)]
@@ -242,7 +244,7 @@ pub struct DeptFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 父部门
+  /// 父部门 [@fk:base_dept.id]
   #[graphql(name = "parent_id")]
   pub parent_id: String,
   /// 父部门
@@ -251,7 +253,7 @@ pub struct DeptFieldComment {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 部门负责人
+  /// 部门负责人 [@fk:base_usr.id]
   #[graphql(name = "usr_ids")]
   pub usr_ids: String,
   /// 部门负责人
@@ -272,7 +274,7 @@ pub struct DeptFieldComment {
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: String,
-  /// 组织
+  /// 组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 组织
@@ -281,7 +283,7 @@ pub struct DeptFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -293,7 +295,7 @@ pub struct DeptFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -307,6 +309,7 @@ pub struct DeptFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 部门
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DeptSearch")]
 #[allow(dead_code)]
@@ -320,7 +323,7 @@ pub struct DeptSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 父部门
+  /// 父部门 [@fk:base_dept.id]
   #[graphql(name = "parent_id")]
   pub parent_id: Option<Vec<DeptId>>,
   /// 父部门
@@ -356,7 +359,7 @@ pub struct DeptSearch {
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
-  /// 组织
+  /// 组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 组织
@@ -374,7 +377,7 @@ pub struct DeptSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -389,7 +392,7 @@ pub struct DeptSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -517,6 +520,7 @@ impl std::fmt::Debug for DeptSearch {
   }
 }
 
+/// 部门
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DeptInput")]
 #[allow(dead_code)]
@@ -529,7 +533,7 @@ pub struct DeptInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 父部门
+  /// 父部门 [@fk:base_dept.id]
   #[graphql(name = "parent_id")]
   pub parent_id: Option<DeptId>,
   /// 父部门
@@ -559,7 +563,7 @@ pub struct DeptInput {
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
-  /// 组织
+  /// 组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 组织

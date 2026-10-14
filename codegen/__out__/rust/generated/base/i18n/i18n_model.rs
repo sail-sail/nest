@@ -43,6 +43,7 @@ fn get_can_sort_in_api_i18n() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_I18N
 }
 
+/// 国际化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nModel")]
 #[allow(dead_code)]
@@ -155,6 +156,7 @@ impl FromRow<'_, MySqlRow> for I18nModel {
   }
 }
 
+/// 国际化
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nFieldComment")]
 #[allow(dead_code)]
@@ -162,13 +164,13 @@ pub struct I18nFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: String,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: String,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: String,
   /// 菜单
@@ -183,7 +185,7 @@ pub struct I18nFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -195,7 +197,7 @@ pub struct I18nFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -209,6 +211,7 @@ pub struct I18nFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 国际化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "I18nSearch")]
 #[allow(dead_code)]
@@ -218,7 +221,7 @@ pub struct I18nSearch {
   /// ID列表
   pub ids: Option<Vec<I18nId>>,
   pub is_deleted: Option<u8>,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
   /// 语言
@@ -230,7 +233,7 @@ pub struct I18nSearch {
   /// 语言
   #[graphql(name = "lang_id_lbl_like")]
   pub lang_id_lbl_like: Option<String>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
@@ -260,7 +263,7 @@ pub struct I18nSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -275,7 +278,7 @@ pub struct I18nSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -391,6 +394,7 @@ impl std::fmt::Debug for I18nSearch {
   }
 }
 
+/// 国际化
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "I18nInput")]
 #[allow(dead_code)]
@@ -400,13 +404,13 @@ pub struct I18nInput {
   /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 语言
+  /// 语言 [@fk:base_lang.id]
   #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: Option<String>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单

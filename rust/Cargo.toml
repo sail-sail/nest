@@ -7,14 +7,16 @@ default-run = "rust"
 [workspace.dependencies]
 serde_json = "1.0.151"
 serde = { version = "1.0.229", features = ["derive"] }
+serde-xml-rs = "0.8.2"
 mime = "0.3.17"
 futures-util = "0.3.34"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "local-time", "parking_lot"] }
 tracing-appender = "0.2.5"
 tracing-attributes = "0.1.31"
+async-trait = "0.1.89"
 tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros", "net", "fs"] }
-poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
+poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket", "sse"] }
 async-graphql = { version = "8.0.0-rc.5", features = ["decimal", "time", "chrono", "chrono-tz", "tracing", "raw_value", "boxed-trait"], default-features = false }
 slab = "0.4.12"
 chrono = { version = "0.4.45", features = ["serde"] }
@@ -54,6 +56,7 @@ delay_timer = "0.11.6"
 num-traits = "0.2.19"
 fast_chemail = "0.9.6"
 http = "1.5.0"
+http-body-util = "0.1.3"
 futures = "0.3.34"
 sha1 = "0.11.0"
 aes = "0.9.3"
@@ -80,6 +83,7 @@ calamine = { version = "0.36.1", features = ["chrono", "picture"] }
 wecom-crypto = "0.1.9"
 rumqttc-v5-next = { version = "0.34.0", features = ["use-rustls"] }
 coordtransform = "0.4.0"
+rmcp ={ version = "3.5.0", features = ["auth", "transport-streamable-http-server"] }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -90,6 +94,7 @@ tikv-jemallocator = "0.7.0"
 [dependencies]
 serde_json.workspace = true
 serde.workspace = true
+serde-xml-rs.workspace = true
 mime.workspace = true
 futures-util.workspace = true
 tracing.workspace = true
@@ -166,6 +171,7 @@ calamine.workspace = true
 # self_cell = "1.1"
 rumqttc-v5-next.workspace = true
 coordtransform.workspace = true
+rmcp.workspace = true
 
 generated = { path = "./generated" }
 app = { path = "./app" }
@@ -181,6 +187,9 @@ members = [
   "aliyun_sdk",
 ]
 resolver = "2"
+
+[patch.crates-io]
+sse-stream = { git = "https://github.com/4t145/sse-stream", tag = "release-0.2.4" }
 
 # [build-dependencies]
 # protobuf-codegen = "3.7.1"

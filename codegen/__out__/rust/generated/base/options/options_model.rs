@@ -42,6 +42,7 @@ fn get_can_sort_in_api_options() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_OPTIONS
 }
 
+/// 系统选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptionsModel")]
 #[allow(dead_code)]
@@ -174,6 +175,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
   }
 }
 
+/// 系统选项
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptionsFieldComment")]
 #[allow(dead_code)]
@@ -208,7 +210,7 @@ pub struct OptionsFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -220,7 +222,7 @@ pub struct OptionsFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -234,6 +236,7 @@ pub struct OptionsFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 系统选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptionsSearch")]
 #[allow(dead_code)]
@@ -278,7 +281,7 @@ pub struct OptionsSearch {
   /// 备注
   #[graphql(name = "rem_like")]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -293,7 +296,7 @@ pub struct OptionsSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -405,6 +408,7 @@ impl std::fmt::Debug for OptionsSearch {
   }
 }
 
+/// 系统选项
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OptionsInput")]
 #[allow(dead_code)]

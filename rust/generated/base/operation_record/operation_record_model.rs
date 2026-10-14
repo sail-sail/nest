@@ -43,6 +43,7 @@ fn get_can_sort_in_api_operation_record() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_OPERATION_RECORD
 }
 
+/// 操作记录
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordModel")]
 #[allow(dead_code)]
@@ -171,6 +172,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
   }
 }
 
+/// 操作记录
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordFieldComment")]
 #[allow(dead_code)]
@@ -202,7 +204,7 @@ pub struct OperationRecordFieldComment {
   /// 操作后数据
   #[graphql(name = "new_data")]
   pub new_data: String,
-  /// 操作人
+  /// 操作人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 操作人
@@ -216,6 +218,7 @@ pub struct OperationRecordFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 操作记录
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordSearch")]
 #[allow(dead_code)]
@@ -272,7 +275,7 @@ pub struct OperationRecordSearch {
   /// 操作后数据
   #[graphql(skip)]
   pub new_data_like: Option<String>,
-  /// 操作人
+  /// 操作人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 操作人
@@ -287,7 +290,7 @@ pub struct OperationRecordSearch {
   /// 操作时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -412,6 +415,7 @@ impl std::fmt::Debug for OperationRecordSearch {
   }
 }
 
+/// 操作记录
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordInput")]
 #[allow(dead_code)]

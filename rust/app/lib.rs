@@ -30,7 +30,7 @@ pub struct Mutation(
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
 
 #[allow(unused_imports)]
-use poem::{Route, get};
+use poem::{Route, get, post};
 
 pub fn init() {
   
@@ -42,6 +42,63 @@ pub fn init() {
 #[allow(unused_mut, clippy::let_and_return)]
 pub fn register_routes(app: Route) -> Route {
   let mut app = app;
-  
+
+  app = app.at(
+    "/.well-known/oauth-protected-resource/mcp",
+    get(base::mcp::mcp_router::oauth_protected_resource_metadata_mcp)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/.well-known/oauth-protected-resource",
+    get(base::mcp::mcp_router::oauth_protected_resource_metadata_root)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/.well-known/oauth-authorization-server",
+    get(base::mcp::mcp_router::oauth_authorization_server_metadata)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/authorize",
+    get(base::mcp::mcp_router::oauth_authorize_get)
+      .post(base::mcp::mcp_router::oauth_authorize_post)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/token",
+    post(base::mcp::mcp_router::oauth_token)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/register",
+    post(base::mcp::mcp_router::oauth_register)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/revoke",
+    post(base::mcp::mcp_router::oauth_revoke)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/mcp",
+    get(base::mcp::mcp_endpoint::mcp_get())
+      .post(base::mcp::mcp_endpoint::mcp_post())
+      .delete(base::mcp::mcp_endpoint::mcp_delete())
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
+  app = app.at(
+    "/mcp/login",
+    post(base::mcp::mcp_router::login)
+      .options(base::mcp::mcp_router::mcp_options),
+  );
+
   app
 }

@@ -841,6 +841,7 @@ pub async fn get_field_comments_dyn_page(
     update_usr_id_lbl: "更新人".into(),
     update_time: "更新时间".into(),
     update_time_lbl: "更新时间".into(),
+    dyn_page_field: "动态页面字段".into(),
   };
   Ok(field_comments)
 }

@@ -42,6 +42,7 @@ fn get_can_sort_in_api_lang() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_LANG
 }
 
+/// 语言
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LangModel")]
 #[allow(dead_code)]
@@ -152,6 +153,7 @@ impl FromRow<'_, MySqlRow> for LangModel {
   }
 }
 
+/// 语言
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LangFieldComment")]
 #[allow(dead_code)]
@@ -177,7 +179,7 @@ pub struct LangFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -189,7 +191,7 @@ pub struct LangFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -203,6 +205,7 @@ pub struct LangFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 语言
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LangSearch")]
 #[allow(dead_code)]
@@ -236,7 +239,7 @@ pub struct LangSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -251,7 +254,7 @@ pub struct LangSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -349,6 +352,7 @@ impl std::fmt::Debug for LangSearch {
   }
 }
 
+/// 语言
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LangInput")]
 #[allow(dead_code)]
