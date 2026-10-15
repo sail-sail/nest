@@ -33,11 +33,6 @@ export async function findCountOptions(
     getPagePathOptions,
   } = await import("./options.model.ts");
   
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
-  
   const num = await findCountOptions(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllOptions(
   const {
     getPagePathOptions,
   } = await import("./options.model.ts");
-  
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
   
   checkSortOptions(sort);
   
@@ -102,11 +92,6 @@ export async function findOneOptions(
     getPagePathOptions,
   } = await import("./options.model.ts");
   
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
-  
   checkSortOptions(sort);
   
   const model = await findOneOptions(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkOptions(
     getPagePathOptions,
   } = await import("./options.model.ts");
   
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
-  
   checkSortOptions(sort);
   
   const model = await findOneOkOptions(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdOptions(
     getPagePathOptions,
   } = await import("./options.model.ts");
   
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
-  
   const model = await findByIdOptions(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkOptions(
   const {
     getPagePathOptions,
   } = await import("./options.model.ts");
-  
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
   
   const model = await findByIdOkOptions(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsOptions(
     getPagePathOptions,
   } = await import("./options.model.ts");
   
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
-  
   const models = await findByIdsOptions(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsOptions(
   const {
     existsOptions,
   } = await import("./options.service.ts");
-  
-  const {
-    getPagePathOptions,
-  } = await import("./options.model.ts");
-  
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
 
   return await existsOptions(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkOptions(
   const {
     findByIdsOkOptions,
   } = await import("./options.service.ts");
-  
-  const {
-    getPagePathOptions,
-  } = await import("./options.model.ts");
-  
-  await usePermit(
-    getPagePathOptions(),
-    "find",
-  );
   
   const models = await findByIdsOkOptions(ids);
   

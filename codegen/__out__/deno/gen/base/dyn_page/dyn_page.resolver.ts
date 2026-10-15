@@ -33,11 +33,6 @@ export async function findCountDynPage(
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
   
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
-  
   const num = await findCountDynPage(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllDynPage(
   const {
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
-  
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
   
   checkSortDynPage(sort);
   
@@ -102,11 +92,6 @@ export async function findOneDynPage(
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
   
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
-  
   checkSortDynPage(sort);
   
   const model = await findOneDynPage(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkDynPage(
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
   
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
-  
   checkSortDynPage(sort);
   
   const model = await findOneOkDynPage(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdDynPage(
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
   
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
-  
   const model = await findByIdDynPage(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkDynPage(
   const {
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
-  
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
   
   const model = await findByIdOkDynPage(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsDynPage(
     getPagePathDynPage,
   } = await import("./dyn_page.model.ts");
   
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
-  
   const models = await findByIdsDynPage(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsDynPage(
   const {
     existsDynPage,
   } = await import("./dyn_page.service.ts");
-  
-  const {
-    getPagePathDynPage,
-  } = await import("./dyn_page.model.ts");
-  
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
 
   return await existsDynPage(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkDynPage(
   const {
     findByIdsOkDynPage,
   } = await import("./dyn_page.service.ts");
-  
-  const {
-    getPagePathDynPage,
-  } = await import("./dyn_page.model.ts");
-  
-  await usePermit(
-    getPagePathDynPage(),
-    "find",
-  );
   
   const models = await findByIdsOkDynPage(ids);
   

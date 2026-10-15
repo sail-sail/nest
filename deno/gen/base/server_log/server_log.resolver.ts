@@ -31,11 +31,6 @@ export async function findCountServerLog(
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
   
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
-  
   const num = await findCountServerLog(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllServerLog(
   const {
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
-  
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
   
   checkSortServerLog(sort);
   
@@ -100,11 +90,6 @@ export async function findOneServerLog(
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
   
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
-  
   checkSortServerLog(sort);
   
   const model = await findOneServerLog(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkServerLog(
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
   
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
-  
   checkSortServerLog(sort);
   
   const model = await findOneOkServerLog(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdServerLog(
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
   
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
-  
   const model = await findByIdServerLog(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkServerLog(
   const {
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
-  
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
   
   const model = await findByIdOkServerLog(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsServerLog(
     getPagePathServerLog,
   } = await import("./server_log.model.ts");
   
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
-  
   const models = await findByIdsServerLog(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsServerLog(
   const {
     existsServerLog,
   } = await import("./server_log.service.ts");
-  
-  const {
-    getPagePathServerLog,
-  } = await import("./server_log.model.ts");
-  
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
 
   return await existsServerLog(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkServerLog(
   const {
     findByIdsOkServerLog,
   } = await import("./server_log.service.ts");
-  
-  const {
-    getPagePathServerLog,
-  } = await import("./server_log.model.ts");
-  
-  await usePermit(
-    getPagePathServerLog(),
-    "find",
-  );
   
   const models = await findByIdsOkServerLog(ids);
   

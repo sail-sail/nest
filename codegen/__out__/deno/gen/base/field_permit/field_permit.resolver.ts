@@ -31,11 +31,6 @@ export async function findCountFieldPermit(
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
   
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
-  
   const num = await findCountFieldPermit(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllFieldPermit(
   const {
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
-  
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
   
   checkSortFieldPermit(sort);
   
@@ -100,11 +90,6 @@ export async function findOneFieldPermit(
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
   
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
-  
   checkSortFieldPermit(sort);
   
   const model = await findOneFieldPermit(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkFieldPermit(
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
   
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
-  
   checkSortFieldPermit(sort);
   
   const model = await findOneOkFieldPermit(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdFieldPermit(
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
   
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
-  
   const model = await findByIdFieldPermit(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkFieldPermit(
   const {
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
-  
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
   
   const model = await findByIdOkFieldPermit(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsFieldPermit(
     getPagePathFieldPermit,
   } = await import("./field_permit.model.ts");
   
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
-  
   const models = await findByIdsFieldPermit(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsFieldPermit(
   const {
     existsFieldPermit,
   } = await import("./field_permit.service.ts");
-  
-  const {
-    getPagePathFieldPermit,
-  } = await import("./field_permit.model.ts");
-  
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
 
   return await existsFieldPermit(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkFieldPermit(
   const {
     findByIdsOkFieldPermit,
   } = await import("./field_permit.service.ts");
-  
-  const {
-    getPagePathFieldPermit,
-  } = await import("./field_permit.model.ts");
-  
-  await usePermit(
-    getPagePathFieldPermit(),
-    "find",
-  );
   
   const models = await findByIdsOkFieldPermit(ids);
   

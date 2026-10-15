@@ -71,3 +71,7 @@ tauri/dist
 tauri/src-tauri/gen
 tauri/src-tauri/target
 tauri/src-tauri/Cargo.lock
+
+
+**/__pycache__/**
+**/tests/**

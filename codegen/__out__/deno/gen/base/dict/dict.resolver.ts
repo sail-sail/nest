@@ -33,11 +33,6 @@ export async function findCountDict(
     getPagePathDict,
   } = await import("./dict.model.ts");
   
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
-  
   const num = await findCountDict(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllDict(
   const {
     getPagePathDict,
   } = await import("./dict.model.ts");
-  
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
   
   checkSortDict(sort);
   
@@ -102,11 +92,6 @@ export async function findOneDict(
     getPagePathDict,
   } = await import("./dict.model.ts");
   
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
-  
   checkSortDict(sort);
   
   const model = await findOneDict(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkDict(
     getPagePathDict,
   } = await import("./dict.model.ts");
   
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
-  
   checkSortDict(sort);
   
   const model = await findOneOkDict(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdDict(
     getPagePathDict,
   } = await import("./dict.model.ts");
   
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
-  
   const model = await findByIdDict(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkDict(
   const {
     getPagePathDict,
   } = await import("./dict.model.ts");
-  
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
   
   const model = await findByIdOkDict(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsDict(
     getPagePathDict,
   } = await import("./dict.model.ts");
   
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
-  
   const models = await findByIdsDict(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsDict(
   const {
     existsDict,
   } = await import("./dict.service.ts");
-  
-  const {
-    getPagePathDict,
-  } = await import("./dict.model.ts");
-  
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
 
   return await existsDict(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkDict(
   const {
     findByIdsOkDict,
   } = await import("./dict.service.ts");
-  
-  const {
-    getPagePathDict,
-  } = await import("./dict.model.ts");
-  
-  await usePermit(
-    getPagePathDict(),
-    "find",
-  );
   
   const models = await findByIdsOkDict(ids);
   

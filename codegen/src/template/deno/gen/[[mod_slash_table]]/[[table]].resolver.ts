@@ -202,7 +202,7 @@ export async function findCount<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -247,7 +247,7 @@ export async function findAll<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -343,7 +343,7 @@ export async function findSummary<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -383,7 +383,7 @@ export async function findOne<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -448,7 +448,7 @@ export async function findOneOk<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -510,7 +510,7 @@ export async function findById<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -572,7 +572,7 @@ export async function findByIdOk<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -632,7 +632,7 @@ export async function findByIds<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   await usePermit(
@@ -690,7 +690,7 @@ export async function exists<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   const {
@@ -721,7 +721,7 @@ export async function findByIdsOk<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  } else {
+  } else if (opts?.isFindPermit) {
   #>
   
   const {

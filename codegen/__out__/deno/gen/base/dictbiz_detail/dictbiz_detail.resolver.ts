@@ -33,11 +33,6 @@ export async function findCountDictbizDetail(
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
   
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
-  
   const num = await findCountDictbizDetail(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllDictbizDetail(
   const {
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
-  
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
   
   checkSortDictbizDetail(sort);
   
@@ -102,11 +92,6 @@ export async function findOneDictbizDetail(
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
   
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
-  
   checkSortDictbizDetail(sort);
   
   const model = await findOneDictbizDetail(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkDictbizDetail(
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
   
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
-  
   checkSortDictbizDetail(sort);
   
   const model = await findOneOkDictbizDetail(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdDictbizDetail(
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
   
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
-  
   const model = await findByIdDictbizDetail(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkDictbizDetail(
   const {
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
-  
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
   
   const model = await findByIdOkDictbizDetail(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsDictbizDetail(
     getPagePathDictbizDetail,
   } = await import("./dictbiz_detail.model.ts");
   
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
-  
   const models = await findByIdsDictbizDetail(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsDictbizDetail(
   const {
     existsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
-  
-  const {
-    getPagePathDictbizDetail,
-  } = await import("./dictbiz_detail.model.ts");
-  
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
 
   return await existsDictbizDetail(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkDictbizDetail(
   const {
     findByIdsOkDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
-  
-  const {
-    getPagePathDictbizDetail,
-  } = await import("./dictbiz_detail.model.ts");
-  
-  await usePermit(
-    getPagePathDictbizDetail(),
-    "find",
-  );
   
   const models = await findByIdsOkDictbizDetail(ids);
   
