@@ -153,10 +153,14 @@ if (searchByKeyword) {
   un-h="full"
   un-p="l-1.5 r-1.5 t-1.5"
   un-box-border
->
+><#
+  if (opts?.isFindPermit) {
+  #>
   <template
     v-if="permit('find', '查看')"
-  ></template>
+  ></template><#
+  }
+  #>
   <div
     un-m="x-1.5"
     un-overflow-auto
