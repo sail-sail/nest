@@ -37,11 +37,6 @@ pub async fn find_all_job(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_job()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_job(sort.as_deref())?;
   
   let models = job_service::find_all_job(
@@ -67,11 +62,6 @@ pub async fn find_count_job(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_job()),
-    String::from("find"),
-  ).await?;
-  
   let num = job_service::find_count_job(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_job(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_job()),
-    String::from("find"),
-  ).await?;
   
   check_sort_job(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_job(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_job()),
-    String::from("find"),
-  ).await?;
   
   check_sort_job(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_job(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_job()),
-    String::from("find"),
-  ).await?;
   
   let res = job_service::exists_job(
     search,
