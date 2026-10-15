@@ -37,11 +37,6 @@ pub async fn find_all_wxw_oa_template(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_wxw_oa_template()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_wxw_oa_template(sort.as_deref())?;
   
   let models = wxw_oa_template_service::find_all_wxw_oa_template(
@@ -67,11 +62,6 @@ pub async fn find_count_wxw_oa_template(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_wxw_oa_template()),
-    String::from("find"),
-  ).await?;
-  
   let num = wxw_oa_template_service::find_count_wxw_oa_template(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_wxw_oa_template(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_oa_template()),
-    String::from("find"),
-  ).await?;
   
   check_sort_wxw_oa_template(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_wxw_oa_template(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_oa_template()),
-    String::from("find"),
-  ).await?;
   
   check_sort_wxw_oa_template(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_wxw_oa_template(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_oa_template()),
-    String::from("find"),
-  ).await?;
   
   let res = wxw_oa_template_service::exists_wxw_oa_template(
     search,

@@ -37,11 +37,6 @@ pub async fn find_all_wxw_msg(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_wxw_msg()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_wxw_msg(sort.as_deref())?;
   
   let models = wxw_msg_service::find_all_wxw_msg(
@@ -67,11 +62,6 @@ pub async fn find_count_wxw_msg(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_wxw_msg()),
-    String::from("find"),
-  ).await?;
-  
   let num = wxw_msg_service::find_count_wxw_msg(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_wxw_msg(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_msg()),
-    String::from("find"),
-  ).await?;
   
   check_sort_wxw_msg(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_wxw_msg(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_msg()),
-    String::from("find"),
-  ).await?;
   
   check_sort_wxw_msg(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_wxw_msg(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_wxw_msg()),
-    String::from("find"),
-  ).await?;
   
   let res = wxw_msg_service::exists_wxw_msg(
     search,
