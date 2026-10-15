@@ -35,11 +35,6 @@ pub async fn find_all_options(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_options()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_options(sort.as_deref())?;
   
   let models = options_service::find_all_options(
@@ -65,11 +60,6 @@ pub async fn find_count_options(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_options()),
-    String::from("find"),
-  ).await?;
-  
   let num = options_service::find_count_options(
     search,
     options,
@@ -91,11 +81,6 @@ pub async fn find_one_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_options()),
-    String::from("find"),
-  ).await?;
   
   check_sort_options(sort.as_deref())?;
   
@@ -121,11 +106,6 @@ pub async fn find_one_ok_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_options()),
-    String::from("find"),
-  ).await?;
   
   check_sort_options(sort.as_deref())?;
   
@@ -213,11 +193,6 @@ pub async fn exists_options(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_options()),
-    String::from("find"),
-  ).await?;
   
   let res = options_service::exists_options(
     search,

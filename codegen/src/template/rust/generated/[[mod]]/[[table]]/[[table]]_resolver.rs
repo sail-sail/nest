@@ -239,7 +239,7 @@ pub async fn find_all_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (!is_with_auth_optional) {
+  if (!is_with_auth_optional && opts?.isFindPermit) {
   #>
   
   use_permit(
@@ -327,7 +327,7 @@ pub async fn find_count_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (!is_with_auth_optional) {
+  if (!is_with_auth_optional && opts?.isFindPermit) {
   #>
   
   use_permit(
@@ -368,7 +368,7 @@ pub async fn find_one_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (!is_with_auth_optional) {
+  if (!is_with_auth_optional && opts?.isFindPermit) {
   #>
   
   use_permit(
@@ -457,7 +457,7 @@ pub async fn find_one_ok_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (!is_with_auth_optional) {
+  if (!is_with_auth_optional && opts?.isFindPermit) {
   #>
   
   use_permit(
@@ -735,7 +735,7 @@ pub async fn exists_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (!is_with_auth_optional) {
+  if (!is_with_auth_optional && opts?.isFindPermit) {
   #>
   
   use_permit(
