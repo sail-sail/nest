@@ -37,11 +37,6 @@ pub async fn find_all_data_permit(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_data_permit()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_data_permit(sort.as_deref())?;
   
   let models = data_permit_service::find_all_data_permit(
@@ -67,11 +62,6 @@ pub async fn find_count_data_permit(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_data_permit()),
-    String::from("find"),
-  ).await?;
-  
   let num = data_permit_service::find_count_data_permit(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_data_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_data_permit()),
-    String::from("find"),
-  ).await?;
   
   check_sort_data_permit(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_data_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_data_permit()),
-    String::from("find"),
-  ).await?;
   
   check_sort_data_permit(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_data_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_data_permit()),
-    String::from("find"),
-  ).await?;
   
   let res = data_permit_service::exists_data_permit(
     search,

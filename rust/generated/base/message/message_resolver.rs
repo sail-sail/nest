@@ -37,11 +37,6 @@ pub async fn find_all_message(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_message()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_message(sort.as_deref())?;
   
   let models = message_service::find_all_message(
@@ -67,11 +62,6 @@ pub async fn find_count_message(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_message()),
-    String::from("find"),
-  ).await?;
-  
   let num = message_service::find_count_message(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_message(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_message()),
-    String::from("find"),
-  ).await?;
   
   check_sort_message(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_message(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_message()),
-    String::from("find"),
-  ).await?;
   
   check_sort_message(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_message(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_message()),
-    String::from("find"),
-  ).await?;
   
   let res = message_service::exists_message(
     search,

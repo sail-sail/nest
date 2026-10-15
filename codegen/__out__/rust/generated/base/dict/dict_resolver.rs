@@ -35,11 +35,6 @@ pub async fn find_all_dict(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_dict()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_dict(sort.as_deref())?;
   
   let models = dict_service::find_all_dict(
@@ -65,11 +60,6 @@ pub async fn find_count_dict(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_dict()),
-    String::from("find"),
-  ).await?;
-  
   let num = dict_service::find_count_dict(
     search,
     options,
@@ -91,11 +81,6 @@ pub async fn find_one_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_dict()),
-    String::from("find"),
-  ).await?;
   
   check_sort_dict(sort.as_deref())?;
   
@@ -121,11 +106,6 @@ pub async fn find_one_ok_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_dict()),
-    String::from("find"),
-  ).await?;
   
   check_sort_dict(sort.as_deref())?;
   
@@ -213,11 +193,6 @@ pub async fn exists_dict(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_dict()),
-    String::from("find"),
-  ).await?;
   
   let res = dict_service::exists_dict(
     search,
