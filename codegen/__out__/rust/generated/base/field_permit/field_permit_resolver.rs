@@ -35,11 +35,6 @@ pub async fn find_all_field_permit(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_field_permit()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_field_permit(sort.as_deref())?;
   
   let models = field_permit_service::find_all_field_permit(
@@ -65,11 +60,6 @@ pub async fn find_count_field_permit(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_field_permit()),
-    String::from("find"),
-  ).await?;
-  
   let num = field_permit_service::find_count_field_permit(
     search,
     options,
@@ -91,11 +81,6 @@ pub async fn find_one_field_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_field_permit()),
-    String::from("find"),
-  ).await?;
   
   check_sort_field_permit(sort.as_deref())?;
   
@@ -121,11 +106,6 @@ pub async fn find_one_ok_field_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_field_permit()),
-    String::from("find"),
-  ).await?;
   
   check_sort_field_permit(sort.as_deref())?;
   
@@ -213,11 +193,6 @@ pub async fn exists_field_permit(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_field_permit()),
-    String::from("find"),
-  ).await?;
   
   let res = field_permit_service::exists_field_permit(
     search,
