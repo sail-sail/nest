@@ -118,7 +118,7 @@ const attrs = defineProps({
 	 */
 	color: {
 		type: String,
-		default: "#333"
+		default: "#333333"
 	},
 	/**
 	 * 暗色模式颜色
@@ -126,7 +126,7 @@ const attrs = defineProps({
 	 */
 	darkColor: {
 		type: String,
-		default: ""
+		default: "#dddddd"
 	},
 	/**
 	 * 高亮颜色

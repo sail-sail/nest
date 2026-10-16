@@ -415,6 +415,7 @@ async function onSelectList(value?: UsrModel | UsrModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -423,6 +424,7 @@ async function onSelectList(value?: UsrModel | UsrModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -430,6 +432,7 @@ async function onSelectList(value?: UsrModel | UsrModel[]) {
     await refreshInputValue();
   }
   emit("update:modelLabel", modelLabel || "");
+  await nextTick();
   emit("change", value[0]);
 }
 
