@@ -72,7 +72,7 @@ const props = defineProps({
      */
     labelFontColor: {
         type: [String],
-        default: "#333333"
+        default: ""
     },
     /**
      * 间隙，项目之间的间距。

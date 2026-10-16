@@ -136,14 +136,14 @@ const props = defineProps({
 	 */
 	bgColor: {
 		type: String,
-		default: 'white'
+		default: '#f5f5f5'
 	},
 	/**
 	 * 暗黑背景颜色，如果不提供默认读取全局的sheet配置
 	 */
 	darkBgColor: {
 		type: String,
-		default: ''
+		default: '#1c1c1e'
 	},
 
 	/**

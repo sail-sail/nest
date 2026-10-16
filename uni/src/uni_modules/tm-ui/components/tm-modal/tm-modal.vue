@@ -156,14 +156,14 @@
 		 */
 		bgColor: {
 			type: String,
-			default: "white",
+			default: "#f5f5f5",
 		},
 		/**
 		 * 暗黑时的容器背景色，不填写的话取sheetDarkColor
 		 */
 		darkBgColor: {
 			type: String,
-			default: "",
+			default: "#1c1c1e",
 		},
 		zIndex: {
 			type: [String, Number],
