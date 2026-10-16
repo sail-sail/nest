@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+  useTmConfig,
+} from "./uni_modules/tm-ui/libs/config";
+
+const tm = useTmConfig()
+tm.config.mode = "light";
+
+uni.onThemeChange(({ theme }) => {
+  tm.config.mode = theme === 'dark' ? 'dark' : 'light'
+});
 
 // #ifdef H5
 import {

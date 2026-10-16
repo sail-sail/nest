@@ -38,7 +38,7 @@ const attrs = defineProps({
      */
     fontColor: {
         type: String,
-        default: "white"
+        default: "var(--font-color)"
     },
     maxCount: {
         type: [String, Number],

@@ -73,7 +73,8 @@ const props = defineProps({
     bottomColor: {
         type: String,
         // default: "#f5f5f5"
-        default: "#EBEBEB"
+        // default: "#EBEBEB"
+        default: "var(--color-border)"
     },
     /**
      * 标题字号大小，会覆盖父form值
@@ -132,7 +133,7 @@ const _tmFormLabelFontSize = computed(() => {
 const _tmFormLabelFontColor = computed(() => {
     if (props.labelFontColor) return getDefaultColor(props.labelFontColor)
     if (tmFormLabelFontColor.value) return getDefaultColor(tmFormLabelFontColor.value)
-    return "#333333"
+    return "var(--font-label-color)"
 })
 
 const _required = computed(() => props.required)
