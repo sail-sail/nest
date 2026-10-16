@@ -342,7 +342,7 @@
 		 */
 		darkFontColor: {
 			type: String,
-			default: ""
+			default: "#dddddd"
 		},
 		/**
 		 * 激活时的字体颜色

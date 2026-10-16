@@ -170,7 +170,7 @@
             un-flex="~"
             un-items="center"
             un-gap="2"
-            un-b="0 b-1 solid #e6e6e6"
+            un-b="0 b-1 solid [var(--color-border)]"
             :style="{
               'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
             }"
