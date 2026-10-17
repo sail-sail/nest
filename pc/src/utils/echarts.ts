@@ -51,6 +51,23 @@ export const chartPalette = [
   "#a3e635",
 ];
 
+/** 明亮模式主色板, 白底上对比度更高 */
+export const chartPaletteLight = [
+  "#0891b2",
+  "#2563eb",
+  "#7c3aed",
+  "#059669",
+  "#d97706",
+  "#e11d48",
+  "#0284c7",
+  "#65a30d",
+];
+
+/** 按主题取图表主色板 */
+export function getChartPalette(isDark: boolean) {
+  return isDark ? chartPalette : chartPaletteLight;
+}
+
 /** 图表主题, 区分明亮/黑暗模式 */
 export function getChartTheme(isDark: boolean) {
 
