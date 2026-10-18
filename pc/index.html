@@ -93,7 +93,8 @@
       } else if (vueuseColor === "light") {
         prefersDarkMode = false;
       } else {
-        prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        // prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        prefersDarkMode = true;
       }
       if (prefersDarkMode) {
         const el = document.documentElement;
