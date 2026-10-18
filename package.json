@@ -12,7 +12,7 @@
     "gqlgen": "cd rust && npm run gqlgen",
     "lint-staged": "cd rust && cd ../pc && npm run lint-staged && cd ../uni && npm run lint-staged",
     "codeapply": "cd codegen && node --experimental-strip-types src/bin/codeapply.ts",
-    "coderemove": "cd codegen && node --experimental-strip-types src/bin/coderemove_rs.ts",
+    "coderemove": "cd codegen && node --experimental-strip-types src/bin/coderemove.ts",
     "initdb": "cd codegen && node --experimental-strip-types src/util/npmInitDB.ts",
     "importCsv": "cd codegen && node --experimental-strip-types src/util/npmImportCsv.ts",
     "uuid": "cd codegen && node --experimental-strip-types src/util/npmShortUuidV4.ts",
