@@ -343,8 +343,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             // Excel里面的下拉框
             if (
               !column.notImportExportList &&
-              (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
-              || (column.dict || column.dictbiz)
+              (
+                (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
+                || (column.dict || column.dictbiz)
+              )
             ) {
               if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
                 lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
@@ -380,8 +382,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             // Excel里面的下拉框
             if (
               !column.notImportExportList &&
-              (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
-              || (column.dict || column.dictbiz)
+              (
+                (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
+                || (column.dict || column.dictbiz)
+              )
             ) {
               if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
                 lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }?.map((item) => item.${ foreignKey.lbl }) || [ ]%>`;
