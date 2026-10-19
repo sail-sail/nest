@@ -3,7 +3,7 @@ name: backend-api
 description: 当需要修改后端与新API开发时使用
 compatibility: Rust + async-graphql
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Rust GraphQL 后端接口开发
@@ -11,6 +11,7 @@ metadata:
 ## 何时使用
 
 - 新增或修改自定义 Query、Mutation
+- 涉及 Upload 时转看 graphql-upload
 - 组合多个 generated DAO 做聚合查询或特殊流程
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`（`*_model.rs` 按需新增）
