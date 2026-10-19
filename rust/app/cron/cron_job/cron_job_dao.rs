@@ -182,7 +182,7 @@ pub async fn init_cron_jobs() -> Result<()> {
     None,
   ).await.unwrap();
   
-  info!("init_cron_jobs: {:?}", cron_job_models);
+  info!("init_cron_jobs: {:?}", cron_job_models.iter().map(|m| m.lbl.as_str()).collect::<Vec<_>>());
   
   for cron_job_model in cron_job_models {
     
