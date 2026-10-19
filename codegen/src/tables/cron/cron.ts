@@ -12,7 +12,6 @@ export default defineConfig({
       sys_fields: [
         "code",
       ],
-      detailCustomDialogType: "medium",
     },
     columns: [
       {
