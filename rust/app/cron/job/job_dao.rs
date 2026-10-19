@@ -52,6 +52,16 @@ pub async fn run_job(
   debug!("cron_job begin: {cron_job_id}: {cron}");
   
   let begin_time = chrono::Local::now().naive_local();
+  let id = create_cron_job_log(
+    CronJobLogInput {
+      cron_job_id: Some(cron_job_id),
+      begin_time: Some(begin_time),
+      exec_result: Some("".into()),
+      tenant_id: Some(tenant_id),
+      ..Default::default()
+    },
+    Some(cron_log_options),
+  ).await?;
   
   let code = job_model.code;
   
@@ -74,14 +84,12 @@ pub async fn run_job(
     let exec_result = exec_result.to_string();
     
     if !exec_result.is_empty() {
-      create_cron_job_log(
+      update_by_id_cron_job_log(
+        id,
         CronJobLogInput {
-          cron_job_id: Some(cron_job_id),
           exec_state: Some(CronJobLogExecState::Fail),
-          begin_time: Some(begin_time),
-          end_time: Some(end_time),
           exec_result: Some(exec_result.clone()),
-          tenant_id: Some(tenant_id),
+          end_time: Some(end_time),
           ..Default::default()
         },
         Some(cron_log_options),
@@ -95,14 +103,12 @@ pub async fn run_job(
     let Ok(exec_result) = &exec_result
   {
     
-    create_cron_job_log(
+    update_by_id_cron_job_log(
+      id,
       CronJobLogInput {
-        cron_job_id: Some(cron_job_id),
         exec_state: Some(CronJobLogExecState::Success),
-        begin_time: Some(begin_time),
-        end_time: Some(end_time),
         exec_result: Some(exec_result.clone()),
-        tenant_id: Some(tenant_id),
+        end_time: Some(end_time),
         ..Default::default()
       },
       Some(cron_log_options),
