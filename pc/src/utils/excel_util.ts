@@ -199,13 +199,13 @@ function num2Date(valTmp: number | string | Date) {
   return date;
 }
 
-const SPLIT_SQL_INSERT_LEN = 2000;
+const SPLIT_SQL_INSERT_LEN = 200;
 
 export function splitArr<T>(
   arr: T[],
   size: number,
 ): T[][] {
-  if (size <= SPLIT_SQL_INSERT_LEN) {
+  if (arr.length <= size) {
     return [ arr ];
   }
   const res: T[][] = [ ];
@@ -217,7 +217,8 @@ export function splitArr<T>(
 
 export function splitCreateArr<T>(
   arr: T[],
+  size = SPLIT_SQL_INSERT_LEN,
 ) {
-  return splitArr(arr, SPLIT_SQL_INSERT_LEN);
+  return splitArr(arr, size);
 }
 
