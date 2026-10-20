@@ -39,7 +39,7 @@
     "@graphql-codegen/typescript-operations": "6.1.10",
     "@types/node": "26.6.5",
     "@types/sqlstring": "2.3.2",
-    "chokidar": "5.0.0",
+    "chokidar": "6.0.0",
     "commander": "15.0.0",
     "dotenv": "18.0.8",
     "ssh2-promise": "1.0.3",
