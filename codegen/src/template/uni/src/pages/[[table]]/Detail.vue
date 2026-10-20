@@ -1458,7 +1458,7 @@ if (right_field && !right_field_column) {
 
           <CustomActionButton
             v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
             "
             report
             disabled
@@ -1496,7 +1496,7 @@ if (right_field && !right_field_column) {
 
           <CustomActionButton
             v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
             "
             report
             color="success"
