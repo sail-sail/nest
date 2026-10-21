@@ -66,6 +66,7 @@ let retryDelay = 3_000;
 let heartbeatTimer: number | undefined;
 let agentPromise: Promise<PageAgentInstance> | null = null;
 let taskRunning = false;
+let connectionFailed = false;
 /** 宿主在 ready 帧里下发，用于让心跳精确落到当前标签页 */
 let channelId = "";
 
@@ -247,15 +248,28 @@ async function handleFrame(event: string, data: string): Promise<void> {
 }
 
 function scheduleRetry(delay: number): void {
-  if (!started || retryTimer) return;
+  if (!started || retryTimer || connectionFailed) return;
   retryTimer = window.setTimeout(() => {
     retryTimer = undefined;
     void connect();
   }, delay);
 }
 
+function stopBridge(): void {
+  connectionFailed = true;
+  started = false;
+  connecting = false;
+  if (retryTimer) {
+    window.clearTimeout(retryTimer);
+    retryTimer = undefined;
+  }
+  stopHeartbeat();
+  abort?.abort();
+  abort = null;
+}
+
 async function connect(): Promise<void> {
-  if (!started || connecting) return;
+  if (!started || connecting || connectionFailed) return;
   connecting = true;
 
   const current = token();
@@ -279,8 +293,7 @@ async function connect(): Promise<void> {
     });
 
     if (!response.ok || !response.body) {
-      connecting = false;
-      scheduleRetry(response.status === 401 ? 20_000 : 8_000);
+      stopBridge();
       return;
     }
 
@@ -315,13 +328,15 @@ async function connect(): Promise<void> {
       }
     }
   } catch {
-    // 断线、切网、后端重启都走重连
+    if (process.env.NODE_ENV === "development") {
+      stopBridge();
+    }
   } finally {
     connecting = false;
     stopHeartbeat();
     if (abort === controller) abort = null;
 
-    if (started) {
+    if (started && !connectionFailed) {
       const delay = retryDelay;
       retryDelay = Math.min(retryDelay * 2, 30_000);
       scheduleRetry(delay);
@@ -367,7 +382,7 @@ function stopHeartbeat(): void {
 
 /** 在应用启动后调用一次；重复调用无副作用 */
 export function startPageAgentBridge(): void {
-  if (started) return;
+  if (started || connectionFailed) return;
   started = true;
   void connect();
 }
