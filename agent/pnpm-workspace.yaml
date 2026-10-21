@@ -1,0 +1,13 @@
+# pnpm 12 的构建审批表。
+# dsh 会带 node-pty / koffi / dsh-subprocess-local 等原生模块；本机没有 CMake/MinGW，
+# 先全部关闭，靠“不使用 shell/PTY”来规避。若 dsh 启动时确实需要，再单独放开并装工具链。
+allowBuilds:
+  "@deepseek-ai/dsh-subprocess-local": false
+  "@google/genai": true
+  esbuild: true
+  koffi: false
+  node-pty: false
+  protobufjs: true
+
+minimumReleaseAgeExclude:
+  - '*'

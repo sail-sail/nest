@@ -1,0 +1,41 @@
+{
+  "servers": [
+    {
+      "name": "kb",
+      "enabled": false,
+      "transport": "streamable-http",
+      "url": "http://localhost:9100/mcp",
+      "headers": {
+        "Authorization": "Bearer ${KB_MCP_TOKEN}"
+      },
+      "toolCallTimeoutMs": 60000,
+      "failOnStartupError": false
+    },
+    {
+      "name": "kb-stdio",
+      "enabled": false,
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@your-org/kb-mcp"],
+      "env": {
+        "KB_API_KEY": "${KB_MCP_TOKEN}"
+      },
+      "toolCallTimeoutMs": 60000,
+      "failOnStartupError": false
+    },
+    {
+      "name": "page-agent",
+      "enabled": false,
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@page-agent/mcp"],
+      "env": {
+        "LLM_BASE_URL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "LLM_API_KEY": "${PAGE_AGENT_LLM_KEY}",
+        "LLM_MODEL_NAME": "qwen3.5-plus"
+      },
+      "toolCallTimeoutMs": 300000,
+      "failOnStartupError": false
+    }
+  ]
+}

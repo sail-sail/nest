@@ -1,0 +1,40 @@
+# 业务智能体 overlay：叠加在官方 sdk profile 之上。
+# 换人格、裁掉编码代理的服务器侧工具、把审批/沙箱调到无 UI 也能跑、挂上业务工具桥。
+# tool-web / web 检索保留（按业务要求），其余 shell/文件工具关闭。
+
+- id: system-prompt
+  config:
+    personaPrefix: >-
+      你是「XXX 管理系统」的内置业务助手。你只能通过提供的工具查询当前登录用户有权访问的数据。
+      不清楚字段或接口时，先用 schema_search 搜索，再用 schema_get 确认，最后才执行查询。
+      回答使用简体中文：先给结论，再给依据。不要编造数据；不要执行写操作，除非用户明确要求且工具允许。
+
+# 关闭编码代理的服务器侧能力；保留 web 检索
+- id: tool-bash
+  disabled: true
+- id: tool-pwsh
+  disabled: true
+- id: tool-fs
+  disabled: true
+- id: tool-fs-search
+  disabled: true
+
+# 没有 UI 回答审批，策略必须是 never；沙箱保持只读
+- id: approval
+  config:
+    policy: never
+- id: sandbox-policy
+  config:
+    mode: read-only
+    workspaceRoot: !!js process.cwd()
+
+# 技能目录：只使用 agent/skills，避免继承机器上的用户级/内置技能，保证不同环境一致
+- id: skill-filesystem
+  config:
+    includeDefaultRoots: false
+    customSkillDirs:
+      - !!js "process.getBuiltinModule('node:path').resolve(process.cwd(), '..', 'skills')"
+
+- insert:
+    - id: app-tools
+      name: ./tool-plugin.mjs
