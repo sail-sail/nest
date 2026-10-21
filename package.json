@@ -25,6 +25,7 @@
     "upgrade": "cd codegen && npm run upgrade && npm run codegen",
     "upgrade_all": "cd codegen && npm run upgrade_all",
     "db_charset": "cd codegen && node --experimental-strip-types src/util/npmDbCharset.ts",
+    "sql-alter": "cd codegen && node --experimental-strip-types src/util/npmSqlAlter.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm",
