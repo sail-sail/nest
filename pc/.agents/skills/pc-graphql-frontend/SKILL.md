@@ -1,9 +1,9 @@
 ---
 name: pc-graphql-frontend
-description: 前端自定义 GraphQL API 接口. 当需要在前端调用后端自定义接口（非标准 CRUD）时使用
+description: 前端自定义 GraphQL API 接口. 当需要在前端调用后端自定义接口（非标准 CRUD），或处理 Upload/multipart 文件上传时使用
 compatibility: Vue 3 + TypeScript
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # 前端自定义 API 接口开发
@@ -109,6 +109,13 @@ export async function updateXxx(
   return data;
 }
 ```
+
+## Upload 例外
+
+- `query()` / `mutation()` helper 走 JSON body，不适合 `Upload`
+- GraphQL 文件上传统一在页面级 `Api2.ts` 手写 `fetch("/graphql")` + `FormData`
+- `FormData` 按 GraphQL multipart request spec 组装：`operations`、`map`、文件字段 `"0"`
+- 认证头沿用 `useUsrStore().authorization`
 
 ## 核心规则
 

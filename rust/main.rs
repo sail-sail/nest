@@ -11,16 +11,18 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 use std::time::Duration;
 use std::time::Instant;
 
+use futures_util::io::AllowStdIo;
 use tracing::error;
 
 use poem::{
-  handler, Response,
-  web::{Data, Json, Query},
+  Body, handler, Response,
+  web::{Data, Query},
 };
 
 use poem::http::{StatusCode, header};
 
 use async_graphql::{
+  http::{MultipartOptions, receive_batch_body},
   Request, Variables,
 };
 
@@ -233,8 +235,8 @@ pub async fn graphql_handler_get(
 pub async fn graphql_handler(
   schema: Data<&app::QuerySchema>,
   Query(token_param): Query<AuthTokenParam>,
-  data: Json<Request>,
   req: &poem::Request,
+  body: Body,
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
@@ -250,7 +252,38 @@ pub async fn graphql_handler(
   let ip = generated::common::gql::model::Ip(ip);
   
   let now0 = Instant::now();
-  let mut gql_req = data.0;
+  let body = match body.into_vec().await {
+    Ok(body) => body,
+    Err(err) => {
+      error!("{}", err);
+      return Response::builder()
+        .status(StatusCode::BAD_REQUEST)
+        .body(err.to_string());
+    },
+  };
+  let batch_req = match receive_batch_body(
+    req.header(header::CONTENT_TYPE)
+      .map(|content_type| content_type.to_owned()),
+    AllowStdIo::new(std::io::Cursor::new(body)),
+    MultipartOptions::default(),
+  ).await {
+    Ok(batch_req) => batch_req,
+    Err(err) => {
+      error!("{}", err);
+      return Response::builder()
+        .status(StatusCode::BAD_REQUEST)
+        .body(err.to_string());
+    },
+  };
+  let mut gql_req = match batch_req.into_single() {
+    Ok(gql_req) => gql_req,
+    Err(err) => {
+      error!("{}", err);
+      return Response::builder()
+        .status(StatusCode::BAD_REQUEST)
+        .body(err.to_string());
+    },
+  };
   match req.header(AUTHORIZATION).map(|s| s.to_string()) {
     None => {
       if let Some(auth_token) = token_param.Authorization {
