@@ -30,6 +30,8 @@
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.12",
+    "@page-agent/core": "1.12.4",
+    "@page-agent/page-controller": "1.12.4",
     "@qr-x/vue": "1.1.1",
     "@tauri-apps/plugin-dialog": "2.8.3",
     "@tauri-apps/plugin-fs": "2.7.1",
@@ -54,7 +56,10 @@
     "graphql": "17.0.2",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.2",
+    "markstream-vue": "2.0.20",
+    "mermaid": "12.2.0",
     "numeral": "2.0.6",
+    "page-agent": "1.12.4",
     "pinyin-pro": "3.29.5",
     "sortablejs": "1.15.7",
     "swiper": "14.3.0",
@@ -63,7 +68,8 @@
     "vue-demi": "0.14.10",
     "vue-router": "5.4.0",
     "xlsx": "npm:@jsr/sail__xlsx",
-    "xlsx-handlebars": "0.2.2"
+    "xlsx-handlebars": "0.2.2",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@file-viewer/vite-plugin": "3.2.2",

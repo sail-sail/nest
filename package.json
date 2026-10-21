@@ -7,6 +7,8 @@
     "start": "cd pc && npm start",
     "start:pc": "cd pc && npm start",
     "start:deno": "cd deno && npm start",
+    "start:agent": "cd agent && pnpm dev",
+    "build:agent": "cd agent && pnpm build",
     "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && npm run codegen",
     "gqlgen": "cd deno && npm run gqlgen",
@@ -28,6 +30,6 @@
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i && cd ../codegen && pnpm i"
+    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i && cd ../codegen && pnpm i && cd ../agent && pnpm i"
   }
 }
