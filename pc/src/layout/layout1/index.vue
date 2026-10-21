@@ -425,6 +425,7 @@
 
   <!-- 智能助手 -->
   <AgentChatDrawer
+    un-opacity="70"
     v-if="usrStore.authorization"
   ></AgentChatDrawer>
 

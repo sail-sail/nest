@@ -1,12 +1,13 @@
 <template>
   <button
     v-if="!onAgentPage"
+    v-bind="$attrs"
     class="agent-fab"
     type="button"
     title="打开智能助手"
     @click="open = true"
   >
-    <span class="agent-fab__logo">AI</span>
+    <!-- <span class="agent-fab__logo">AI</span> -->
     <span class="agent-fab__text">智能助手</span>
   </button>
 
@@ -58,13 +59,13 @@ onUnmounted(() => registerAssistantCollapse(null));
 <style lang="scss" scoped>
 .agent-fab {
   position: fixed;
-  right: 24px;
-  bottom: 28px;
+  right: 18px;
+  bottom: 18px;
   z-index: 2000;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px 8px 8px;
+  padding: 4px 8px 4px 8px;
   border: 0;
   border-radius: 999px;
   background: linear-gradient(135deg, #4f7cff, #7a5cff);

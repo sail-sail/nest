@@ -615,7 +615,9 @@ onMounted(init);
 
 onMounted(() => {
   void refreshPageStatus();
-  pageStatusTimer = window.setInterval(() => void refreshPageStatus(), 20_000);
+  if (process.env.NODE_ENV === "production") {
+    pageStatusTimer = window.setInterval(() => void refreshPageStatus(), 20_000);
+  }
 });
 
 onUnmounted(() => {
