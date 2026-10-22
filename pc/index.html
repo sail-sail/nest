@@ -109,6 +109,7 @@
       } else {
         // prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
         prefersDarkMode = true;
+        localStorage.setItem("vueuse-color-scheme", "dark");
       }
       if (prefersDarkMode) {
         const el = document.documentElement;

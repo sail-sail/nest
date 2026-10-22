@@ -50,6 +50,15 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
+/**
+ * 写操作不重试：网络抖动时重发可能造成重复上传 / 重复写入。
+ * 只读模式下 graphql_execute 已被 AST 闸门拦住 mutation，全部可安全重试。
+ */
+function isRetryable(tool: ToolName): boolean {
+  if (config.readonly) return true;
+  return tool !== "graphql_execute" && tool !== "oss_upload";
+}
+
 export async function startBridge(): Promise<BridgeHandle> {
   const secret = randomBytes(32).toString("hex");
   const app = new Hono();
@@ -170,10 +179,7 @@ export async function startBridge(): Promise<BridgeHandle> {
         assertReadonlyQuery(query);
       }
 
-      const result = await mcpPool.call(token, tool, args, {
-        // 只读模式下所有调用都可安全重试；写操作不重试，避免重复执行
-        retryable: config.readonly || tool !== "graphql_execute",
-      });
+      const result = await mcpPool.call(token, tool, args, { retryable: isRetryable(tool) });
       return c.json({ ok: true, result });
     } catch (error) {
       if (error instanceof ReadonlyViolation) {
