@@ -6,6 +6,7 @@ import { startBridge } from "./bridge.ts";
 import { config, isAllowedOrigin } from "./config.ts";
 import { closeHarness, initHarness, runTurn } from "./harness.ts";
 import { llmProxy } from "./llm-proxy.ts";
+import { resolveModelRoute } from "./llm-config.ts";
 import { errorMessage, log } from "./logger.ts";
 import { memory } from "./memory.ts";
 import { mcpPool } from "./mcp-pool.ts";
@@ -76,9 +77,25 @@ app.use("/agent/api/*", async (c, next) => {
   await next();
 });
 
-app.get("/agent/api/health", (c) =>
-  c.json({ ok: true, model: config.model, readonly: config.readonly }),
-);
+app.get("/agent/api/health", (c) => {
+  try {
+    const route = resolveModelRoute();
+    return c.json({
+      ok: true,
+      provider: route.provider,
+      model: route.model,
+      readonly: config.readonly,
+    });
+  } catch (error) {
+    return c.json({
+      ok: true,
+      provider: "none",
+      model: "",
+      readonly: config.readonly,
+      warning: errorMessage(error),
+    });
+  }
+});
 
 // 浏览器里的 PageAgent 模型请求走宿主代理，key 不下发到前端
 app.route("/agent/llm", llmProxy);
@@ -355,6 +372,15 @@ app.post("/agent/api/conversations/:id/messages", async (c) => {
 });
 
 async function main(): Promise<void> {
+  // 启动即校验模型配置：官方 DeepSeek 优先，其次自定义网关，都没有直接失败
+  const route = resolveModelRoute();
+  log.info("model route", {
+    kind: route.kind,
+    provider: route.provider,
+    model: route.model,
+    base: route.kind === "custom" ? route.baseUrl : undefined,
+  });
+
   store.load();
   memory.load();
   const bridge = await startBridge();
@@ -366,7 +392,8 @@ async function main(): Promise<void> {
       log.info("agent listening", {
         url: `http://${config.host}:${info.port}/agent`,
         mcp: config.mcpUrl,
-        model: config.model,
+        provider: route.provider,
+        model: route.model,
         readonly: config.readonly,
       });
     },

@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "build": "node scripts/build.mjs",
     "build-prod": "node scripts/build.mjs",
     "start:prod": "node dist/index.js",
     "typecheck": "tsc --noEmit",

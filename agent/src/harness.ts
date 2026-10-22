@@ -1,6 +1,7 @@
 import { DeepSeekHarness, type HarnessNotification, type HarnessSession, type RunResult } from "@deepseek-ai/dsh-sdk-client";
 import { config } from "./config.ts";
 import type { BridgeHandle } from "./bridge.ts";
+import { prepareLlmPatch, resolveModelRoute } from "./llm-config.ts";
 import { errorMessage, log } from "./logger.ts";
 import { prepareMcpPatch } from "./mcp-config.ts";
 import { store, type ConversationRecord } from "./store.ts";
@@ -15,25 +16,26 @@ export function initHarness(bridgeHandle: BridgeHandle): void {
 function getHarness(): DeepSeekHarness {
   if (!harness) {
     if (!bridge) throw new Error("bridge 尚未启动");
-    if (!config.deepseekKey) {
-      log.warn("DEEPSEEK_API_KEY 为空，模型调用会失败");
-    }
+    const route = resolveModelRoute();
     const patches = [config.patchFile];
     const mcpPatch = prepareMcpPatch();
     if (mcpPatch) patches.push(mcpPatch);
+    const llmPatch = prepareLlmPatch();
+    if (llmPatch) patches.push(llmPatch);
     harness = new DeepSeekHarness({
       profile: "sdk",
       patches,
       dshHome: config.dshHome,
       processCwd: config.workspace,
       cwd: config.workspace,
-      provider: "deepseek-official",
-      model: config.model,
+      provider: route.provider,
+      model: route.model,
       maxTokens: 16_384,
       initializeTimeoutMs: 120_000,
       env: {
         ...process.env,
         DEEPSEEK_API_KEY: config.deepseekKey,
+        CUSTOM_LLM_API_KEY: config.customLlmKey,
         AGENT_BRIDGE_URL: bridge.url,
         AGENT_BRIDGE_SECRET: bridge.secret,
       },

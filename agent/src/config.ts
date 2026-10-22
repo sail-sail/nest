@@ -33,6 +33,13 @@ export const config = {
   mcpUrl: process.env.APP_MCP_URL || "http://localhost:4001/mcp",
   model: process.env.DSH_MODEL || "deepseek-v4-flash",
   deepseekKey: process.env.DEEPSEEK_API_KEY || "",
+  // 自定义模型（OpenAI 兼容网关）：仅在 DEEPSEEK_API_KEY 缺失时启用
+  customLlmKey: process.env.CUSTOM_LLM_API_KEY || "",
+  customLlmBase: (process.env.CUSTOM_LLM_BASE_URL || "").replace(/\/$/, ""),
+  customLlmModel: process.env.CUSTOM_LLM_MODEL || "",
+  customLlmProvider: process.env.CUSTOM_LLM_PROVIDER || "custom",
+  customLlmDisplayName: process.env.CUSTOM_LLM_NAME || "",
+  customLlmContextWindow: num(process.env.CUSTOM_LLM_CONTEXT_WINDOW, 131_072),
   readonly: process.env.AGENT_TOOL_READONLY !== "false",
   // 页面操作（PageAgent）：单次任务最长等待、最多步数
   pageEnabled: process.env.AGENT_PAGE_OPERATE !== "false",

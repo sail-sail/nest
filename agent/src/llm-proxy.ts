@@ -132,8 +132,13 @@ llmProxy.post("/v1/chat/completions", async (c) => {
   if (!isAllowedOrigin(c.req.header("origin"))) {
     return c.json({ error: "origin not allowed" }, 403);
   }
-  if (!config.deepseekKey) {
-    return c.json({ error: "DEEPSEEK_API_KEY 未配置" }, 500);
+
+  let route: ModelRoute;
+  try {
+    route = resolveModelRoute();
+  } catch (error) {
+    const message = error instanceof ModelConfigError ? error.message : "模型未配置";
+    return c.json({ error: message }, 500);
   }
 
   const token = extractBearer(c.req.header("authorization"));
@@ -174,18 +179,17 @@ llmProxy.post("/v1/chat/completions", async (c) => {
     settled = true;
     settleReservedTokens(usrId, outputCap, charged);
   };
-
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120_000);
   // 客户端断开（SSE/页面关闭）时同步取消上游，避免继续消耗 token
   const signal = AbortSignal.any([controller.signal, c.req.raw.signal]);
 
   try {
-    const upstream = await fetch(`${config.deepseekBase}/chat/completions`, {
+    const upstream = await fetch(`${route.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        authorization: `Bearer ${config.deepseekKey}`,
+        authorization: `Bearer ${route.apiKey}`,
       },
       body: JSON.stringify(payload),
       signal,

@@ -466,7 +466,73 @@ AGENT_MEMORY_DIGEST_LIMIT=10   # 首轮注入条数
 - 记忆是“用户说了什么”，不自动从数据库事实里学习；需要沉淀业务知识时用技能或 AGENTS.md。
 - 首轮注入的是最近 10 条，不是最相关的 10 条；记忆多了以后需要改成按当前问题检索。
 
-## 十三、构建与部署
+## 十三、模型配置（官方 DeepSeek / 自定义网关）
+
+### 优先级
+
+| 顺序 | 条件 | 实际使用 |
+| --- | --- | --- |
+| 1 | `DEEPSEEK_API_KEY` 非空 | `deepseek-official` + `DSH_MODEL` |
+| 2 | 上一项为空，且 `CUSTOM_LLM_API_KEY / CUSTOM_LLM_BASE_URL / CUSTOM_LLM_MODEL` 都填了 | 自定义 OpenAI 兼容网关 |
+| 3 | 都没有 | **启动直接失败**，日志给出缺哪几个变量 |
+
+注意：只要 `DEEPSEEK_API_KEY` 有值，就**不会**使用自定义配置，避免两套 key 混用。
+
+### 自定义模型
+
+```dotenv
+CUSTOM_LLM_API_KEY=sk-xxx
+CUSTOM_LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+CUSTOM_LLM_MODEL=qwen3-max
+# 可选
+CUSTOM_LLM_PROVIDER=custom       # 路由名，小写+连字符
+CUSTOM_LLM_NAME=通义千问           # 仅显示用
+CUSTOM_LLM_CONTEXT_WINDOW=131072
+```
+
+`BASE_URL` 要写到 `/v1`（网关的 OpenAI 兼容根路径），不要带 `/chat/completions`。
+
+实现方式是给 dsh 的 `llm-pi-ai` 插件加一条 **hand-declared gateway**：
+
+```json
+[
+  {
+    "id": "llm-pi-ai",
+    "config": {
+      "providers": {
+        "custom": {
+          "api": "openai-completions",
+          "baseURL": "https://.../v1",
+          "apiKeyEnv": "CUSTOM_LLM_API_KEY",
+          "models": [{ "id": "qwen3-max", "contextWindow": 131072 }]
+        }
+      }
+    }
+  }
+]
+```
+
+这段 overlay 在启动时写到 `.dsh/runtime/llm.patch.json`，与 `dsh/patch.yml` 一起叠加；
+官方 DeepSeek 模式不会生成这个文件。
+
+### 对页面操作的影响
+
+浏览器里的 PageAgent 通过 `/agent/llm` 代理调模型，代理也走同一套优先级；
+切到自定义网关后，页面操作的内层模型也会自动使用它（不再依赖 `DEEPSEEK_API_KEY`）。
+
+### 要求
+
+- 自定义网关必须支持 **OpenAI Chat Completions + tool calling**（智能体依赖工具调用）。
+- 模型名必须和网关上的 id 一致；`CUSTOM_LLM_CONTEXT_WINDOW` 只影响上下文预算，不会探测真实值。
+- `CUSTOM_LLM_API_KEY` 只通过 launch env 传给 dsh，不写进配置文件。
+
+### 排查
+
+- 启动日志 `model route` 会打印 `kind / provider / model / base`。
+- `GET /agent/api/health` 返回当前 `provider` 与 `model`，可以用于部署自检。
+- 报 `MISSING_CREDENTIAL`：`CUSTOM_LLM_API_KEY` 没传进 dsh 进程，检查 `.env` 是否被加载。
+
+## 十四、构建与部署
 
 ### 本地构建
 
@@ -576,7 +642,7 @@ systemctl start nest-agent
   `process.cwd()` 的上一级解析，`skills/`、`workspace/` 必须跟代码在一起。
 - 构建产物已实测：用 `node dist/index.js` 起服务，真实模型对话 + `memory_list` 工具调用正常。
 
-## 十四、里程碑
+## 十五、里程碑
 
 1. 目录 + workspace + 依赖安装，dsh `--dump-config` 通过。
 2. 单 runtime + 内部桥，`session_me` 工具打通（不带模型，直接调桥）。

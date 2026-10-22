@@ -20,3 +20,4 @@
 16. 页面操作不受 `AGENT_TOOL_READONLY` 约束；要关闭用 `AGENT_PAGE_OPERATE=false`。浏览器内的模型请求必须走 `/agent/llm` 代理，禁止把 `DEEPSEEK_API_KEY` 注入前端
 17. 长期记忆按 `usrId` 隔离，走 `memory_*` 工具和 `agent/src/memory.ts`；不要在 dsh 侧共享一个记忆库（多用户会串号），也不要保存凭据/手机号/身份证等敏感信息
 18. 记忆首轮注入只拼进模型输入，不要写进转录或前端展示；改注入逻辑时保持这个边界
+19. 模型选择优先级固定为 `DEEPSEEK_API_KEY` → `CUSTOM_LLM_*` → 启动报错；自定义模型走 `llm-pi-ai` 的 hand-declared gateway（`openai-completions`），不要写死到 harness 的 `provider` 里
