@@ -129,12 +129,15 @@ class PageHub {
     };
   }
 
-  /** 心跳：记录该标签页最近活跃时间、路由、可见性与焦点 */
-  touch(channelId: string, path: string, visible?: boolean, focused?: boolean): void {
-    const channel = channelId
-      ? this.channels.get(channelId)
-      : [...this.channels.values()][0];
-    if (!channel) return;
+  /**
+   * 心跳：记录该标签页最近活跃时间、路由、可见性与焦点。
+   * 必须同时校验 usrId 与 channelId：空 channelId 不再兜底到任意 channel，
+   * 否则可能把别的用户的连接状态（path/focused/lastSeen）改掉。
+   */
+  touch(usrId: string, channelId: string, path: string, visible?: boolean, focused?: boolean): void {
+    if (!channelId) return;
+    const channel = this.channels.get(channelId);
+    if (!channel || channel.usrId !== usrId) return;
     channel.lastSeen = Date.now();
     if (path) channel.path = path;
     if (typeof visible === "boolean") channel.visible = visible;
@@ -145,7 +148,7 @@ class PageHub {
     const channel = this.channelsFor(usrId)[0];
     if (!channel) throw new PageOfflineError();
 
-    const busy = [...this.pending.values()].some((task) => task.channelId === channel.id);
+    const busy = [...this.pending.values()].some((task) => task.usrId === usrId);
     if (busy) throw new PageBusyError();
 
     const taskId = `pt_${randomUUID().replaceAll("-", "")}`;

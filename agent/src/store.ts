@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { HarnessSession } from "@deepseek-ai/dsh-sdk-client";
+import { decodeClaims } from "./auth.ts";
 import { config } from "./config.ts";
 import { log } from "./logger.ts";
 
@@ -32,10 +33,32 @@ function toPublic(record: ConversationRecord): PublicConversation {
 
 export class ConversationStore {
   private readonly records = new Map<string, ConversationRecord>();
+  /** dshSessionId → record 反向索引：桥工具调用按 sessionId 反查用户，避免每次全量扫描 */
+  private readonly byDshSessionId = new Map<string, ConversationRecord>();
   private readonly tokens = new Map<string, string>();
   private readonly sessions = new Map<string, HarnessSession>();
   private readonly live = new Set<string>();
+  /** 正在生成回答的会话：「断开」只关 SSE，轮次仍占用到结束，防止同一 dsh 会话并发 run */
+  private readonly busy = new Set<string>();
   private saveTimer: NodeJS.Timeout | undefined;
+  private readonly tokenSweeper: NodeJS.Timeout;
+
+  constructor() {
+    // 定期清掉过期/无效 token，减少敏感凭据的内存驻留时间
+    this.tokenSweeper = setInterval(() => this.sweepTokens(), 10 * 60_000);
+    this.tokenSweeper.unref();
+  }
+
+  /** decodeClaims 对过期或格式损坏的 token 都会抛错，抛错即可安全移除 */
+  private sweepTokens(): void {
+    for (const [sessionId, token] of this.tokens) {
+      try {
+        decodeClaims(token);
+      } catch {
+        this.tokens.delete(sessionId);
+      }
+    }
+  }
 
   load(): void {
     try {
@@ -44,6 +67,7 @@ export class ConversationStore {
       for (const record of parsed.conversations ?? []) {
         if (!record?.id || !record.dshSessionId || !record.usrId) continue;
         this.records.set(record.id, record);
+        this.byDshSessionId.set(record.dshSessionId, record);
       }
       log.info("conversations loaded", { count: this.records.size });
     } catch (error) {
@@ -84,6 +108,7 @@ export class ConversationStore {
       updatedAt: now,
     };
     this.records.set(record.id, record);
+    this.byDshSessionId.set(record.dshSessionId, record);
     this.scheduleSave();
     return record;
   }
@@ -105,11 +130,24 @@ export class ConversationStore {
     const record = this.get(id, usrId);
     if (!record) return false;
     this.records.delete(id);
+    this.byDshSessionId.delete(record.dshSessionId);
     this.tokens.delete(record.dshSessionId);
     this.sessions.delete(record.dshSessionId);
     this.live.delete(record.dshSessionId);
+    this.busy.delete(id);
     this.scheduleSave();
     return true;
+  }
+
+  /** 同一会话同时只允许一轮生成；占用成功返回 true，已在生成中返回 false */
+  tryMarkBusy(conversationId: string): boolean {
+    if (this.busy.has(conversationId)) return false;
+    this.busy.add(conversationId);
+    return true;
+  }
+
+  clearBusy(conversationId: string): void {
+    this.busy.delete(conversationId);
   }
 
   bindToken(record: ConversationRecord, token: string): void {
@@ -122,10 +160,7 @@ export class ConversationStore {
 
   /** 反查 dsh 会话属于哪个用户：页面操作要按用户路由到正确的浏览器连接 */
   usrIdFor(dshSessionId: string): string | undefined {
-    for (const record of this.records.values()) {
-      if (record.dshSessionId === dshSessionId) return record.usrId;
-    }
-    return undefined;
+    return this.byDshSessionId.get(dshSessionId)?.usrId;
   }
 
   touch(record: ConversationRecord, text: string): void {
