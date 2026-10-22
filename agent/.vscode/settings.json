@@ -1,0 +1,13 @@
+{
+  "files.exclude": {
+    "dist/": true
+  },
+  "search.exclude": {
+    "dist/": true
+  },
+  "files.watcherExclude": {
+    "dist/": true
+  },
+  "deno.enable": false,
+  "files.eol": "\n"
+}

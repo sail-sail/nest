@@ -1,0 +1,32 @@
+{
+  "name": "agent",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "node scripts/build.mjs",
+    "build-prod": "node scripts/build.mjs",
+    "start:prod": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "dsh:config": "node ./node_modules/@deepseek-ai/dsh/lib/bin.js --profile sdk --patch ./dsh/patch.yml --dump-config"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
+    "@hono/node-server": "2.1.5",
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "graphql": "17.0.2",
+    "hono": "4.13.13"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}
