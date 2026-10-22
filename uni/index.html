@@ -10,11 +10,24 @@
       var vConsole = new window.VConsole();
     </script> -->
     <script>
-      var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
-        CSS.supports('top: constant(a)'))
-      document.write(
-        '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
-        (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+      (() => {
+        const version = "$__version__$";
+        const savedVersion = window.localStorage.getItem("__version");
+
+        if (savedVersion !== version) {
+          window.localStorage.setItem("__version", version);
+          if (savedVersion) {
+            window.location.reload();
+            return;
+          }
+        }
+
+        var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
+          CSS.supports('top: constant(a)'))
+        document.write(
+          '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+          (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+      })();
     </script>
     <title></title>
     <style>

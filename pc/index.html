@@ -16,11 +16,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#8203;</title>
     <script>
-      const title = window.localStorage.getItem("app_title");
-      if (title) {
-        document.title = title;
-      }
-      window.localStorage.setItem("__version", "$__version__$");
+      (() => {
+        const version = "$__version__$";
+        const savedVersion = window.localStorage.getItem("__version");
+
+        if (savedVersion !== version) {
+          window.localStorage.setItem("__version", version);
+          if (savedVersion) {
+            window.location.reload();
+            return;
+          }
+        }
+
+        const title = window.localStorage.getItem("app_title");
+        if (title) {
+          document.title = title;
+        }
+
+        document.documentElement.setAttribute("data-app-version", version);
+      })();
     </script>
     <style>
       .loading_spinner .circular {
