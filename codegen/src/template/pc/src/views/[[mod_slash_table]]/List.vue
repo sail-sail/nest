@@ -1176,7 +1176,6 @@ if (searchByKeyword) {
             un-cursor-pointer
             un-flex="~"
             un-justify-end
-            un-h="5.5"
             un-overflow-hidden
             @click="isSearchExpand = !isSearchExpand"
           ><#
