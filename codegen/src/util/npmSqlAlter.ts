@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import clipboardy from "clipboardy";
 
 const repoRoot = path.resolve(process.cwd(), "..");
 
@@ -182,14 +183,26 @@ function buildAlterStatementsFromSchema(prevSql: string, currSql: string) {
   const currTables = extractCreateTables(currSql);
   const ops: string[] = [];
 
+  function buildPositionClause(columnNames: string[], index: number) {
+    if (index <= 0) {
+      return " FIRST";
+    }
+    return ` AFTER \`${columnNames[index - 1]}\``;
+  }
+
   for (const [tableName, currColumns] of currTables) {
     const prevColumns = prevTables.get(tableName);
     if (!prevColumns) continue;
 
-    for (const [colName, currDef] of currColumns) {
+    const currColumnEntries = Array.from(currColumns.entries());
+    const currColumnNames = currColumnEntries.map(([colName]) => colName);
+
+    for (let index = 0; index < currColumnEntries.length; index++) {
+      const [colName, currDef] = currColumnEntries[index];
       const prevDef = prevColumns.get(colName);
       if (prevDef == null) {
-        ops.push(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${colName}\` ${currDef};`);
+        const positionClause = buildPositionClause(currColumnNames, index);
+        ops.push(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${colName}\` ${currDef}${positionClause};`);
       } else if (prevDef.trim() !== currDef.trim()) {
         ops.push(`ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${colName}\` ${currDef};`);
       }
@@ -313,6 +326,9 @@ async function main() {
   for (const sql of generated) {
     console.log(sql);
   }
+  clipboardy.writeSync(generated.join("\n"));
+  console.log("---");
+  console.log("已复制到剪贴板。");
 }
 
 main().catch((err) => {

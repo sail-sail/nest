@@ -2910,7 +2910,7 @@ export async function getDefaultInput<#=Table_Up#>() {<#
           } else {
             defaultValue = "dayjs().format('YYYY-MM-DD')";
           }
-        } else if (defaultValue === "CURRENT_DATETIME") {
+        } else if (defaultValue === "CURRENT_DATETIME" || defaultValue === "CURRENT_TIMESTAMP") {
           defaultValue = `dayjs().format('${ valueFormat }')`;
         } else if (defaultValue?.startsWith("start_of_")) {
           defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
