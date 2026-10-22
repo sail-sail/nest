@@ -35,4 +35,6 @@ app.directive("search-form-item-width-auto", searchFormItemWidthAuto);
 app.mount("#app");
 
 // 智能助手的页面操作通道：一边保持 SSE 接收任务，一边按需加载 PageAgent
-startPageAgentBridge();
+if (process.env.NODE_ENV === "production") {
+  startPageAgentBridge();
+}
