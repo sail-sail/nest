@@ -86,9 +86,14 @@ export class McpPool {
     return { key, entry };
   }
 
-  private async dispose(key: string): Promise<void> {
+  /**
+   * 释放连接。传入 expected 时做身份校验：并发重试期间该 key 可能已被
+   * 另一次调用重建为新连接，此时不能把别人的新连接关掉。
+   */
+  private async dispose(key: string, expected?: PoolEntry): Promise<void> {
     const entry = this.entries.get(key);
     if (!entry) return;
+    if (expected && entry !== expected) return;
     this.entries.delete(key);
     try {
       await entry.transport.close();
@@ -100,7 +105,7 @@ export class McpPool {
   private async sweep(): Promise<void> {
     const deadline = Date.now() - 4 * 60_000;
     const stale = [...this.entries.entries()].filter(([, entry]) => entry.lastUsed < deadline);
-    await Promise.all(stale.map(([key]) => this.dispose(key)));
+    await Promise.all(stale.map(([key, entry]) => this.dispose(key, entry)));
   }
 
   async call(
@@ -132,7 +137,7 @@ export class McpPool {
         tool: name,
         error: sanitizeToken(errorMessage(error), token),
       });
-      await this.dispose(key);
+      await this.dispose(key, entry);
       ({ key, entry } = await this.entryFor(token));
       return invoke();
     }
