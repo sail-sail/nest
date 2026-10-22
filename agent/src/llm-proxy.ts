@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { AuthError, decodeClaims, extractBearer } from "./auth.ts";
 import { config } from "./config.ts";
+import { ModelConfigError, resolveModelRoute, type ModelRoute } from "./llm-config.ts";
 import { errorMessage, log } from "./logger.ts";
 
 /**
@@ -29,8 +30,13 @@ llmProxy.post("/v1/chat/completions", async (c) => {
   if (!originAllowed(c.req.header("origin"))) {
     return c.json({ error: "origin not allowed" }, 403);
   }
-  if (!config.deepseekKey) {
-    return c.json({ error: "DEEPSEEK_API_KEY 未配置" }, 500);
+
+  let route: ModelRoute;
+  try {
+    route = resolveModelRoute();
+  } catch (error) {
+    const message = error instanceof ModelConfigError ? error.message : "模型未配置";
+    return c.json({ error: message }, 500);
   }
 
   const token = extractBearer(c.req.header("authorization"));
@@ -46,16 +52,16 @@ llmProxy.post("/v1/chat/completions", async (c) => {
   if (!body) return c.json({ error: "invalid json body" }, 400);
 
   // 模型固定，避免代理被当成任意模型的免费出口
-  const payload = { ...body, model: config.model };
+  const payload = { ...body, model: route.model };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120_000);
 
   try {
-    const upstream = await fetch(`${config.deepseekBase}/chat/completions`, {
+    const upstream = await fetch(`${route.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        authorization: `Bearer ${config.deepseekKey}`,
+        authorization: `Bearer ${route.apiKey}`,
       },
       body: JSON.stringify(payload),
       signal: controller.signal,
