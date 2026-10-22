@@ -422,7 +422,13 @@
   <ChangePassword
     ref="changePasswordRef"
   ></ChangePassword>
-  
+
+  <!-- 智能助手 -->
+  <AgentChatDrawer
+    un-opacity="70"
+    v-if="usrStore.authorization"
+  ></AgentChatDrawer>
+
 </el-splitter>
 </template>
 
@@ -434,6 +440,8 @@ import Tabs from "./Tabs.vue";
 import Login from "../Login.vue";
 
 import ChangePassword from "../change_password/ChangePassword.vue";
+
+import AgentChatDrawer from "@/components/AgentChatDrawer.vue";
 
 import {
   getLoginInfo,

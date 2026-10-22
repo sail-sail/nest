@@ -7,6 +7,8 @@
     "start": "cd pc && npm start",
     "start:pc": "cd pc && npm start",
     "start:rust": "cd rust && cargo run",
+    "start:agent": "cd agent && pnpm dev",
+    "build:agent": "cd agent && pnpm build",
     "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && npm run codegen",
     "gqlgen": "cd rust && npm run gqlgen",
@@ -25,9 +27,10 @@
     "upgrade": "cd codegen && npm run upgrade && npm run codegen",
     "upgrade_all": "cd codegen && npm run upgrade_all",
     "db_charset": "cd codegen && node --experimental-strip-types src/util/npmDbCharset.ts",
+    "sql-alter": "cd codegen && node --experimental-strip-types src/util/npmSqlAlter.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd rust && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i && cd ../codegen && pnpm i"
+    "postinstall": "cd rust && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i && cd ../codegen && pnpm i && cd ../agent && pnpm i"
   }
 }
