@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { AuthError, decodeClaims, extractBearer } from "./auth.ts";
 import { startBridge } from "./bridge.ts";
-import { config } from "./config.ts";
+import { config, isAllowedOrigin } from "./config.ts";
 import { closeHarness, initHarness, runTurn } from "./harness.ts";
 import { llmProxy } from "./llm-proxy.ts";
 import { resolveModelRoute } from "./llm-config.ts";
@@ -53,21 +53,12 @@ class FrameQueue implements AsyncIterable<SseFrame> {
   }
 }
 
-function allowedOrigins(): Set<string> {
-  const origins = new Set<string>([config.publicOrigin]);
-  origins.add("http://localhost:4000");
-  origins.add("http://127.0.0.1:4000");
-  return origins;
-}
-
-const origins = allowedOrigins();
 const app = new Hono<{ Variables: Variables }>();
 
 app.use("/agent/api/*", async (c, next) => {
   if (c.req.path === "/agent/api/health") return next();
 
-  const origin = c.req.header("origin");
-  if (origin && !origins.has(origin)) {
+  if (!isAllowedOrigin(c.req.header("origin"))) {
     return c.json({ error: "origin not allowed" }, 403);
   }
 
@@ -195,6 +186,7 @@ app.post("/agent/api/page-agent/heartbeat", async (c) => {
     focused?: unknown;
   };
   pageHub.touch(
+    usrId,
     typeof body.channelId === "string" ? body.channelId : "",
     typeof body.path === "string" ? body.path : "",
     typeof body.visible === "boolean" ? body.visible : undefined,
@@ -258,13 +250,22 @@ app.post("/agent/api/conversations/:id/messages", async (c) => {
   if (!text) return c.json({ error: "text 不能为空" }, 400);
   if (text.length > 20_000) return c.json({ error: "text 过长" }, 413);
 
+  // 同一会话同时只允许一轮生成：「断开」只关 SSE，上一轮仍占用会话到结束
+  if (!store.tryMarkBusy(record.id)) {
+    return c.json(
+      { error: "上一轮回答仍在生成中，请稍候再发", code: "CONVERSATION_BUSY" },
+      409,
+    );
+  }
+  const startedAt = Date.now();
+
   const token = c.get("token");
   store.bindToken(record, token);
   store.touch(record, text);
-  appendTranscript(record.id, { role: "user", text });
+  const messageCount = appendTranscript(record.id, { role: "user", text });
 
   // 第一轮把长期记忆注入模型上下文；前端与转录仍只保留用户原文
-  const firstTurn = readTranscript(record.id).length === 1;
+  const firstTurn = messageCount === 1;
   const digest =
     firstTurn && config.memoryEnabled ? memory.digest(record.usrId, config.memoryDigestLimit) : "";
   const promptText = digest ? `${digest}\n\n${text}` : text;
@@ -357,6 +358,15 @@ app.post("/agent/api/conversations/:id/messages", async (c) => {
       clearInterval(heartbeat);
       queue.close();
       await runPromise.catch(() => {});
+      store.clearBusy(record.id);
+      log.info("chat turn finished", {
+        usrId: record.usrId,
+        conversationId: record.id,
+        textLength: text.length,
+        ms: Date.now() - startedAt,
+        ok: !failure,
+        aborted,
+      });
     }
   });
 });

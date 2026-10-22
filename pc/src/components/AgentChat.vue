@@ -36,6 +36,18 @@
         :disabled="running"
         @change="onSelectConversation"
       ></CustomSelect>
+      <div>
+        <el-icon
+          class="agent-chat__delete"
+          un-cursor-pointer
+          un-text="hover:red"
+          :title="activeId ? '删除当前会话' : '暂无可删除会话'"
+          :class="{ 'is-disabled': !activeId || running }"
+          @click="deleteCurrentConversation"
+        >
+          <ElIconCircleClose />
+        </el-icon>
+      </div>
       <el-button
         size="small"
         :disabled="running"
@@ -57,16 +69,6 @@
     >
       <div class="agent-chat__empty-title">
         可以帮你查数据、看报表、找字段
-      </div>
-      <div class="agent-chat__chips">
-        <button
-          v-for="hint in hints"
-          :key="hint"
-          class="agent-chat__chip"
-          @click="input = hint"
-        >
-          {{ hint }}
-        </button>
       </div>
     </div>
 
@@ -268,9 +270,6 @@ function chatSelectMethod() {
   return conversations;
 }
 
-const hints = [
-];
-
 function authHeaders(): Record<string, string> {
   return {
     "content-type": "application/json",
@@ -281,7 +280,7 @@ function authHeaders(): Record<string, string> {
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/agent/api${path}`, {
     ...init,
-    headers: { ...authHeaders(), ...(init?.headers ?? {}) },
+    headers: { ...authHeaders(), ...init?.headers },
   });
   if (!response.ok) {
     const text = await response.text().catch(() => "");
@@ -333,13 +332,12 @@ function onScroll() {
 }
 
 watch(
-  [items, running],
+  [() => items.value.length, running],
   () => {
     // 初始化完成前由 jumpToBottomNow() 负责定位，避免平滑滚到底
     if (!inited.value) return;
     if (stick.value) scrollToBottom();
   },
-  { deep: true },
 );
 
 function toItems(messages: Array<Record<string, unknown>>): ChatItem[] {
@@ -411,6 +409,42 @@ async function createConversation() {
   input.value = "";
 }
 
+async function deleteCurrentConversation() {
+  const conversationId = activeId.value;
+  if (!conversationId || running.value) return;
+
+  try {
+    await ElMessageBox.confirm(
+      "确定删除这个会话吗？确定后会彻底删除该会话及其全部消息记录。",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      },
+    );
+  } catch {
+    return;
+  }
+
+  try {
+    await api(`/conversations/${conversationId}`, { method: "DELETE" });
+    conversations.value = conversations.value.filter((item) => item.id !== conversationId);
+    const nextConversation = conversations.value[0];
+    activeId.value = "";
+    items.value = [];
+    input.value = "";
+
+    if (nextConversation) {
+      await selectConversation(nextConversation.id);
+    } else {
+      await createConversation();
+    }
+    ElMessage.success("会话已删除");
+  } catch (error) {
+    ElMessage.error((error as Error).message || "删除会话失败");
+  }
+}
+
 async function onSelectConversation(value: unknown) {
   const item = Array.isArray(value) ? value[0] : value;
   const conversationId = typeof item === "string"
@@ -474,6 +508,8 @@ function handleFrame(event: string, data: Record<string, unknown>) {
       target.open = false;
     }
     statusText.value = "正在整理结果…";
+    // 更新已有条目不触发 length 变化，这里手动补一次滚动
+    if (stick.value) scrollToBottom();
     return;
   }
 
@@ -486,8 +522,7 @@ function handleFrame(event: string, data: Record<string, unknown>) {
     for (const item of items.value) {
       if (item.kind === "assistant") item.final = true;
     }
-    const finalResponse = typeof data.finalResponse === "string" ? data.finalResponse : "";
-    if (finalResponse) statusText.value = "就绪";
+    statusText.value = "就绪";
     return;
   }
 
@@ -539,9 +574,10 @@ async function send() {
 
   input.value = "";
   stick.value = true;
+  const userItemId = `u-${Date.now()}`;
   items.value.push({
     kind: "user",
-    id: `u-${Date.now()}`,
+    id: userItemId,
     time: Date.now(),
     text,
   });
@@ -558,7 +594,18 @@ async function send() {
       signal: controller.signal,
     });
     if (!response.ok) {
-      const message = await response.text().catch(() => "");
+      const raw = await response.text().catch(() => "");
+      let message = raw;
+      try {
+        message = (JSON.parse(raw) as { error?: string }).error ?? raw;
+      } catch {
+        // 非 JSON 错误体原样展示
+      }
+      if (response.status === 409) {
+        // 本轮未被服务端接受（上一轮仍在生成）：回滚乐观消息并恢复输入
+        items.value = items.value.filter((item) => item.id !== userItemId);
+        input.value = text;
+      }
       throw new Error(message || `请求失败（${response.status}）`);
     }
     await readSse(response, handleFrame);
@@ -717,6 +764,26 @@ onUnmounted(() => {
   width: 280px;
 }
 
+.agent-chat__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.agent-chat__delete:hover {
+  color: var(--el-color-danger);
+}
+
+.agent-chat__delete.is-disabled {
+  color: var(--el-text-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .agent-chat__body {
   flex: 1;
   min-height: 0;
@@ -732,28 +799,6 @@ onUnmounted(() => {
   font-size: 14px;
   color: var(--el-text-color-secondary);
   margin-bottom: 14px;
-}
-
-.agent-chat__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.agent-chat__chip {
-  border: 1px solid var(--el-border-color);
-  background: var(--el-fill-color-lighter);
-  color: var(--el-text-color-regular);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.agent-chat__chip:hover {
-  border-color: var(--el-color-primary);
-  color: var(--el-color-primary);
 }
 
 .msg {

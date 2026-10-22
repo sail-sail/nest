@@ -66,7 +66,7 @@ let retryDelay = 3_000;
 let heartbeatTimer: number | undefined;
 let agentPromise: Promise<PageAgentInstance> | null = null;
 let taskRunning = false;
-let connectionFailed = false;
+let bridgeDisabled = false;
 /** 宿主在 ready 帧里下发，用于让心跳精确落到当前标签页 */
 let channelId = "";
 
@@ -248,15 +248,15 @@ async function handleFrame(event: string, data: string): Promise<void> {
 }
 
 function scheduleRetry(delay: number): void {
-  if (!started || retryTimer || connectionFailed) return;
+  if (!started || retryTimer || bridgeDisabled) return;
   retryTimer = window.setTimeout(() => {
     retryTimer = undefined;
     void connect();
   }, delay);
 }
 
-function stopBridge(): void {
-  connectionFailed = true;
+function disableBridge(): void {
+  bridgeDisabled = true;
   started = false;
   connecting = false;
   if (retryTimer) {
@@ -269,7 +269,7 @@ function stopBridge(): void {
 }
 
 async function connect(): Promise<void> {
-  if (!started || connecting || connectionFailed) return;
+  if (!started || connecting || bridgeDisabled) return;
   connecting = true;
 
   const current = token();
@@ -292,9 +292,18 @@ async function connect(): Promise<void> {
       signal: controller.signal,
     });
 
-    if (!response.ok || !response.body) {
-      stopBridge();
+    if (response.status === 404) {
+      // 旧版后端未提供 page-agent 通道：本页生命周期内永久停止，避免无意义重连
+      disableBridge();
       return;
+    }
+    if (response.status === 401 || response.status === 403) {
+      // token 失效时保留重连：用户重新登录后无需刷新页面即可自动恢复
+      throw new Error(`page stream unauthorized (${response.status})`);
+    }
+    if (!response.ok || !response.body) {
+      // 网关抖动（5xx 等）：交给 finally 的退避重试，不要一次失败就永久下线
+      throw new Error(`page stream http ${response.status}`);
     }
 
     // 连上后重置退避
@@ -328,15 +337,14 @@ async function connect(): Promise<void> {
       }
     }
   } catch {
-    if (process.env.NODE_ENV === "development") {
-      stopBridge();
-    }
+    // 网络错误统一走 finally 的退避重试；
+    // 只有 404（通道不存在）会 disableBridge，其余错误都允许后续恢复
   } finally {
     connecting = false;
     stopHeartbeat();
     if (abort === controller) abort = null;
 
-    if (started && !connectionFailed) {
+    if (started && !bridgeDisabled) {
       const delay = retryDelay;
       retryDelay = Math.min(retryDelay * 2, 30_000);
       scheduleRetry(delay);
@@ -382,7 +390,7 @@ function stopHeartbeat(): void {
 
 /** 在应用启动后调用一次；重复调用无副作用 */
 export function startPageAgentBridge(): void {
-  if (started || connectionFailed) return;
+  if (started || bridgeDisabled) return;
   started = true;
   void connect();
 }
