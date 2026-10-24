@@ -20,15 +20,41 @@ try {
   // ignore
 }
 
-function num(value: string | undefined, fallback: number): number {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+const TRUE_VALUES = new Set(["1", "true", "yes", "on"]);
+const FALSE_VALUES = new Set(["0", "false", "no", "off"]);
+
+function envNum(
+  name: string,
+  fallback: number,
+  min = 1,
+  max = Number.MAX_SAFE_INTEGER,
+): number {
+  const raw = process.env[name];
+  if (raw === undefined || !raw.trim()) return fallback;
+  const parsed = Number(raw);
+  if (!Number.isSafeInteger(parsed) || parsed < min || parsed > max) {
+    throw new Error(
+      `${name} 必须是 ${min} 到 ${max} 之间的整数，当前为 ${JSON.stringify(raw)}`,
+    );
+  }
+  return parsed;
+}
+
+function envBool(name: string, fallback: boolean): boolean {
+  const raw = process.env[name];
+  if (raw === undefined || !raw.trim()) return fallback;
+  const normalized = raw.trim().toLowerCase();
+  if (TRUE_VALUES.has(normalized)) return true;
+  if (FALSE_VALUES.has(normalized)) return false;
+  throw new Error(
+    `${name} 必须是 true/false、1/0、yes/no 或 on/off，当前为 ${JSON.stringify(raw)}`,
+  );
 }
 
 export const config = {
   rootDir,
   host: process.env.AGENT_HOST || "127.0.0.1",
-  port: num(process.env.AGENT_PORT, 4002),
+  port: envNum("AGENT_PORT", 4002, 1, 65_535),
   publicOrigin: (process.env.AGENT_PUBLIC_ORIGIN || "http://localhost:4000").replace(/\/$/, ""),
   mcpUrl: process.env.APP_MCP_URL || "http://localhost:4001/mcp",
   model: process.env.DSH_MODEL || "deepseek-v4-flash",
@@ -39,20 +65,38 @@ export const config = {
   customLlmModel: process.env.CUSTOM_LLM_MODEL || "",
   customLlmProvider: process.env.CUSTOM_LLM_PROVIDER || "custom",
   customLlmDisplayName: process.env.CUSTOM_LLM_NAME || "",
-  customLlmContextWindow: num(process.env.CUSTOM_LLM_CONTEXT_WINDOW, 131_072),
-  readonly: process.env.AGENT_TOOL_READONLY !== "false",
+  customLlmContextWindow: envNum("CUSTOM_LLM_CONTEXT_WINDOW", 131_072),
+  readonly: envBool("AGENT_TOOL_READONLY", true),
+  // SSE 心跳：默认关闭，防止浏览器/宿主间持续 ping
+  heartbeatEnabled: envBool("AGENT_HEARTBEAT", false),
   // 页面操作（PageAgent）：单次任务最长等待、最多步数
-  pageEnabled: process.env.AGENT_PAGE_OPERATE !== "false",
-  pageTimeoutMs: num(process.env.AGENT_PAGE_TIMEOUT_MS, 180_000),
-  pageMaxSteps: num(process.env.AGENT_PAGE_MAX_STEPS, 20),
+  pageEnabled: envBool("AGENT_PAGE_OPERATE", true),
+  pageTimeoutMs: envNum("AGENT_PAGE_TIMEOUT_MS", 180_000),
+  pageMaxSteps: envNum("AGENT_PAGE_MAX_STEPS", 20, 1, 40),
   // LLM 代理（PageAgent 浏览器侧模型调用）：单请求输出上限与每用户每日 token 封顶
-  llmProxyEnabled: process.env.AGENT_LLM_PROXY !== "false",
-  llmMaxTokensCap: num(process.env.AGENT_LLM_MAX_TOKENS, 8_192),
-  llmDailyTokens: num(process.env.AGENT_LLM_DAILY_TOKENS, 1_000_000),
+  llmProxyEnabled: envBool("AGENT_LLM_PROXY", true),
+  llmMaxTokensCap: envNum("AGENT_LLM_MAX_TOKENS", 8_192),
+  llmDailyTokens: envNum("AGENT_LLM_DAILY_TOKENS", 1_000_000),
   // 跨会话记忆：按用户隔离，存 .dsh/memory.json
-  memoryEnabled: process.env.AGENT_MEMORY !== "false",
+  memoryEnabled: envBool("AGENT_MEMORY", true),
   memoryFile: path.join(rootDir, ".dsh", "memory.json"),
-  memoryDigestLimit: num(process.env.AGENT_MEMORY_DIGEST_LIMIT, 10),
+  memoryDigestLimit: envNum("AGENT_MEMORY_DIGEST_LIMIT", 10),
+  // 附件暂存：浏览器直传宿主，模型只拿 attachmentId，base64 不进模型上下文
+  attachmentEnabled: envBool("AGENT_ATTACHMENT", true),
+  attachmentDir: path.join(rootDir, ".dsh", "attachments"),
+  attachmentMaxBytes: envNum("AGENT_ATTACHMENT_MAX_BYTES", 10 * 1024 * 1024),
+  attachmentMaxPerUser: envNum("AGENT_ATTACHMENT_MAX_FILES", 5),
+  attachmentTtlMs: envNum("AGENT_ATTACHMENT_TTL_MS", 30 * 60_000),
+  // 工具参数内联 base64 的字符上限（≈6KB 二进制），超过必须走附件
+  inlineBase64MaxChars: envNum("AGENT_INLINE_BASE64_MAX", 8_192),
+  // 单次工具输出进入模型上下文的 token 预算（dsh 子进程按此裁剪）
+  toolOutputTokens: envNum("AGENT_TOOL_OUTPUT_TOKENS", 6_000),
+  // 会话句柄生命周期：空闲多久释放、最多同时驻留多少个
+  sessionTtlMs: envNum("AGENT_SESSION_TTL_MS", 30 * 60_000),
+  sessionMax: envNum("AGENT_SESSION_MAX", 32),
+  // 用量记账：按天落盘，保留天数
+  usageDir: path.join(rootDir, ".dsh", "usage"),
+  usageRetentionDays: envNum("AGENT_USAGE_RETENTION_DAYS", 30),
   deepseekBase: (process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/v1").replace(
     /\/$/,
     "",

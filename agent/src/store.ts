@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { HarnessSession } from "@deepseek-ai/dsh-sdk-client";
@@ -22,6 +23,21 @@ export interface PublicConversation {
   updatedAt: number;
 }
 
+export interface SessionStats {
+  live: number;
+  busy: number;
+  max: number;
+  ttlMs: number;
+}
+
+interface SessionEntry {
+  session: HarnessSession;
+  /** 最后一次被使用的时间，用于 TTL 与 LRU */
+  lastUsed: number;
+  /** 正在跑一轮：不允许被淘汰 */
+  busy: boolean;
+}
+
 function toPublic(record: ConversationRecord): PublicConversation {
   return {
     id: record.id,
@@ -36,17 +52,22 @@ export class ConversationStore {
   /** dshSessionId → record 反向索引：桥工具调用按 sessionId 反查用户，避免每次全量扫描 */
   private readonly byDshSessionId = new Map<string, ConversationRecord>();
   private readonly tokens = new Map<string, string>();
-  private readonly sessions = new Map<string, HarnessSession>();
-  private readonly live = new Set<string>();
-  /** 正在生成回答的会话：「断开」只关 SSE，轮次仍占用到结束，防止同一 dsh 会话并发 run */
+  /** dshSessionId → 会话句柄；Map 的插入顺序即 LRU 顺序（最旧在前） */
+  private readonly sessions = new Map<string, SessionEntry>();
+  /** 会话独占锁：生成或删除期间阻止另一独占操作；SSE 断开不会提前释放生成锁 */
   private readonly busy = new Set<string>();
   private saveTimer: NodeJS.Timeout | undefined;
+  private saveQueue: Promise<void> = Promise.resolve();
   private readonly tokenSweeper: NodeJS.Timeout;
+  private readonly sessionSweeper: NodeJS.Timeout;
 
   constructor() {
     // 定期清掉过期/无效 token，减少敏感凭据的内存驻留时间
     this.tokenSweeper = setInterval(() => this.sweepTokens(), 10 * 60_000);
     this.tokenSweeper.unref();
+    // 定期回收长时间没用的会话句柄，避免多用户长跑把内存堆满
+    this.sessionSweeper = setInterval(() => this.sweepSessions(), 60_000);
+    this.sessionSweeper.unref();
   }
 
   /** decodeClaims 对过期或格式损坏的 token 都会抛错，抛错即可安全移除 */
@@ -81,20 +102,29 @@ export class ConversationStore {
     if (this.saveTimer) return;
     this.saveTimer = setTimeout(() => {
       this.saveTimer = undefined;
-      this.save();
+      void this.save();
     }, 300);
   }
 
-  save(): void {
-    try {
-      fs.mkdirSync(path.dirname(config.dataFile), { recursive: true });
-      const payload = JSON.stringify({ conversations: [...this.records.values()] }, null, 2);
-      const tmp = `${config.dataFile}.tmp`;
-      fs.writeFileSync(tmp, payload, "utf8");
-      fs.renameSync(tmp, config.dataFile);
-    } catch (error) {
-      log.error("conversation store save failed", { error: String(error) });
+  /** 快照按调用顺序异步串行落盘；定时保存与关闭保存不能同时写同一个 tmp 文件 */
+  save(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = undefined;
     }
+    const payload = JSON.stringify({ conversations: [...this.records.values()] }, null, 2);
+    const dataFile = config.dataFile;
+    this.saveQueue = this.saveQueue.then(async () => {
+      try {
+        await fsp.mkdir(path.dirname(dataFile), { recursive: true });
+        const tmp = `${dataFile}.tmp`;
+        await fsp.writeFile(tmp, payload, "utf8");
+        await fsp.rename(tmp, dataFile);
+      } catch (error) {
+        log.error("conversation store save failed", { error: String(error) });
+      }
+    });
+    return this.saveQueue;
   }
 
   create(usrId: string, title = "新会话"): ConversationRecord {
@@ -133,13 +163,12 @@ export class ConversationStore {
     this.byDshSessionId.delete(record.dshSessionId);
     this.tokens.delete(record.dshSessionId);
     this.sessions.delete(record.dshSessionId);
-    this.live.delete(record.dshSessionId);
     this.busy.delete(id);
     this.scheduleSave();
     return true;
   }
 
-  /** 同一会话同时只允许一轮生成；占用成功返回 true，已在生成中返回 false */
+  /** 同一会话同时只允许一个生成/删除操作；占用成功返回 true，已占用返回 false */
   tryMarkBusy(conversationId: string): boolean {
     if (this.busy.has(conversationId)) return false;
     this.busy.add(conversationId);
@@ -172,21 +201,83 @@ export class ConversationStore {
     this.scheduleSave();
   }
 
-  isLive(dshSessionId: string): boolean {
-    return this.live.has(dshSessionId);
-  }
-
-  markLive(dshSessionId: string): void {
-    this.live.add(dshSessionId);
-  }
-
+  /** 取会话句柄并刷新 LRU；超过 TTL 的直接释放，交给上层 resumeSession 重建 */
   getSession(dshSessionId: string): HarnessSession | undefined {
-    return this.sessions.get(dshSessionId);
+    const entry = this.sessions.get(dshSessionId);
+    if (!entry) return undefined;
+    if (!entry.busy && Date.now() - entry.lastUsed > config.sessionTtlMs) {
+      this.evictSession(dshSessionId, "ttl");
+      return undefined;
+    }
+    entry.lastUsed = Date.now();
+    // 重新插入把该句柄移到 Map 末尾，保持「最旧在前」
+    this.sessions.delete(dshSessionId);
+    this.sessions.set(dshSessionId, entry);
+    return entry.session;
   }
 
   setSession(dshSessionId: string, session: HarnessSession): void {
-    this.sessions.set(dshSessionId, session);
-    this.live.add(dshSessionId);
+    const existing = this.sessions.get(dshSessionId);
+    if (existing) {
+      existing.session = session;
+      existing.lastUsed = Date.now();
+      this.sessions.delete(dshSessionId);
+      this.sessions.set(dshSessionId, existing);
+    } else {
+      this.sessions.set(dshSessionId, { session, lastUsed: Date.now(), busy: false });
+    }
+    this.evictOverflow();
+  }
+
+  /** 轮次开始/结束时标记；busy 的句柄不会被 TTL 或 LRU 回收 */
+  markSessionBusy(dshSessionId: string, busy: boolean): void {
+    const entry = this.sessions.get(dshSessionId);
+    if (!entry) return;
+    entry.busy = busy;
+    entry.lastUsed = Date.now();
+  }
+
+  sessionStats(): SessionStats {
+    let busy = 0;
+    for (const entry of this.sessions.values()) {
+      if (entry.busy) busy += 1;
+    }
+    return {
+      live: this.sessions.size,
+      busy,
+      max: config.sessionMax,
+      ttlMs: config.sessionTtlMs,
+    };
+  }
+
+  private evictSession(dshSessionId: string, reason: "lru" | "ttl" | "delete"): void {
+    const entry = this.sessions.get(dshSessionId);
+    if (!entry) return;
+    this.sessions.delete(dshSessionId);
+    log.info("session evicted", {
+      sessionId: dshSessionId,
+      reason,
+      idleMs: Date.now() - entry.lastUsed,
+    });
+  }
+
+  private evictOverflow(): void {
+    if (this.sessions.size <= config.sessionMax) return;
+    for (const [sessionId, entry] of this.sessions) {
+      if (this.sessions.size <= config.sessionMax) return;
+      if (entry.busy) continue;
+      this.evictSession(sessionId, "lru");
+    }
+  }
+
+  private sweepSessions(): void {
+    const now = Date.now();
+    for (const [sessionId, entry] of this.sessions) {
+      if (entry.busy) continue;
+      if (now - entry.lastUsed > config.sessionTtlMs) {
+        this.evictSession(sessionId, "ttl");
+      }
+    }
   }
 }
 
