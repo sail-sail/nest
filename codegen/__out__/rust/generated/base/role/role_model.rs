@@ -172,7 +172,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<MenuId>>()
     };
-    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     let menu_ids_lbl = {
       let mut keys: Vec<u32> = menu_ids_lbl.keys()
@@ -213,7 +213,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<PermitId>>()
     };
-    let permit_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("permit_ids_lbl")?;
+    let permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("permit_ids_lbl")?;
     let permit_ids_lbl = permit_ids_lbl.unwrap_or_default().0;
     let permit_ids_lbl = {
       let mut keys: Vec<u32> = permit_ids_lbl.keys()
@@ -272,7 +272,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<FieldPermitId>>()
     };
-    let field_permit_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("field_permit_ids_lbl")?;
+    let field_permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("field_permit_ids_lbl")?;
     let field_permit_ids_lbl = field_permit_ids_lbl.unwrap_or_default().0;
     let field_permit_ids_lbl = {
       let mut keys: Vec<u32> = field_permit_ids_lbl.keys()

@@ -156,7 +156,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<DomainId>>()
     };
-    let domain_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("domain_ids_lbl")?;
+    let domain_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("domain_ids_lbl")?;
     let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
     let domain_ids_lbl = {
       let mut keys: Vec<u32> = domain_ids_lbl.keys()
@@ -197,7 +197,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<MenuId>>()
     };
-    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     let menu_ids_lbl = {
       let mut keys: Vec<u32> = menu_ids_lbl.keys()
