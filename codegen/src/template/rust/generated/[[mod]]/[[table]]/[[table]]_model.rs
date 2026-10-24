@@ -1074,7 +1074,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     };<#
       if (hasModelLabel && !column.modelLabel) {
     #>
-    let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
     let <#=column_name#>_lbl = {
       let mut keys: Vec<u32> = <#=column_name#>_lbl.keys()

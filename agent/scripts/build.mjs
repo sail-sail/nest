@@ -77,5 +77,7 @@ ecosystem = ecosystem.replaceAll("{env}", "prod");
 fs.writeFileSync(path.join(dist, "ecosystem.config.json"), ecosystem, "utf8");
 log("写入 ecosystem.config.json");
 
+copy(".npmrc", ".npmrc");
+
 const files = fs.readdirSync(dist).sort();
 log(`完成：dist/ (${files.length} 项)`);

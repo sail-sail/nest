@@ -145,7 +145,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
         )
         .collect::<Vec<UsrId>>()
     };
-    let usr_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("usr_ids_lbl")?;
+    let usr_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("usr_ids_lbl")?;
     let usr_ids_lbl = usr_ids_lbl.unwrap_or_default().0;
     let usr_ids_lbl = {
       let mut keys: Vec<u32> = usr_ids_lbl.keys()

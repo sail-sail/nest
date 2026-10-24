@@ -13,11 +13,13 @@
     "build-prod": "node scripts/build.mjs",
     "start:prod": "node dist/index.js",
     "typecheck": "tsc --noEmit",
+    "smoke:context": "tsx scripts/smoke-context.ts",
     "dsh:config": "node ./node_modules/@deepseek-ai/dsh/lib/bin.js --profile sdk --patch ./dsh/patch.yml --dump-config"
   },
   "dependencies": {
     "@deepseek-ai/dsh": "0.2.1-rc.2",
     "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-token-meter": "0.2.1-rc.2",
     "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
     "@hono/node-server": "2.1.5",
     "@modelcontextprotocol/sdk": "1.32.1",

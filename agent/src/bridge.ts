@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { randomBytes } from "node:crypto";
+import { AttachmentError, attachments } from "./attachments.ts";
 import { TOOL_NAMES, config, type ToolName } from "./config.ts";
 import { errorMessage, log } from "./logger.ts";
 import { McpToolError, mcpPool } from "./mcp-pool.ts";
@@ -57,6 +58,71 @@ function asRecord(value: unknown): Record<string, unknown> {
 function isRetryable(tool: ToolName): boolean {
   if (config.readonly) return true;
   return tool !== "graphql_execute" && tool !== "oss_upload";
+}
+
+interface ResolvedUpload {
+  args: Record<string, unknown>;
+  /** 成功后要清掉的暂存附件 id */
+  stagedId?: string;
+}
+
+/**
+ * oss_upload 的参数分流：文件字节由宿主从暂存目录读，模型只传 attachmentId。
+ * 内联 base64 只保留给极小内容，超过上限直接拒绝——截断会损坏文件，
+ * 而放行会让几十万 token 的文件内容永久留在模型上下文里。
+ */
+export async function resolveUploadArgs(
+  usrId: string | undefined,
+  args: Record<string, unknown>,
+): Promise<ResolvedUpload> {
+  const attachmentId = typeof args.attachmentId === "string" ? args.attachmentId.trim() : "";
+
+  if (attachmentId) {
+    if (!usrId) throw new AttachmentError("会话未绑定用户", "TOKEN_MISSING", 409);
+    const staged = await attachments.read(usrId, attachmentId);
+    if (!staged) {
+      throw new AttachmentError(
+        "附件不存在或已过期，请让前端重新上传后再试",
+        "ATTACHMENT_NOT_FOUND",
+        404,
+      );
+    }
+    const { attachmentId: _ignored, ...rest } = args;
+    return {
+      args: {
+        ...rest,
+        filename:
+          typeof args.filename === "string" && args.filename.trim()
+            ? args.filename
+            : staged.meta.filename,
+        contentType:
+          typeof args.contentType === "string" && args.contentType.trim()
+            ? args.contentType
+            : staged.meta.contentType,
+        contentBase64: staged.data.toString("base64"),
+      },
+      stagedId: attachmentId,
+    };
+  }
+
+  const inline = typeof args.contentBase64 === "string" ? args.contentBase64 : "";
+  if (!inline.trim()) {
+    throw new AttachmentError(
+      "缺少文件内容：请先把文件上传为附件，再用 attachmentId 调用；不要把文件转成 base64 内联",
+      "BAD_REQUEST",
+      400,
+    );
+  }
+  if (inline.length > config.inlineBase64MaxChars) {
+    const kb = Math.round((config.inlineBase64MaxChars * 3) / 4 / 1024);
+    throw new AttachmentError(
+      `contentBase64 超过 ${config.inlineBase64MaxChars} 字符上限（约 ${kb}KB 文件）。` +
+        "请先 POST 到 /agent/api/attachments 拿到 attachmentId，再用 attachmentId 调用。",
+      "INLINE_BASE64_TOO_LARGE",
+      413,
+    );
+  }
+  return { args };
 }
 
 export async function startBridge(): Promise<BridgeHandle> {
@@ -173,15 +239,29 @@ export async function startBridge(): Promise<BridgeHandle> {
       );
     }
 
+    const usrId = store.usrIdFor(sessionId);
+
     try {
+      let callArgs = args;
+      let stagedId: string | undefined;
+      if (tool === "oss_upload") {
+        const resolved = await resolveUploadArgs(usrId, args);
+        callArgs = resolved.args;
+        stagedId = resolved.stagedId;
+      }
+
       if (tool === "graphql_execute" && config.readonly) {
-        const query = typeof args.query === "string" ? args.query : "";
+        const query = typeof callArgs.query === "string" ? callArgs.query : "";
         assertReadonlyQuery(query);
       }
 
-      const result = await mcpPool.call(token, tool, args, { retryable: isRetryable(tool) });
+      const result = await mcpPool.call(token, tool, callArgs, { retryable: isRetryable(tool) });
+      if (stagedId) await attachments.remove(stagedId);
       return c.json({ ok: true, result });
     } catch (error) {
+      if (error instanceof AttachmentError) {
+        return c.json({ ok: false, error: error.message, code: error.code }, error.status as 400);
+      }
       if (error instanceof ReadonlyViolation) {
         return c.json({ ok: false, error: error.message, code: "READONLY" });
       }

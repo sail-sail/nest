@@ -181,7 +181,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         )
         .collect::<Vec<RoleId>>()
     };
-    let role_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("role_ids_lbl")?;
+    let role_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
     let role_ids_lbl = {
       let mut keys: Vec<u32> = role_ids_lbl.keys()
@@ -222,7 +222,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         )
         .collect::<Vec<DeptId>>()
     };
-    let dept_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
     let dept_ids_lbl = {
       let mut keys: Vec<u32> = dept_ids_lbl.keys()
@@ -263,7 +263,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
         )
         .collect::<Vec<OrgId>>()
     };
-    let org_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("org_ids_lbl")?;
+    let org_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
     let org_ids_lbl = {
       let mut keys: Vec<u32> = org_ids_lbl.keys()

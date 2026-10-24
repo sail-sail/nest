@@ -1,4 +1,5 @@
 import type { HarnessNotification } from "@deepseek-ai/dsh-sdk-client";
+import { redactToolArguments } from "./redact.ts";
 
 export interface SseFrame {
   event: string;
@@ -86,7 +87,8 @@ export function mapNotification(
           step: data.step,
           callId: data.callId,
           name: data.name,
-          arguments: safeParse(String(data.arguments ?? "{}")),
+          // 参数会进前端与转录：base64 / 凭据在出站前就替换掉
+          arguments: redactToolArguments(safeParse(String(data.arguments ?? "{}"))),
         },
       };
     }
