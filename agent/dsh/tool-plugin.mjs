@@ -39,13 +39,99 @@ async function callBridge(exec, tool, args) {
   return payload.result ?? null;
 }
 
-const renderJson = (_args, value) => {
-  let text = JSON.stringify(value, null, 2) ?? "null";
-  if (text.length > 60_000) {
-    text = `${text.slice(0, 60_000)}\n...（结果过大，已截断）`;
+/**
+ * 单次工具输出的 token 预算。宿主通过 AGENT_TOOL_OUTPUT_TOKENS 注入，
+ * 与 src/config.ts 的默认值保持一致；插件单独运行时退回 6,000。
+ */
+const OUTPUT_TOKEN_BUDGET = (() => {
+  const parsed = Number(process.env.AGENT_TOOL_OUTPUT_TOKENS);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 6_000;
+})();
+
+/**
+ * 保守估算 token：CJK/全角字符按 1 字符 1 token，其余按 4 字符 1 token。
+ * 没有 tokenizer，宁可高估——高估只会多裁一点，低估会直接撑爆上下文。
+ */
+export function estimateTokens(text) {
+  let chars = 0;
+  let wide = 0;
+  for (const ch of text) {
+    chars += 1;
+    if (ch.codePointAt(0) >= 0x2e80) wide += 1;
   }
-  return [{ type: "text", text }];
-};
+  return wide + Math.ceil((chars - wide) / 4);
+}
+
+function compactValue(value, limits, stats, depth = 0) {
+  if (value === null || value === undefined) return value;
+  if (typeof value === "string") {
+    if (value.length <= limits.maxString) return value;
+    stats.truncatedStrings += 1;
+    return `${value.slice(0, limits.maxString)}…（已省略 ${value.length - limits.maxString} 字符）`;
+  }
+  if (typeof value !== "object") return value;
+  if (depth >= 8) return "[层级过深已省略]";
+  if (Array.isArray(value)) {
+    const kept = value
+      .slice(0, limits.maxArray)
+      .map((item) => compactValue(item, limits, stats, depth + 1));
+    if (value.length > limits.maxArray) {
+      stats.droppedItems += value.length - limits.maxArray;
+      kept.push(`…（另有 ${value.length - limits.maxArray} 项）`);
+    }
+    return kept;
+  }
+  const out = {};
+  for (const [key, item] of Object.entries(value)) {
+    out[key] = compactValue(item, limits, stats, depth + 1);
+  }
+  return out;
+}
+
+function budgetNotice(stats, budget) {
+  const parts = [];
+  if (stats.droppedItems > 0) parts.push(`省略数组项 ${stats.droppedItems} 个`);
+  if (stats.truncatedStrings > 0) parts.push(`截断长字符串 ${stats.truncatedStrings} 个`);
+  if (parts.length === 0) return "";
+  return `[工具输出超出 ${budget} tokens 预算，已裁剪：${parts.join("，")}。需要完整数据请缩小 pgSize 或只取必要字段]\n`;
+}
+
+/**
+ * 把工具输出裁到 token 预算内：优先按数组/字符串结构化裁剪，
+ * 只有遇到单个巨型字符串等病态输入才退化成硬截断。
+ */
+export function renderWithinBudget(value, budget = OUTPUT_TOKEN_BUDGET) {
+  const full = JSON.stringify(value, null, 2) ?? "null";
+  if (estimateTokens(full) <= budget) return full;
+
+  const attempts = [
+    { maxArray: 50, maxString: 4_000 },
+    { maxArray: 20, maxString: 1_500 },
+    { maxArray: 5, maxString: 400 },
+  ];
+
+  for (const limits of attempts) {
+    const stats = { droppedItems: 0, truncatedStrings: 0 };
+    const compacted = compactValue(value, limits, stats);
+    const body = JSON.stringify(compacted, null, 2) ?? "null";
+    const text = `${budgetNotice(stats, budget)}${body}`;
+    if (estimateTokens(text) <= budget) return text;
+  }
+
+  const notice = `[工具输出超出 ${budget} tokens 预算，已硬截断；请缩小 pgSize、只取必要字段或改用聚合查询]\n`;
+  const suffixOf = (kept) => `\n…（以下省略 ${full.length - kept} 字符）`;
+  // 预留尾部说明的 token，否则加完说明会重新超出预算
+  const room = Math.max(1, budget - estimateTokens(notice) - 20);
+  const tokensPerChar = estimateTokens(full) / Math.max(1, full.length);
+  let keep = Math.max(1, Math.floor(room / tokensPerChar));
+  for (let i = 0; i < 20 && keep > 1; i += 1) {
+    if (estimateTokens(`${notice}${full.slice(0, keep)}${suffixOf(keep)}`) <= budget) break;
+    keep = Math.floor(keep * 0.85);
+  }
+  return `${notice}${full.slice(0, keep)}${suffixOf(keep)}`;
+}
+
+const renderJson = (_args, value) => [{ type: "text", text: renderWithinBudget(value) }];
 
 function tool(name, description, parameters, options = {}) {
   return defineTool({
@@ -103,7 +189,8 @@ export function apply(ctx) {
       "graphql_execute",
       "在进程内直接执行 GraphQL query / mutation（当前默认只读，mutation 会被拒绝）。" +
         "对任何 findAll* 查询必须显式传 page: { pgOffset, pgSize, isResultLimit: true }；" +
-        "缺 page 会被拒绝，pgSize 缺省 20、超过 2000 自动降到 2000。",
+        "缺 page 会被拒绝，pgSize 缺省 20、超过 2000 自动降到 2000。" +
+        "只取回答需要的字段；结果超出 token 预算会被裁剪，需要更多数据时用聚合或分页。",
       {
         query: { type: "string", required: true, description: "GraphQL 查询文本" },
         variables: { type: "object", additionalProperties: true, description: "可选：变量对象" },
@@ -116,11 +203,22 @@ export function apply(ctx) {
   ctx.tools.register(
     tool(
       "oss_upload",
-      "上传附件。contentBase64 为文件内容的 base64；返回附件 id 等信息。",
+      [
+        "把附件上传到业务系统，返回附件 id 等信息。",
+        "文件字节不要内联进参数：内容超过 8,192 字符时必须先由前端 POST 到 /agent/api/attachments 拿到 attachmentId，调用时只传 attachmentId。",
+        "contentBase64 仅用于极小的文本内容；超过上限会被宿主直接拒绝，不要把文件转成 base64 传进来。",
+      ].join("\n"),
       {
         id: { type: "string", description: "可选：指定附件 id" },
-        filename: { type: "string", required: true, description: "文件名" },
-        contentBase64: { type: "string", required: true, description: "文件内容的 base64" },
+        filename: { type: "string", description: "可选：文件名；传 attachmentId 时可省略，默认用附件原名" },
+        attachmentId: {
+          type: "string",
+          description: "宿主暂存附件 id（att_ 开头）。上传文件时必须用它，不要用 contentBase64",
+        },
+        contentBase64: {
+          type: "string",
+          description: "仅限 ≤8,192 字符的极小内容；文件请先上传成附件再传 attachmentId",
+        },
         contentType: { type: "string", description: "可选：MIME 类型" },
         isPublic: { type: "boolean", description: "可选：是否公开" },
         db: { type: "string", description: "可选：目标库" },

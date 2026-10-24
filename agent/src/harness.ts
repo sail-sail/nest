@@ -9,6 +9,17 @@ import { store, type ConversationRecord } from "./store.ts";
 let harness: DeepSeekHarness | undefined;
 let bridge: BridgeHandle | undefined;
 
+/**
+ * DEEPSEEK_BASE_URL 仅供宿主的 /agent/llm 代理使用。
+ * dsh 子进程会读取同名变量并改变官方 provider 行为，导致会话返回空响应。
+ * 这里显式剔除，避免宿主配置污染 dsh。
+ */
+function childEnv(): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  delete env.DEEPSEEK_BASE_URL;
+  return env;
+}
+
 export function initHarness(bridgeHandle: BridgeHandle): void {
   bridge = bridgeHandle;
 }
@@ -33,11 +44,12 @@ function getHarness(): DeepSeekHarness {
       maxTokens: 16_384,
       initializeTimeoutMs: 120_000,
       env: {
-        ...process.env,
+        ...childEnv(),
         DEEPSEEK_API_KEY: config.deepseekKey,
         CUSTOM_LLM_API_KEY: config.customLlmKey,
         AGENT_BRIDGE_URL: bridge.url,
         AGENT_BRIDGE_SECRET: bridge.secret,
+        AGENT_TOOL_OUTPUT_TOKENS: String(config.toolOutputTokens),
       },
     });
   }
@@ -79,7 +91,13 @@ export async function runTurn(
   onNotification: (notification: HarnessNotification) => void,
 ): Promise<RunResult> {
   const session = await getSession(record);
-  return session.run(text, { onNotification });
+  // 占用期间不允许被 TTL / LRU 释放，避免中途换句柄
+  store.markSessionBusy(record.dshSessionId, true);
+  try {
+    return await session.run(text, { onNotification });
+  } finally {
+    store.markSessionBusy(record.dshSessionId, false);
+  }
 }
 
 export async function closeHarness(): Promise<void> {

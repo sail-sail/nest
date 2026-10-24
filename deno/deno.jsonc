@@ -34,7 +34,7 @@
     "./": "./",
     "/": "./",
     "@hexagon/croner": "jsr:@hexagon/croner@10.0.1",
-    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.32.1",
+    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.32.2",
     "zod": "npm:zod@4.6.7",
     "@oak/oak": "jsr:@oak/oak@17.2.0",
     "@std/assert": "jsr:@std/assert@1.0.19",

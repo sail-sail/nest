@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { config } from "./config.ts";
@@ -68,6 +69,7 @@ class MemoryStore {
   private readonly data = new Map<string, MemoryItem[]>();
   private loaded = false;
   private saveTimer: NodeJS.Timeout | undefined;
+  private saveQueue: Promise<void> = Promise.resolve();
 
   load(): void {
     if (this.loaded) return;
@@ -94,20 +96,29 @@ class MemoryStore {
     if (this.saveTimer) return;
     this.saveTimer = setTimeout(() => {
       this.saveTimer = undefined;
-      this.flush();
+      void this.flush();
     }, 300);
   }
 
-  private flush(): void {
-    try {
-      fs.mkdirSync(path.dirname(config.memoryFile), { recursive: true });
-      const payload = { users: Object.fromEntries(this.data) };
-      const tmp = `${config.memoryFile}.tmp`;
-      fs.writeFileSync(tmp, JSON.stringify(payload, null, 2), "utf8");
-      fs.renameSync(tmp, config.memoryFile);
-    } catch (error) {
-      log.warn("memory save failed", { error: String(error) });
+  /** 定时保存与进程关闭共用一条异步写队列，避免并发写 tmp 文件 */
+  flush(): Promise<void> {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = undefined;
     }
+    const memoryFile = config.memoryFile;
+    const payload = JSON.stringify({ users: Object.fromEntries(this.data) }, null, 2);
+    this.saveQueue = this.saveQueue.then(async () => {
+      try {
+        await fsp.mkdir(path.dirname(memoryFile), { recursive: true });
+        const tmp = `${memoryFile}.tmp`;
+        await fsp.writeFile(tmp, payload, "utf8");
+        await fsp.rename(tmp, memoryFile);
+      } catch (error) {
+        log.warn("memory save failed", { error: String(error) });
+      }
+    });
+    return this.saveQueue;
   }
 
   private itemsOf(usrId: string): MemoryItem[] {
