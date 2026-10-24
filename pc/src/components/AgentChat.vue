@@ -81,7 +81,17 @@
         class="msg msg--user"
       >
         <div class="msg__bubble">
-          {{ item.text }}
+          <div v-if="item.display">{{ item.display }}</div>
+          <div
+            v-if="item.files.length"
+            class="msg__files"
+          >
+            <span
+              v-for="file in item.files"
+              :key="file.id"
+              class="msg__file"
+            >{{ file.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -167,6 +177,29 @@
   </div>
 
   <footer class="agent-chat__foot">
+    <div
+      v-if="attachments.length"
+      class="agent-chat__files"
+    >
+      <span
+        v-for="file in attachments"
+        :key="file.key"
+        class="file-chip"
+        :class="{ 'is-loading': file.uploading, 'is-error': !!file.error }"
+        :title="file.error || file.filename"
+      >
+        <span class="file-chip__name">{{ file.filename }}</span>
+        <span class="file-chip__size">
+          {{ file.uploading ? "上传中…" : formatSize(file.size) }}
+        </span>
+        <button
+          class="file-chip__remove"
+          type="button"
+          :disabled="running"
+          @click="removeAttachment(file)"
+        >×</button>
+      </span>
+    </div>
     <el-input
       ref="inputRef"
       v-model="input"
@@ -177,7 +210,27 @@
       :disabled="running"
       @keydown.enter="onEnter"
     />
+    <input
+      ref="fileInputRef"
+      class="agent-chat__file-input"
+      type="file"
+      multiple
+      @change="onPickFiles"
+    />
     <div class="agent-chat__send">
+      <el-button
+        size="small"
+        text
+        :disabled="running || uploading"
+        @click="pickFile"
+      >
+        <template #icon>
+          <ElIconUpload />
+        </template>
+        <span>
+          上传附件
+        </span>
+      </el-button>
       <span class="agent-chat__tip">Enter 发送，Shift + Enter 换行</span>
       <el-button
         v-if="running"
@@ -190,7 +243,7 @@
         v-else
         type="primary"
         size="small"
-        :disabled="!input.trim()"
+        :disabled="!canSend"
         @click="send"
       >
         发送
@@ -220,11 +273,31 @@ interface ConversationItem {
   updatedAt: number;
 }
 
+interface MessageFile {
+  id: string;
+  name: string;
+}
+
 interface UserItem {
   kind: "user";
   id: string;
   time: number;
+  /** 原始文本（含附件 hint），409 回滚时用 */
   text: string;
+  /** 展示文本（已剥离附件 hint） */
+  display: string;
+  files: MessageFile[];
+}
+
+interface PendingAttachment {
+  key: string;
+  id: string;
+  /** 服务端返回的引用片段：[附件 att_xxx 文件名] */
+  hint: string;
+  filename: string;
+  size: number;
+  uploading: boolean;
+  error?: string;
 }
 
 interface AssistantItem {
@@ -263,8 +336,24 @@ const inited = ref(false);
 const statusText = ref("就绪");
 const scrollEl = ref<HTMLElement>();
 const inputRef = ref<HTMLInputElement>();
+const fileInputRef = ref<HTMLInputElement>();
+const attachments = ref<PendingAttachment[]>([]);
+const uploading = ref(false);
 const stick = ref(true);
 const abortController = shallowRef<AbortController>();
+
+/** 与服务端 hint 格式保持一致：[附件 att_xxx 文件名] */
+const ATTACHMENT_HINT = /\[附件 (att_[A-Za-z0-9]+) ([^\]\n]+)\]/g;
+/** 客户端软上限，真正的限制在服务端（AGENT_ATTACHMENT_MAX_BYTES，默认 10MB） */
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+let attachmentSeq = 0;
+
+const canSend = computed(
+  () =>
+    !running.value
+    && !uploading.value
+    && (!!input.value.trim() || attachments.value.some((file) => !!file.id && !file.error)),
+);
 
 function chatSelectMethod() {
   return conversations;
@@ -287,6 +376,91 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(text || `请求失败（${response.status}）`);
   }
   return (await response.json()) as T;
+}
+
+async function errorTextOf(response: Response): Promise<string> {
+  const raw = await response.text().catch(() => "");
+  try {
+    const parsed = JSON.parse(raw) as { error?: string };
+    return parsed.error || raw || `请求失败（${response.status}）`;
+  } catch {
+    return raw || `请求失败（${response.status}）`;
+  }
+}
+
+function formatSize(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+  if (bytes >= 1024) return `${Math.round(bytes / 1024)}KB`;
+  return `${bytes}B`;
+}
+
+function pickFile() {
+  if (running.value || uploading.value) return;
+  fileInputRef.value?.click();
+}
+
+function removeAttachment(file: PendingAttachment) {
+  attachments.value = attachments.value.filter((item) => item.key !== file.key);
+}
+
+/** 选中的文件直传宿主：字节不进模型，消息里只保留服务端给的 hint */
+async function onPickFiles(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const files = Array.from(target.files ?? []);
+  // 清空后同一个文件才能再次触发 change
+  target.value = "";
+  if (!files.length) return;
+
+  uploading.value = true;
+  try {
+    for (const file of files) {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        ElMessage.warning(`${file.name} 超过 ${formatSize(MAX_UPLOAD_BYTES)}，未上传`);
+        continue;
+      }
+
+      attachmentSeq += 1;
+      const pending: PendingAttachment = {
+        key: `file-${Date.now()}-${attachmentSeq}`,
+        id: "",
+        hint: "",
+        filename: file.name,
+        size: file.size,
+        uploading: true,
+      };
+      attachments.value.push(pending);
+
+      try {
+        const response = await fetch(
+          `/agent/api/attachments?name=${encodeURIComponent(file.name)}`,
+          {
+            method: "POST",
+            headers: {
+              authorization: `Bearer ${usrStore.authorization}`,
+              "content-type": file.type || "application/octet-stream",
+            },
+            body: file,
+          },
+        );
+        if (!response.ok) throw new Error(await errorTextOf(response));
+        const data = (await response.json()) as {
+          attachment: { id: string; filename: string; size: number };
+          hint: string;
+        };
+        pending.id = data.attachment.id;
+        pending.hint = data.hint;
+        pending.filename = data.attachment.filename;
+        pending.size = data.attachment.size;
+        pending.uploading = false;
+      } catch (error) {
+        pending.uploading = false;
+        pending.error = (error as Error).message || "上传失败";
+        ElMessage.error(`${file.name}：${pending.error}`);
+      }
+    }
+  } finally {
+    uploading.value = false;
+  }
 }
 
 function pretty(value: unknown): string {
@@ -340,6 +514,19 @@ watch(
   },
 );
 
+/** 把消息里的 [附件 att_xxx 文件名] 拆出来：气泡展示正文 + 文件标签，不露原始标记 */
+function parseUserText(raw: string): { display: string; files: MessageFile[] } {
+  const files: MessageFile[] = [];
+  const display = raw
+    .replace(ATTACHMENT_HINT, (_match: string, id: string, name: string) => {
+      files.push({ id, name });
+      return "";
+    })
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return { display, files };
+}
+
 function toItems(messages: Array<Record<string, unknown>>): ChatItem[] {
   const result: ChatItem[] = [];
   for (const message of messages) {
@@ -347,7 +534,9 @@ function toItems(messages: Array<Record<string, unknown>>): ChatItem[] {
     const id = String(message.id ?? "");
     const time = Number(message.time ?? Date.now());
     if (role === "user") {
-      result.push({ kind: "user", id, time, text: String(message.text ?? "") });
+      const text = String(message.text ?? "");
+      const { display, files } = parseUserText(text);
+      result.push({ kind: "user", id, time, text, display, files });
     } else if (role === "assistant") {
       const text = String(message.text ?? "");
       const reasoning = String(message.reasoning ?? "");
@@ -389,6 +578,7 @@ async function loadMessages(conversationId: string) {
 
 async function selectConversation(conversationId: string) {
   activeId.value = conversationId;
+  attachments.value = [];
   await loadMessages(conversationId);
 }
 
@@ -407,6 +597,7 @@ async function createConversation() {
   activeId.value = data.conversation.id;
   items.value = [];
   input.value = "";
+  attachments.value = [];
 }
 
 async function deleteCurrentConversation() {
@@ -567,19 +758,30 @@ async function readSse(response: Response, onFrame: (event: string, data: Record
 
 async function send() {
   const text = input.value.trim();
-  if (!text || running.value) return;
+  const ready = attachments.value.filter(
+    (file) => !!file.id && !!file.hint && !file.uploading && !file.error,
+  );
+  if ((!text && ready.length === 0) || running.value || uploading.value) return;
   if (!activeId.value) await createConversation();
   const conversationId = activeId.value;
   if (!conversationId) return;
 
+  // 附件 hint 由服务端生成，原样拼在用户消息前，模型据此引用 attachmentId
+  const markers = ready.map((file) => file.hint).join("\n");
+  const payload = markers ? (text ? `${markers}\n\n${text}` : markers) : text;
+  const parsed = parseUserText(payload);
+
   input.value = "";
+  attachments.value = [];
   stick.value = true;
   const userItemId = `u-${Date.now()}`;
   items.value.push({
     kind: "user",
     id: userItemId,
     time: Date.now(),
-    text,
+    text: payload,
+    display: parsed.display,
+    files: parsed.files,
   });
   running.value = true;
   statusText.value = "正在思考…";
@@ -590,7 +792,7 @@ async function send() {
     const response = await fetch(`/agent/api/conversations/${conversationId}/messages`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text: payload }),
       signal: controller.signal,
     });
     if (!response.ok) {
@@ -602,9 +804,10 @@ async function send() {
         // 非 JSON 错误体原样展示
       }
       if (response.status === 409) {
-        // 本轮未被服务端接受（上一轮仍在生成）：回滚乐观消息并恢复输入
+        // 本轮未被服务端接受（上一轮仍在生成）：回滚乐观消息并恢复输入与附件
         items.value = items.value.filter((item) => item.id !== userItemId);
         input.value = text;
+        attachments.value = ready;
       }
       throw new Error(message || `请求失败（${response.status}）`);
     }
@@ -823,6 +1026,21 @@ onUnmounted(() => {
   word-break: break-word;
 }
 
+.msg__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.msg__file {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 18%);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .msg--assistant {
   align-items: flex-start;
 }
@@ -983,6 +1201,67 @@ onUnmounted(() => {
   margin-right: auto;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
+}
+
+.agent-chat__file-input {
+  display: none;
+}
+
+.agent-chat__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 3px 6px 3px 8px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  background: var(--el-fill-color-lighter);
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+}
+
+.file-chip.is-loading {
+  opacity: 0.6;
+}
+
+.file-chip.is-error {
+  border-color: var(--el-color-danger-light-5);
+  color: var(--el-color-danger);
+}
+
+.file-chip__name {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-chip__size {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+
+.file-chip__remove {
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.file-chip__remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 @keyframes agent-pulse {

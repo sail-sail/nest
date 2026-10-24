@@ -109,7 +109,7 @@ token 轮换要重启 runtime；会话历史分散在各 runtime 的 `dshHome`�
 
 ## 四、工具清单（以 Rust 为准）
 
-Rust 的 MCP 实际暴露 7 个工具，不是 5~6 个：
+Rust 的 MCP 实际暴露 7 个工具：
 | 工具 | 用途 | 建议 |
 |---|---|---|
 | `session_me` | 当前登录态 | 保留，可用于启动自检 |
@@ -133,6 +133,38 @@ Rust 侧字段变更时必须同步修改，否则模型会传错参数。
 | `memory_search` | 检索长期记忆 |
 | `memory_list` | 列出长期记忆 |
 | `memory_forget` | 删除/清空长期记忆 |
+
+### 附件上传：base64 不进上下文
+
+`oss_upload` 不再要求模型内联文件内容，文件字节走宿主暂存：
+
+```
+浏览器 POST /agent/api/attachments?name=report.pdf   （Bearer + 同源，body 为文件字节）
+  → { attachmentId: "att_...", filename, size, contentType, expiresAt }
+  → 用户消息里带 [附件 att_xxx report.pdf]
+  → 模型调用 oss_upload({ attachmentId, filename })
+  → 宿主读盘、转 base64、调 Rust MCP；成功后删除暂存文件
+```
+
+- 暂存目录 `.dsh/attachments/`，默认 TTL 30 分钟、单文件 10MB、每用户 5 个，均可用 `AGENT_ATTACHMENT_*` 调整。
+- `contentBase64` 仍保留，但上限 `AGENT_INLINE_BASE64_MAX`（默认 8,192 字符）；超限直接 413，
+  不截断（截断会损坏文件），并在错误信息里告诉模型改走附件。
+- 转录与 SSE 帧在出站前统一脱敏：`contentBase64`、`authorization`/`token`/`password` 等键替换为
+  `[base64 已省略，原始 N 字符]`；普通超长字符串截到 2,000 字符。历史转录回读时同样过一遍
+  （`src/redact.ts`），所以升级前写入的 base64 也不会再回放到前端。
+- 冒烟：`pnpm smoke:context`。
+
+### 工具输出预算
+
+工具结果不再按固定字符数截断，而是按 token 预算裁剪（`dsh/tool-plugin.mjs` 的 `renderWithinBudget`）：
+
+- 预算由 `AGENT_TOOL_OUTPUT_TOKENS` 控制，默认 6,000，宿主经 env 传给 dsh 子进程。
+- 没有 tokenizer，按「CJK 1 字符 ≈ 1 token、其余 4 字符 ≈ 1 token」保守估算，宁可多裁。
+- 裁剪优先结构化：先缩数组（50 → 20 → 5 项）、再缩长字符串，并在结果前加一行
+  `[工具输出超出 N tokens 预算，已裁剪：…]`；只有单个巨型字符串才退化成硬截断。
+- `dsh/patch.yml` 把 `tool-result-pruner` 的 `thresholdChars` 抬到 24,000：dsh-base 默认 8,192
+  会把上面已裁过的结果再切一次；现在它只兜住不走 `renderJson` 的外接 MCP 结果。
+  压缩触发前 pruner 不运行，日常单次结果由工具层预算负责。
 
 ## 五、安全边界
 
@@ -169,7 +201,7 @@ agent/
   workspace/           dsh 的工作目录（沙箱根，不放业务代码）
   mcp.config.example.json  外接 MCP 模板
   mcp.config.json          本地外接 MCP 配置（git 忽略）
-  .dsh/                dshHome：会话日志、配置、转录、生成的 MCP overlay（git 忽略）
+  .dsh/                dshHome：会话日志、配置、转录、用量账目、生成的 MCP overlay（git 忽略）
 ```
 
 ## 七、接口草案
@@ -179,7 +211,12 @@ agent/
 - `POST /agent/api/conversations/:id/messages` → SSE 流
   - 请求：`{ "text": "..." }`，头 `Authorization: Bearer <jwt>`
   - 事件：`text`（助手增量/整段）、`tool_call`、`tool_result`、`done`、`error`
-- `GET  /agent/api/health` → `{ ok, dsh: "up" | "down" }`
+  - 同一会话生成中再次发送会返回 `409` 和 `code: "CONVERSATION_BUSY"`
+- `DELETE /agent/api/conversations/:id` → 删除会话及转录
+  - 生成或删除进行中会返回 `409` 和 `code: "CONVERSATION_BUSY"`
+- `POST /agent/api/attachments?name=<文件名>` → 附件暂存，返回 `{ attachment, hint }`
+- `GET  /agent/api/usage?days=7` → 当前用户按天聚合的用量
+- `GET  /agent/api/health` → `{ ok, provider, model, readonly, sessions }`
 
 SSE 用 POST + `fetch` 读流，不用 `EventSource`；响应头 `X-Accel-Buffering: no` 防止 Nginx 缓冲。
 
@@ -276,7 +313,8 @@ PageAgent 是「in-page GUI agent」：一段跑在网页里的 JS，读文本�
 **不推荐**用它做无人值守的服务端自动化；那种场景用 Playwright/Puppeteer 更合适。
 
 结论：如果目标是「让助手操作我们自己的管理后台」，走 A；如果是「操作任意外部网站」，走 B，
-但要接受每用户本地安装扩展/MCP。当前只加了 B 的示例配置（disabled），A 的 WS 桥还没实现。
+但要接受每用户本地安装扩展/MCP。当前 A 已实现，使用 SSE 下发任务、POST 回传结果（不是 WebSocket）；
+B 仅保留 disabled 的示例配置，适用于本地开发、Electron/Tauri 桌面端等场景。
 
 ## 十、图表（ECharts）
 
@@ -361,12 +399,15 @@ dsh 工具 page_operate(instruction)
 ### 配置
 
 ```dotenv
+AGENT_HEARTBEAT=false        # true 启用 SSE / page-agent 的 ping 心跳，默认关闭
 AGENT_PAGE_OPERATE=true      # false 时两个工具直接拒绝
 AGENT_PAGE_TIMEOUT_MS=180000 # 单次任务宿主等待上限
 AGENT_PAGE_MAX_STEPS=20      # 默认步数
 AGENT_LLM_PROXY=true         # 关闭后 /agent/llm 返回 404
 DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
 ```
+
+- `DEEPSEEK_BASE_URL` 只用于 `/agent/llm` 代理；服务端会自动隔离，不透传给 dsh 子进程。
 
 前端（`pc`）可选：
 
@@ -466,7 +507,41 @@ AGENT_MEMORY_DIGEST_LIMIT=10   # 首轮注入条数
 - 记忆是“用户说了什么”，不自动从数据库事实里学习；需要沉淀业务知识时用技能或 AGENTS.md。
 - 首轮注入的是最近 10 条，不是最相关的 10 条；记忆多了以后需要改成按当前问题检索。
 
-## 十三、模型配置（官方 DeepSeek / 自定义网关）
+## 十三、会话生命周期与用量记账
+
+### 会话句柄（LRU + TTL）
+
+`store.sessions` 从“永不释放的强引用”改成带容量与空闲超时的句柄池（`src/store.ts`）：
+
+| 配置 | 默认 | 作用 |
+| --- | --- | --- |
+| `AGENT_SESSION_TTL_MS` | 30 分钟 | 空闲超过该时长释放句柄，下一轮由 `resumeSession` 重建 |
+| `AGENT_SESSION_MAX` | 32 | 同时驻留的句柄上限，超出按 LRU 淘汰 |
+
+- Map 的插入顺序即 LRU 顺序；`getSession` 命中后重新插入到末尾。
+- `markSessionBusy` 在 `runTurn` 前后置位：正在生成的句柄不会被 TTL 或 LRU 回收；
+  必要时宁可先淘汰刚建的新句柄，也不打断进行中的轮次。
+- 释放的只是内存引用，不删除 dsh 会话；`resumeSession` 从持久日志恢复上下文。
+- `GET /agent/api/health` 返回 `sessions: { live, busy, max, ttlMs }`，方便观察水位。
+
+### 用量记账
+
+每轮结束写一条账（`src/usage.ts`），按用户、按本地日期聚合：
+
+- token 取 dsh 的 provider 精确用量（`assistant/message` 的 `usage`），由
+  `@deepseek-ai/dsh-token-meter/client` 的 `deriveTurnTokenUsage` 折叠成整轮，
+  自动处理重试与多次尝试；取不到时 `tokens: null`，只记时长与工具次数，
+  `unmeteredTurns` 单独计数，不用启发式估算冒充账单。
+- 记录内容：`usrId / conversationId / sessionId / provider / model / ms / ok / aborted /
+  toolCalls / tokens`，不含任何消息正文。
+- 落盘 `.dsh/usage/YYYY-MM-DD.jsonl`，一天一个文件，默认保留 30 天
+  （`AGENT_USAGE_RETENTION_DAYS`）；启动时回填内存聚合，并清理过期文件。
+- `GET /agent/api/usage?days=7` 返回当前用户最近 N 天的聚合：轮次、成功/失败/中断、
+  input/output/total token、缓存读写、工具调用数、总耗时。
+
+注意 token-meter 的读数是参考用量，与提供方账单可能有偏差；需要计费级精度时以账单为准。
+
+## 十四、模型配置（官方 DeepSeek / 自定义网关）
 
 ### 优先级
 
@@ -532,7 +607,7 @@ CUSTOM_LLM_CONTEXT_WINDOW=131072
 - `GET /agent/api/health` 返回当前 `provider` 与 `model`，可以用于部署自检。
 - 报 `MISSING_CREDENTIAL`：`CUSTOM_LLM_API_KEY` 没传进 dsh 进程，检查 `.env` 是否被加载。
 
-## 十四、构建与部署
+## 十五、构建与部署
 
 ### 本地构建
 
@@ -588,6 +663,8 @@ APP_GRAPHQL_URL=http://127.0.0.1:4001/graphql
 
 - `AGENT_HOME` 要作为**系统环境变量**传入（systemd 的 `Environment=`），放在 `.env` 里无效：
   它决定 `.env` 从哪读。
+- 布尔环境变量支持 `true/false`、`1/0`、`yes/no`、`on/off`（不区分大小写）；数值必须是整数。
+  非法布尔值或数值会让服务启动失败，不再静默回退到默认值。
 - `.dsh/`（会话、转录、记忆）和 `workspace/` 必须可写。
 - 需要外接 MCP 时，`cp mcp.config.example.json mcp.config.json` 再改。
 
@@ -642,7 +719,7 @@ systemctl start nest-agent
   `process.cwd()` 的上一级解析，`skills/`、`workspace/` 必须跟代码在一起。
 - 构建产物已实测：用 `node dist/index.js` 起服务，真实模型对话 + `memory_list` 工具调用正常。
 
-## 十五、里程碑
+## 十六、里程碑
 
 1. 目录 + workspace + 依赖安装，dsh `--dump-config` 通过。
 2. 单 runtime + 内部桥，`session_me` 工具打通（不带模型，直接调桥）。

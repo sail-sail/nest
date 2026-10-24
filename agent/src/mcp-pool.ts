@@ -56,6 +56,8 @@ function canonical(result: McpCallResult): unknown {
  */
 export class McpPool {
   private readonly entries = new Map<string, PoolEntry>();
+  /** 相同 token 的首次并发调用共享一次连接创建，避免覆盖后泄漏未纳管的连接 */
+  private readonly creations = new Map<string, Promise<PoolEntry>>();
   private readonly sweeper: NodeJS.Timeout;
 
   constructor(private readonly url: string) {
@@ -81,9 +83,23 @@ export class McpPool {
       existing.lastUsed = Date.now();
       return { key, entry: existing };
     }
-    const entry = await this.create(token);
-    this.entries.set(key, entry);
-    return { key, entry };
+
+    const pending = this.creations.get(key);
+    if (pending) {
+      const entry = await pending;
+      entry.lastUsed = Date.now();
+      return { key, entry };
+    }
+
+    const creating = this.create(token);
+    this.creations.set(key, creating);
+    try {
+      const entry = await creating;
+      this.entries.set(key, entry);
+      return { key, entry };
+    } finally {
+      if (this.creations.get(key) === creating) this.creations.delete(key);
+    }
   }
 
   /**
@@ -145,6 +161,8 @@ export class McpPool {
 
   async closeAll(): Promise<void> {
     clearInterval(this.sweeper);
+    // 关闭前等待已在创建的连接登记进池，避免关闭完成后又遗留新连接
+    await Promise.allSettled([...this.creations.values()]);
     await Promise.all([...this.entries.keys()].map((key) => this.dispose(key)));
   }
 }

@@ -28,6 +28,17 @@
     mode: read-only
     workspaceRoot: !!js process.cwd()
 
+# 工具结果修剪：压缩触发后把超大工具结果压进预算。
+# dsh-base 默认阈值 8,192 字符，会和 tool-plugin 的 token 预算重复裁剪；
+# 这里抬到 24,000（≈6,000 tokens 预算下最坏情况的 ASCII 字符数），
+# 让已经裁剪过的结果不再被二次切分，同时兜住不走 renderJson 的外接 MCP 结果。
+# 约束：headChars + 标记 + tailChars <= thresholdChars。
+- id: tool-result-pruner
+  config:
+    thresholdChars: 24000
+    headChars: 16000
+    tailChars: 6000
+
 # 技能目录：只使用 agent/skills，避免继承机器上的用户级/内置技能，保证不同环境一致
 - id: skill-filesystem
   config:

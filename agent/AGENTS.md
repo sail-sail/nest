@@ -21,3 +21,6 @@
 17. 长期记忆按 `usrId` 隔离，走 `memory_*` 工具和 `agent/src/memory.ts`；不要在 dsh 侧共享一个记忆库（多用户会串号），也不要保存凭据/手机号/身份证等敏感信息
 18. 记忆首轮注入只拼进模型输入，不要写进转录或前端展示；改注入逻辑时保持这个边界
 19. 模型选择优先级固定为 `DEEPSEEK_API_KEY` → `CUSTOM_LLM_*` → 启动报错；自定义模型走 `llm-pi-ai` 的 hand-declared gateway（`openai-completions`），不要写死到 harness 的 `provider` 里
+20. 文件字节不进模型上下文：`oss_upload` 优先传 `attachmentId`（宿主暂存 `.dsh/attachments`，见 `agent/src/attachments.ts`），内联 `contentBase64` 上限 8,192 字符且超限报错不截断；转录与 SSE 的 `tool_call.args` 必须过 `agent/src/redact.ts`，新增工具参数不要绕过它
+21. 工具输出按 token 预算裁剪（`renderJson` → `renderWithinBudget`，默认 6,000，`AGENT_TOOL_OUTPUT_TOKENS`）；`dsh/patch.yml` 的 `tool-result-pruner.thresholdChars` 必须大于该预算对应的最坏字符数，否则会二次裁剪
+22. 会话句柄按 LRU/TTL 回收（`src/store.ts`，`AGENT_SESSION_TTL_MS` / `AGENT_SESSION_MAX`）：回收只是丢内存引用，靠 `resumeSession` 重建；`runTurn` 必须用 `markSessionBusy` 包住，避免轮次中途被淘汰。用量按轮记账（`src/usage.ts` → `.dsh/usage/YYYY-MM-DD.jsonl`），拿不到 provider 精确用量时记 `tokens: null`，不要用估算值冒充
