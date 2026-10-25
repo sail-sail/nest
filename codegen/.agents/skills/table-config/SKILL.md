@@ -460,6 +460,9 @@ opts: {
   - `Ignore`: 静默跳过
   - `Update`: 自动转为更新
   - `Throw`: 抛出错误
+- 该规则同时适用于**同一批次内**的重复数据（`_creates` 在内存中用 `get_unique_keys_<table>` 判重）：
+  `Throw` 整批报错、`Ignore` 跳过该条、`Update` 以批次中最后一条为准（插入完成后再按 id 更新）
+- 唯一约束仅为应用层校验，DDL 不含 UNIQUE 索引；因此批内重复若未在内存判重就会真的插进去
 
 ## noAdd + noEdit 占位 mutation
 

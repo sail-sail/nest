@@ -122,6 +122,14 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 } from "#/types.ts";<#
 }
 #><#
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
+#>
+
+import {
+  importModelsByChunk,
+} from "@/utils/excel_util.ts";<#
+}
+#><#
 if (hasBpm) {
 #>
 
@@ -2616,45 +2624,30 @@ export async function importModels<#=Table_Up#>(
   opt.showErrMsg = false;
   opt.notLoading = true;
   
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await creates<#=Table_Up#>(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;<#
-      if (isUseI18n) {
-      #>
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));<#
-      } else {
-      #>
-      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);<#
-      }
-      #>
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
+  // 后端 creates 为单事务: 一批中任意一条失败则整批回滚, 无法直接得知出错的行;
+  // importModelsByChunk 在失败时二分拆分重试, 以定位到具体行并给出准确的成败条数
+  return importModelsByChunk(
+    inputs,
+    (items) => creates<#=Table_Up#>(
+      items,
+      UniqueType.Update,
+      opt,
+    ),
+    percentage,
+    isCancel,<#
+  if (isUseI18n) {
+  #>
+    async (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? await nsAsync("第 {0} 行导入失败: {1}", rowStart, err)
+      : await nsAsync("第 {0} 至 {1} 行导入失败(整批回滚): {2}", rowStart, rowEnd, err),<#
+  } else {
+  #>
+    (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? `第 ${ rowStart } 行导入失败: ${ err }`
+      : `第 ${ rowStart } 至 ${ rowEnd } 行导入失败(整批回滚): ${ err }`,<#
   }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  #>
+  );
 }<#
 }
 #><#

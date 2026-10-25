@@ -812,7 +812,8 @@ export async function checkByUniqueMessageReceiver(
       return id;
     }
     if (uniqueType === UniqueType.Ignore) {
-      return;
+      // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+      return oldModel.id;
     }
   }
   return;
@@ -1468,6 +1469,8 @@ async function _creates(
       }
     }
     
+    const new_id = shortUuidV4<MessageReceiverId>();
+    
     const oldModels = await findByUniqueMessageReceiver(input, options);
     if (oldModels.length > 0) {
       let id: MessageReceiverId | undefined = undefined;
@@ -1491,9 +1494,8 @@ async function _creates(
       inputs2.push(input);
     }
     
-    const id = shortUuidV4<MessageReceiverId>();
-    input.id = id;
-    ids2.push(id);
+    input.id = new_id;
+    ids2.push(new_id);
   }
   
   if (inputs2.length === 0) {

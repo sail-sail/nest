@@ -940,10 +940,47 @@ export async function checkByUniqueDept(
       return id;
     }
     if (uniqueType === UniqueType.Ignore) {
-      return;
+      // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+      return oldModel.id;
     }
   }
   return;
+}
+
+// MARK: getUniqueKeysDept
+/** 计算唯一键, 用于同一批次内的数据去重 */
+export function getUniqueKeysDept(
+  input: Readonly<DeptInput>,
+  is_silent_mode: boolean,
+  auth?: {
+    tenant_id?: string;
+    usr_id?: string;
+  },
+): string[] {
+  
+  const keys: string[] = [ ];
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.parent_id != null) {
+      parts.push(`parent_id=${ input.parent_id }`);
+    }
+    
+    if (input.lbl != null) {
+      parts.push(`lbl=${ input.lbl }`);
+    }
+    
+    if (parts.length === 3) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  
+  return keys;
 }
 
 // MARK: findOneDept
@@ -1590,6 +1627,17 @@ async function _creates(
   
   const ids2: DeptId[] = [ ];
   const inputs2: DeptInput[] = [ ];
+  // 同批次唯一键 -> id, 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+  const batch_map = new Map<string, DeptId>();
+  // Update 模式下, 同批次内的重复数据需在插入之后更新
+  const pending_updates: [ DeptId, DeptInput ][] = [ ];
+  // 批内去重所需的有效值, 只解析一次, 避免逐条查询
+  const batch_auth: {
+    tenant_id?: string;
+    usr_id?: string;
+  } = {
+    tenant_id: await getTenant_id(await get_usr_id()),
+  };
   
   for (const input of inputs) {
   
@@ -1613,6 +1661,42 @@ async function _creates(
       }
     }
     
+    const new_id = shortUuidV4<DeptId>();
+    const unique_keys = getUniqueKeysDept(
+      input,
+      is_silent_mode,
+      batch_auth,
+    );
+    
+    // 同批次去重: 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+    let old_id: DeptId | undefined = undefined;
+    for (const key of unique_keys) {
+      const exists_id = batch_map.get(key);
+      if (exists_id) {
+        old_id = exists_id;
+        break;
+      }
+    }
+    if (old_id) {
+      const unique_type = options?.uniqueType ?? UniqueType.Throw;
+      if (unique_type === UniqueType.Throw) {
+        throw new UniqueException("部门 重复");
+      }
+      if (unique_type === UniqueType.Ignore) {
+        ids2.push(old_id);
+        continue;
+      }
+      if (unique_type === UniqueType.Update) {
+        pending_updates.push([ old_id, input ]);
+        ids2.push(old_id);
+        continue;
+      }
+    }
+    
+    for (const key of unique_keys) {
+      batch_map.set(key, new_id);
+    }
+    
     const oldModels = await findByUniqueDept(input, options);
     if (oldModels.length > 0) {
       let id: DeptId | undefined = undefined;
@@ -1628,6 +1712,9 @@ async function _creates(
         }
       }
       if (id) {
+        for (const key of unique_keys) {
+          batch_map.set(key, id);
+        }
         ids2.push(id);
         continue;
       }
@@ -1636,12 +1723,23 @@ async function _creates(
       inputs2.push(input);
     }
     
-    const id = shortUuidV4<DeptId>();
-    input.id = id;
-    ids2.push(id);
+    input.id = new_id;
+    ids2.push(new_id);
   }
   
   if (inputs2.length === 0) {
+    // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+    for (const [ id, input ] of pending_updates) {
+      await updateByIdDept(
+        id,
+        input,
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+        },
+      );
+    }
     return ids2;
   }
   
@@ -1821,6 +1919,19 @@ async function _creates(
   }
   
   await delCacheDept();
+  
+  // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+  for (const [ id, input ] of pending_updates) {
+    await updateByIdDept(
+      id,
+      input,
+      {
+        is_debug: options?.is_debug,
+        is_silent_mode: options?.is_silent_mode,
+        uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+      },
+    );
+  }
   
   return ids2;
 }

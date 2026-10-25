@@ -1011,10 +1011,62 @@ export async function checkByUniqueDynPageField(
       return id;
     }
     if (uniqueType === UniqueType.Ignore) {
-      return;
+      // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+      return oldModel.id;
     }
   }
   return;
+}
+
+// MARK: getUniqueKeysDynPageField
+/** 计算唯一键, 用于同一批次内的数据去重 */
+export function getUniqueKeysDynPageField(
+  input: Readonly<DynPageFieldInput>,
+  is_silent_mode: boolean,
+  auth?: {
+    tenant_id?: string;
+    usr_id?: string;
+  },
+): string[] {
+  
+  const keys: string[] = [ ];
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.dyn_page_id != null) {
+      parts.push(`dyn_page_id=${ input.dyn_page_id }`);
+    }
+    
+    if (input.lbl != null) {
+      parts.push(`lbl=${ input.lbl }`);
+    }
+    
+    if (parts.length === 3) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.code != null) {
+      parts.push(`code=${ input.code }`);
+    }
+    
+    if (parts.length === 2) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  
+  return keys;
 }
 
 // MARK: findOneDynPageField
@@ -1747,11 +1799,58 @@ async function _creates(
   
   const ids2: DynPageFieldId[] = [ ];
   const inputs2: DynPageFieldInput[] = [ ];
+  // 同批次唯一键 -> id, 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+  const batch_map = new Map<string, DynPageFieldId>();
+  // Update 模式下, 同批次内的重复数据需在插入之后更新
+  const pending_updates: [ DynPageFieldId, DynPageFieldInput ][] = [ ];
+  // 批内去重所需的有效值, 只解析一次, 避免逐条查询
+  const batch_auth: {
+    tenant_id?: string;
+    usr_id?: string;
+  } = {
+    tenant_id: await getTenant_id(await get_usr_id()),
+  };
   
   for (const input of inputs) {
   
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    const new_id = shortUuidV4<DynPageFieldId>();
+    const unique_keys = getUniqueKeysDynPageField(
+      input,
+      is_silent_mode,
+      batch_auth,
+    );
+    
+    // 同批次去重: 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+    let old_id: DynPageFieldId | undefined = undefined;
+    for (const key of unique_keys) {
+      const exists_id = batch_map.get(key);
+      if (exists_id) {
+        old_id = exists_id;
+        break;
+      }
+    }
+    if (old_id) {
+      const unique_type = options?.uniqueType ?? UniqueType.Throw;
+      if (unique_type === UniqueType.Throw) {
+        throw new UniqueException("动态页面字段 重复");
+      }
+      if (unique_type === UniqueType.Ignore) {
+        ids2.push(old_id);
+        continue;
+      }
+      if (unique_type === UniqueType.Update) {
+        pending_updates.push([ old_id, input ]);
+        ids2.push(old_id);
+        continue;
+      }
+    }
+    
+    for (const key of unique_keys) {
+      batch_map.set(key, new_id);
     }
     
     const oldModels = await findByUniqueDynPageField(input, options);
@@ -1769,6 +1868,9 @@ async function _creates(
         }
       }
       if (id) {
+        for (const key of unique_keys) {
+          batch_map.set(key, id);
+        }
         ids2.push(id);
         continue;
       }
@@ -1777,12 +1879,23 @@ async function _creates(
       inputs2.push(input);
     }
     
-    const id = shortUuidV4<DynPageFieldId>();
-    input.id = id;
-    ids2.push(id);
+    input.id = new_id;
+    ids2.push(new_id);
   }
   
   if (inputs2.length === 0) {
+    // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+    for (const [ id, input ] of pending_updates) {
+      await updateByIdDynPageField(
+        id,
+        input,
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+        },
+      );
+    }
     return ids2;
   }
   
@@ -1976,6 +2089,19 @@ async function _creates(
   
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }
+  
+  // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+  for (const [ id, input ] of pending_updates) {
+    await updateByIdDynPageField(
+      id,
+      input,
+      {
+        is_debug: options?.is_debug,
+        is_silent_mode: options?.is_silent_mode,
+        uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+      },
+    );
   }
   
   return ids2;
