@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  useMaybeContext,
   getCacheEnabled,
 } from "/lib/context.ts";
 
@@ -1388,8 +1389,10 @@ async function _creates(
   const batch_auth: {
     tenant_id?: string;
     usr_id?: string;
-  } = {
-  };
+  } = { };
+  const has_batch_context = !!useMaybeContext();
+  let batch_usr_id_loaded = false;
+  let batch_tenant_id_loaded = false;
   
   for (const input of inputs) {
   
@@ -1398,6 +1401,8 @@ async function _creates(
     }
     
     const new_id = shortUuidV4<OptionsId>();
+    
+    
     const unique_keys = getUniqueKeysOptions(
       input,
       is_silent_mode,

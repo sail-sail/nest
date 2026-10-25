@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  useMaybeContext,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";

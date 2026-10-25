@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  useMaybeContext,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -1242,9 +1243,10 @@ async function _creates(
   const batch_auth: {
     tenant_id?: string;
     usr_id?: string;
-  } = {
-    tenant_id: await getTenant_id(await get_usr_id()),
-  };
+  } = { };
+  const has_batch_context = !!useMaybeContext();
+  let batch_usr_id_loaded = false;
+  let batch_tenant_id_loaded = false;
   
   for (const input of inputs) {
   
@@ -1253,6 +1255,18 @@ async function _creates(
     }
     
     const new_id = shortUuidV4<DynPageValId>();
+    
+    if (has_batch_context) {
+      if (!batch_tenant_id_loaded && input.tenant_id == null) {
+        if (!batch_usr_id_loaded) {
+          batch_auth.usr_id = await get_usr_id();
+          batch_usr_id_loaded = true;
+        }
+        batch_auth.tenant_id = await getTenant_id(batch_auth.usr_id);
+        batch_tenant_id_loaded = true;
+      }
+    }
+    
     const unique_keys = getUniqueKeysDynPageVal(
       input,
       is_silent_mode,
