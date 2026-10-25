@@ -344,7 +344,7 @@ const abortController = shallowRef<AbortController>();
 
 /** 与服务端 hint 格式保持一致：[附件 att_xxx 文件名] */
 const ATTACHMENT_HINT = /\[附件 (att_[A-Za-z0-9]+) ([^\]\n]+)\]/g;
-/** 客户端软上限，真正的限制在服务端（AGENT_ATTACHMENT_MAX_BYTES，默认 10MB） */
+/** 客户端上限，与服务端 AGENT_ATTACHMENT_MAX_BYTES 默认值保持一致（50MB） */
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 let attachmentSeq = 0;
 

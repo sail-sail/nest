@@ -84,11 +84,28 @@ export const config = {
   // 附件暂存：浏览器直传宿主，模型只拿 attachmentId，base64 不进模型上下文
   attachmentEnabled: envBool("AGENT_ATTACHMENT", true),
   attachmentDir: path.join(rootDir, ".dsh", "attachments"),
-  attachmentMaxBytes: envNum("AGENT_ATTACHMENT_MAX_BYTES", 10 * 1024 * 1024),
+  attachmentMaxBytes: envNum("AGENT_ATTACHMENT_MAX_BYTES", 50 * 1024 * 1024),
   attachmentMaxPerUser: envNum("AGENT_ATTACHMENT_MAX_FILES", 5),
   attachmentTtlMs: envNum("AGENT_ATTACHMENT_TTL_MS", 30 * 60_000),
   // 工具参数内联 base64 的字符上限（≈6KB 二进制），超过必须走附件
   inlineBase64MaxChars: envNum("AGENT_INLINE_BASE64_MAX", 8_192),
+  // 代码执行沙箱（exec_node）：按 (用户, 会话) 分桶，隔离靠 Node 权限模型的读写白名单
+  sandboxEnabled: envBool("AGENT_SANDBOX", false),
+  sandboxRoot: path.join(rootDir, ".dsh", "sandbox"),
+  sandboxTimeoutMs: envNum("AGENT_SANDBOX_TIMEOUT_MS", 15_000),
+  // 模型可以自己调大超时，但不能超过这个上限
+  sandboxTimeoutMaxMs: envNum("AGENT_SANDBOX_TIMEOUT_MAX_MS", 120_000),
+  sandboxMaxHeapMb: envNum("AGENT_SANDBOX_MAX_HEAP_MB", 256),
+  // 单会话目录的落盘上限，超过后拒绝执行，避免把磁盘写满
+  sandboxMaxDirBytes: envNum("AGENT_SANDBOX_MAX_DIR_BYTES", 512 * 1024 * 1024),
+  sandboxRetentionMs: envNum("AGENT_SANDBOX_RETENTION_MS", 24 * 60 * 60_000),
+  // 额外的只读授权目录（逗号分隔绝对路径），默认空：沙箱只能看自己的会话目录
+  sandboxReadDirs: (process.env.AGENT_SANDBOX_READ_DIRS || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean),
+  // 沙箱不经过 Rust，等于绕开 MCP 的 token 校验；每次执行前补一次验签 + 身份比对
+  sandboxVerifyTtlMs: envNum("AGENT_SANDBOX_VERIFY_TTL_MS", 10 * 60_000),
   // 单次工具输出进入模型上下文的 token 预算（dsh 子进程按此裁剪）
   toolOutputTokens: envNum("AGENT_TOOL_OUTPUT_TOKENS", 6_000),
   // 会话句柄生命周期：空闲多久释放、最多同时驻留多少个

@@ -58,6 +58,8 @@ export class ConversationStore {
   private readonly busy = new Set<string>();
   private saveTimer: NodeJS.Timeout | undefined;
   private saveQueue: Promise<void> = Promise.resolve();
+  /** 是否已从磁盘加载过：未加载就落盘会用空内存覆盖真实会话，必须拦住 */
+  private loaded = false;
   private readonly tokenSweeper: NodeJS.Timeout;
   private readonly sessionSweeper: NodeJS.Timeout;
 
@@ -95,6 +97,9 @@ export class ConversationStore {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         log.warn("conversation store load failed", { error: String(error) });
       }
+    } finally {
+      // 文件不存在也算加载过：首次启动允许正常落盘
+      this.loaded = true;
     }
   }
 
@@ -111,6 +116,11 @@ export class ConversationStore {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
       this.saveTimer = undefined;
+    }
+    // 脚本 / 测试直接 create 时不会调 load()，这时落盘会把真实会话清空
+    if (!this.loaded) {
+      log.warn("conversation store 未加载，跳过落盘");
+      return this.saveQueue;
     }
     const payload = JSON.stringify({ conversations: [...this.records.values()] }, null, 2);
     const dataFile = config.dataFile;
@@ -190,6 +200,11 @@ export class ConversationStore {
   /** 反查 dsh 会话属于哪个用户：页面操作要按用户路由到正确的浏览器连接 */
   usrIdFor(dshSessionId: string): string | undefined {
     return this.byDshSessionId.get(dshSessionId)?.usrId;
+  }
+
+  /** 反查整条记录：代码执行沙箱要按 (usrId, conversationId) 分目录，光有 sessionId 不够 */
+  recordFor(dshSessionId: string): ConversationRecord | undefined {
+    return this.byDshSessionId.get(dshSessionId);
   }
 
   touch(record: ConversationRecord, text: string): void {
