@@ -1,6 +1,10 @@
 /* oxlint-disable @typescript-eslint/no-explicit-any */
 import { saveAs } from "../compositions/download.ts";
 
+import {
+  showUploadMsg,
+} from "./common.ts";
+
 import dayjs from "dayjs";
 
 /**
@@ -220,5 +224,130 @@ export function splitCreateArr<T>(
   size = SPLIT_SQL_INSERT_LEN,
 ) {
   return splitArr(arr, size);
+}
+
+/** 导入失败时最多保留的错误详情条数 */
+const IMPORT_ERR_MSG_LIMIT = 10;
+
+/** 最多逐行定位多少条失败数据, 超过后不再拆分, 直接按整批计为失败 */
+const IMPORT_ISOLATE_LIMIT = 100;
+
+/**
+ * 分批导入数据
+ *
+ * 后端的 creates 接口是单事务的: 一批数据中任意一条失败则整批回滚,
+ * 接口也不会返回具体是哪一行出错。因此在某一批失败后按二分法拆分重试,
+ * 逐步缩小范围直至单条, 从而给出精确的失败行号与真实入库条数。
+ * 失败批次已整批回滚, 拆分后重试不会产生重复数据。
+ *
+ * @param inputs 全部待导入数据
+ * @param createFn 单批创建函数
+ * @param percentage 导入进度(0-100)
+ * @param isCancel 是否已取消
+ * @param formatErrMsg 生成错误提示, rowStart/rowEnd 为 Excel 行号(含表头)
+ * @param opt.headerRows 表头行数, 用于把数据下标换算成 Excel 行号, 默认 1
+ * @param opt.maxErrMsgs 最多保留的错误详情条数
+ * @param opt.maxIsolateNum 最多逐行定位的失败条数
+ */
+export async function importModelsByChunk<T>(
+  inputs: T[],
+  createFn: (items: T[]) => Promise<unknown>,
+  percentage: Ref<number>,
+  isCancel: Ref<boolean>,
+  formatErrMsg: (
+    rowStart: number,
+    rowEnd: number,
+    err: unknown,
+  ) => string | Promise<string>,
+  opt?: {
+    headerRows?: number;
+    maxErrMsgs?: number;
+    maxIsolateNum?: number;
+  },
+) {
+  const headerRows = opt?.headerRows ?? 1;
+  const maxErrMsgs = opt?.maxErrMsgs ?? IMPORT_ERR_MSG_LIMIT;
+  const maxIsolateNum = opt?.maxIsolateNum ?? IMPORT_ISOLATE_LIMIT;
+  
+  const len = inputs.length;
+  percentage.value = 0;
+  
+  let succNum = 0;
+  let failNum = 0;
+  let isolateNum = 0;
+  let doneNum = 0;
+  let isMsgTruncated = false;
+  const failErrMsgs: string[] = [ ];
+  
+  // 数据下标 -> Excel 行号
+  const getRowNum = (index: number) => index + 1 + headerRows;
+  
+  const addDone = (num: number) => {
+    doneNum += num;
+    percentage.value = len > 0 ? Math.floor(doneNum / len * 100) : 100;
+  };
+  
+  const pushErrMsg = async (
+    rowStart: number,
+    rowEnd: number,
+    err: unknown,
+  ) => {
+    if (failErrMsgs.length >= maxErrMsgs) {
+      isMsgTruncated = true;
+      return;
+    }
+    failErrMsgs.push(await formatErrMsg(rowStart, rowEnd, err));
+  };
+  
+  /** 导入 [start, end) 区间, 失败则二分重试 */
+  const importRange = async (
+    start: number,
+    end: number,
+  ): Promise<void> => {
+    if (isCancel.value) {
+      return;
+    }
+    const items = inputs.slice(start, end);
+    try {
+      await createFn(items);
+      succNum += items.length;
+      addDone(items.length);
+      return;
+    } catch (err) {
+      // 已定位到单条, 即真正出错的行
+      if (items.length === 1) {
+        failNum += 1;
+        isolateNum += 1;
+        addDone(1);
+        await pushErrMsg(getRowNum(start), getRowNum(start), err);
+        return;
+      }
+      // 失败数据过多时不再逐行定位, 直接按整批判定失败
+      if (isolateNum >= maxIsolateNum) {
+        failNum += items.length;
+        addDone(items.length);
+        await pushErrMsg(getRowNum(start), getRowNum(end - 1), err);
+        return;
+      }
+      const mid = Math.ceil(items.length / 2);
+      await importRange(start, start + mid);
+      await importRange(start + mid, end);
+    }
+  };
+  
+  let offset = 0;
+  for (const chunk of splitCreateArr(inputs)) {
+    if (isCancel.value) {
+      break;
+    }
+    await importRange(offset, offset + chunk.length);
+    offset += chunk.length;
+  }
+  
+  if (isMsgTruncated) {
+    failErrMsgs.push(`错误信息过多, 仅显示前 ${ failErrMsgs.length } 条`);
+  }
+  
+  return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
