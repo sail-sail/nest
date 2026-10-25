@@ -1,8 +1,8 @@
-\---  
+---  
 name: chart-report  
 description: 把业务数据画成 ECharts 图表：先查数据，再输出一个 \`\`\`echarts 代码块（纯 JSON），支持柱状图/折线图/饼图/漏斗图  
 whenToUse: 用户要求画图、看趋势、做对比、看占比、可视化数据时  
-\---
+---
 
 # 图表输出规范
 

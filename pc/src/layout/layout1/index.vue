@@ -300,14 +300,14 @@
                       <span>{{ ns('关闭其它') }}</span>
                     </el-dropdown-item>
                     
+                    <!-- 智能助手 -->
                     <el-dropdown-item
-                      v-if="usrStore.isAdmin()"
-                      @click="onClearCache"
+                      @click="onOpenAgent"
                     >
                       <ElIcon>
-                        <ElIconDelete />
+                        <ElIconComment />
                       </ElIcon>
-                      <span>{{ ns('清空缓存') }}</span>
+                      <span>{{ ns('智能助手') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -328,6 +328,16 @@
                         <ElIconLock />
                       </ElIcon>
                       <span>{{ ns('修改密码') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      v-if="usrStore.isAdmin()"
+                      @click="onClearCache"
+                    >
+                      <ElIcon>
+                        <ElIconDelete />
+                      </ElIcon>
+                      <span>{{ ns('清空缓存') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -672,6 +682,12 @@ function closeOtherTabs() {
   if (tabsStore.actTab) {
     tabsStore.closeOtherTabs(tabsStore.actTab);
   }
+}
+
+async function onOpenAgent() {
+  await router.push({
+    path: "/agent",
+  });
 }
 
 // 清空缓存
