@@ -18,6 +18,7 @@ npm-debug.log
 .tmp/
 dist/
 build/
+.dsh/
 
 # 前端框架相关
 .nuxt/

@@ -45,6 +45,17 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/agent",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "智能助手",
+        component: () => import("@/views/agent/Index.vue"),
+      },
+    ],
+  },
+  {
     path: "/base",
     component: Layout1,
     children: [
