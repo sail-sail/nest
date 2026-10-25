@@ -2,12 +2,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { randomBytes } from "node:crypto";
 import { AttachmentError, attachments } from "./attachments.ts";
+import { hashToken } from "./auth.ts";
 import { TOOL_NAMES, config, type ToolName } from "./config.ts";
 import { errorMessage, log } from "./logger.ts";
 import { McpToolError, mcpPool } from "./mcp-pool.ts";
 import { MemoryRejected, memory } from "./memory.ts";
 import { PageBusyError, PageOfflineError, pageHub } from "./page-hub.ts";
 import { ReadonlyViolation, assertReadonlyQuery } from "./readonly.ts";
+import { sandbox, SandboxError } from "./sandbox.ts";
 import { sanitizeToken } from "./sanitize.ts";
 import { store } from "./store.ts";
 
@@ -43,6 +45,79 @@ type MemoryToolName = (typeof MEMORY_TOOLS)[number];
 
 function isMemoryTool(value: unknown): value is MemoryToolName {
   return typeof value === "string" && (MEMORY_TOOLS as readonly string[]).includes(value);
+}
+
+/** 代码执行沙箱：不经 Rust /mcp，由宿主按 (用户, 会话) 起受限子进程 */
+const SANDBOX_TOOLS = ["exec_node"] as const;
+
+type SandboxToolName = (typeof SANDBOX_TOOLS)[number];
+
+function isSandboxTool(value: unknown): value is SandboxToolName {
+  return typeof value === "string" && (SANDBOX_TOOLS as readonly string[]).includes(value);
+}
+
+/**
+ * exec_node 不经 Rust，等于绕开了 MCP 那条链路上的 token 校验；
+ * 而它的能力比任何业务工具都大（本地代码执行 + 落盘）。
+ * 所以每次执行前都要拿同一个 token 调一次 session_me：既让 Rust 验签，
+ * 也把返回的 usr_id 与目录归属比对一次——光验签只能证明"token 有效"，
+ * 证明不了"这个 token 就是这条会话的人"。
+ * 结果按 token 缓存 TTL，省掉同一会话里的重复往返。
+ */
+const sandboxVerified = new Map<string, { at: number; usrId: string }>();
+
+/** MCP 返回的 loginInfo 形如 { usr_id, lbl, username, role_codes, tenant_id, ... } */
+function loginUsrId(result: unknown): string | undefined {
+  const loginInfo = (result as { loginInfo?: { usr_id?: unknown } } | null)?.loginInfo;
+  const value = loginInfo?.usr_id;
+  return typeof value === "string" && value ? value : undefined;
+}
+
+async function assertSandboxAuthorized(token: string, usrId: string): Promise<void> {
+  const key = hashToken(token);
+  const now = Date.now();
+  const cached = sandboxVerified.get(key);
+  // 缓存必须同时命中会话归属：同一个 token 换了 usrId 也要重新比对
+  if (cached && cached.usrId === usrId && now - cached.at < config.sandboxVerifyTtlMs) return;
+
+  let result: unknown;
+  try {
+    result = await mcpPool.call(token, "session_me", {}, { retryable: true });
+  } catch (error) {
+    // 失败不缓存：连不上 Rust 时不能退化成"放行"，也不能退化成永久拒绝
+    throw new SandboxError(
+      `代码执行需要有效登录态，校验未通过：${errorMessage(error)}`,
+      "SANDBOX_TOKEN_INVALID",
+      401,
+    );
+  }
+
+  const actual = loginUsrId(result);
+  if (!actual) {
+    throw new SandboxError(
+      "登录校验没有返回 usr_id，无法确认会话归属，已拒绝执行",
+      "SANDBOX_VERIFY_BAD_RESPONSE",
+      502,
+    );
+  }
+  if (actual !== usrId) {
+    log.warn("sandbox identity mismatch", {
+      expected: usrId.slice(0, 6),
+      actual: actual.slice(0, 6),
+    });
+    throw new SandboxError(
+      "登录身份与当前会话归属不一致，已拒绝执行",
+      "SANDBOX_IDENTITY_MISMATCH",
+      403,
+    );
+  }
+
+  sandboxVerified.set(key, { at: now, usrId });
+  if (sandboxVerified.size > 512) {
+    for (const [cachedKey, entry] of sandboxVerified) {
+      if (now - entry.at >= config.sandboxVerifyTtlMs) sandboxVerified.delete(cachedKey);
+    }
+  }
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -224,6 +299,53 @@ export async function startBridge(): Promise<BridgeHandle> {
         }
         log.warn("page tool failed", { tool, error: message });
         return c.json({ ok: false, error: message, code: "PAGE_FAILED" });
+      }
+    }
+
+    if (isSandboxTool(tool)) {
+      if (!config.sandboxEnabled) {
+        return c.json(
+          { ok: false, error: "代码执行已关闭（AGENT_SANDBOX=false）", code: "SANDBOX_DISABLED" },
+          403,
+        );
+      }
+
+      // 目录按 (usrId, conversationId) 分桶，所以两条身份都必须拿到
+      const record = store.recordFor(sessionId);
+      if (!record) {
+        return c.json({ ok: false, error: "会话未绑定用户", code: "TOKEN_MISSING" }, 409);
+      }
+
+      const code = typeof args.code === "string" ? args.code : "";
+      if (!code.trim()) {
+        return c.json({ ok: false, error: "code 不能为空", code: "BAD_REQUEST" }, 400);
+      }
+
+      const token = store.tokenFor(sessionId);
+      if (!token) {
+        return c.json(
+          { ok: false, error: "会话未绑定登录态，请刷新后重试", code: "TOKEN_MISSING" },
+          409,
+        );
+      }
+
+      try {
+        // 先验签 + 比对归属再建目录：校验不过就什么都不落地
+        await assertSandboxAuthorized(token, record.usrId);
+        const result = await sandbox.run({
+          usrId: record.usrId,
+          conversationId: record.id,
+          code,
+          timeoutMs: typeof args.timeoutMs === "number" ? args.timeoutMs : undefined,
+        });
+        return c.json({ ok: true, result });
+      } catch (error) {
+        if (error instanceof SandboxError) {
+          return c.json({ ok: false, error: error.message, code: error.code }, error.status as 400);
+        }
+        const message = errorMessage(error);
+        log.error("sandbox tool failed", { error: message });
+        return c.json({ ok: false, error: message, code: "SANDBOX_FAILED" });
       }
     }
 

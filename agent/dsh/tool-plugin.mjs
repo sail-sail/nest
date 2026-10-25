@@ -341,4 +341,31 @@ export function apply(ctx) {
       { timeoutMs: 15_000, concurrencySafe: false },
     ),
   );
+
+  ctx.tools.register(
+    tool(
+      "exec_node",
+      [
+        "在一个受限沙箱里执行一段 Node.js（ESM）代码，用来处理数据、算指标、解析大文件。",
+        "沙箱只能读写本会话自己的目录（cwd 就是该目录），可以用相对路径直接落盘；文件会保留，下次调用还能看到。",
+        "只有 Node 内置模块，没有第三方依赖，也不要 require 本仓库的文件。",
+        "不能起子进程、不能用 worker_threads、不能加载原生 addon；可以访问网络。",
+        "关键约束：stdout/stderr 会进入对话上下文并被裁剪，所以只 print 结论或少量样本。",
+        "处理大文件时不要输出内容本身：先把中间结果写进文件，或只 print 行数、聚合值、前几行。",
+        "不适合的场景：查询业务数据（用 graphql_execute）、操作页面（用 page_operate）。",
+      ].join("\n"),
+      {
+        code: {
+          type: "string",
+          required: true,
+          description: "要执行的 ESM 代码；用相对路径读写当前会话目录，只打印结论",
+        },
+        timeoutMs: {
+          type: "number",
+          description: "可选：超时毫秒数，默认 15000，最大 120000；处理大文件时才调大",
+        },
+      },
+      { timeoutMs: 130_000, concurrencySafe: false },
+    ),
+  );
 }

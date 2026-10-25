@@ -43,4 +43,5 @@ whenToUse: 用户询问销售报表、业绩汇总、同比环比时
 
 业务查询的完整示例见 `skills/business-query/SKILL.md`；图表输出规范见 `skills/chart-report/SKILL.md`；
 流程图/时序图/ER 图见 `skills/mermaid-diagram/SKILL.md`；页面操作见 `skills/page-operation/SKILL.md`；
-长期记忆的保存/检索规范见 `skills/memory-usage/SKILL.md`。
+长期记忆的保存/检索规范见 `skills/memory-usage/SKILL.md`；代码执行沙箱（`exec_node`）的用法与边界见
+`skills/code-exec/SKILL.md`。

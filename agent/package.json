@@ -14,6 +14,7 @@
     "start:prod": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "smoke:context": "tsx scripts/smoke-context.ts",
+    "smoke:sandbox": "tsx scripts/smoke-sandbox.ts",
     "dsh:config": "node ./node_modules/@deepseek-ai/dsh/lib/bin.js --profile sdk --patch ./dsh/patch.yml --dump-config"
   },
   "dependencies": {

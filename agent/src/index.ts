@@ -13,6 +13,7 @@ import { errorMessage, log } from "./logger.ts";
 import { memory } from "./memory.ts";
 import { mcpPool } from "./mcp-pool.ts";
 import { pageHub } from "./page-hub.ts";
+import { sandbox } from "./sandbox.ts";
 import { store } from "./store.ts";
 import { mapNotification, type SseFrame } from "./stream.ts";
 import { sanitizeToken } from "./sanitize.ts";
@@ -513,6 +514,7 @@ async function main(): Promise<void> {
   memory.load();
   usage.load();
   attachments.init();
+  await sandbox.init();
   const bridge = await startBridge();
   initHarness(bridge);
 
