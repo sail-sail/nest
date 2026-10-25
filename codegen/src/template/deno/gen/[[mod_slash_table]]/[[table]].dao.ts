@@ -192,7 +192,8 @@ if (!(hasDataPermit() && hasCreateUsrId)) {
 import {
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,<#
+  get_is_creating,
+  useMaybeContext,<#
   if (cache) {
   #>
   getCacheEnabled,<#
@@ -4870,17 +4871,10 @@ async function _creates(
   const batch_auth: {
     tenant_id?: string;
     usr_id?: string;
-  } = {<#
-    if (hasUniqueAuthTenantId) {
-    #>
-    tenant_id: await getTenant_id(await get_usr_id()),<#
-    }
-    if (hasUniqueCreateUsrId) {
-    #>
-    usr_id: await get_usr_id(),<#
-    }
-    #>
-  };<#
+  } = { };
+  const has_batch_context = !!useMaybeContext();
+  let batch_usr_id_loaded = false;
+  let batch_tenant_id_loaded = false;<#
   }
   #>
   
@@ -4953,6 +4947,32 @@ async function _creates(
     const new_id = shortUuidV4<<#=Table_Up#>Id>();<#
     if (uniqueKeySets.length > 0) {
     #>
+    <# if (hasUniqueAuthTenantId || hasUniqueCreateUsrId) {
+    #>
+    if (has_batch_context) {<#
+      if (hasUniqueCreateUsrId) {
+      #>
+      if (!batch_usr_id_loaded && !is_silent_mode && input.create_usr_id == null) {
+        batch_auth.usr_id = await get_usr_id();
+        batch_usr_id_loaded = true;
+      }<#
+      }
+      if (hasUniqueAuthTenantId) {
+      #>
+      if (!batch_tenant_id_loaded && input.tenant_id == null) {
+        if (!batch_usr_id_loaded) {
+          batch_auth.usr_id = await get_usr_id();
+          batch_usr_id_loaded = true;
+        }
+        batch_auth.tenant_id = await getTenant_id(batch_auth.usr_id);
+        batch_tenant_id_loaded = true;
+      }<#
+      }
+      #>
+    }<#
+    }
+    #>
+    
     const unique_keys = getUniqueKeys<#=Table_Up#>(
       input,
       is_silent_mode,
