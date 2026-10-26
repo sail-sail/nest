@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 
 use color_eyre::eyre::{Result, eyre};
 use poem::{IntoResponse, Response, http::StatusCode};
-use tracing::error;
+use tracing::{info,error};
 
 use generated::common::context::{
   get_now,
@@ -81,6 +81,9 @@ pub async fn wxwork_usr_notify_get(
   notify_query: NotifyQuery,
   options: Option<Options>,
 ) -> Result<Response> {
+  
+  info!("wxwork_usr_notify_get called with notify_query: {:?}", notify_query);
+  
   let NotifyQuery {
     msg_signature: _,
     timestamp: _,
@@ -406,7 +409,7 @@ pub async fn wxw_login_by_code(
   
   let org_ids = usr_model.org_ids;
   let mut org_id = usr_model.default_org_id;
-  if !org_id.is_empty() {
+  if org_id.is_empty() && !org_ids.is_empty() {
     org_id = org_ids[0];
   }
   if !org_id.is_empty() && !org_ids.contains(&org_id) {

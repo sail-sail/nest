@@ -80,7 +80,7 @@ pub struct WxwLoginByCode {
   
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct NotifyQuery {
   #[serde(rename = "msg_signature")]
   pub msg_signature: String,
