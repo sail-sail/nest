@@ -258,6 +258,7 @@ import MarkdownRender, { setCustomComponents } from "markstream-vue";
 import "markstream-vue/index.css";
 import AgentEChartsBlock from "./AgentEChartsBlock.vue";
 import AgentEChartsTag from "./AgentEChartsTag.vue";
+import config from "@/utils/config";
 import { fetchPageAgentStatus } from "@/utils/pageAgentBridge";
 
 setCustomComponents("agent", {
@@ -367,6 +368,9 @@ function authHeaders(): Record<string, string> {
 }
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  if (!config.agentEnabled) {
+    throw new Error("智能助手已关闭");
+  }
   const response = await fetch(`/agent/api${path}`, {
     ...init,
     headers: { ...authHeaders(), ...init?.headers },
@@ -405,6 +409,10 @@ function removeAttachment(file: PendingAttachment) {
 
 /** 选中的文件直传宿主：字节不进模型，消息里只保留服务端给的 hint */
 async function onPickFiles(event: Event) {
+  if (!config.agentEnabled) {
+    ElMessage.warning("智能助手已关闭，无法上传附件");
+    return;
+  }
   const target = event.target as HTMLInputElement;
   const files = Array.from(target.files ?? []);
   // 清空后同一个文件才能再次触发 change
@@ -757,10 +765,14 @@ async function readSse(response: Response, onFrame: (event: string, data: Record
 }
 
 async function send() {
-  const text = input.value.trim();
-  const ready = attachments.value.filter(
-    (file) => !!file.id && !!file.hint && !file.uploading && !file.error,
-  );
+if (!config.agentEnabled) {
+  statusText.value = "智能助手已关闭";
+  return;
+}
+const text = input.value.trim();
+const ready = attachments.value.filter(
+  (file) => !!file.id && !!file.hint && !file.uploading && !file.error,
+);
   if ((!text && ready.length === 0) || running.value || uploading.value) return;
   if (!activeId.value) await createConversation();
   const conversationId = activeId.value;
