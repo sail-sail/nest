@@ -12,6 +12,7 @@ const TOKEN_KEY = "store.usr.authorization";
 const STREAM_URL = "/agent/api/page-agent/stream";
 const STATUS_URL = "/agent/api/page-agent/status";
 const LLM_BASE = () => `${location.origin}/agent/llm/v1`;
+const AGENT_ENABLED = import.meta.env.VITE_AGENT_ENABLED === "true";
 
 /** always：每个任务都确认；risky：命中危险词才确认；never：不确认（默认） */
 const CONFIRM_POLICY = (import.meta.env.VITE_AGENT_PAGE_CONFIRM || "never") as
@@ -390,13 +391,14 @@ function stopHeartbeat(): void {
 
 /** 在应用启动后调用一次；重复调用无副作用 */
 export function startPageAgentBridge(): void {
-  if (started || bridgeDisabled) return;
+  if (!AGENT_ENABLED || started || bridgeDisabled) return;
   started = true;
   void connect();
 }
 
 /** 供聊天界面展示「页面是否可操作」 */
 export async function fetchPageAgentStatus(): Promise<{ online: boolean; path: string } | null> {
+  if (!AGENT_ENABLED) return null;
   const current = token();
   if (!current) return null;
   try {

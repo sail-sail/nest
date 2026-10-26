@@ -302,6 +302,7 @@
                     
                     <!-- 智能助手 -->
                     <el-dropdown-item
+                      v-if="config.agentEnabled"
                       @click="onOpenAgent"
                     >
                       <ElIcon>
@@ -435,8 +436,8 @@
 
   <!-- 智能助手 -->
   <AgentChatDrawer
-    un-opacity="70"
-    v-if="usrStore.authorization"
+    un-opacity="50"
+    v-if="config.agentEnabled && usrStore.authorization"
   ></AgentChatDrawer>
 
 </el-splitter>
@@ -685,6 +686,7 @@ function closeOtherTabs() {
 }
 
 async function onOpenAgent() {
+  if (!config.agentEnabled) return;
   await router.push({
     path: "/agent",
   });
