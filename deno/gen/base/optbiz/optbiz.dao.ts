@@ -736,8 +736,8 @@ export function getUniqueKeysOptbiz(
   input: Readonly<OptbizInput>,
   is_silent_mode: boolean,
   auth?: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   },
 ): string[] {
   
@@ -1408,8 +1408,8 @@ async function _creates(
   const pending_updates: [ OptbizId, OptbizInput ][] = [ ];
   // 批内去重所需的有效值, 只解析一次, 避免逐条查询
   const batch_auth: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   } = { };
   const has_batch_context = !!useMaybeContext();
   let batch_usr_id_loaded = false;

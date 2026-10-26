@@ -9,6 +9,35 @@ const hasIsMonth = columns.some((column) => column.isMonth);
 const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+/**
+ * 唯一键中的自引用外键列(树形表的 parent_id 等): 空 id 代表"无上级"(根级),
+ * 插入时缺省会落成列默认值(空串), 因此校验前需把缺省值补成空 id, 保证根级也参与同级唯一校验
+ */
+const selfFkUniqueColumns = (opts?.uniques || [ ])
+  .flat()
+  .filter((unique, index, list) => list.indexOf(unique) === index)
+  .filter((unique) => {
+    const column = columns.find((item) => item.COLUMN_NAME === unique);
+    if (!column) return false;
+    if (column.ignoreCodegen) return false;
+    if (column.isVirtual) return false;
+    if (column.isPassword) return false;
+    if (column.isEncrypt) return false;
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) return false;
+    if (foreignKey.type === "many2many") return false;
+    if (foreignKey.table !== table) return false;
+    if (foreignKey.mod != null && foreignKey.mod !== mod) return false;
+    return true;
+  });
+/**
+ * 自引用外键列里的非空列: 只有这类列的缺省值会落成空串(根级), 才能补空 id;
+ * 可空列缺省即 null, 补空串会改变落库语义, 不参与该处理
+ */
+const selfFkNotNullUniqueColumns = selfFkUniqueColumns.filter((unique) => {
+  const column = columns.find((item) => item.COLUMN_NAME === unique);
+  return column && column.IS_NULLABLE !== "YES";
+});
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
 const hasIsIcon = columns.some((column) => column.isIcon);
@@ -3442,8 +3471,8 @@ export function getUniqueKeys<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
   is_silent_mode: boolean,
   auth?: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   },
 ): string[] {
   
@@ -4869,8 +4898,8 @@ async function _creates(
   const pending_updates: [ <#=Table_Up#>Id, <#=inputName#> ][] = [ ];
   // 批内去重所需的有效值, 只解析一次, 避免逐条查询
   const batch_auth: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   } = { };
   const has_batch_context = !!useMaybeContext();
   let batch_usr_id_loaded = false;
@@ -4883,6 +4912,19 @@ async function _creates(
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }<#
+    if (selfFkNotNullUniqueColumns.length > 0) {
+    #>
+    
+    // 空父级 = 根级: 插入时缺省会落成列默认值(空串), 补齐空 id 后根级同名同样会被拦截<#
+    for (const unique of selfFkNotNullUniqueColumns) {
+    #>
+    if (input.<#=unique#> == null) {
+      input.<#=unique#> = "" as <#=Table_Up#>Id;
+    }<#
+    }
+    #><#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -6411,13 +6453,36 @@ export async function updateById<#=Table_Up#>(
     await updateTenantById<#=Table_Up#>(id, input.tenant_id, options);
   }<#
   }
+  #><#
+  if (selfFkUniqueColumns.length > 0) {
+  #>
+  
+  const oldModel = await findById<#=Table_Up#>(id, options);
+  
+  if (!oldModel) {
+    return id;
+  }<#
+  }
   #>
   
   {
     const input2 = {
       ...input,
       id: undefined,
-    };
+    };<#
+    if (selfFkUniqueColumns.length > 0) {
+    #>
+    
+    // 唯一键里的自引用外键列: 未传时用旧值, 否则改父级会跳过唯一校验<#
+    for (const unique of selfFkUniqueColumns) {
+    #>
+    if (input2.<#=unique#> == null) {
+      input2.<#=unique#> = oldModel.<#=unique#>;
+    }<#
+    }
+    #>
+    <# }
+    #>
     let models = await findByUnique<#=Table_Up#>(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
@@ -6434,13 +6499,17 @@ export async function updateById<#=Table_Up#>(
         return id;
       }
     }
-  }
+  }<#
+  if (selfFkUniqueColumns.length === 0) {
+  #>
   
   const oldModel = await findById<#=Table_Up#>(id, options);
   
   if (!oldModel) {
     return id;
   }<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   

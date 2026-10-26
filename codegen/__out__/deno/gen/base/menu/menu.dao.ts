@@ -883,8 +883,8 @@ export function getUniqueKeysMenu(
   input: Readonly<MenuInput>,
   is_silent_mode: boolean,
   auth?: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   },
 ): string[] {
   
@@ -1559,8 +1559,8 @@ async function _creates(
   const pending_updates: [ MenuId, MenuInput ][] = [ ];
   // 批内去重所需的有效值, 只解析一次, 避免逐条查询
   const batch_auth: {
-    tenant_id?: string;
-    usr_id?: string;
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
   } = { };
   const has_batch_context = !!useMaybeContext();
   let batch_usr_id_loaded = false;
@@ -1570,6 +1570,11 @@ async function _creates(
   
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+    
+    // 空父级 = 根级: 插入时缺省会落成列默认值(空串), 补齐空 id 后根级同名同样会被拦截
+    if (input.parent_id == null) {
+      input.parent_id = "" as MenuId;
     }
     
     const new_id = shortUuidV4<MenuId>();
@@ -1948,11 +1953,23 @@ export async function updateByIdMenu(
     throw new Error("updateByIdMenu: input cannot be null");
   }
   
+  const oldModel = await findByIdMenu(id, options);
+  
+  if (!oldModel) {
+    return id;
+  }
+  
   {
     const input2 = {
       ...input,
       id: undefined,
     };
+    
+    // 唯一键里的自引用外键列: 未传时用旧值, 否则改父级会跳过唯一校验
+    if (input2.parent_id == null) {
+      input2.parent_id = oldModel.parent_id;
+    }
+    
     let models = await findByUniqueMenu(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
@@ -1962,12 +1979,6 @@ export async function updateByIdMenu(
         return id;
       }
     }
-  }
-  
-  const oldModel = await findByIdMenu(id, options);
-  
-  if (!oldModel) {
-    return id;
   }
   
   const args = new QueryArgs();
