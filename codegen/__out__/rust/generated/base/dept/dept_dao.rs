@@ -2188,6 +2188,10 @@ async fn _creates(
     }
 
     let mut input = input;
+    // 空父级 = 根级: 插入时缺省会落成列默认值(空串), 补齐空 id 后根级同名同样会被拦截
+    if input.parent_id.is_none() {
+      input.parent_id = Some(Default::default());
+    }
 
     // 组织
     if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
@@ -2841,6 +2845,9 @@ pub async fn update_by_id_dept(
   {
     let mut input = input.clone();
     input.id = None;
+    if input.parent_id.is_none() {
+      input.parent_id = Some(old_model.parent_id.clone());
+    }
     
     let models = find_by_unique_dept(
       input.into(),
