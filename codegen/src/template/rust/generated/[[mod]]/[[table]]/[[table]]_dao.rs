@@ -35,6 +35,35 @@ const hasMany2many = columns.some((column) => {
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+/**
+ * 唯一键中的自引用外键列(树形表的 parent_id 等): 空 id 代表"无上级"(根级),
+ * 插入时缺省会落成列默认值(空串), 因此校验前需把缺省值补成空 id, 保证根级也参与同级唯一校验
+ */
+const selfFkUniqueColumns = (opts?.uniques || [ ])
+  .flat()
+  .filter((unique, index, list) => list.indexOf(unique) === index)
+  .filter((unique) => {
+    const column = columns.find((item) => item.COLUMN_NAME === unique);
+    if (!column) return false;
+    if (column.ignoreCodegen) return false;
+    if (column.isVirtual) return false;
+    if (column.isPassword) return false;
+    if (column.isEncrypt) return false;
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) return false;
+    if (foreignKey.type === "many2many") return false;
+    if (foreignKey.table !== table) return false;
+    if (foreignKey.mod != null && foreignKey.mod !== mod) return false;
+    return true;
+  });
+/**
+ * 自引用外键列里的非空列: 只有这类列的缺省值会落成空串(根级), 才能补空 id;
+ * 可空列缺省即 NULL, 补空串会改变落库语义, 不参与该处理
+ */
+const selfFkNotNullUniqueColumns = selfFkUniqueColumns.filter((unique) => {
+  const column = columns.find((item) => item.COLUMN_NAME === unique);
+  return column && column.IS_NULLABLE !== "YES";
+});
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
@@ -5229,6 +5258,19 @@ async fn _creates(
     #>
 
     let mut input = input;<#
+    if (selfFkNotNullUniqueColumns.length > 0) {
+    #>
+    // 空父级 = 根级: 插入时缺省会落成列默认值(空串), 补齐空 id 后根级同名同样会被拦截<#
+    for (const unique of selfFkNotNullUniqueColumns) {
+      const unique_rust = rustKeyEscape(unique);
+    #>
+    if input.<#=unique_rust#>.is_none() {
+      input.<#=unique_rust#> = Some(Default::default());
+    }<#
+    }
+    #><#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -7299,7 +7341,17 @@ pub async fn update_by_id_<#=table#>(
   
   {
     let mut input = input.clone();
-    input.id = None;
+    input.id = None;<#
+    for (const unique of selfFkUniqueColumns) {
+      const unique_rust = rustKeyEscape(unique);
+      const uniqueColumn = columns.find((item) => item.COLUMN_NAME === unique);
+      const is_nullable = uniqueColumn.IS_NULLABLE === "YES";
+    #>
+    if input.<#=unique_rust#>.is_none() {
+      input.<#=unique_rust#> = <#=is_nullable ? `old_model.${ unique_rust }.clone()` : `Some(old_model.${ unique_rust }.clone())`#>;
+    }<#
+    }
+    #>
     
     let models = find_by_unique_<#=table#>(
       input.into(),
