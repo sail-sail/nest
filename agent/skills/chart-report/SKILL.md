@@ -1,7 +1,7 @@
----  
-name: chart-report  
-description: 把业务数据画成 ECharts 图表：先查数据，再输出一个 \`\`\`echarts 代码块（纯 JSON），支持柱状图/折线图/饼图/漏斗图  
-whenToUse: 用户要求画图、看趋势、做对比、看占比、可视化数据时  
+---
+name: chart-report
+description: 把业务数据画成 ECharts 图表：先查数据，再输出一个 ```echarts 代码块（纯 JSON），支持柱状图/折线图/饼图/漏斗图
+whenToUse: 用户要求画图、看趋势、做对比、看占比、可视化数据时
 ---
 
 # 图表输出规范
@@ -76,4 +76,4 @@ whenToUse: 用户要求画图、看趋势、做对比、看占比、可视化数
 
 - 图表是给用户看的，不是给你自己校验的；你无法看到渲染结果，所以配置要保守、简单。
 - 如果 JSON 解析失败，前端会显示「图表配置无效」并回退展示原始 JSON，用户会看到错误。
-- 不要输出 `<echarts>` HTML 标签，统一用 \`\`\`echarts 代码块。
+- 不要输出 `<echarts>` HTML 标签，统一用 ```echarts 代码块。
