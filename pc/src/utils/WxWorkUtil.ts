@@ -132,10 +132,6 @@ export async function createWWLoginPanel(
 ) {
   let host = window.location.host;
   let redirect_uri = `${ window.location.origin }${ window.location.pathname }`;
-  if (process.env.NODE_ENV === "development") {
-    host = "pms.ejsexcel.com";
-    redirect_uri = `https://${ host }${ window.location.pathname }`;
-  }
   const {
     appid,
     agentid,
