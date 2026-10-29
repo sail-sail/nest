@@ -488,9 +488,27 @@ pub fn request_origin(req: &Request) -> String {
   request_origin_from_headers(req.headers())
 }
 
+/// 对外可访问的基地址，由 `mcp_public_base_url` 显式指定。
+///
+/// 附件下载、图片预览链接都以请求来源拼绝对地址，而 agent 调 `/mcp` 用的是进程间
+/// 地址（服务器上通常是 `http://127.0.0.1:4001/mcp`），拼出来的链接在浏览器里不可达。
+/// 这里给它一个覆盖入口：配了就用配的，没配继续按请求头推导，既有反代部署不受影响。
+pub fn public_base_url() -> Option<String> {
+  let value = std::env::var("mcp_public_base_url").ok()?;
+  let value = value.trim();
+  if value.is_empty() {
+    return None;
+  }
+  Some(value.trim_end_matches('/').to_owned())
+}
+
 pub fn request_origin_from_headers(
   headers: &http::HeaderMap,
 ) -> String {
+  if let Some(base_url) = public_base_url() {
+    return base_url;
+  }
+
   let protocol = forwarded_header_value(headers, "proto")
     .or_else(|| first_header_value(headers, "x-forwarded-proto"))
     .or_else(|| first_header_value(headers, "x-forwarded-protocol"))
