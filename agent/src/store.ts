@@ -38,6 +38,9 @@ interface SessionEntry {
   busy: boolean;
 }
 
+/** 冻结 token 的内存驻留上限：只用于回收，不参与鉴权判定 */
+const TOKEN_MEMORY_TTL_MS = 7 * 24 * 60 * 60_000;
+
 function toPublic(record: ConversationRecord): PublicConversation {
   return {
     id: record.id,
@@ -72,11 +75,19 @@ export class ConversationStore {
     this.sessionSweeper.unref();
   }
 
-  /** decodeClaims 对过期或格式损坏的 token 都会抛错，抛错即可安全移除 */
+  /**
+   * 只回收「格式损坏」或「过期很久」的 token。
+   * 服务端 `/mcp`、`/api/oss/*` 只验签名不看 exp，`/graphql` 还有一段宽限并续期，
+   * 所以这里按 exp 精确判断会误伤仍在使用的会话；用 TOKEN_MEMORY_TTL_MS 宽松回收即可。
+   */
   private sweepTokens(): void {
+    const deadline = Date.now() - TOKEN_MEMORY_TTL_MS;
     for (const [sessionId, token] of this.tokens) {
       try {
-        decodeClaims(token);
+        const claims = decodeClaims(token);
+        if (claims.exp !== undefined && claims.exp * 1000 < deadline) {
+          this.tokens.delete(sessionId);
+        }
       } catch {
         this.tokens.delete(sessionId);
       }
