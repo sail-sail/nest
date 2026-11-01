@@ -266,6 +266,7 @@ use generated::common::context::{
 - `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
 - Input 中 `_lbl` 字段无需传递，DAO 会自动生成
 - 函数定义和调用时，多参数统一换行
+- 数据库布尔列统一是 `tinyint unsigned`，模型字段为 `u8`（0/1），系统中没有 `bool` 字段：判断写 `xxx == 1`，赋值/入参写 `Some(1)`，默认值写 `0`，前端读到的也是数字而非 true/false
 
 2. 事务与鉴权
 
@@ -332,8 +333,11 @@ pub mod {table}_service;
 
 在 `rust/` 目录执行 `npm run gqlgen`，会导出 schema 并更新前端类型：
 
+- `rust/generated/common/gql/schema.graphql`（导出的 schema）
 - `pc/src/typings/types.ts`
 - `uni/src/typings/types.ts`
+
+前端 `pc/graphql.config.js` 以 `rust/generated/common/gql/schema.graphql` 校验 `Api.ts` / `Api2.ts` 里的 GraphQL 字符串，所以新增 mutation/query 后如果还没跑 `gqlgen`，编辑器会报 `Cannot query field "xxx" on type "Mutation"`，跑一次即可消除；不要在类型文件里手工补，跑 `gqlgen` 会整体重写。
 
 ## 技术栈
 
