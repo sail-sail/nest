@@ -68,12 +68,11 @@ export default defineConfig({
     TurboConsole({
       inspector: false,
     }),
-    // @ts-ignore
     Inspector({
       toggleButtonPos: "top-left",
       lazyLoad: 500,
       disableInspectorOnEditorOpen: true,
-      launchEditor: "code",
+      launchEditor: "buddycn",
     }),
     // VueDevTools(),
     VueDevtoolsJson(),
