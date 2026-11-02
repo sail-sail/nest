@@ -51,7 +51,10 @@ if (isH5) {
     pluginsH5.push(
       Inspector({
         toggleButtonPos: "top-left",
-      }) as any,
+        lazyLoad: 500,
+        disableInspectorOnEditorOpen: true,
+        launchEditor: "buddycn",
+      }),
     );
   } else {
     pluginsH5.push(

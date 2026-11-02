@@ -18,17 +18,17 @@
     "dsh:config": "node ./node_modules/@deepseek-ai/dsh/lib/bin.js --profile sdk --patch ./dsh/patch.yml --dump-config"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-token-meter": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
+    "@deepseek-ai/dsh": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-token-meter": "0.2.1-rc.5",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.5",
     "@hono/node-server": "2.1.5",
-    "@modelcontextprotocol/sdk": "1.32.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "graphql": "17.0.2",
-    "hono": "4.13.13"
+    "hono": "4.13.16"
   },
   "devDependencies": {
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "tsx": "4.23.15",
     "typescript": "7.0.2"
   }

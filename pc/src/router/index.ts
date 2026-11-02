@@ -77,6 +77,14 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to) => {
+  const agentEnabled = String(import.meta.env.VITE_AGENT_ENABLED ?? "").trim().toLowerCase() === "true";
+  if (to.path === "/agent" && !agentEnabled) {
+    return { path: "/index" };
+  }
+  return true;
+});
+
 // router.beforeEach((to, from) => {
 //   const tabsStore = useTabsStore();
 //   if (tabsStore.actTab?._hasPermit) {
