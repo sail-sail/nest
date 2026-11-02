@@ -126,8 +126,8 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: OrgId | OrgId[] | ""): void,
-  (e: "update:modelLabel", value?: string): void,
+  (e: "update:modelValue", value?: OrgId | OrgId[] | null | ""): void,
+  (e: "update:modelLabel", value?: string | null | ""): void,
   (e: "change", value?: OrgModel | OrgModel[]): void,
   (e: "clear"): void,
 }>();
