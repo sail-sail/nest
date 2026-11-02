@@ -105,6 +105,8 @@ const props = withDefaults(
     disabled?: boolean;
     isReadonlyBorder?: boolean;
     validateEvent?: boolean;
+    /** 可选层级: 1 只到省, 2 只到市, 3 到区县(默认) */
+    level?: 1 | 2 | 3;
   }>(),
   {
     readonly: undefined,
@@ -114,6 +116,7 @@ const props = withDefaults(
     disabled: undefined,
     isReadonlyBorder: true,
     validateEvent: undefined,
+    level: 3,
   },
 );
 
@@ -125,9 +128,39 @@ const cascaderProps = computed<CascaderProps>(() => {
   };
 });
 
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any
-const options = ref<any>();
+const rawOptions = ref<PcaItem[]>();
 let optionsPrm: Promise<PcaItem[]>;
+
+/**
+ * 按层级裁剪省市区数据: 只保留前 level 层, 末层去掉 children 让其成为叶子节点
+ */
+function trimPcaByLevel(items: PcaItem[], level: number, depth = 1): PcaItem[] {
+  return items.map((item) => {
+    if (depth >= level || !item.children || item.children.length === 0) {
+      const rest: PcaItem = {
+        ...item,
+      };
+      delete rest.children;
+      return rest;
+    }
+    return {
+      ...item,
+      children: trimPcaByLevel(item.children, level, depth + 1),
+    };
+  });
+}
+
+const options = computed<PcaItem[] | undefined>(() => {
+  const data = rawOptions.value;
+  if (!data) {
+    return undefined;
+  }
+  const level = props.level ?? 3;
+  if (level >= 3) {
+    return data;
+  }
+  return trimPcaByLevel(data, level <= 1 ? 1 : 2);
+});
 
 const inputRef = ref<InstanceType<typeof ElCascader>>();
 
@@ -200,11 +233,12 @@ watch(
       return;
     }
     
-    if (!modelValue.value || !options.value || options.value.length === 0) {
+    const optionList = options.value;
+    if (!modelValue.value || !optionList || optionList.length === 0) {
       modelLabel.value = undefined;
     } else {
       modelLabel.value = modelValue.value.map((item) => {
-        return treeFindLabel(options.value, item);
+        return treeFindLabel(optionList, item);
       });
     }
     if (props.validateEvent !== false && options.value) {
@@ -222,7 +256,7 @@ async function initFrame() {
   if (!optionsPrm) {
     optionsPrm = findAllPcaCode();
   }
-  options.value = await optionsPrm;
+  rawOptions.value = await optionsPrm;
 }
 
 initFrame();

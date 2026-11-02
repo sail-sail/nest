@@ -1211,8 +1211,12 @@ if (searchByKeyword) {
     un-flex="~ wrap"
     un-items-center
     un-gap="y-2"
-  >
-    <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
+  ><#
+    if (hasIsDeleted) {
+    #>
+    <template v-if="search.is_deleted !== 1"><#
+    }
+    #><#
       if (opts.noAdd !== true) {
       #>
       
@@ -1738,7 +1742,9 @@ if (searchByKeyword) {
         </template>
       </el-dropdown><#
       }
-      #>
+      #><#
+    if (hasIsDeleted) {
+    #>
       
     </template>
     
@@ -1917,7 +1923,9 @@ if (searchByKeyword) {
       }
       #>
       
-    </template>
+    </template><#
+    }
+    #>
     
     <div
       un-flex="[1_0_0]"
