@@ -37,11 +37,6 @@ pub async fn find_all_tsdb_app(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_tsdb_app()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_tsdb_app(sort.as_deref())?;
   
   let models = tsdb_app_service::find_all_tsdb_app(
@@ -67,11 +62,6 @@ pub async fn find_count_tsdb_app(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_tsdb_app()),
-    String::from("find"),
-  ).await?;
-  
   let num = tsdb_app_service::find_count_tsdb_app(
     search,
     options,
@@ -93,11 +83,6 @@ pub async fn find_one_tsdb_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_tsdb_app()),
-    String::from("find"),
-  ).await?;
   
   check_sort_tsdb_app(sort.as_deref())?;
   
@@ -123,11 +108,6 @@ pub async fn find_one_ok_tsdb_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_tsdb_app()),
-    String::from("find"),
-  ).await?;
   
   check_sort_tsdb_app(sort.as_deref())?;
   
@@ -215,11 +195,6 @@ pub async fn exists_tsdb_app(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_tsdb_app()),
-    String::from("find"),
-  ).await?;
   
   let res = tsdb_app_service::exists_tsdb_app(
     search,
