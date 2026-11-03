@@ -1223,21 +1223,20 @@ pub async fn find_by_ids_ok_tsdb_app(
     return Err(eyre!(err_msg));
   }
   
-  let tsdb_app_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = tsdb_app_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 时序数据库 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<TsdbAppModel>>>()?;
+  let mut tsdb_app_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = tsdb_app_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      tsdb_app_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 时序数据库 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(tsdb_app_models)
+  Ok(tsdb_app_models_res)
 }
 
 // MARK: find_by_ids_tsdb_app
