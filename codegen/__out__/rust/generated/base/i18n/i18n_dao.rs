@@ -1110,21 +1110,20 @@ pub async fn find_by_ids_ok_i18n(
     return Err(eyre!(err_msg));
   }
   
-  let i18n_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = i18n_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 国际化 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<I18nModel>>>()?;
+  let mut i18n_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = i18n_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      i18n_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 国际化 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(i18n_models)
+  Ok(i18n_models_res)
 }
 
 // MARK: find_by_ids_i18n

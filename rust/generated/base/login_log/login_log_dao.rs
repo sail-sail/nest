@@ -961,21 +961,20 @@ pub async fn find_by_ids_ok_login_log(
     return Err(eyre!(err_msg));
   }
   
-  let login_log_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = login_log_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 登录日志 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<LoginLogModel>>>()?;
+  let mut login_log_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = login_log_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      login_log_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 登录日志 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(login_log_models)
+  Ok(login_log_models_res)
 }
 
 // MARK: find_by_ids_login_log
