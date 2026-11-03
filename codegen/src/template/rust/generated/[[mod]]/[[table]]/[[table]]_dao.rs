@@ -2922,8 +2922,15 @@ if (isUseI18n) {
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_page_path_<#=table#>().into(),
+  i18n_dao::NRoute {<#
+  if (opts?.isUseDynPageFields) {
+  #>
+    route_path: Some(get_page_path_<#=table#>(None)),<#
+  } else {
+  #>
+    route_path: Some(get_page_path_<#=table#>().to_owned()),<#
+  }
+  #>
   }
 }<#
 }
@@ -3142,11 +3149,11 @@ pub async fn get_field_comments_<#=table#>(<#
       if (inline_foreign_type === "one2many") {
         num++;
     #>
-    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=inline_column_name#>: vec[<#=String(num)#>].to_owned(),<#
       } else if (inline_foreign_type === "one2one") {
         num++;
     #>
-    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=inline_column_name#>: vec[<#=String(num)#>].to_owned(),<#
       }
     #><#
     }
@@ -3589,38 +3596,37 @@ pub async fn find_by_ids_ok_<#=table#>(
     return Err(eyre!(err_msg));
   }
   
-  let <#=table#>_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = <#=table#>_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }<#
-      if (isUseI18n) {
-      #>
-      let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = i18n_dao::ns(
-        String::from("此 {0} 已经被删除"),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
-      }
-      #>
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
+  let mut <#=table#>_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = <#=table#>_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      <#=table#>_models_res.push(model.clone());
+      continue;
+    }<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      String::from("此 {0} 已经被删除"),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(<#=table#>_models)
+  Ok(<#=table#>_models_res)
 }
 
 // MARK: find_by_ids_<#=table#>
@@ -8784,7 +8790,7 @@ pub async fn delete_by_ids_<#=table#>(
     if old_model.is_sys == 1 {<#
       if (isUseI18n) {
       #>
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
+      let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;<#
       } else {
       #>
       let err_msg = "不能删除系统记录";<#
@@ -10575,7 +10581,7 @@ pub async fn validate_is_enabled_<#=table#>(
       String::from("已禁用"),
       None,
     ).await?;
-    let err_msg = String::from(format!("{table_comment}{msg1}"));<#
+    let err_msg = format!("{table_comment}{msg1}");<#
     } else {
     #>
     let err_msg = String::from("<#=table_comment#>已禁用");<#
@@ -10608,7 +10614,7 @@ pub async fn validate_option_<#=table#>(
         String::from("不存在"),
         None,
       ).await?;
-      let err_msg = String::from(format!("{table_comment}{msg1}"));<#
+      let err_msg = format!("{table_comment}{msg1}");<#
       } else {
       #>
       let err_msg = String::from("<#=table_comment#>不存在");<#
