@@ -29,17 +29,21 @@ if (commands.length > 0) {
 }
 
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
-const publishBase = publish_cnf[projectName]?.publishBase;
+let publish_name = ecosystem.apps[0].publish_name?.replaceAll("{env}", env);
+if (!publish_name) {
+  publish_name = projectName;
+}
+const publishBase = publish_cnf[publish_name]?.publishBase;
 
 if (!publishBase) {
-  console.error(`错误: 未找到项目 ${ projectName } 的发布配置: generated/common/script/publish_cnf.js`);
+  console.error(`错误: 未找到发布配置 ${ publish_name }: generated/common/script/publish_cnf.js`);
   process.exit(1);
 }
 
 const sshConfig = {
-  host: publish_cnf[projectName].host,
-  username: publish_cnf[projectName].username,
-  password: publish_cnf[projectName].password,
+  host: publish_cnf[publish_name].host,
+  username: publish_cnf[publish_name].username,
+  password: publish_cnf[publish_name].password,
 };
 
 console.log({ ...sshConfig, password: "" });

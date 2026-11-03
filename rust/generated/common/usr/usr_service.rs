@@ -203,21 +203,19 @@ pub async fn login(
   
   // dbg!(get_password(password.clone())?);
   
+  #[cfg(not(debug_assertions))]
   if usr_model.password != get_password(password)? {
     
-    #[cfg(not(debug_assertions))]
-    {
-      create_login_log(
-        LoginLogInput {
-          username: username.clone().into(),
-          ip: ip.clone().into(),
-          is_succ: 0.into(),
-          tenant_id: tenant_id.into(),
-          ..Default::default()
-        },
-        None,
-      ).await?;
-    }
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        ip: ip.clone().into(),
+        is_succ: 0.into(),
+        tenant_id: tenant_id.into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
     
     let err_msg = n_route.n(
       String::from("用户名或密码错误"),

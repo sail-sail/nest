@@ -35,11 +35,6 @@ pub async fn find_all_i18n(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_i18n()),
-    String::from("find"),
-  ).await?;
-  
   check_sort_i18n(sort.as_deref())?;
   
   let models = i18n_service::find_all_i18n(
@@ -65,11 +60,6 @@ pub async fn find_count_i18n(
     function_name = function_name!(),
   );
   
-  use_permit(
-    String::from(get_page_path_i18n()),
-    String::from("find"),
-  ).await?;
-  
   let num = i18n_service::find_count_i18n(
     search,
     options,
@@ -91,11 +81,6 @@ pub async fn find_one_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_i18n()),
-    String::from("find"),
-  ).await?;
   
   check_sort_i18n(sort.as_deref())?;
   
@@ -121,11 +106,6 @@ pub async fn find_one_ok_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_i18n()),
-    String::from("find"),
-  ).await?;
   
   check_sort_i18n(sort.as_deref())?;
   
@@ -213,11 +193,6 @@ pub async fn exists_i18n(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  use_permit(
-    String::from(get_page_path_i18n()),
-    String::from("find"),
-  ).await?;
   
   let res = i18n_service::exists_i18n(
     search,

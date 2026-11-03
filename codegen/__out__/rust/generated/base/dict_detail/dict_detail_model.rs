@@ -43,6 +43,7 @@ fn get_can_sort_in_api_dict_detail() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DICT_DETAIL
 }
 
+/// 系统字典明细
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailModel")]
 #[allow(dead_code)]
@@ -165,6 +166,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
   }
 }
 
+/// 系统字典明细
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailFieldComment")]
 #[allow(dead_code)]
@@ -172,7 +174,7 @@ pub struct DictDetailFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: String,
   /// 系统字典
@@ -196,7 +198,7 @@ pub struct DictDetailFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -208,7 +210,7 @@ pub struct DictDetailFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -222,6 +224,7 @@ pub struct DictDetailFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 系统字典明细
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailSearch")]
 #[allow(dead_code)]
@@ -231,7 +234,7 @@ pub struct DictDetailSearch {
   /// ID列表
   pub ids: Option<Vec<DictDetailId>>,
   pub is_deleted: Option<u8>,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: Option<Vec<DictId>>,
   /// 系统字典
@@ -267,7 +270,7 @@ pub struct DictDetailSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -282,7 +285,7 @@ pub struct DictDetailSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -393,6 +396,7 @@ impl std::fmt::Debug for DictDetailSearch {
   }
 }
 
+/// 系统字典明细
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictDetailInput")]
 #[allow(dead_code)]
@@ -404,7 +408,7 @@ pub struct DictDetailInput {
   pub is_deleted: Option<u8>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 系统字典
+  /// 系统字典 [@fk:base_dict.id]
   #[graphql(name = "dict_id")]
   pub dict_id: Option<DictId>,
   /// 系统字典

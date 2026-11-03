@@ -21,8 +21,7 @@ impl MessageQuery {
       .build()
       .scope({
         message_resolver::get_my_unread_message_count()
-      })
-      .await
+      }).await
   }
 }
 

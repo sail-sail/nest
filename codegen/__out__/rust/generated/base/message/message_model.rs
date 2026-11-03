@@ -45,6 +45,7 @@ fn get_can_sort_in_api_message() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_MESSAGE
 }
 
+/// 消息
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MessageModel")]
 #[allow(dead_code)]
@@ -215,6 +216,7 @@ impl FromRow<'_, MySqlRow> for MessageModel {
   }
 }
 
+/// 消息
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "MessageFieldComment")]
 #[allow(dead_code)]
@@ -246,7 +248,7 @@ pub struct MessageFieldComment {
   /// 跳转参数
   #[graphql(name = "route_query")]
   pub route_query: String,
-  /// 发送人
+  /// 发送人 [@fk:base_usr.id]
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: String,
   /// 发送人
@@ -264,13 +266,13 @@ pub struct MessageFieldComment {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: String,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -282,7 +284,7 @@ pub struct MessageFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -296,6 +298,7 @@ pub struct MessageFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 消息
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MessageSearch")]
 #[allow(dead_code)]
@@ -341,7 +344,7 @@ pub struct MessageSearch {
   /// 跳转参数
   #[graphql(skip)]
   pub route_query_like: Option<String>,
-  /// 发送人
+  /// 发送人 [@fk:base_usr.id]
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: Option<Vec<UsrId>>,
   /// 发送人
@@ -359,7 +362,7 @@ pub struct MessageSearch {
   /// 置顶
   #[graphql(skip)]
   pub is_pinned: Option<Vec<u8>>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 所属组织
@@ -371,7 +374,7 @@ pub struct MessageSearch {
   /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
   pub org_id_lbl_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -386,7 +389,7 @@ pub struct MessageSearch {
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -531,6 +534,7 @@ impl std::fmt::Debug for MessageSearch {
   }
 }
 
+/// 消息
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "MessageInput")]
 #[allow(dead_code)]
@@ -567,7 +571,7 @@ pub struct MessageInput {
   /// 跳转参数
   #[graphql(name = "route_query")]
   pub route_query: Option<String>,
-  /// 发送人
+  /// 发送人 [@fk:base_usr.id]
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: Option<UsrId>,
   /// 发送人
@@ -585,7 +589,7 @@ pub struct MessageInput {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: Option<String>,
-  /// 所属组织
+  /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织

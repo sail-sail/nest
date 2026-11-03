@@ -45,6 +45,17 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/agent",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "智能助手",
+        component: () => import("@/views/agent/Index.vue"),
+      },
+    ],
+  },
+  {
     path: "/base",
     component: Layout1,
     children: [
@@ -64,6 +75,14 @@ const router = createRouter({
   history: createWebHashHistory(),
   strict: true,
   routes,
+});
+
+router.beforeEach((to) => {
+  const agentEnabled = String(import.meta.env.VITE_AGENT_ENABLED ?? "").trim().toLowerCase() === "true";
+  if (to.path === "/agent" && !agentEnabled) {
+    return { path: "/index" };
+  }
+  return true;
 });
 
 // router.beforeEach((to, from) => {

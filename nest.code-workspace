@@ -13,6 +13,10 @@
       "deno": false
     },
     {
+      "path": "./agent",
+      "deno": false
+    },
+    {
       "path": "./codegen",
       "deno": false
     }

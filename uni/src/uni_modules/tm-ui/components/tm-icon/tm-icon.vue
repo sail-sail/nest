@@ -90,7 +90,7 @@ const attrs = defineProps({
    */
   darkColor: {
     type: String,
-    default: "white",
+    default: "#dddddd",
   },
   /**
    * 图标是否旋转

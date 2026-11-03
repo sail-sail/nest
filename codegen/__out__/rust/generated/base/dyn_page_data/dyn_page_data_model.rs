@@ -45,6 +45,7 @@ fn get_can_sort_in_api_dyn_page_data() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_DYN_PAGE_DATA
 }
 
+/// 动态页面数据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageDataModel")]
 #[allow(dead_code)]
@@ -134,6 +135,7 @@ impl FromRow<'_, MySqlRow> for DynPageDataModel {
   }
 }
 
+/// 动态页面数据
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DynPageDataFieldComment")]
 #[allow(dead_code)]
@@ -144,7 +146,7 @@ pub struct DynPageDataFieldComment {
   /// 关联页面路由
   #[graphql(name = "ref_code")]
   pub ref_code: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -156,7 +158,7 @@ pub struct DynPageDataFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -173,6 +175,7 @@ pub struct DynPageDataFieldComment {
   pub dyn_page_data: JSONObject,
 }
 
+/// 动态页面数据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageDataSearch")]
 #[allow(dead_code)]
@@ -190,7 +193,7 @@ pub struct DynPageDataSearch {
   /// 关联页面路由
   #[graphql(name = "ref_code_like")]
   pub ref_code_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -205,7 +208,7 @@ pub struct DynPageDataSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -286,6 +289,7 @@ impl std::fmt::Debug for DynPageDataSearch {
   }
 }
 
+/// 动态页面数据
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageDataInput")]
 #[allow(dead_code)]

@@ -2,6 +2,10 @@ import {
   UniqueType,
 } from "#/types.ts";
 
+import {
+  importModelsByChunk,
+} from "@/utils/excel_util.ts";
+
 import type {
   Query,
   Mutation,
@@ -611,6 +615,9 @@ export async function findAllPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllPermit: PermitModel[];
   } = await query({
@@ -699,6 +706,9 @@ export async function findAllFieldPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllFieldPermit: FieldPermitModel[];
   } = await query({
@@ -885,38 +895,21 @@ export async function importModelsRole(
   opt.showErrMsg = false;
   opt.notLoading = true;
   
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await createsRole(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
-  }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  // 后端 creates 为单事务: 一批中任意一条失败则整批回滚, 无法直接得知出错的行;
+  // importModelsByChunk 在失败时二分拆分重试, 以定位到具体行并给出准确的成败条数
+  return importModelsByChunk(
+    inputs,
+    (items) => createsRole(
+      items,
+      UniqueType.Update,
+      opt,
+    ),
+    percentage,
+    isCancel,
+    (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? `第 ${ rowStart } 行导入失败: ${ err }`
+      : `第 ${ rowStart } 至 ${ rowEnd } 行导入失败(整批回滚): ${ err }`,
+  );
 }
 
 /**

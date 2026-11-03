@@ -44,6 +44,7 @@ fn get_can_sort_in_api_data_permit() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_DATA_PERMIT
 }
 
+/// 数据权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
 #[allow(dead_code)]
@@ -167,6 +168,7 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
   }
 }
 
+/// 数据权限
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitFieldComment")]
 #[allow(dead_code)]
@@ -174,7 +176,7 @@ pub struct DataPermitFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: String,
   /// 菜单
@@ -195,7 +197,7 @@ pub struct DataPermitFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -207,7 +209,7 @@ pub struct DataPermitFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -221,6 +223,7 @@ pub struct DataPermitFieldComment {
   pub update_time_lbl: String,
 }
 
+/// 数据权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitSearch")]
 #[allow(dead_code)]
@@ -232,7 +235,7 @@ pub struct DataPermitSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
@@ -256,7 +259,7 @@ pub struct DataPermitSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -271,7 +274,7 @@ pub struct DataPermitSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -371,6 +374,7 @@ impl std::fmt::Debug for DataPermitSearch {
   }
 }
 
+/// 数据权限
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitInput")]
 #[allow(dead_code)]
@@ -385,7 +389,7 @@ pub struct DataPermitInput {
   pub tenant_id: Option<TenantId>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 菜单
+  /// 菜单 [@fk:base_menu.id]
   #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单

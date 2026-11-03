@@ -137,7 +137,6 @@ mod tests {
 
         assert_eq!(receiver_models.len(), 1);
         Ok(())
-      })
-      .await
+      }).await
   }
 }

@@ -49,6 +49,7 @@ fn get_can_sort_in_api_dictbiz() -> &'static [&'static str; 3] {
   &CAN_SORT_IN_API_DICTBIZ
 }
 
+/// 业务字典
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizModel")]
 #[allow(dead_code)]
@@ -187,6 +188,7 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
   }
 }
 
+/// 业务字典
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizFieldComment")]
 #[allow(dead_code)]
@@ -221,7 +223,7 @@ pub struct DictbizFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
@@ -233,7 +235,7 @@ pub struct DictbizFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
@@ -245,8 +247,12 @@ pub struct DictbizFieldComment {
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
+  /// 业务字典明细
+  #[graphql(name = "dictbiz_detail")]
+  pub dictbiz_detail: String,
 }
 
+/// 业务字典
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictbizSearch")]
 #[allow(dead_code)]
@@ -290,7 +296,7 @@ pub struct DictbizSearch {
   /// 备注
   #[graphql(name = "rem_like")]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -305,7 +311,7 @@ pub struct DictbizSearch {
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -417,6 +423,7 @@ impl std::fmt::Debug for DictbizSearch {
   }
 }
 
+/// 业务字典
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictbizInput")]
 #[allow(dead_code)]

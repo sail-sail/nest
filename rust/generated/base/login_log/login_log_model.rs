@@ -43,6 +43,7 @@ fn get_can_sort_in_api_login_log() -> &'static [&'static str; 2] {
   &CAN_SORT_IN_API_LOGIN_LOG
 }
 
+/// 登录日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogModel")]
 #[allow(dead_code)]
@@ -160,6 +161,7 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
   }
 }
 
+/// 登录日志
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogFieldComment")]
 #[allow(dead_code)]
@@ -193,6 +195,7 @@ pub struct LoginLogFieldComment {
   pub create_time_lbl: String,
 }
 
+/// 登录日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogSearch")]
 #[allow(dead_code)]
@@ -225,7 +228,7 @@ pub struct LoginLogSearch {
   /// 登录时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 创建人
+  /// 创建人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
@@ -237,7 +240,7 @@ pub struct LoginLogSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_lbl_like: Option<String>,
-  /// 更新人
+  /// 更新人 [@fk:base_usr.id]
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
@@ -331,6 +334,7 @@ impl std::fmt::Debug for LoginLogSearch {
   }
 }
 
+/// 登录日志
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogInput")]
 #[allow(dead_code)]

@@ -1,0 +1,10 @@
+node_modules/
+.dsh/
+.env
+*.log
+mcp.config.json
+dist/
+
+# dsh 工作目录只保留说明文件
+workspace/*
+!workspace/AGENTS.md

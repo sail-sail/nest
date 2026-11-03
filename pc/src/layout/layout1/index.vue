@@ -300,14 +300,15 @@
                       <span>{{ ns('关闭其它') }}</span>
                     </el-dropdown-item>
                     
+                    <!-- 智能助手 -->
                     <el-dropdown-item
-                      v-if="usrStore.isAdmin()"
-                      @click="onClearCache"
+                      v-if="config.agentEnabled"
+                      @click="onOpenAgent"
                     >
                       <ElIcon>
-                        <ElIconDelete />
+                        <ElIconComment />
                       </ElIcon>
-                      <span>{{ ns('清空缓存') }}</span>
+                      <span>{{ ns('智能助手') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -328,6 +329,16 @@
                         <ElIconLock />
                       </ElIcon>
                       <span>{{ ns('修改密码') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      v-if="usrStore.isAdmin()"
+                      @click="onClearCache"
+                    >
+                      <ElIcon>
+                        <ElIconDelete />
+                      </ElIcon>
+                      <span>{{ ns('清空缓存') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -422,7 +433,13 @@
   <ChangePassword
     ref="changePasswordRef"
   ></ChangePassword>
-  
+
+  <!-- 智能助手 -->
+  <AgentChatDrawer
+    un-opacity="50"
+    v-if="config.agentEnabled && usrStore.authorization"
+  ></AgentChatDrawer>
+
 </el-splitter>
 </template>
 
@@ -434,6 +451,8 @@ import Tabs from "./Tabs.vue";
 import Login from "../Login.vue";
 
 import ChangePassword from "../change_password/ChangePassword.vue";
+
+import AgentChatDrawer from "@/components/AgentChatDrawer.vue";
 
 import {
   getLoginInfo,
@@ -664,6 +683,13 @@ function closeOtherTabs() {
   if (tabsStore.actTab) {
     tabsStore.closeOtherTabs(tabsStore.actTab);
   }
+}
+
+async function onOpenAgent() {
+  if (!config.agentEnabled) return;
+  await router.push({
+    path: "/agent",
+  });
 }
 
 // 清空缓存

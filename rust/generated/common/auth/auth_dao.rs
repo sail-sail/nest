@@ -31,20 +31,34 @@ static JWT_VALIDATION: LazyLock<Validation> = LazyLock::new(|| {
   validation
 });
 
+fn strip_bearer_prefix(token: &str) -> &str {
+  let token = token.trim();
+  let Some((scheme, rest)) = token.split_once(char::is_whitespace) else {
+    return token;
+  };
+  if scheme.eq_ignore_ascii_case("Bearer") {
+    return rest.trim();
+  }
+  token
+}
+
 pub fn get_auth_model_by_token(
   token: impl AsRef<str>,
 ) -> Result<AuthModel> {
-  let token = token.as_ref().replace("Bearer ", "");
-  let mut token: &str = token.as_ref();
-  if token.starts_with("Bearer ") {
-    token = utf8_slice::from(token, 7);
+  let token = strip_bearer_prefix(token.as_ref());
+  let token = token.trim();
+  if token.starts_with("mcp_at_") || token.starts_with("mcp_rt_") {
+    return Err(eyre!(ServiceException {
+      message: format!("token解析失败: oauth token 无效或已过期: {token}"),
+      ..Default::default()
+    }));
   }
   let decoded = decode::<AuthModel>(
     token,
     &JWT_DECODING_KEY,
     &JWT_VALIDATION,
   ).map_err(|e| eyre!(ServiceException {
-    message: format!("token解析失败: {e}"),
+    message: format!("token解析失败: {e}: {token}"),
     ..Default::default()
   }))?;
   let auth_model = decoded.claims;
@@ -98,7 +112,8 @@ mod test {
 
   use crate::common::auth::auth_dao::get_auth_model_by_token;
 
-  use super::get_password;
+  use crate::common::auth::auth_model::AuthModel;
+  use super::{get_password, get_token_by_auth_model};
   
   #[derive(serde::Deserialize, serde::Serialize)]
   struct Claims {
@@ -113,7 +128,7 @@ mod test {
     let decoding_key = DecodingKey::from_secret(b"38e52379-9e94-467c-8e63-17ad318fc845");
     let mut validation = Validation::default();
     validation.validate_exp = false;
-    
+
     // let token: &str = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjlMbW5xaExJVHpLc2tGTy9sY1hScUEiLCJkZXB0X2lkIjoiUi9WSFcwa3pSeEs5dEc4bUlITWRiUSIsImxhbmciOiJ6aC1jbiIsImV4cCI6MTY4MDYyNTA5N30.BDbu_mJXsECJnnRiOmf10fEniE8RZ0E_77lZYXL5X8Q";
     let token2 = encode(
       &Header::default(),
@@ -124,15 +139,28 @@ mod test {
       },
       &encoding_key,
     ).unwrap();
-    
+
     let _claims = decode::<Claims>(
       &token2,
       &decoding_key,
       &validation,
     ).unwrap().claims;
-    
+
     // Claims { id: "9LmnqhLITzKskFO/lcXRqA", wx_usr_id: None, exp: 1680625097 }
     // println!("{:?}", claims);
+  }
+
+  #[test]
+  fn test_lowercase_bearer_scheme() {
+    let mut auth_model = AuthModel::default();
+    auth_model.exp = 2_000_000_000;
+
+    let token = get_token_by_auth_model(&auth_model).unwrap();
+    let round_trip = get_auth_model_by_token(format!("bearer {token}")).unwrap();
+
+    assert_eq!(round_trip.id, auth_model.id);
+    assert_eq!(round_trip.tenant_id, auth_model.tenant_id);
+    assert_eq!(round_trip.exp, auth_model.exp);
   }
   
   #[test]

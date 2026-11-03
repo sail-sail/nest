@@ -153,7 +153,14 @@ if (searchByKeyword) {
   un-h="full"
   un-p="l-1.5 r-1.5 t-1.5"
   un-box-border
->
+><#
+  if (opts?.isFindPermit) {
+  #>
+  <template
+    v-if="permit('find', '查看')"
+  ></template><#
+  }
+  #>
   <div
     un-m="x-1.5"
     un-overflow-auto
@@ -464,7 +471,7 @@ if (searchByKeyword) {
           prop="<#=column_name#>"
         >
           <CustomInput
-            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            v-model="search.<#=column_name#>_lbl_like"<#
             if (isUseI18n) {
             #>
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
@@ -1169,7 +1176,6 @@ if (searchByKeyword) {
             un-cursor-pointer
             un-flex="~"
             un-justify-end
-            un-h="5.5"
             un-overflow-hidden
             @click="isSearchExpand = !isSearchExpand"
           ><#
@@ -1205,8 +1211,12 @@ if (searchByKeyword) {
     un-flex="~ wrap"
     un-items-center
     un-gap="y-2"
-  >
-    <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
+  ><#
+    if (hasIsDeleted) {
+    #>
+    <template v-if="search.is_deleted !== 1"><#
+    }
+    #><#
       if (opts.noAdd !== true) {
       #>
       
@@ -1732,7 +1742,9 @@ if (searchByKeyword) {
         </template>
       </el-dropdown><#
       }
-      #>
+      #><#
+    if (hasIsDeleted) {
+    #>
       
     </template>
     
@@ -1911,7 +1923,9 @@ if (searchByKeyword) {
       }
       #>
       
-    </template>
+    </template><#
+    }
+    #>
     
     <div
       un-flex="[1_0_0]"

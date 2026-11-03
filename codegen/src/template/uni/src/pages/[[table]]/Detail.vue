@@ -8,6 +8,61 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const inlineForeignTabs = (opts?.inlineForeignTabs || [ ]).filter((item) => item.onlyCodegenDeno !== true);
 const hasInlineForeignTabs = inlineForeignTabs.length > 0;
+// 选择省市县区: 按实际配置的字段决定可选层级, 每级必须 code + lbl 成对存在
+let province_code_column = undefined;
+let province_lbl_column = undefined;
+let city_code_column = undefined;
+let city_lbl_column = undefined;
+let county_code_column = undefined;
+let county_lbl_column = undefined;
+let address_column = undefined;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.isProvinceCode) {
+    province_code_column = column;
+  }
+  if (column.isProvinceLbl) {
+    province_lbl_column = column;
+  }
+  if (column.isCityCode) {
+    city_code_column = column;
+  }
+  if (column.isCityLbl) {
+    city_lbl_column = column;
+  }
+  if (column.isCountyCode) {
+    county_code_column = column;
+  }
+  if (column.isCountyLbl) {
+    county_lbl_column = column;
+  }
+  if (column.isAddress) {
+    address_column = column;
+  }
+}
+// 地址选择层级: 0 无, 1 省, 2 省市, 3 省市区
+let pca_level = 0;
+if (province_code_column && province_lbl_column) {
+  pca_level = 1;
+  if (city_code_column && city_lbl_column) {
+    pca_level = 2;
+    if (county_code_column && county_lbl_column) {
+      pca_level = 3;
+    }
+  }
+}
+// 地址选择器在表单里承载的字段: 最深一级的名称字段
+const pca_lbl_column = pca_level === 3 ? county_lbl_column : pca_level === 2 ? city_lbl_column : pca_level === 1 ? province_lbl_column : undefined;
+// 由浅到深的代码字段
+const pca_code_columns = [ province_code_column, city_code_column, county_code_column ].slice(0, pca_level);
+// 元组类型, 如 [string, string]
+const pca_tuple_types = Array.from({ length: pca_level }, function() {
+  return "string";
+}).join(", ");
+// 承载字段即使 onlyCodegenDeno 也要在前端生成
+function isPcaLblColumn(column) {
+  return pca_lbl_column != null && column.COLUMN_NAME === pca_lbl_column.COLUMN_NAME;
+}
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -91,49 +146,6 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
-// 选择省市县区
-let province_code_column = undefined;
-let province_lbl_column = undefined;
-let city_code_column = undefined;
-let city_lbl_column = undefined;
-let county_code_column = undefined;
-let county_lbl_column = undefined;
-let address_column = undefined;
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  const column_name = column.COLUMN_NAME;
-  if (column.isProvinceCode) {
-    province_code_column = column;
-  }
-  if (column.isProvinceLbl) {
-    province_lbl_column = column;
-  }
-  if (column.isCityCode) {
-    city_code_column = column;
-    if (!province_code_column) {
-      throw new Error("没有配置省份字段");
-    }
-  }
-  if (column.isCityLbl) {
-    city_lbl_column = column;
-  }
-  if (column.isCountyCode) {
-    county_code_column = column;
-    if (!city_lbl_column) {
-      throw new Error("没有配置城市字段");
-    }
-  }
-  if (column.isCountyLbl) {
-    county_lbl_column = column;
-  }
-  if (column.isAddress) {
-    address_column = column;
-  }
-  if (province_code_column && province_lbl_column && city_code_column && city_lbl_column && county_code_column && county_lbl_column && address_column) {
-    break;
-  }
-}
-
 // 根据关键字搜索
 let searchByKeyword = opts?.searchByKeyword;
 
@@ -202,11 +214,11 @@ if (right_field && !right_field_column) {
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         const column_name = column.COLUMN_NAME;
-        if (column.onlyCodegenDeno) {
+        if (column.onlyCodegenDeno && !isPcaLblColumn(column)) {
           continue;
         }
         if (column.ignoreCodegen) continue;
-        if (column.onlyCodegenDeno) continue;
+        if (column.onlyCodegenDeno && !isPcaLblColumn(column)) continue;
         if (column.noDetail) continue;
         if (column_name === "id") continue;
         if (column_name === "is_locked") continue;
@@ -731,7 +743,7 @@ if (right_field && !right_field_column) {
             ></CustomInput>
           </tm-form-item>
         </template><#
-        } else if (column.isCountyLbl) {
+        } else if (isPcaLblColumn(column)) {
         #>
         
         <!-- <#=column_comment#> -->
@@ -767,6 +779,11 @@ if (right_field && !right_field_column) {
           >
             <CustomCityPicker
               v-model="<#=column_name#>_city_picker"<#
+              if (pca_level != 3) {
+              #>
+              :level="<#=pca_level#>"<#
+              }
+              #><#
               if (placeholderInForm) {
               #>
               placeholder="<#=placeholderInForm#>"<#
@@ -1458,7 +1475,7 @@ if (right_field && !right_field_column) {
 
           <CustomActionButton
             v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
             "
             report
             disabled
@@ -1496,7 +1513,7 @@ if (right_field && !right_field_column) {
 
           <CustomActionButton
             v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
             "
             report
             color="success"
@@ -1760,7 +1777,7 @@ import {<#
 } from "./Api.ts";
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";<#
-if (county_lbl_column) {
+if (pca_lbl_column) {
 #>
 
 import {
@@ -1829,31 +1846,36 @@ let <#=table#>_id = $ref<<#=Table_Up#>Id>();
 
 let <#=table#>_input = $ref<<#=Table_Up#>Input>({ });
 let <#=table#>_model = $ref<<#=Table_Up#>Model>();<#
-if (county_lbl_column) {
+if (pca_lbl_column) {
 #>
 
 /** 选择省市区县 */
-const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string, string] | undefined>({
+const <#=pca_lbl_column.COLUMN_NAME#>_city_picker = $computed<[<#=pca_tuple_types#>] | undefined>({
   get() {
-    return [
-      <#=table#>_input.<#=province_code_column.COLUMN_NAME#> ?? "",
-      <#=table#>_input.<#=city_code_column.COLUMN_NAME#> ?? "",
-      <#=table#>_input.<#=county_code_column.COLUMN_NAME#> ?? "",
-    ] as [string, string, string];
+    return [<#
+      for (let i = 0; i < pca_code_columns.length; i++) {
+    #>
+      <#=table#>_input.<#=pca_code_columns[i].COLUMN_NAME#> ?? "",<#
+      }
+    #>
+    ] as [<#=pca_tuple_types#>];
   },
-  async set(codes) {
-    const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
-    const <#=province_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=province_code_column.COLUMN_NAME#>);
-    const <#=city_code_column.COLUMN_NAME#> = codes?.[1] ?? "";
-    const <#=city_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=city_code_column.COLUMN_NAME#>);
-    const <#=county_code_column.COLUMN_NAME#> = codes?.[2] ?? "";
-    const <#=county_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=county_code_column.COLUMN_NAME#>);
-    <#=table#>_input.<#=province_code_column.COLUMN_NAME#> = <#=province_code_column.COLUMN_NAME#>;
-    <#=table#>_input.<#=province_lbl_column.COLUMN_NAME#> = <#=province_lbl_column.COLUMN_NAME#>;
-    <#=table#>_input.<#=city_code_column.COLUMN_NAME#> = <#=city_code_column.COLUMN_NAME#>;
-    <#=table#>_input.<#=city_lbl_column.COLUMN_NAME#> = <#=city_lbl_column.COLUMN_NAME#>;
-    <#=table#>_input.<#=county_code_column.COLUMN_NAME#> = <#=county_code_column.COLUMN_NAME#>;
-    <#=table#>_input.<#=county_lbl_column.COLUMN_NAME#> = <#=county_lbl_column.COLUMN_NAME#>;
+  async set(codes) {<#
+    for (let i = 0; i < pca_code_columns.length; i++) {
+      const code_column = pca_code_columns[i];
+      const lbl_column = [ province_lbl_column, city_lbl_column, county_lbl_column ][i];
+    #>
+    const <#=code_column.COLUMN_NAME#> = codes?.[<#=i.toString()#>] ?? "";
+    const <#=lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=code_column.COLUMN_NAME#>);<#
+    }
+    for (let i = 0; i < pca_code_columns.length; i++) {
+      const code_column = pca_code_columns[i];
+      const lbl_column = [ province_lbl_column, city_lbl_column, county_lbl_column ][i];
+    #>
+    <#=table#>_input.<#=code_column.COLUMN_NAME#> = <#=code_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=lbl_column.COLUMN_NAME#> = <#=lbl_column.COLUMN_NAME#>;<#
+    }
+  #>
   },
 });<#
 }
@@ -1863,11 +1885,11 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     const column_name = column.COLUMN_NAME;
-    if (column.onlyCodegenDeno) {
+    if (column.onlyCodegenDeno && !isPcaLblColumn(column)) {
       continue;
     }
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !isPcaLblColumn(column)) continue;
     if (column.noDetail) continue;
     if (column.autoCode) continue;
     if (column_name === "id") continue;
