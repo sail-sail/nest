@@ -346,6 +346,13 @@ async fn fetch_send_card_msg(
   Ok(Some(data))
 }
 
+/// 是否真正发送企微消息: 由 .env 的 wxwork_msg_enable 控制, 未配置或非 true 时只打印日志
+fn is_wxwork_msg_enable() -> bool {
+  std::env::var("wxwork_msg_enable")
+    .map(|value| value.trim().eq_ignore_ascii_case("true"))
+    .unwrap_or(false)
+}
+
 /// 发送卡片消息
 #[allow(dead_code)]
 pub async fn send_card_msg(
@@ -355,19 +362,18 @@ pub async fn send_card_msg(
   
   let req_id = get_req_id();
   
+  if !is_wxwork_msg_enable() {
+    info!(
+      "{req_id} 企微消息发送未开启(wxwork_msg_enable != true), 仅打印日志不发送: {msg}",
+      msg = serde_json::to_string(&input)?,
+    );
+    return Ok(false);
+  }
+  
   info!(
     "{req_id} 发送卡片消息: {msg}",
     msg = serde_json::to_string(&input)?,
   );
-  
-  let wxwork_msg_enable = std::env::var("wxwork_msg_enable")
-    .unwrap_or_else(|_| "false".to_string())
-    .trim()
-    .to_ascii_lowercase();
-  
-  if wxwork_msg_enable != "true" {
-    return Ok(false);
-  }
   
   if input.touser.is_empty() {
     return Ok(false);
@@ -469,6 +475,7 @@ pub async fn send_message_wxwork(
   receiver_usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<MessageModel> {
+  let req_id = get_req_id();
   let sender_usr_id = get_auth_id_ok()?;
   let mut message_input = normalize_wecom_system_message(input);
   message_input.sender_usr_id = Some(sender_usr_id);
@@ -498,6 +505,22 @@ pub async fn send_message_wxwork(
   }
 
   if receiver_usr_ids.is_empty() {
+    return Ok(message);
+  }
+
+  // 企微推送开关未开启时只打印日志, 应用内消息照常写入数据库
+  if !is_wxwork_msg_enable() {
+    info!(
+      "{req_id} 企微消息发送未开启(wxwork_msg_enable != true), 仅打印日志不发送: {msg}",
+      msg = serde_json::to_string(&json!({
+        "message_id": &message.id,
+        "receiver_usr_ids": &receiver_usr_ids,
+        "title": &title,
+        "content": &content,
+        "route_path": &route_path,
+        "route_query": &route_query,
+      }))?,
+    );
     return Ok(message);
   }
 
