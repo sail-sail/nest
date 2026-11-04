@@ -867,21 +867,20 @@ pub async fn find_by_ids_ok_wxw_oa_approval_detail(
     return Err(eyre!(err_msg));
   }
   
-  let wxw_oa_approval_detail_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = wxw_oa_approval_detail_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 审批申请详情 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxwOaApprovalDetailModel>>>()?;
+  let mut wxw_oa_approval_detail_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = wxw_oa_approval_detail_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      wxw_oa_approval_detail_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 审批申请详情 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(wxw_oa_approval_detail_models)
+  Ok(wxw_oa_approval_detail_models_res)
 }
 
 // MARK: find_by_ids_wxw_oa_approval_detail
