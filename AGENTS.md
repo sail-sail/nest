@@ -1,22 +1,4 @@
 # 项目指引
 
-## 结构
-- `nest.code-workspace` - VSCode 工作区
-- `rust/` - GraphQL 后端 (Rust)
-- `agent/` - 业务智能体服务 (Node + DeepSeek Harness)
-- `pc/` - 前端 (Vite/Vue 3)
-- `uni/` - 小程序前端
-- `codegen/` - 代码生成器
-
-## 各端 AGENTS.md 位置
-- `rust/AGENTS.md`
-- `agent/AGENTS.md`
-- `pc/AGENTS.md`
-- `uni/AGENTS.md`
-- `codegen/AGENTS.md`
-
-## 技能位置
-- 后端: `rust/.agents/skills/`
-- 智能体: `agent/skills/`
-- 前端: `pc/.agents/skills/`
-- 代码生成: `codegen/.agents/skills/`
+- `rust/` GraphQL 后端(Rust) · `agent/` 业务智能体服务(Node + DeepSeek Harness) · `pc/` 前端(Vite/Vue 3) · `uni/` 小程序 · `codegen/` 代码生成器
+- 技能: `rust/.agents/skills/`、`agent/skills/`、`pc/.agents/skills/`、`codegen/.agents/skills/`

@@ -1022,21 +1022,20 @@ pub async fn find_by_ids_ok_lang(
     return Err(eyre!(err_msg));
   }
   
-  let lang_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = lang_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 语言 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<LangModel>>>()?;
+  let mut lang_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = lang_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      lang_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 语言 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(lang_models)
+  Ok(lang_models_res)
 }
 
 // MARK: find_by_ids_lang

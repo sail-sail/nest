@@ -1004,8 +1004,8 @@ pub async fn creates_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("新增"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("新增"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1322,8 +1322,8 @@ pub async fn audit_reverse_<#=table#>(
   if (isUseI18n) {
   #>
 
-  let method_lbl = ns(String::from("反审核"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("反审核"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
 
@@ -1404,8 +1404,8 @@ pub async fn audit_pass_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("审核通过"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("审核通过"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1488,8 +1488,8 @@ pub async fn audit_reject_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("审核拒绝"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("审核拒绝"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1572,8 +1572,8 @@ pub async fn audit_review_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("复核通过"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("复核通过"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1669,8 +1669,8 @@ pub async fn delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("删除"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("删除"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1756,8 +1756,8 @@ pub async fn default_by_id_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("默认"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("默认"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -1870,9 +1870,9 @@ pub async fn enable_by_ids_<#=table#>(
   
   let method_lbl = {
     if is_enabled == 0 {
-      ns(String::from("禁用"), options).await?
+      ns(String::from("禁用"), None).await?
     } else {
-      ns(String::from("启用"), options).await?
+      ns(String::from("启用"), None).await?
     }
   };<#
   } else {
@@ -1896,7 +1896,7 @@ pub async fn enable_by_ids_<#=table#>(
   };<#
   if (isUseI18n) {
   #>
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   let table_comment = String::from("<#=table_comment#>");<#
@@ -2123,8 +2123,8 @@ pub async fn revert_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("还原"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("还原"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
@@ -2210,8 +2210,8 @@ pub async fn force_delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns(String::from("彻底删除"), options).await?;
-  let table_comment = ns(String::from("<#=table_comment#>"), options).await?;<#
+  let method_lbl = ns(String::from("彻底删除"), None).await?;
+  let table_comment = ns(String::from("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   

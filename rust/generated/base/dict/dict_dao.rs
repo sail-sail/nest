@@ -1167,21 +1167,20 @@ pub async fn find_by_ids_ok_dict(
     return Err(eyre!(err_msg));
   }
   
-  let dict_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = dict_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 系统字典 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DictModel>>>()?;
+  let mut dict_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = dict_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      dict_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 系统字典 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(dict_models)
+  Ok(dict_models_res)
 }
 
 // MARK: find_by_ids_dict
