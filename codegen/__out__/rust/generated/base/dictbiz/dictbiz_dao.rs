@@ -1188,21 +1188,20 @@ pub async fn find_by_ids_ok_dictbiz(
     return Err(eyre!(err_msg));
   }
   
-  let dictbiz_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = dictbiz_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 业务字典 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DictbizModel>>>()?;
+  let mut dictbiz_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = dictbiz_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      dictbiz_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 业务字典 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(dictbiz_models)
+  Ok(dictbiz_models_res)
 }
 
 // MARK: find_by_ids_dictbiz

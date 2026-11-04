@@ -806,21 +806,20 @@ pub async fn find_by_ids_ok_permit(
     return Err(eyre!(err_msg));
   }
   
-  let permit_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = permit_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 按钮权限 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<PermitModel>>>()?;
+  let mut permit_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = permit_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      permit_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 按钮权限 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(permit_models)
+  Ok(permit_models_res)
 }
 
 // MARK: find_by_ids_permit

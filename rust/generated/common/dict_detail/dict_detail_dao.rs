@@ -33,7 +33,7 @@ pub async fn get_dict<T: AsRef<str>>(
   
   let mut args = QueryArgs::new();
   let mut lang_join = "";
-  let mut lang_select = "";
+  let mut lang_select = "null as lbl_lang,";
   
   if server_i18n_enable {
     let lang_id = get_lang_id().await?;
@@ -46,8 +46,6 @@ pub async fn get_dict<T: AsRef<str>>(
       args.push(lang_id.into());
       lang_select = "base_dict_detail_lang.lbl as lbl_lang,";
     }
-  } else {
-    lang_select = "null as lbl_lang,";
   }
   let lang_join = lang_join;
   let lang_select = lang_select;

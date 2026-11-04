@@ -950,21 +950,20 @@ pub async fn find_by_ids_ok_operation_record(
     return Err(eyre!(err_msg));
   }
   
-  let operation_record_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = operation_record_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 操作记录 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<OperationRecordModel>>>()?;
+  let mut operation_record_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = operation_record_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      operation_record_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 操作记录 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(operation_record_models)
+  Ok(operation_record_models_res)
 }
 
 // MARK: find_by_ids_operation_record
