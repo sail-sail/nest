@@ -17,9 +17,15 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 
 - 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
 - 默认安全顺序是：先 `pnpm run importCsv` 导入新菜单/字典，再生成新增修改删除字段 SQL 出来给人类去数据库执行
+- **新增表不能依赖 `pnpm run sql-alter`**：它只拿 git index 里已存在的表做对比，新文件在 index 里没有基版，会被直接跳过；新表的 `CREATE TABLE` 段要交给人手工执行
+- AI 只负责写 SQL 和 `{mod}.ts`，不连库、不跑 `npm run codegen`
+- 明细表(子表)的菜单固定 `is_hidden=1`，不作为独立页面入口
 
 ## 表路径
 `codegen/src/tables/{mod}/{mod}.sql`
+
+- 同目录下的 `*.sql.csv` 是**数据导入文件**(菜单/字典/初始化数据)，不是表结构；表结构只在 `{mod}.sql`
+- 模块已存在时只改 `{mod}.sql` 和 `{mod}.ts`，**不要动** `src/tables/tables.ts`
 
 ## 表名格式
 
@@ -54,6 +60,8 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 - `tenant_id` 只在该表数据需要按租户隔离、过滤或鉴权时添加；单租户表、系统全局表不要添加
 - `lbl` 是绝大多数业务主表的基础显示字段；纯中间表、日志表、令牌表这类不面向业务展示的表可以没有 `lbl`
 - 如果出现字段重名、字段语义冲突，或现有字段类型与本页规则冲突，先返回明确错误点，不要继续拼接 SQL
+- 每个列都必须写 `COMMENT`，codegen 读到空注释会直接报错 `column comment is empty`
+- 表也必须写 `COMMENT='中文表名'`，codegen 用它当表标签/页面标题
 
 ## 字典字段
 
@@ -92,10 +100,10 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 - `reviewed`: 已复核
 - `rejected`: 审核拒绝
 
-如果业务没有“复核”环节，可以去掉 `reviewed`，只保留：
+如果业务没有“复核”环节，可以去掉 `reviewed`，只保留 4 个值：
 
 ```sql
-`audit` ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+`audit` ENUM('unsubmited', 'unaudited', 'audited', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
 ```
 
 - `audit` 字段属于系统字典字段，必须保持 `dict:audit`
@@ -182,6 +190,8 @@ SQL 建好后，必须继续阅读 [table-config/SKILL.md](../table-config/SKILL
 - 外键命名：`{foreignTable}_id`（**不带**模块名 `{mod}_` 前缀），如 `usr_id`
 - 冗余标签命名：`{foreignTable}_id_lbl`，如 `usr_id_lbl`
 - 冗余标签字段按需添加，一般业务表都需要；长度允许大于 45（如主表 `lbl` 是 varchar(50/100) 时对齐）
+- 字段名一般等于「被引用表名去掉模块前缀」：`presale_tech_id` → `scrm_presale_tech`，codegen 靠这个自动推断外键。对不上时（`client_lead_usr_id`、`biz_id` 这类）必须在 `{mod}.ts` 里显式写 `foreignKey` 或 `notForeignKeyById: true`，否则 codegen 报 `table2_name not found`
+- `{foreignTable}_id_lbl` 的 varchar 长度一般对齐被引用表的 `lbl`
 
 ## 多对多中间表
 

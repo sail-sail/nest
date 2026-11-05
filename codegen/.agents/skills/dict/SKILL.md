@@ -89,6 +89,12 @@ npm run uuid -- 4  # 生成需要的 UUID 数量
 npm run importCsv -- {mod}/base_dictbiz.{mod}
 npm run importCsv -- {mod}/base_dictbiz_detail.{mod}
 ```
+或者
+```bash
+pnpm run uuid 4  # 生成需要的 UUID 数量
+pnpm run importCsv {mod}/base_dictbiz.{mod}
+pnpm run importCsv {mod}/base_dictbiz_detail.{mod}
+```
 
 ## 内置系统字典
 
