@@ -78,6 +78,8 @@ ec_order: {
 },
 ```
 
+- 每个表块上方写一行 `// 中文表名` 注释，与 `{mod}.sql` 里的 `-- 中文表名` 对应
+
 ### 5. 新表生成前的安全执行顺序
 
 - 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
@@ -110,6 +112,15 @@ ec_order: {
 | 所有 `is_*` 布尔字段 | `isSwitch` 默认 true，显示文本或只读时要显式 `isSwitch: false` |
 | `order_by` | 无需配置 |
 | `isFluentEditor` | noList 默认 true |
+
+## 不用手写的配置(别漏也别乱加)
+
+| 配置 | 原因 |
+|------|------|
+| `opts.hasSelectInput` | 被别的表用 `selectType: "selectInput"` 引用时自动为 true |
+| `opts.uniques` 里的自动编号字段 | `autoCode` 自动追加 |
+| 字典字段的 `foreignKey` | 有 `dict:` / `dictbiz:` 标注就自动识别 |
+| `defaultSort`(表里有 `autoCode` 时) | 自动用编号字段降序 |
 
 ## 常用 opts 配置
 
@@ -422,8 +433,10 @@ ec_order: {
 ```
 
 - `onlyCodegenDeno`: 只生成后端，不生成到前端
+- `onlyCodegenDenoButApi`: 只生成后端，但生成到前端的`Api.ts`字段
 - 序列字段必须在 SQL 中建出并在 columns 中写出（配 `onlyCodegenDeno: true`），codegen 会校验存在性，缺失会报错
 - 带 `autoCode` 的字段自动追加唯一约束（无 dateSeq 时 `[字段]`，有 dateSeq 时 `[dateSeq, 字段]`），`opts.uniques` 无需再手写该字段
+- 带 `autoCode` 还会自动加 `search` / `sortable`，未配 `defaultSort` 时自动用该字段降序
 
 ## COLUMN_DEFAULT 特殊默认值
 
@@ -437,6 +450,10 @@ ec_order: {
 | `CURRENT_USERNAME` | 当前用户名 |
 | `CURRENT_DATE` / `CURRENT_DATETIME` | 当前日期/时间 |
 | `start_of_day` ~ `end_of_second` | dayjs 时间范围 |
+
+- **前端默认值只有这一个来源**：配置里没有 `defaultValue` 项。数值要"默认 0"就写 SQL `NOT NULL DEFAULT 0`，日期要"默认今天"就写 `DEFAULT (CURRENT_DATE)` 并在配置里标 `COLUMN_DEFAULT: "CURRENT_DATE"`
+- 数字字段 `require: true` 只生成 `el-form` 的 required 规则，`0` 算已填；要"必须大于 0"得加 `validators: [{ minimum: 1 }]`
+- 数字字段默认 `isHideZero = true`(值为 0 时页面上不显示)，业务上 0 有意义时显式写 `isHideZero: false`
 
 ## 密码字段 (isPassword)
 
