@@ -1087,7 +1087,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }
@@ -1118,7 +1118,7 @@ async function onDeleteByIds() {
   const num = await deleteByIdsWxwOaApprovalDetail(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   ElMessage.success(`删除 ${ num } 审批申请详情 成功`);
   emit("remove", num);
