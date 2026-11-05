@@ -1677,22 +1677,7 @@ pub async fn create_cron_job_log_detail(
 ) -> Result<CronJobLogDetailId> {
   
   let table = get_table_name_cron_job_log_detail();
-  let method = "create_cron_job_log_detail";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {input:?}");
-    if let Some(options) = &options {
-      msg += &format!(" options: {options:?}");
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
+  // 定制: 定时任务日志明细写入频繁, 不打印日志
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);

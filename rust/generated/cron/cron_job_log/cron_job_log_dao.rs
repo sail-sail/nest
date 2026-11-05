@@ -2440,24 +2440,10 @@ pub async fn delete_by_ids_cron_job_log(
 ) -> Result<u64> {
   
   let table = get_table_name_cron_job_log();
-  let method = "delete_by_ids_cron_job_log";
-  
-  let is_debug = get_is_debug(options.as_ref());
+  // 定制: 定时任务日志删除频繁, 不打印日志
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {ids:?}");
-    if let Some(options) = &options {
-      msg += &format!(" options: {options:?}");
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
   
   if ids.is_empty() {
     return Ok(0);
@@ -2480,16 +2466,6 @@ pub async fn delete_by_ids_cron_job_log(
   for old_model in old_models {
     
     let id = old_model.id;
-    
-    if !is_silent_mode {
-      info!(
-        "{} {}.{}: {}",
-        get_req_id(),
-        table,
-        method,
-        serde_json::to_string(&old_model)?,
-      );
-    }
     
     let mut args = QueryArgs::new();
     
