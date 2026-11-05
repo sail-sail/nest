@@ -748,11 +748,6 @@ export interface TableColumn {
    */
   isHideZero?: boolean;
   
-  /**
-   * 是否需要做查询find的权限控制, 默认为false
-   */
-  isFindPermit?: boolean;
-  
 }
 
 /**
@@ -1244,6 +1239,11 @@ export interface TablesConfigItem {
        */
       apply_time_field?: string;
     };
+  
+    /**
+     * 是否需要做查询find的权限控制, 默认为false
+     */
+    isFindPermit?: boolean;
     
   },
   columns: TableColumn[];

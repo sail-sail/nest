@@ -359,9 +359,9 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
     
     <view
       v-if="!inited && <#=table#>_models.length === 0"
-      un-m="x-2 t-2"
       un-p="x-4 y-4"
       un-box-border
+      un-h="full"
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-rounded="md"
@@ -374,9 +374,9 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
     
     <view
       v-if="inited && <#=table#>_models.length === 0"
-      un-m="x-2 t-2"
       un-p="x-4 y-4"
       un-box-border
+      un-h="full"
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-rounded="md"

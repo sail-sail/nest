@@ -4643,7 +4643,7 @@ async function openAdd() {
   selectedIds = [
     ...changedIds,
   ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
 }
@@ -4705,7 +4705,7 @@ async function openCopy() {
   selectedIds = [
     ...changedIds,
   ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
 }
@@ -4900,7 +4900,7 @@ async function onImportExcel() {
     });<#
     }
     #>
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -4949,7 +4949,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -4973,7 +4973,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -4997,7 +4997,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -5023,7 +5023,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -5091,7 +5091,7 @@ async function openEdit() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }<#
@@ -5309,7 +5309,7 @@ async function openAudit() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }
@@ -5401,7 +5401,7 @@ async function onAuditReverseByIds() {
     return;
   }
   await auditReverse<#=Table_Up#>(id);
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();<#
   if (isUseI18n) {
   #>
@@ -5550,7 +5550,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }<#
@@ -5619,7 +5619,7 @@ async function onDeleteByIds() {
   #>
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);<#
   if (isUseI18n) {
   #>
@@ -5706,7 +5706,7 @@ async function onForceDeleteByIds() {
     ElMessage.success(`彻底删除 ${ num } <#=table_comment#> 成功`);<#
     }
     #>
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -5779,7 +5779,7 @@ async function onEnableByIds(is_enabled: number) {
       #>
     }
     ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -5852,7 +5852,7 @@ async function onLockByIds(is_locked: number) {
       #>
     }
     ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -5927,7 +5927,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;<#
     }
     #>
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);<#
     if (isUseI18n) {
     #>
@@ -6332,7 +6332,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = selectedIds2;
   await updateById<#=Table_Up#>(row.id, { <#=column_name#>: selectedIds2 });
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
 }<#
   }
