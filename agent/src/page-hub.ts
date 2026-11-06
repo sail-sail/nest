@@ -9,7 +9,6 @@ export interface PageTaskResult {
   success: boolean;
   data: string;
   steps?: number;
-  path?: string;
 }
 
 export interface PageTaskInput {
@@ -37,10 +36,6 @@ interface Channel {
   id: string;
   usrId: string;
   attachedAt: number;
-  lastSeen: number;
-  visible: boolean;
-  focused: boolean;
-  path: string;
   send: Send;
 }
 
@@ -71,10 +66,6 @@ class PageHub {
       id: randomUUID(),
       usrId,
       attachedAt: Date.now(),
-      lastSeen: Date.now(),
-      visible: true,
-      focused: false,
-      path: "",
       send,
     };
     this.channels.set(channel.id, channel);
@@ -102,46 +93,23 @@ class PageHub {
   }
 
   /**
-   * 多标签页时优先选「有焦点 → 可见 → 最近心跳」的那个，
-   * 避免把确认框弹在后台标签页里。
+   * 同一用户开了多个标签页时取最近连上的那条。
+   * 浏览器不上报焦点/可见性/路由，任务发给哪个标签页由连接顺序决定，
+   * 具体操作对象由浏览器里的 PageAgent 自己看 DOM 决定。
    */
   private channelsFor(usrId: string): Channel[] {
     return [...this.channels.values()]
       .filter((channel) => channel.usrId === usrId)
-      .sort(
-        (a, b) =>
-          Number(b.focused) - Number(a.focused) ||
-          Number(b.visible) - Number(a.visible) ||
-          b.lastSeen - a.lastSeen,
-      );
+      .sort((a, b) => b.attachedAt - a.attachedAt);
   }
 
   isOnline(usrId: string): boolean {
     return this.channelsFor(usrId).length > 0;
   }
 
-  status(usrId: string): { online: boolean; path: string; tabs: number } {
+  status(usrId: string): { online: boolean; tabs: number } {
     const list = this.channelsFor(usrId);
-    return {
-      online: list.length > 0,
-      path: list[0]?.path ?? "",
-      tabs: list.length,
-    };
-  }
-
-  /**
-   * 心跳：记录该标签页最近活跃时间、路由、可见性与焦点。
-   * 必须同时校验 usrId 与 channelId：空 channelId 不再兜底到任意 channel，
-   * 否则可能把别的用户的连接状态（path/focused/lastSeen）改掉。
-   */
-  touch(usrId: string, channelId: string, path: string, visible?: boolean, focused?: boolean): void {
-    if (!channelId) return;
-    const channel = this.channels.get(channelId);
-    if (!channel || channel.usrId !== usrId) return;
-    channel.lastSeen = Date.now();
-    if (path) channel.path = path;
-    if (typeof visible === "boolean") channel.visible = visible;
-    if (typeof focused === "boolean") channel.focused = focused;
+    return { online: list.length > 0, tabs: list.length };
   }
 
   async runTask(usrId: string, input: PageTaskInput): Promise<PageTaskResult> {
@@ -198,12 +166,6 @@ class PageHub {
     clearTimeout(task.timer);
     this.pending.delete(taskId);
     task.resolve(result);
-
-    const channel = this.channels.get(task.channelId);
-    if (channel) {
-      channel.lastSeen = Date.now();
-      if (result.path) channel.path = result.path;
-    }
     return true;
   }
 }
