@@ -64,20 +64,12 @@ let connecting = false;
 let abort: AbortController | null = null;
 let retryTimer: number | undefined;
 let retryDelay = 3_000;
-let heartbeatTimer: number | undefined;
 let agentPromise: Promise<PageAgentInstance> | null = null;
 let taskRunning = false;
 let bridgeDisabled = false;
-/** 宿主在 ready 帧里下发，用于让心跳精确落到当前标签页 */
-let channelId = "";
 
 function token(): string {
   return localStorage.getItem(TOKEN_KEY) || "";
-}
-
-function currentPath(): string {
-  const hash = location.hash.replace(/^#/, "");
-  return hash || location.pathname;
 }
 
 function maskSensitive(content: string): string {
@@ -203,13 +195,11 @@ async function handleTask(payload: TaskPayload): Promise<void> {
       success: result.success,
       data: result.data,
       steps: result.history?.length ?? 0,
-      path: currentPath(),
     });
   } catch (error) {
     await postResult(payload.id, {
       success: false,
       data: `页面操作失败：${error instanceof Error ? error.message : String(error)}`,
-      path: currentPath(),
     });
   } finally {
     taskRunning = false;
@@ -218,17 +208,6 @@ async function handleTask(payload: TaskPayload): Promise<void> {
 
 async function handleFrame(event: string, data: string): Promise<void> {
   if (event === "ping") return;
-
-  if (event === "ready") {
-    try {
-      const info = JSON.parse(data) as { channelId?: string };
-      if (info.channelId) channelId = info.channelId;
-    } catch {
-      // ignore
-    }
-    void sendHeartbeat();
-    return;
-  }
 
   if (event === "cancel") {
     const agent = await agentPromise?.catch(() => null);
@@ -264,7 +243,6 @@ function disableBridge(): void {
     window.clearTimeout(retryTimer);
     retryTimer = undefined;
   }
-  stopHeartbeat();
   abort?.abort();
   abort = null;
 }
@@ -282,7 +260,6 @@ async function connect(): Promise<void> {
 
   const controller = new AbortController();
   abort = controller;
-  channelId = "";
 
   try {
     const response = await fetch(STREAM_URL, {
@@ -309,7 +286,6 @@ async function connect(): Promise<void> {
 
     // 连上后重置退避
     retryDelay = 3_000;
-    startHeartbeat();
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -342,7 +318,6 @@ async function connect(): Promise<void> {
     // 只有 404（通道不存在）会 disableBridge，其余错误都允许后续恢复
   } finally {
     connecting = false;
-    stopHeartbeat();
     if (abort === controller) abort = null;
 
     if (started && !bridgeDisabled) {
@@ -350,42 +325,6 @@ async function connect(): Promise<void> {
       retryDelay = Math.min(retryDelay * 2, 30_000);
       scheduleRetry(delay);
     }
-  }
-}
-
-function startHeartbeat(): void {
-  stopHeartbeat();
-  void sendHeartbeat();
-  heartbeatTimer = window.setInterval(() => void sendHeartbeat(), 25_000);
-}
-
-async function sendHeartbeat(): Promise<void> {
-  const current = token();
-  if (!current) return;
-  try {
-    await fetch("/agent/api/page-agent/heartbeat", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${current}`,
-      },
-      body: JSON.stringify({
-        channelId,
-        path: currentPath(),
-        // 多标签页时，宿主优先把任务发给有焦点、可见的那个
-        visible: document.visibilityState === "visible",
-        focused: document.hasFocus(),
-      }),
-    });
-  } catch {
-    // 心跳失败不重试，下一次 tick 会自然补上
-  }
-}
-
-function stopHeartbeat(): void {
-  if (heartbeatTimer) {
-    window.clearInterval(heartbeatTimer);
-    heartbeatTimer = undefined;
   }
 }
 
@@ -397,7 +336,7 @@ export function startPageAgentBridge(): void {
 }
 
 /** 供聊天界面展示「页面是否可操作」 */
-export async function fetchPageAgentStatus(): Promise<{ online: boolean; path: string } | null> {
+export async function fetchPageAgentStatus(): Promise<{ online: boolean } | null> {
   if (!AGENT_ENABLED) return null;
   const current = token();
   if (!current) return null;
