@@ -110,9 +110,89 @@ function parseTableName(raw: string) {
   return tableName.replace(/^.*\./, "");
 }
 
+type TableSchema = {
+  columns: Map<string, string>;
+  indexes: Map<string, string>;
+  indexNames: Map<string, { name: string; auto: boolean }>;
+};
+
+// 索引/约束声明不参与列对比, 否则会被当成名为 INDEX 的列
+const INDEX_ITEM_PATTERN = /^(?:(?:UNIQUE|FULLTEXT|SPATIAL)\s+)?(?:KEY|INDEX)\b/i;
+const UNIQUE_ITEM_PATTERN = /^(?:UNIQUE|FULLTEXT|SPATIAL)\s*\(/i;
+const NON_COLUMN_ITEM_PATTERN = /^(?:PRIMARY\s+KEY|CONSTRAINT|FOREIGN\s+KEY|CHECK)\b/i;
+
+// 区分 CREATE TABLE 里的列定义、索引定义和可忽略的约束
+function classifyTableItem(item: string) {
+  if (NON_COLUMN_ITEM_PATTERN.test(item)) return "skip";
+  if (INDEX_ITEM_PATTERN.test(item) || UNIQUE_ITEM_PATTERN.test(item)) return "index";
+  return "column";
+}
+
+function normalizeSqlFragment(sql: string) {
+  return sql.replace(/`/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+// 未命名索引 MySQL 取首列名, 重名时依次追加 _2/_3
+function uniqueIndexName(base: string, usedNames: Set<string>) {
+  const safeBase = base || "idx";
+  let name = safeBase;
+  let suffix = 2;
+  while (usedNames.has(name)) {
+    name = `${safeBase}_${suffix}`;
+    suffix += 1;
+  }
+  usedNames.add(name);
+  return name;
+}
+
+function parseIndexDefinition(item: string) {
+  const def = item.replace(/\s+/g, " ").trim();
+  const namedMatch = def.match(/^(?:(?:UNIQUE|FULLTEXT|SPATIAL)\s+)?(?:KEY|INDEX)\s+`([^`]+)`\s*\(/i);
+  const firstColumnMatch = def.match(/\(\s*`?([A-Za-z0-9_$]+)`?/);
+  return {
+    def,
+    name: namedMatch ? namedMatch[1] : "",
+    firstColumn: firstColumnMatch ? firstColumnMatch[1] : "",
+  };
+}
+
+function splitTableItems(body: string) {
+  const items: string[] = [];
+  let current = "";
+  let parenDepth = 0;
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    const prev = body[i - 1];
+    if (ch === "'" && !inDoubleQuote && prev !== "\\") {
+      inSingleQuote = !inSingleQuote;
+    } else if (ch === '"' && !inSingleQuote && prev !== "\\") {
+      inDoubleQuote = !inDoubleQuote;
+    }
+
+    if (!inSingleQuote && !inDoubleQuote) {
+      if (ch === "(") parenDepth += 1;
+      if (ch === ")") parenDepth = Math.max(0, parenDepth - 1);
+      if (ch === "," && parenDepth === 0) {
+        const item = current.trim();
+        current = "";
+        if (item) items.push(item);
+        continue;
+      }
+    }
+    current += ch;
+  }
+
+  const tail = current.trim();
+  if (tail) items.push(tail);
+  return items;
+}
+
 function extractCreateTables(sql: string) {
   const statements = splitSqlStatements(stripComments(sql));
-  const tables = new Map<string, Map<string, string>>();
+  const tables = new Map<string, TableSchema>();
 
   for (const statement of statements) {
     const match = statement.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([`"\w.]+)/i);
@@ -123,55 +203,35 @@ function extractCreateTables(sql: string) {
     if (openIndex === -1 || closeIndex <= openIndex) continue;
 
     const body = statement.slice(openIndex + 1, closeIndex);
-    const columnMap = new Map<string, string>();
-    let current = "";
-    let parenDepth = 0;
-    let inSingleQuote = false;
-    let inDoubleQuote = false;
+    const schema: TableSchema = {
+      columns: new Map(),
+      indexes: new Map(),
+      indexNames: new Map(),
+    };
+    const usedIndexNames = new Set<string>(["PRIMARY"]);
 
-    for (let i = 0; i < body.length; i++) {
-      const ch = body[i];
-      const prev = body[i - 1];
-      if (ch === "'" && !inDoubleQuote && prev !== "\\") {
-        inSingleQuote = !inSingleQuote;
-      } else if (ch === '"' && !inSingleQuote && prev !== "\\") {
-        inDoubleQuote = !inDoubleQuote;
+    for (const item of splitTableItems(body)) {
+      const kind = classifyTableItem(item);
+      if (kind === "column") {
+        const columnMatch = item.match(/^`?([A-Za-z0-9_]+)`?\s+(.*)$/);
+        if (!columnMatch) continue;
+        schema.columns.set(columnMatch[1], columnMatch[2].trim());
+        continue;
       }
+      if (kind === "skip") continue;
 
-      if (!inSingleQuote && !inDoubleQuote) {
-        if (ch === "(") parenDepth += 1;
-        if (ch === ")") parenDepth = Math.max(0, parenDepth - 1);
-        if (ch === "," && parenDepth === 0) {
-          const item = current.trim();
-          current = "";
-          if (!item) continue;
-          const columnMatch = item.match(/^`?([A-Za-z0-9_]+)`?\s+(.*)$/);
-          if (!columnMatch) continue;
-          const colName = columnMatch[1];
-          const colDef = columnMatch[2].trim();
-          if (!/^PRIMARY\b|^UNIQUE\b|^KEY\b|^INDEX\b|^CONSTRAINT\b|^FULLTEXT\b|^SPATIAL\b/i.test(colDef)) {
-            columnMap.set(colName, colDef);
-          }
-          continue;
-        }
-      }
-      current += ch;
+      const index = parseIndexDefinition(item);
+      const signature = normalizeSqlFragment(index.def);
+      if (schema.indexes.has(signature)) continue;
+      schema.indexes.set(signature, index.def);
+      schema.indexNames.set(signature, {
+        name: uniqueIndexName(index.name || index.firstColumn, usedIndexNames),
+        auto: !index.name,
+      });
     }
 
-    const tail = current.trim();
-    if (tail) {
-      const columnMatch = tail.match(/^`?([A-Za-z0-9_]+)`?\s+(.*)$/);
-      if (columnMatch) {
-        const colName = columnMatch[1];
-        const colDef = columnMatch[2].trim();
-        if (!/^PRIMARY\b|^UNIQUE\b|^KEY\b|^INDEX\b|^CONSTRAINT\b|^FULLTEXT\b|^SPATIAL\b/i.test(colDef)) {
-          columnMap.set(colName, colDef);
-        }
-      }
-    }
-
-    if (columnMap.size > 0) {
-      tables.set(tableName, columnMap);
+    if (schema.columns.size > 0) {
+      tables.set(tableName, schema);
     }
   }
 
@@ -182,6 +242,7 @@ function buildAlterStatementsFromSchema(prevSql: string, currSql: string) {
   const prevTables = extractCreateTables(prevSql);
   const currTables = extractCreateTables(currSql);
   const ops: string[] = [];
+  const notes: string[] = [];
 
   function buildPositionClause(columnNames: string[], index: number) {
     if (index <= 0) {
@@ -190,10 +251,12 @@ function buildAlterStatementsFromSchema(prevSql: string, currSql: string) {
     return ` AFTER \`${columnNames[index - 1]}\``;
   }
 
-  for (const [tableName, currColumns] of currTables) {
-    const prevColumns = prevTables.get(tableName);
-    if (!prevColumns) continue;
+  for (const [tableName, currSchema] of currTables) {
+    const prevSchema = prevTables.get(tableName);
+    if (!prevSchema) continue;
 
+    const currColumns = currSchema.columns;
+    const prevColumns = prevSchema.columns;
     const currColumnEntries = Array.from(currColumns.entries());
     const currColumnNames = currColumnEntries.map(([colName]) => colName);
 
@@ -205,6 +268,20 @@ function buildAlterStatementsFromSchema(prevSql: string, currSql: string) {
         ops.push(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${colName}\` ${currDef}${positionClause};`);
       } else if (prevDef.trim() !== currDef.trim()) {
         ops.push(`ALTER TABLE \`${tableName}\` MODIFY COLUMN \`${colName}\` ${currDef};`);
+      }
+    }
+
+    for (const [signature, indexDef] of currSchema.indexes) {
+      if (prevSchema.indexes.has(signature)) continue;
+      ops.push(`ALTER TABLE \`${tableName}\` ADD ${indexDef};`);
+    }
+
+    for (const [signature, indexDef] of prevSchema.indexes) {
+      if (currSchema.indexes.has(signature)) continue;
+      const indexName = prevSchema.indexNames.get(signature) as { name: string; auto: boolean };
+      ops.push(`ALTER TABLE \`${tableName}\` DROP INDEX \`${indexName.name}\`;`);
+      if (indexName.auto) {
+        notes.push(`${tableName} 索引 ${indexDef} 未显式命名, 推断 MySQL 索引名为 \`${indexName.name}\`, 执行 DROP INDEX 前请确认。`);
       }
     }
 
@@ -221,7 +298,7 @@ function buildAlterStatementsFromSchema(prevSql: string, currSql: string) {
     }
   }
 
-  return ops;
+  return { ops, notes };
 }
 
 function extractDirectAlterStatements(sqlText: string) {
@@ -269,6 +346,8 @@ async function main() {
 
   const generated: string[] = [];
   const generatedSet = new Set<string>();
+  const notes: string[] = [];
+  const noteSet = new Set<string>();
 
   for (const file of changedFiles) {
     const diffOutput = git(["diff", "--unified=0", "--", file]);
@@ -305,7 +384,13 @@ async function main() {
       continue;
     }
 
-    const alters = buildAlterStatementsFromSchema(previousSql, currentSql);
+    const { ops: alters, notes: alterNotes } = buildAlterStatementsFromSchema(previousSql, currentSql);
+    for (const note of alterNotes) {
+      if (!noteSet.has(note)) {
+        noteSet.add(note);
+        notes.push(note);
+      }
+    }
     if (alters.length > 0) {
       for (const sql of alters) {
         if (!generatedSet.has(sql)) {
@@ -325,6 +410,13 @@ async function main() {
   console.log("---");
   for (const sql of generated) {
     console.log(sql);
+  }
+  if (notes.length > 0) {
+    console.log("---");
+    console.log("提示：");
+    for (const note of notes) {
+      console.log(`- ${note}`);
+    }
   }
   clipboardy.writeSync(generated.join("\n"));
   console.log("---");

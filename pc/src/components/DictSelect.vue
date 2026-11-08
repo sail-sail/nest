@@ -260,7 +260,9 @@ import {
   findAllDictDetail,
 } from "@/views/base/dict_detail/Api.ts";
 
-export type DictModel = GetDict;
+export type DictModel = GetDict & {
+  disabled?: boolean;
+}
 
 const emit = defineEmits<{
   (e: "data", value?: DictModel[]): void,
@@ -302,11 +304,13 @@ const props = withDefaults(
         return {
           label: item.lbl,
           value: Number(item.val),
+          disabled: item.disabled,
         };
       }
       return {
         label: item.lbl,
         value: item.val,
+        disabled: item.disabled,
       };
     },
     height: 400,

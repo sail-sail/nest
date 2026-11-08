@@ -15,11 +15,12 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter", "local-time
 tracing-appender = "0.2.5"
 tracing-attributes = "0.1.31"
 async-trait = "0.1.92"
-tokio = { version = "1.53.3", features = ["rt-multi-thread", "macros", "net", "fs"] }
+tokio = { version = "1.53.3", features = ["rt-multi-thread", "macros", "net", "fs", "io-util", "sync", "time", "signal"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket", "sse"] }
 async-graphql = { version = "8.0.0-rc.5", features = ["decimal", "time", "chrono", "chrono-tz", "tracing", "raw_value", "boxed-trait"], default-features = false }
 slab = "0.4.12"
 chrono = { version = "0.4.45", features = ["serde"] }
+chrono-tz = "0.10.4"
 sqlx = { version = "0.9.0", features = ["runtime-tokio", "mysql", "mysql-rsa", "chrono", "time", "rust_decimal", "json", "derive"], default-features = false }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.38.0", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
@@ -52,7 +53,7 @@ rust_decimal = { version = "1.43.0", features = ["maths"]}
 regex = "1.13.1"
 # yarte = "0.15.7"
 image = { version = "0.25.10", features = ["webp"] }
-delay_timer = "0.11.6"
+cron_clock = "0.8.0"
 num-traits = "0.2.19"
 fast_chemail = "0.9.6"
 http = "1.5.0"
@@ -141,7 +142,6 @@ rust_decimal.workspace = true
 regex.workspace = true
 # yarte.workspace = true
 image.workspace = true
-delay_timer.workspace = true
 num-traits.workspace = true
 fast_chemail.workspace = true
 http.workspace = true

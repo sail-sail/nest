@@ -3,6 +3,10 @@
 rustup target add x86_64-unknown-linux-musl
 cargo build --release --target=x86_64-unknown-linux-musl
 
+sudo apt install -y musl-tools                        # 提供 /usr/bin/musl-gcc
+sudo ln -sf /usr/bin/musl-gcc /usr/local/bin/x86_64-linux-musl-gcc
+x86_64-linux-musl-gcc --version                       # 验证
+
 # windows 中安装 rg
 winget install BurntSushi.ripgrep.MSVC
 

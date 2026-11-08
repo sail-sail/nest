@@ -339,7 +339,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -391,7 +390,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -443,7 +441,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -501,7 +498,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -579,7 +575,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -643,7 +638,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -696,7 +690,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -754,7 +747,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
@@ -819,7 +811,6 @@ if (right_field && !right_field_column) {
           }
           #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <!-- <#=column_comment#> -->
           <tm-form-item<#
             if (column.noAdd === true) {
             #>
