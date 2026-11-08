@@ -7,7 +7,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
-use delay_timer::prelude::*;
 
 #[allow(unused_imports)]
 use crate::common::context::{
