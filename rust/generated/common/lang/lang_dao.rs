@@ -40,15 +40,12 @@ pub struct LangIdModel {
 #[allow(dead_code)]
 pub async fn get_lang_id() -> Result<Option<LangId>> {
   
-  let lang_code = get_auth_lang();
-  
-  if lang_code.is_none() || lang_code.as_ref().unwrap().is_empty() {
-    return Ok(None);
-  }
+  // 取不到语言或为空时回落 zh-CN
+  let lang_code = get_auth_lang()
+    .filter(|code| !code.is_empty())
+    .unwrap_or_else(|| String::from("zh-CN"));
   
   let table = "base_lang";
-  
-  let lang_code = lang_code.unwrap();
   
   let options = Options::new()
     .set_is_debug(Some(false));

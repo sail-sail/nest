@@ -203,7 +203,6 @@ app.get("/agent/api/page-agent/stream", (c) => {
       event: "ready",
       data: JSON.stringify({
         usrId,
-        channelId: channel.id,
         timeoutMs: config.pageTimeoutMs,
       }),
     });
@@ -220,12 +219,10 @@ app.post("/agent/api/page-agent/tasks/:id/result", async (c) => {
   const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
 
   const data = typeof body.data === "string" ? body.data : "";
-  const path = typeof body.path === "string" ? body.path : "";
   const result = {
     success: body.success === true,
     data: data.length > 8_000 ? `${data.slice(0, 8_000)}\n...（结果过长，已截断）` : data,
     steps: typeof body.steps === "number" ? body.steps : undefined,
-    path: path || undefined,
   };
 
   const accepted = pageHub.complete(usrId, taskId, result);
@@ -237,24 +234,6 @@ app.post("/agent/api/page-agent/tasks/:id/result", async (c) => {
     steps: result.steps ?? 0,
   });
   return c.json({ ok: accepted });
-});
-
-app.post("/agent/api/page-agent/heartbeat", async (c) => {
-  const usrId = c.get("usrId");
-  const body = (await c.req.json().catch(() => ({}))) as {
-    path?: unknown;
-    channelId?: unknown;
-    visible?: unknown;
-    focused?: unknown;
-  };
-  pageHub.touch(
-    usrId,
-    typeof body.channelId === "string" ? body.channelId : "",
-    typeof body.path === "string" ? body.path : "",
-    typeof body.visible === "boolean" ? body.visible : undefined,
-    typeof body.focused === "boolean" ? body.focused : undefined,
-  );
-  return c.json({ ok: true, ...pageHub.status(usrId) });
 });
 
 app.get("/agent/api/conversations", (c) => {

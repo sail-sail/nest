@@ -32,7 +32,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let mut args = QueryArgs::new();
   let mut lang_join = "";
-  let mut lang_select = "";
+  let mut lang_select = "null as lbl_lang,";
   
   if server_i18n_enable {
     let lang_id = get_lang_id().await?;
@@ -45,8 +45,6 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       args.push(lang_id.into());
       lang_select = "base_menu_lang.lbl as lbl_lang,";
     }
-  } else {
-    lang_select = "null as lbl_lang,";
   }
   let lang_join = lang_join;
   let lang_select = lang_select;

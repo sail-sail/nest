@@ -18,6 +18,7 @@ impl DictDetailQuery {
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDict>>> {
     Ctx::builder(ctx)
+      .with_auth_optional()?
       .build()
       .scope({
         dict_detail_resolver::get_dict(codes)

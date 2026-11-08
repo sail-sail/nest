@@ -1559,7 +1559,7 @@ pub async fn audit_review_<#=table#>(
     #>
     let table_comment = ns(
       "<#=table_comment#>".to_owned(),
-      options,
+      None,
     ).await?;
     let map = HashMap::from([
       ("0".to_owned(), table_comment),
@@ -1699,13 +1699,13 @@ pub async fn delete_by_ids_<#=table#>(
       #>
       let table_comment = ns(
         "<#=table_comment#>".to_owned(),
-        options,
+        None,
       ).await?;
       let map = HashMap::from([
         ("0".to_owned(), table_comment),
       ]);
       let err_msg = ns(
-        "不能删除已经锁定的 {0}",
+        "不能删除已经锁定的 {0}".to_owned(),
         map.into(),
       ).await?;<#
       } else {
@@ -1742,7 +1742,7 @@ pub async fn delete_by_ids_<#=table#>(
         #>
         let table_comment = ns(
           "<#=table_comment#>".to_owned(),
-          options,
+          None,
         ).await?;
         let map = HashMap::from([
           ("0".to_owned(), table_comment),
