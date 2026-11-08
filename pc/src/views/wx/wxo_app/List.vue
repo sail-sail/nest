@@ -1434,7 +1434,7 @@ async function openAdd() {
   selectedIds = [
     ...changedIds,
   ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
 }
@@ -1475,7 +1475,7 @@ async function openCopy() {
   selectedIds = [
     ...changedIds,
   ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   emit("add", changedIds);
 }
@@ -1575,7 +1575,7 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1599,7 +1599,7 @@ async function onIs_locked(id: WxoAppId, is_locked: number) {
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1621,7 +1621,7 @@ async function onIs_enabled(id: WxoAppId, is_enabled: number) {
       notLoading,
     },
   );
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1664,7 +1664,7 @@ async function openEdit() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }
@@ -1729,7 +1729,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }
@@ -1760,7 +1760,7 @@ async function onDeleteByIds() {
   const num = await deleteByIdsWxoApp(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   ElMessage.success(`删除 ${ num } 公众号设置 成功`);
   emit("remove", num);
@@ -1793,7 +1793,7 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 公众号设置 成功`);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1827,7 +1827,7 @@ async function onEnableByIds(is_enabled: number) {
       msg = `禁用 ${ num } 公众号设置 成功`;
     }
     ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1861,7 +1861,7 @@ async function onLockByIds(is_locked: number) {
       msg = `解锁 ${ num } 公众号设置 成功`;
     }
     ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1892,7 +1892,7 @@ async function onRevertByIds() {
   const num = await revertByIdsWxoApp(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
     ElMessage.success(`还原 ${ num } 公众号设置 成功`);
     emit("revert", num);

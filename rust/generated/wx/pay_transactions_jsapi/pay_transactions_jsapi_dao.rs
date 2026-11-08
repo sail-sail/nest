@@ -1241,21 +1241,20 @@ pub async fn find_by_ids_ok_pay_transactions_jsapi(
     return Err(eyre!(err_msg));
   }
   
-  let pay_transactions_jsapi_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = pay_transactions_jsapi_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 微信JSAPI下单 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<PayTransactionsJsapiModel>>>()?;
+  let mut pay_transactions_jsapi_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = pay_transactions_jsapi_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      pay_transactions_jsapi_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 微信JSAPI下单 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(pay_transactions_jsapi_models)
+  Ok(pay_transactions_jsapi_models_res)
 }
 
 // MARK: find_by_ids_pay_transactions_jsapi
