@@ -104,6 +104,7 @@
     "chat.useNestedAgentsMdFiles": true,
     "git.enableSmartCommit": true,
     "diffEditor.experimental.showMoves": true,
-    "diffEditor.experimental.useTrueInlineView": true
+    "diffEditor.experimental.useTrueInlineView": true,
+    "rust-analyzer.initializeStopped": true
   }
 }
