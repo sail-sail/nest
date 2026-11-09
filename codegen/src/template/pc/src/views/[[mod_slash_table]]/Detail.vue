@@ -1468,8 +1468,15 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
             if (inline_foreign_type === "one2many") {
           #>
           
-          <el-tab-pane
-            label="<#=inlineForeignTab.label#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="ns('<#=inlineForeignTab.label#>')"<#
+            } else {
+            #>
+            label="<#=inlineForeignTab.label#>"<#
+            }
+            #>
             name="<#=inlineForeignTab.label#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
@@ -2356,8 +2363,15 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
             } else if (inline_foreign_type === "one2one") {
           #>
           
-          <el-tab-pane
-            label="<#=inlineForeignTab.label#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="ns('<#=inlineForeignTab.label#>')"<#
+            } else {
+            #>
+            label="<#=inlineForeignTab.label#>"<#
+            }
+            #>
             name="<#=inlineForeignTab.label#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
@@ -3230,8 +3244,15 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
             }
             const hasIsSys = inlineMany2manyColumns.some((column) => column.COLUMN_NAME === "is_sys");
           #>
-          <el-tab-pane
-            label="<#=column_comment#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="n('<#=column_comment#>')"<#
+            } else {
+            #>
+            label="<#=column_comment#>"<#
+            }
+            #>
             name="<#=column_name#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
