@@ -9,6 +9,10 @@ use crate::common::context::{
 
 use crate::common::cache::cache_dao;
 
+use crate::common::i18n::i18n_dao::get_server_i18n_enable;
+
+use crate::common::lang::lang_dao::get_lang_id;
+
 use super::dictbiz_detail_model::GetDictbiz;
 
 /// 获取业务字典
@@ -26,9 +30,28 @@ pub async fn get_dictbiz<T: AsRef<str>>(
   
   let table = "base_dictbiz";
   
-  let tenant_id = get_auth_tenant_id().unwrap_or_default();
+  let server_i18n_enable = get_server_i18n_enable();
   
   let mut args = QueryArgs::new();
+  let mut lang_join = "";
+  let mut lang_select = "null as lbl_lang,";
+  
+  if server_i18n_enable {
+    let lang_id = get_lang_id().await?;
+    if let Some(lang_id) = lang_id {
+      lang_join = r#"
+      left join base_dictbiz_detail_lang
+        on t.id=base_dictbiz_detail_lang.dictbiz_detail_id
+        and base_dictbiz_detail_lang.lang_id=?
+      "#;
+      args.push(lang_id.into());
+      lang_select = "base_dictbiz_detail_lang.lbl as lbl_lang,";
+    }
+  }
+  let lang_join = lang_join;
+  let lang_select = lang_select;
+  
+  let tenant_id = get_auth_tenant_id().unwrap_or_default();
   args.push(tenant_id.into());
   
   for x in codes.iter() {
@@ -42,6 +65,7 @@ pub async fn get_dictbiz<T: AsRef<str>>(
       base_dictbiz.code,
       base_dictbiz.type,
       t.lbl,
+      {lang_select}
       t.val
     from
       base_dictbiz_detail t
@@ -49,6 +73,7 @@ pub async fn get_dictbiz<T: AsRef<str>>(
       on t.dictbiz_id = base_dictbiz.id
       and base_dictbiz.is_deleted = 0
       and base_dictbiz.is_enabled = 1
+    {lang_join}
     where
       t.is_deleted = 0
       and t.is_enabled = 1
@@ -77,11 +102,17 @@ pub async fn get_dictbiz<T: AsRef<str>>(
     }
   }
   
-  let res: Vec<GetDictbiz> = query(
+  let mut res: Vec<GetDictbiz> = query(
     sql,
     args,
     options,
   ).await?;
+  
+  for d in res.iter_mut() {
+    if let Some(lbl_lang) = d.lbl_lang.as_ref() && !lbl_lang.is_empty() {
+      d.lbl = lbl_lang.clone();
+    }
+  }
   
   let res_len = res.len();
   

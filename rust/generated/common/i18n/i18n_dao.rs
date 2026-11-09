@@ -195,7 +195,9 @@ pub async fn n_lang(
     options,
   ).await?;
   let mut menu_model: Option<MenuModel> = None;
-  if let Some(route_path) = route_path {
+  // 空路由表示系统级翻译(前端 ns/nsAsync 传 ""), 不能拿去匹配 route_path 为空的菜单
+  // 否则会命中类似 "系统管理" 这种目录菜单, 导致按 menu_id 查不到系统级翻译
+  if let Some(route_path) = route_path && !route_path.is_empty() {
     menu_model = find_one_menu(
       MenuSearch {
         route_path: route_path.into(),

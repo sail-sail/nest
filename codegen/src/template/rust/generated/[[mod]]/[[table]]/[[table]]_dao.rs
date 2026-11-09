@@ -5992,8 +5992,13 @@ async fn _creates(
   }<#
   if (opts.langTable && isUseI18n) {
   #>
-  for input in inputs.iter() {
-    refresh_lang_by_input(input, options).await?;
+  for (input, id) in inputs2.iter().zip(inputs2_ids.iter()) {
+    let mut input = input.clone();
+    input.id = Some(*id);
+    refresh_lang_by_input(
+      &input,
+      options,
+    ).await?;
   }<#
   }
   #><#
@@ -6800,14 +6805,14 @@ async fn refresh_lang_by_input(
   options: Option<Options>,
 ) -> Result<()> {
   
-  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
-    return Err(eyre!("refresh_lang_by_input: input.id is empty"));
-  }
-  
   let server_i18n_enable = get_server_i18n_enable();
   
   if !server_i18n_enable {
     return Ok(());
+  }
+  
+  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
+    return Err(eyre!("refresh_lang_by_input: input.id is empty"));
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
