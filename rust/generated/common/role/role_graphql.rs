@@ -12,6 +12,7 @@ pub struct RoleQuery;
 impl RoleQuery {
   
   /// 获取当前角色的首页轮播图路由
+  #[graphql(name = "getHomeUrls")]
   async fn get_home_urls(
     &self,
     ctx: &Context<'_>,
