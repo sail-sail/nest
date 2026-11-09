@@ -5588,7 +5588,8 @@ for (const key of redundLblKeys) {
   if (opts?.langTable && isUseI18n) {
   #>
   
-  for (const input of inputs) {
+  // 用 inputs2: 被唯一键去重跳过的 input 没有 id, 不能写语言表
+  for (const input of inputs2) {
     await refreshLangByInput(input);
   }<#
   }
