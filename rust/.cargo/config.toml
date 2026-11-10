@@ -14,9 +14,13 @@ rustflags = [
   "link-arg=-z",
   "-C",
   "link-arg=stack-size=8388608",
+  "-C",
+  "target-cpu=x86-64-v4",
 ]
 
 [target.x86_64-pc-windows-msvc]
+# lld 比 link.exe 快一个数量级; 若某个 crate 传入 lld 不认的链接参数, 删掉下面一行即可回退
+linker = "rust-lld.exe"
 rustflags = ["-C", "link-arg=/STACK:8388608"]
 
 [unstable]
