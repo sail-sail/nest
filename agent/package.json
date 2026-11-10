@@ -25,7 +25,7 @@
     "@hono/node-server": "2.1.6",
     "@modelcontextprotocol/sdk": "1.32.2",
     "graphql": "17.1.0",
-    "hono": "4.13.16"
+    "hono": "4.13.17"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

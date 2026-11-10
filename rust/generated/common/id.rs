@@ -1,12 +1,10 @@
 use std::fmt;
-use std::hash::Hash;
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 use sqlx::encode::IsNull;
 use sqlx::error::BoxDynError;
 use sqlx::MySql;
 use sqlx::mysql::MySqlValueRef;
 use async_graphql;
-use crate::common::context::ArgType;
 
 /// 空ID的字节数组常量
 pub const EMPTY_ID_BYTES: [u8; 22] = [0u8; 22];
@@ -33,54 +31,37 @@ pub fn normalize_short_id_bytes(bytes: &[u8]) -> Option<[u8; 22]> {
   Some(arr)
 }
 
-/// 通用ID trait，为22字节的ID类型提供统一接口
-pub trait Id: 
-  Default + Clone + Copy + PartialEq + Eq + Hash + Send + Sync + 
-  Serialize + for<'de> Deserialize<'de> +
-  fmt::Debug + fmt::Display +
-  async_graphql::ScalarType + async_graphql::InputType +
-  From<String> + for<'a> From<&'a str> + From<[u8; 22]> + for<'a> From<&'a [u8; 22]> +
-  Into<String> + Into<[u8; 22]> + Into<ArgType> +
-  for<'q> sqlx::Encode<'q, MySql> + sqlx::Type<MySql> + for<'r> sqlx::Decode<'r, MySql> +
-  PartialEq<str>
-{
+/// 把字符串解析为 22 字节 ID，长度不合法时返回空 ID
+pub fn bytes_from_str(s: &str) -> [u8; 22] {
+  let bytes = s.as_bytes();
+  if bytes.is_empty() {
+    return EMPTY_ID_BYTES;
+  }
+  normalize_short_id_bytes(bytes).unwrap_or(EMPTY_ID_BYTES)
+}
+
+/// ID的类型标记 trait
+/// 只保留 ID 自身必要的能力，不挂超 trait，避免每个实现都做一次超 trait 证明
+pub trait Id {
   /// 类型名称，用于Debug输出和错误消息
   const TYPE_NAME: &'static str;
-  
-  /// GraphQL scalar 名称
-  const GRAPHQL_NAME: &'static str;
-  
+
   /// 获取内部字节数组的引用
   fn as_bytes(&self) -> &[u8; 22];
-  
+
   /// 从字节数组创建ID
   fn from_bytes(bytes: [u8; 22]) -> Self;
-  
-  /// 转换为字符串切片
-  fn as_str(&self) -> &str {
-    if self.is_empty() {
-      ""
-    } else {
-      std::str::from_utf8(self.as_bytes()).unwrap_or("")
-    }
-  }
-  
-  /// 检查是否为空ID
-  fn is_empty(&self) -> bool {
-    *self.as_bytes() == crate::common::id::EMPTY_ID_BYTES
-  }
 }
 
 /// 为实现Id trait的类型提供默认的Serialize实现
-pub fn serialize_id<S, T>(id: &T, serializer: S) -> Result<S::Ok, S::Error>
+pub fn serialize_id<S>(bytes: &[u8; 22], serializer: S) -> Result<S::Ok, S::Error>
 where
   S: serde::Serializer,
-  T: Id,
 {
-  if id.is_empty() {
+  if *bytes == EMPTY_ID_BYTES {
     serializer.serialize_str("")
   } else {
-    match std::str::from_utf8(id.as_bytes()) {
+    match std::str::from_utf8(bytes) {
       Ok(s) => serializer.serialize_str(s),
       Err(_) => serializer.serialize_str("")
     }
@@ -88,96 +69,85 @@ where
 }
 
 /// 为实现Id trait的类型提供默认的Deserialize实现
-pub fn deserialize_id<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+pub fn deserialize_id<'de, D>(deserializer: D) -> Result<[u8; 22], D::Error>
 where
   D: serde::Deserializer<'de>,
-  T: Id,
 {
   let s = String::deserialize(deserializer)?;
-  Ok(T::from(s))
+  Ok(bytes_from_str(&s))
 }
 
 /// 为实现Id trait的类型提供默认的Debug实现
-pub fn debug_id<T: Id>(id: &T, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-  if id.is_empty() {
-    write!(f, "{}()", T::TYPE_NAME)
+pub fn debug_id(bytes: &[u8; 22], type_name: &str, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+  if *bytes == EMPTY_ID_BYTES {
+    write!(f, "{type_name}()")
   } else {
-    match std::str::from_utf8(id.as_bytes()) {
-      Ok(s) => write!(f, "{}({})", T::TYPE_NAME, s),
-      Err(_) => write!(f, "{}()", T::TYPE_NAME)
+    match std::str::from_utf8(bytes) {
+      Ok(s) => write!(f, "{type_name}({s})"),
+      Err(_) => write!(f, "{type_name}()")
     }
   }
 }
 
 /// 为实现Id trait的类型提供默认的Display实现
-pub fn display_id<T: Id>(id: &T, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-  if id.is_empty() {
-    write!(f, "")
+pub fn display_id(bytes: &[u8; 22], f: &mut fmt::Formatter<'_>) -> fmt::Result {
+  if *bytes == EMPTY_ID_BYTES {
+    f.write_str("")
   } else {
-    match std::str::from_utf8(id.as_bytes()) {
-      Ok(s) => write!(f, "{}", s),
-      Err(_) => write!(f, "")
+    match std::str::from_utf8(bytes) {
+      Ok(s) => f.write_str(s),
+      Err(_) => f.write_str("")
     }
   }
 }
 
-/// 为实现Id trait的类型提供默认的GraphQL ScalarType::parse实现
-pub fn parse_id<T: Id>(value: async_graphql::Value) -> async_graphql::InputValueResult<T> {
-  match value {
-    async_graphql::Value::String(s) => {
-      let bytes = s.as_bytes();
-      if bytes.is_empty() {
-        return Ok(T::from_bytes(crate::common::id::EMPTY_ID_BYTES));
-      }
-      if !(bytes.len() == 22 || bytes.len() == 24) {
-        return Err(async_graphql::InputValueError::custom(
-          format!("{} must be 22 bytes string, 24 bytes padded short id, or empty", T::TYPE_NAME)
-        ));
-      }
-      let arr = crate::common::id::normalize_short_id_bytes(bytes).ok_or_else(|| {
-        async_graphql::InputValueError::custom(
-          format!("{} must be 22 bytes string or 24 bytes padded short id", T::TYPE_NAME)
-        )
-      })?;
-      Ok(T::from_bytes(arr))
-    },
-    _ => Err(async_graphql::InputValueError::expected_type(value)),
+/// 解析ID字符串，返回未包装的错误消息，由宏里包装成 GraphQL 错误
+pub fn parse_id_str(s: &str, type_name: &'static str) -> Result<[u8; 22], String> {
+  let bytes = s.as_bytes();
+  if bytes.is_empty() {
+    return Ok(EMPTY_ID_BYTES);
   }
+  if !(bytes.len() == 22 || bytes.len() == 24) {
+    return Err(format!("{type_name} must be 22 bytes string, 24 bytes padded short id, or empty"));
+  }
+  normalize_short_id_bytes(bytes).ok_or_else(|| {
+    format!("{type_name} must be 22 bytes string or 24 bytes padded short id")
+  })
 }
 
 /// 为实现Id trait的类型提供默认的GraphQL ScalarType::to_value实现
-pub fn to_value_id<T: Id>(id: &T) -> async_graphql::Value {
-  if id.is_empty() {
+pub fn to_value_id(bytes: &[u8; 22]) -> async_graphql::Value {
+  if *bytes == EMPTY_ID_BYTES {
     async_graphql::Value::String("".into())
   } else {
-    let s = std::str::from_utf8(id.as_bytes()).unwrap_or("");
+    let s = std::str::from_utf8(bytes).unwrap_or("");
     async_graphql::Value::String(s.into())
   }
 }
 
 /// 为实现Id trait的类型提供默认的SQLx Encode实现
-pub fn encode_id<T: Id>(id: &T, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-  buf.extend_from_slice(id.as_bytes());
+pub fn encode_id(bytes: &[u8; 22], buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
+  buf.extend_from_slice(bytes);
   Ok(IsNull::No)
 }
 
 /// 为实现Id trait的类型提供默认的SQLx Decode实现
-pub fn decode_id<T: Id>(value: MySqlValueRef<'_>) -> Result<T, BoxDynError> {
+pub fn decode_id(value: MySqlValueRef<'_>, type_name: &'static str) -> Result<[u8; 22], BoxDynError> {
   let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
-  let mut arr = EMPTY_ID_BYTES;
   if bytes.is_empty() {
-    return Ok(T::from_bytes(arr));
+    return Ok(EMPTY_ID_BYTES);
   }
   if bytes.len() == 22 {
+    let mut arr = EMPTY_ID_BYTES;
     arr.copy_from_slice(bytes);
+    Ok(arr)
   } else if bytes.len() == 24 {
-    arr = normalize_short_id_bytes(bytes).ok_or_else(|| {
-      format!("{} must be 22 bytes or legacy 24-byte padded short id", T::TYPE_NAME)
-    })?;
+    normalize_short_id_bytes(bytes).ok_or_else(|| {
+      format!("{type_name} must be 22 bytes or legacy 24-byte padded short id").into()
+    })
   } else {
-    return Err(format!("{} must be 22 bytes or legacy 24-byte padded short id", T::TYPE_NAME).into());
+    Err(format!("{type_name} must be 22 bytes or legacy 24-byte padded short id").into())
   }
-  Ok(T::from_bytes(arr))
 }
 
 /// 宏：为ID类型生成所有必需的实现
@@ -190,7 +160,6 @@ macro_rules! impl_id {
 
     impl $crate::common::id::Id for $id_type {
       const TYPE_NAME: &'static str = stringify!($id_type);
-      const GRAPHQL_NAME: &'static str = stringify!($id_type);
       
       fn as_bytes(&self) -> &[u8; 22] {
         &self.0
@@ -222,7 +191,7 @@ macro_rules! impl_id {
       where
         S: serde::Serializer,
       {
-        $crate::common::id::serialize_id(self, serializer)
+        $crate::common::id::serialize_id(&self.0, serializer)
       }
     }
 
@@ -231,30 +200,37 @@ macro_rules! impl_id {
       where
         D: serde::Deserializer<'de>,
       {
-        $crate::common::id::deserialize_id(deserializer)
+        Ok(Self($crate::common::id::deserialize_id(deserializer)?))
       }
     }
 
     impl std::fmt::Debug for $id_type {
       fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        $crate::common::id::debug_id(self, f)
+        $crate::common::id::debug_id(&self.0, <Self as $crate::common::id::Id>::TYPE_NAME, f)
       }
     }
 
     impl std::fmt::Display for $id_type {
       fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        $crate::common::id::display_id(self, f)
+        $crate::common::id::display_id(&self.0, f)
       }
     }
 
     #[async_graphql::Scalar]
     impl async_graphql::ScalarType for $id_type {
       fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
-        $crate::common::id::parse_id(value)
+        match value {
+          async_graphql::Value::String(s) => {
+            $crate::common::id::parse_id_str(&s, <Self as $crate::common::id::Id>::TYPE_NAME)
+              .map(|arr| Self(arr))
+              .map_err(|message| async_graphql::InputValueError::custom(message))
+          },
+          other => Err(async_graphql::InputValueError::expected_type(other)),
+        }
       }
       
       fn to_value(&self) -> async_graphql::Value {
-        $crate::common::id::to_value_id(self)
+        $crate::common::id::to_value_id(&self.0)
       }
     }
 
@@ -272,7 +248,7 @@ macro_rules! impl_id {
 
     impl From<String> for $id_type {
       fn from(s: String) -> Self {
-        s.as_str().into()
+        Self($crate::common::id::bytes_from_str(s.as_str()))
       }
     }
 
@@ -302,28 +278,13 @@ macro_rules! impl_id {
 
     impl From<&str> for $id_type {
       fn from(s: &str) -> Self {
-        let bytes = s.as_bytes();
-        let arr = if bytes.is_empty() {
-          $crate::common::id::EMPTY_ID_BYTES
-        } else if bytes.len() == 22 {
-          let mut arr = $crate::common::id::EMPTY_ID_BYTES;
-          arr.copy_from_slice(bytes);
-          arr
-        } else if bytes.len() == 24 {
-          match $crate::common::id::normalize_short_id_bytes(bytes) {
-            Some(arr) => arr,
-            None => $crate::common::id::EMPTY_ID_BYTES,
-          }
-        } else {
-          $crate::common::id::EMPTY_ID_BYTES
-        };
-        Self(arr)
+        Self($crate::common::id::bytes_from_str(s))
       }
     }
 
     impl<'q> sqlx::encode::Encode<'q, sqlx::MySql> for $id_type {
       fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-        $crate::common::id::encode_id(self, buf)
+        $crate::common::id::encode_id(&self.0, buf)
       }
       
       fn size_hint(&self) -> usize {
@@ -343,15 +304,13 @@ macro_rules! impl_id {
 
     impl<'r> sqlx::Decode<'r, sqlx::MySql> for $id_type {
       fn decode(value: sqlx::mysql::MySqlValueRef<'r>) -> Result<Self, sqlx::error::BoxDynError> {
-        $crate::common::id::decode_id(value)
+        Ok(Self($crate::common::id::decode_id(value, <Self as $crate::common::id::Id>::TYPE_NAME)?))
       }
     }
 
     impl PartialEq<str> for $id_type {
       fn eq(&self, other: &str) -> bool {
-        use $crate::common::id::Id;
-        let bytes = other.as_bytes();
-        *self.as_bytes() == bytes
+        self.0.as_slice() == other.as_bytes()
       }
     }
   };
