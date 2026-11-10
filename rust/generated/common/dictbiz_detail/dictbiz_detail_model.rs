@@ -21,6 +21,8 @@ pub struct GetDictbiz {
   pub code: String,
   pub r#type: String,
   pub lbl: String,
+  #[graphql(skip)]
+  pub lbl_lang: Option<String>,
   pub val: String,
 }
 
@@ -30,12 +32,14 @@ impl FromRow<'_, MySqlRow> for GetDictbiz {
     let code: String = row.try_get("code")?;
     let r#type: String = row.try_get("type")?;
     let lbl: String = row.try_get("lbl")?;
+    let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
     let val: String = row.try_get("val")?;
     Ok(Self {
       id,
       code,
       r#type,
       lbl,
+      lbl_lang,
       val,
     })
   }

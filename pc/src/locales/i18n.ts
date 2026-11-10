@@ -8,6 +8,14 @@ let i18nLblsLang: Record<string, any> | undefined = undefined;
 
 const reg = /\{([\s\S]*?)\}/gm;
 
+/**
+ * 中文(及未设置语言)时 code 本身就是原文, 未命中可直接显示
+ * 其他语言未命中时先显示空白占位, 避免首屏闪一下中文原文
+ */
+function isZhLang(lang: string) {
+  return !lang || lang.toLowerCase().startsWith("zh");
+}
+
 function setLblArgs(
   i18nLbl: string,
   // oxlint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,14 +68,16 @@ async function initI18ns(
       code2Prms.push(n0(lang, routePath, code, { notLoading: true }));
     }
   }
+  let lbls2: string[] = [ ];
   if (code2Prms.length > 0) {
-    const lbls2 = await Promise.all(code2Prms);
+    lbls2 = await Promise.all(code2Prms);
     for (let i = 0; i < keys2.length; i++) {
       const key = keys2[i];
       i18nLbls[key] = lbls2[i];
     }
     localStorage.setItem(`i18nLblsLang`, JSON.stringify(i18nLblsLang));
   }
+  return lbls2;
 }
 
 export function useI18n(routePath?: string | null) {
@@ -172,7 +182,8 @@ function getLbl(
     i18nLbl = setLblArgs(i18nLbl, args);
     return i18nLbl;
   }
-  const i18nLblRef = ref(setLblArgs(code, args));
+  // 非中文语言首屏未命中时先显示空白占位, 避免闪一下中文原文; 回填后照常显示译文
+  const i18nLblRef = ref(isZhLang(lang) ? setLblArgs(code, args) : "");
   // 如果 i18nLbl 不存在, 则到服务器获取, 获取之后再缓存到本地
   if (!i18nLbls[key]) {
     (async function() {
