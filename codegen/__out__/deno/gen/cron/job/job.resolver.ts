@@ -33,11 +33,6 @@ export async function findCountJob(
     getPagePathJob,
   } = await import("./job.model.ts");
   
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
-  
   const num = await findCountJob(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllJob(
   const {
     getPagePathJob,
   } = await import("./job.model.ts");
-  
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
   
   checkSortJob(sort);
   
@@ -102,11 +92,6 @@ export async function findOneJob(
     getPagePathJob,
   } = await import("./job.model.ts");
   
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
-  
   checkSortJob(sort);
   
   const model = await findOneJob(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkJob(
     getPagePathJob,
   } = await import("./job.model.ts");
   
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
-  
   checkSortJob(sort);
   
   const model = await findOneOkJob(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdJob(
     getPagePathJob,
   } = await import("./job.model.ts");
   
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
-  
   const model = await findByIdJob(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkJob(
   const {
     getPagePathJob,
   } = await import("./job.model.ts");
-  
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
   
   const model = await findByIdOkJob(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsJob(
     getPagePathJob,
   } = await import("./job.model.ts");
   
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
-  
   const models = await findByIdsJob(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsJob(
   const {
     existsJob,
   } = await import("./job.service.ts");
-  
-  const {
-    getPagePathJob,
-  } = await import("./job.model.ts");
-  
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
 
   return await existsJob(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkJob(
   const {
     findByIdsOkJob,
   } = await import("./job.service.ts");
-  
-  const {
-    getPagePathJob,
-  } = await import("./job.model.ts");
-  
-  await usePermit(
-    getPagePathJob(),
-    "find",
-  );
   
   const models = await findByIdsOkJob(ids);
   

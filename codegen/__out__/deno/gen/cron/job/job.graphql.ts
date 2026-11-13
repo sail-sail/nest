@@ -6,6 +6,7 @@ import * as resolver from "./job.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar JobId
 
+"任务"
 type JobModel {
   "ID"
   id: JobId!
@@ -25,7 +26,7 @@ type JobModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -33,7 +34,7 @@ type JobModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -46,6 +47,7 @@ type JobModel {
   "系统字段"
   is_sys: Int!
 }
+"任务"
 type JobFieldComment {
   "ID"
   id: String!
@@ -65,7 +67,7 @@ type JobFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -73,7 +75,7 @@ type JobFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -82,6 +84,7 @@ type JobFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"任务"
 input JobInput {
   "ID"
   id: JobId

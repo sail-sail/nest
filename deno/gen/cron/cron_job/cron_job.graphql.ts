@@ -6,12 +6,13 @@ import * as resolver from "./cron_job.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobId
 
+"定时任务"
 type CronJobModel {
   "ID"
   id: CronJobId!
   "名称"
   lbl: String!
-  "任务"
+  "任务 [@fk:cron_job.id]"
   job_id: JobId!
   "任务"
   job_id_lbl: String!
@@ -33,7 +34,7 @@ type CronJobModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -41,7 +42,7 @@ type CronJobModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -49,19 +50,20 @@ type CronJobModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId!
   "所属组织"
   org_id_lbl: String!
   "已删除"
   is_deleted: Int!
 }
+"定时任务"
 type CronJobFieldComment {
   "ID"
   id: String!
   "名称"
   lbl: String!
-  "任务"
+  "任务 [@fk:cron_job.id]"
   job_id: String!
   "任务"
   job_id_lbl: String!
@@ -83,7 +85,7 @@ type CronJobFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -91,7 +93,7 @@ type CronJobFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -99,17 +101,18 @@ type CronJobFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: String!
   "所属组织"
   org_id_lbl: String!
 }
+"定时任务"
 input CronJobInput {
   "ID"
   id: CronJobId
   "名称"
   lbl: String
-  "任务"
+  "任务 [@fk:cron_job.id]"
   job_id: JobId
   "任务"
   job_id_lbl: String
@@ -131,7 +134,7 @@ input CronJobInput {
   order_by: Int
   "备注"
   rem: String
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId
   "所属组织"
   org_id_lbl: String

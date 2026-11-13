@@ -1206,7 +1206,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }
@@ -1237,7 +1237,7 @@ async function onDeleteByIds() {
   const num = await deleteByIdsCronJobLog(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid(true);
   ElMessage.success(`删除 ${ num } 定时任务日志 成功`);
   emit("remove", num);
@@ -1270,7 +1270,7 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 定时任务日志 成功`);
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1301,7 +1301,7 @@ async function onRevertByIds() {
   const num = await revertByIdsCronJobLog(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    dirtyStore.fireDirty(pageName);
+    await dirtyStore.fireDirty(pageName);
     await dataGrid(true);
     ElMessage.success(`还原 ${ num } 定时任务日志 成功`);
     emit("revert", num);

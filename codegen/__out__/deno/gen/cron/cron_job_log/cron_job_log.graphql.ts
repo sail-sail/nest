@@ -16,10 +16,11 @@ enum CronJobLogExecState {
   fail
 }
 
+"定时任务日志"
 type CronJobLogModel {
   "ID"
   id: CronJobLogId!
-  "定时任务"
+  "定时任务 [@fk:cron_cron_job.id]"
   cron_job_id: CronJobId!
   "定时任务"
   cron_job_id_lbl: String!
@@ -46,10 +47,11 @@ type CronJobLogModel {
   "已删除"
   is_deleted: Int!
 }
+"定时任务日志"
 type CronJobLogFieldComment {
   "ID"
   id: String!
-  "定时任务"
+  "定时任务 [@fk:cron_cron_job.id]"
   cron_job_id: String!
   "定时任务"
   cron_job_id_lbl: String!
@@ -74,10 +76,11 @@ type CronJobLogFieldComment {
   "创建时间"
   create_time_lbl: String!
 }
+"定时任务日志"
 input CronJobLogInput {
   "ID"
   id: CronJobLogId
-  "定时任务"
+  "定时任务 [@fk:cron_cron_job.id]"
   cron_job_id: CronJobId
   "定时任务"
   cron_job_id_lbl: String

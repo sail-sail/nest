@@ -35,11 +35,6 @@ export async function findCountCronJob(
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
   
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
-  
   const num = await findCountCronJob(search);
   
   return num;
@@ -61,11 +56,6 @@ export async function findAllCronJob(
   const {
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
-  
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
   
   checkSortCronJob(sort);
   
@@ -104,11 +94,6 @@ export async function findOneCronJob(
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
   
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
-  
   checkSortCronJob(sort);
   
   const model = await findOneCronJob(search, sort);
@@ -132,11 +117,6 @@ export async function findOneOkCronJob(
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
   
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
-  
   checkSortCronJob(sort);
   
   const model = await findOneOkCronJob(search, sort);
@@ -159,11 +139,6 @@ export async function findByIdCronJob(
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
   
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
-  
   const model = await findByIdCronJob(id);
   
   return model;
@@ -183,11 +158,6 @@ export async function findByIdOkCronJob(
   const {
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
-  
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
   
   const model = await findByIdOkCronJob(id);
   
@@ -209,11 +179,6 @@ export async function findByIdsCronJob(
     getPagePathCronJob,
   } = await import("./cron_job.model.ts");
   
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
-  
   const models = await findByIdsCronJob(ids);
   
   return models;
@@ -229,15 +194,6 @@ export async function existsCronJob(
   const {
     existsCronJob,
   } = await import("./cron_job.service.ts");
-  
-  const {
-    getPagePathCronJob,
-  } = await import("./cron_job.model.ts");
-  
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
 
   return await existsCronJob(search);
 }
@@ -252,15 +208,6 @@ export async function findByIdsOkCronJob(
   const {
     findByIdsOkCronJob,
   } = await import("./cron_job.service.ts");
-  
-  const {
-    getPagePathCronJob,
-  } = await import("./cron_job.model.ts");
-  
-  await usePermit(
-    getPagePathCronJob(),
-    "find",
-  );
   
   const models = await findByIdsOkCronJob(ids);
   

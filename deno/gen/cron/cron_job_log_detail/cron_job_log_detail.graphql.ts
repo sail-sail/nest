@@ -6,10 +6,11 @@ import * as resolver from "./cron_job_log_detail.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobLogDetailId
 
+"定时任务日志明细"
 type CronJobLogDetailModel {
   "ID"
   id: CronJobLogDetailId!
-  "定时任务日志"
+  "定时任务日志 [@fk:cron_cron_job_log.id]"
   cron_job_log_id: CronJobLogId!
   "日志明细"
   lbl: String!
@@ -20,10 +21,11 @@ type CronJobLogDetailModel {
   "已删除"
   is_deleted: Int!
 }
+"定时任务日志明细"
 type CronJobLogDetailFieldComment {
   "ID"
   id: String!
-  "定时任务日志"
+  "定时任务日志 [@fk:cron_cron_job_log.id]"
   cron_job_log_id: String!
   "定时任务日志"
   cron_job_log_id_lbl: String!
@@ -34,10 +36,11 @@ type CronJobLogDetailFieldComment {
   "创建时间"
   create_time_lbl: String!
 }
+"定时任务日志明细"
 input CronJobLogDetailInput {
   "ID"
   id: CronJobLogDetailId
-  "定时任务日志"
+  "定时任务日志 [@fk:cron_cron_job_log.id]"
   cron_job_log_id: CronJobLogId
   "日志明细"
   lbl: String
