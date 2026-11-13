@@ -33,6 +33,8 @@ import TurboConsole from "unplugin-turbo-console/vite";
 
 import VueDevtoolsJson from "vite-plugin-devtools-json";
 
+import { openInEditorPlugin, OPEN_EDITOR } from "./src/utils/open_in_editor.mts";
+
 const commonProxy = {
   target: "http://localhost:4001",
   changeOrigin: true,
@@ -72,8 +74,9 @@ export default defineConfig({
       toggleButtonPos: "top-left",
       lazyLoad: 500,
       disableInspectorOnEditorOpen: true,
-      launchEditor: "buddycn",
+      launchEditor: OPEN_EDITOR,
     }),
+    openInEditorPlugin(OPEN_EDITOR),
     // VueDevTools(),
     VueDevtoolsJson(),
     Vue(),
