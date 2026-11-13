@@ -24,6 +24,7 @@ enum WxoAppScope {
   snsapi_userinfo
 }
 
+"公众号设置"
 type WxoAppModel {
   "ID"
   id: WxoAppId!
@@ -47,7 +48,7 @@ type WxoAppModel {
   scope: WxoAppScope!
   "授权作用域"
   scope_lbl: String!
-  "网页授权域名"
+  "网页授权域名 [@fk:base_domain.id]"
   domain_id: DomainId!
   "网页授权域名"
   domain_id_lbl: String!
@@ -65,7 +66,7 @@ type WxoAppModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -73,7 +74,7 @@ type WxoAppModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -84,6 +85,7 @@ type WxoAppModel {
   "已删除"
   is_deleted: Int!
 }
+"公众号设置"
 type WxoAppFieldComment {
   "ID"
   id: String!
@@ -107,7 +109,7 @@ type WxoAppFieldComment {
   scope: String!
   "授权作用域"
   scope_lbl: String!
-  "网页授权域名"
+  "网页授权域名 [@fk:base_domain.id]"
   domain_id: String!
   "网页授权域名"
   domain_id_lbl: String!
@@ -125,7 +127,7 @@ type WxoAppFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -133,7 +135,7 @@ type WxoAppFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -142,6 +144,7 @@ type WxoAppFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"公众号设置"
 input WxoAppInput {
   "ID"
   id: WxoAppId
@@ -165,7 +168,7 @@ input WxoAppInput {
   scope: WxoAppScope
   "授权作用域"
   scope_lbl: String
-  "网页授权域名"
+  "网页授权域名 [@fk:base_domain.id]"
   domain_id: DomainId
   "网页授权域名"
   domain_id_lbl: String

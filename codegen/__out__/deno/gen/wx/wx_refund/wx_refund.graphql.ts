@@ -54,6 +54,7 @@ enum WxRefundAmountCurrency {
   CNY
 }
 
+"微信退款申请"
 type WxRefundModel {
   "ID"
   id: WxRefundId!
@@ -114,6 +115,7 @@ type WxRefundModel {
   "创建时间"
   create_time_lbl: String!
 }
+"微信退款申请"
 type WxRefundFieldComment {
   "ID"
   id: String!
@@ -174,6 +176,7 @@ type WxRefundFieldComment {
   "创建时间"
   create_time_lbl: String!
 }
+"微信退款申请"
 input WxRefundInput {
   "ID"
   id: WxRefundId

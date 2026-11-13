@@ -33,11 +33,6 @@ export async function findCountWxoAppToken(
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
   
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
-  
   const num = await findCountWxoAppToken(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllWxoAppToken(
   const {
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
-  
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
   
   checkSortWxoAppToken(sort);
   
@@ -102,11 +92,6 @@ export async function findOneWxoAppToken(
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
   
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
-  
   checkSortWxoAppToken(sort);
   
   const model = await findOneWxoAppToken(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkWxoAppToken(
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
   
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
-  
   checkSortWxoAppToken(sort);
   
   const model = await findOneOkWxoAppToken(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdWxoAppToken(
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
   
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
-  
   const model = await findByIdWxoAppToken(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkWxoAppToken(
   const {
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
-  
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
   
   const model = await findByIdOkWxoAppToken(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsWxoAppToken(
     getPagePathWxoAppToken,
   } = await import("./wxo_app_token.model.ts");
   
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
-  
   const models = await findByIdsWxoAppToken(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsWxoAppToken(
   const {
     existsWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
-  
-  const {
-    getPagePathWxoAppToken,
-  } = await import("./wxo_app_token.model.ts");
-  
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
 
   return await existsWxoAppToken(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkWxoAppToken(
   const {
     findByIdsOkWxoAppToken,
   } = await import("./wxo_app_token.service.ts");
-  
-  const {
-    getPagePathWxoAppToken,
-  } = await import("./wxo_app_token.model.ts");
-  
-  await usePermit(
-    getPagePathWxoAppToken(),
-    "find",
-  );
   
   const models = await findByIdsOkWxoAppToken(ids);
   

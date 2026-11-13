@@ -166,7 +166,6 @@
     un-items-center
     un-gap="y-2"
   >
-    <template v-if="true">
       
       <el-button
         plain
@@ -244,86 +243,6 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      
-    </template>
-    
-    <template v-else>
-      
-      <el-button
-        plain
-        @click="openView"
-      >
-        <template #icon>
-          <ElIconReading />
-        </template>
-        <span>查看</span>
-      </el-button>
-      
-      <el-button
-        plain
-        @click="onSearch(true)"
-      >
-        <template #icon>
-          <ElIconRefresh />
-        </template>
-        <span>刷新</span>
-      </el-button>
-      
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-          >
-            正在导出
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            正在为导出加载数据
-          </span>
-          <span
-            v-else
-          >
-            更多操作
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>导出</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">取消导出</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
-    </template>
     
     <div
       un-flex="[1_0_0]"
@@ -1309,7 +1228,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }

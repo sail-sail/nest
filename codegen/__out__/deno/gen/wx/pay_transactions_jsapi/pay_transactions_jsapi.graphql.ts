@@ -30,6 +30,7 @@ enum PayTransactionsJsapiCurrency {
   CNY
 }
 
+"微信JSAPI下单"
 type PayTransactionsJsapiModel {
   "ID"
   id: PayTransactionsJsapiId!
@@ -69,7 +70,7 @@ type PayTransactionsJsapiModel {
   currency_lbl: String!
   "用户标识"
   openid: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -77,7 +78,7 @@ type PayTransactionsJsapiModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -88,6 +89,7 @@ type PayTransactionsJsapiModel {
   "已删除"
   is_deleted: Int!
 }
+"微信JSAPI下单"
 type PayTransactionsJsapiFieldComment {
   "ID"
   id: String!
@@ -127,7 +129,7 @@ type PayTransactionsJsapiFieldComment {
   currency_lbl: String!
   "用户标识"
   openid: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -135,7 +137,7 @@ type PayTransactionsJsapiFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -144,6 +146,7 @@ type PayTransactionsJsapiFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"微信JSAPI下单"
 input PayTransactionsJsapiInput {
   "ID"
   id: PayTransactionsJsapiId

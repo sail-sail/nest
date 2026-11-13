@@ -6,6 +6,7 @@ import * as resolver from "./wx_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxAppId
 
+"小程序设置"
 type WxAppModel {
   "ID"
   id: WxAppId!
@@ -31,7 +32,7 @@ type WxAppModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -39,7 +40,7 @@ type WxAppModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -50,6 +51,7 @@ type WxAppModel {
   "已删除"
   is_deleted: Int!
 }
+"小程序设置"
 type WxAppFieldComment {
   "ID"
   id: String!
@@ -75,7 +77,7 @@ type WxAppFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -83,7 +85,7 @@ type WxAppFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -92,6 +94,7 @@ type WxAppFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"小程序设置"
 input WxAppInput {
   "ID"
   id: WxAppId

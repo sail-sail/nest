@@ -85,6 +85,9 @@ export async function findAllWxPayNotice(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllWxPayNotice: WxPayNoticeModel[];
   } = await query({
@@ -117,6 +120,9 @@ export async function findOneWxPayNotice(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneWxPayNotice?: WxPayNoticeModel;
@@ -149,6 +155,9 @@ export async function findOneOkWxPayNotice(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneOkWxPayNotice?: WxPayNoticeModel;
@@ -180,6 +189,9 @@ export async function findCountWxPayNotice(
   search?: WxPayNoticeSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findCountWxPayNotice: Query["findCountWxPayNotice"];
   } = await query({

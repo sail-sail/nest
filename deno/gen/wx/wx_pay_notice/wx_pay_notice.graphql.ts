@@ -52,6 +52,7 @@ enum WxPayNoticePayerCurrency {
   CNY
 }
 
+"微信支付通知"
 type WxPayNoticeModel {
   "ID"
   id: WxPayNoticeId!
@@ -104,6 +105,7 @@ type WxPayNoticeModel {
   "创建时间"
   create_time_lbl: String!
 }
+"微信支付通知"
 type WxPayNoticeFieldComment {
   "ID"
   id: String!
@@ -156,6 +158,7 @@ type WxPayNoticeFieldComment {
   "创建时间"
   create_time_lbl: String!
 }
+"微信支付通知"
 input WxPayNoticeInput {
   "ID"
   id: WxPayNoticeId

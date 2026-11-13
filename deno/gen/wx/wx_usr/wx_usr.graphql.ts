@@ -6,12 +6,13 @@ import * as resolver from "./wx_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxUsrId
 
+"小程序用户"
 type WxUsrModel {
   "ID"
   id: WxUsrId!
   "名称"
   lbl: String!
-  "用户"
+  "用户 [@fk:base_usr.id]"
   usr_id: UsrId!
   "用户"
   usr_id_lbl: String!
@@ -41,7 +42,7 @@ type WxUsrModel {
   language: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -49,7 +50,7 @@ type WxUsrModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -60,12 +61,13 @@ type WxUsrModel {
   "已删除"
   is_deleted: Int!
 }
+"小程序用户"
 type WxUsrFieldComment {
   "ID"
   id: String!
   "名称"
   lbl: String!
-  "用户"
+  "用户 [@fk:base_usr.id]"
   usr_id: String!
   "用户"
   usr_id_lbl: String!
@@ -95,7 +97,7 @@ type WxUsrFieldComment {
   language: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -103,7 +105,7 @@ type WxUsrFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -112,12 +114,13 @@ type WxUsrFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"小程序用户"
 input WxUsrInput {
   "ID"
   id: WxUsrId
   "名称"
   lbl: String
-  "用户"
+  "用户 [@fk:base_usr.id]"
   usr_id: UsrId
   "用户"
   usr_id_lbl: String

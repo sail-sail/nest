@@ -20,6 +20,7 @@ enum WxRefundNoticeRefundStatus {
   ABNORMAL
 }
 
+"微信退款通知"
 type WxRefundNoticeModel {
   "ID"
   id: WxRefundNoticeId!
@@ -58,6 +59,7 @@ type WxRefundNoticeModel {
   "创建时间"
   create_time_lbl: String!
 }
+"微信退款通知"
 type WxRefundNoticeFieldComment {
   "ID"
   id: String!
@@ -96,6 +98,7 @@ type WxRefundNoticeFieldComment {
   "创建时间"
   create_time_lbl: String!
 }
+"微信退款通知"
 input WxRefundNoticeInput {
   "ID"
   id: WxRefundNoticeId

@@ -31,11 +31,6 @@ export async function findCountPayTransactionsJsapi(
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
   
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
-  
   const num = await findCountPayTransactionsJsapi(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllPayTransactionsJsapi(
   const {
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
-  
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
   
   checkSortPayTransactionsJsapi(sort);
   
@@ -100,11 +90,6 @@ export async function findOnePayTransactionsJsapi(
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
   
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
-  
   checkSortPayTransactionsJsapi(sort);
   
   const model = await findOnePayTransactionsJsapi(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkPayTransactionsJsapi(
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
   
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
-  
   checkSortPayTransactionsJsapi(sort);
   
   const model = await findOneOkPayTransactionsJsapi(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdPayTransactionsJsapi(
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
   
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
-  
   const model = await findByIdPayTransactionsJsapi(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkPayTransactionsJsapi(
   const {
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
-  
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
   
   const model = await findByIdOkPayTransactionsJsapi(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsPayTransactionsJsapi(
     getPagePathPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.model.ts");
   
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
-  
   const models = await findByIdsPayTransactionsJsapi(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsPayTransactionsJsapi(
   const {
     existsPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
-  
-  const {
-    getPagePathPayTransactionsJsapi,
-  } = await import("./pay_transactions_jsapi.model.ts");
-  
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
 
   return await existsPayTransactionsJsapi(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkPayTransactionsJsapi(
   const {
     findByIdsOkPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
-  
-  const {
-    getPagePathPayTransactionsJsapi,
-  } = await import("./pay_transactions_jsapi.model.ts");
-  
-  await usePermit(
-    getPagePathPayTransactionsJsapi(),
-    "find",
-  );
   
   const models = await findByIdsOkPayTransactionsJsapi(ids);
   

@@ -6,10 +6,11 @@ import * as resolver from "./wx_app_token.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxAppTokenId
 
+"小程序接口凭据"
 type WxAppTokenModel {
   "ID"
   id: WxAppTokenId!
-  "小程序设置"
+  "小程序设置 [@fk:wx_wx_app.id]"
   wx_app_id: WxAppId!
   "小程序设置"
   wx_app_id_lbl: String!
@@ -28,10 +29,11 @@ type WxAppTokenModel {
   "已删除"
   is_deleted: Int!
 }
+"小程序接口凭据"
 type WxAppTokenFieldComment {
   "ID"
   id: String!
-  "小程序设置"
+  "小程序设置 [@fk:wx_wx_app.id]"
   wx_app_id: String!
   "小程序设置"
   wx_app_id_lbl: String!
@@ -48,10 +50,11 @@ type WxAppTokenFieldComment {
   "令牌超时时间"
   expires_in: String!
 }
+"小程序接口凭据"
 input WxAppTokenInput {
   "ID"
   id: WxAppTokenId
-  "小程序设置"
+  "小程序设置 [@fk:wx_wx_app.id]"
   wx_app_id: WxAppId
   "小程序设置"
   wx_app_id_lbl: String

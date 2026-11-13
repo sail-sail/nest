@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  useMaybeContext,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -765,7 +766,8 @@ export async function checkByUniquePayTransactionsJsapi(
       return id;
     }
     if (uniqueType === UniqueType.Ignore) {
-      return;
+      // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+      return oldModel.id;
     }
   }
   return;
@@ -1437,6 +1439,8 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
+    const new_id = shortUuidV4<PayTransactionsJsapiId>();
+    
     const oldModels = await findByUniquePayTransactionsJsapi(input, options);
     if (oldModels.length > 0) {
       let id: PayTransactionsJsapiId | undefined = undefined;
@@ -1460,9 +1464,8 @@ async function _creates(
       inputs2.push(input);
     }
     
-    const id = shortUuidV4<PayTransactionsJsapiId>();
-    input.id = id;
-    ids2.push(id);
+    input.id = new_id;
+    ids2.push(new_id);
   }
   
   if (inputs2.length === 0) {

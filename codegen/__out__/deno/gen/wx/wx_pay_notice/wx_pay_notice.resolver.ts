@@ -31,11 +31,6 @@ export async function findCountWxPayNotice(
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
   
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
-  
   const num = await findCountWxPayNotice(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllWxPayNotice(
   const {
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
-  
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
   
   checkSortWxPayNotice(sort);
   
@@ -100,11 +90,6 @@ export async function findOneWxPayNotice(
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
   
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
-  
   checkSortWxPayNotice(sort);
   
   const model = await findOneWxPayNotice(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkWxPayNotice(
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
   
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
-  
   checkSortWxPayNotice(sort);
   
   const model = await findOneOkWxPayNotice(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdWxPayNotice(
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
   
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
-  
   const model = await findByIdWxPayNotice(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkWxPayNotice(
   const {
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
-  
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
   
   const model = await findByIdOkWxPayNotice(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsWxPayNotice(
     getPagePathWxPayNotice,
   } = await import("./wx_pay_notice.model.ts");
   
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
-  
   const models = await findByIdsWxPayNotice(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsWxPayNotice(
   const {
     existsWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
-  
-  const {
-    getPagePathWxPayNotice,
-  } = await import("./wx_pay_notice.model.ts");
-  
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
 
   return await existsWxPayNotice(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkWxPayNotice(
   const {
     findByIdsOkWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
-  
-  const {
-    getPagePathWxPayNotice,
-  } = await import("./wx_pay_notice.model.ts");
-  
-  await usePermit(
-    getPagePathWxPayNotice(),
-    "find",
-  );
   
   const models = await findByIdsOkWxPayNotice(ids);
   

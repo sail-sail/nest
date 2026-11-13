@@ -6,6 +6,7 @@ import * as resolver from "./wxo_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxoUsrId
 
+"公众号用户"
 type WxoUsrModel {
   "ID"
   id: WxoUsrId!
@@ -13,7 +14,7 @@ type WxoUsrModel {
   lbl: String!
   "头像"
   head_img: String!
-  "绑定用户"
+  "绑定用户 [@fk:base_usr.id]"
   usr_id: UsrId!
   "绑定用户"
   usr_id_lbl: String!
@@ -35,7 +36,7 @@ type WxoUsrModel {
   country: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -43,7 +44,7 @@ type WxoUsrModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -54,6 +55,7 @@ type WxoUsrModel {
   "已删除"
   is_deleted: Int!
 }
+"公众号用户"
 type WxoUsrFieldComment {
   "ID"
   id: String!
@@ -61,7 +63,7 @@ type WxoUsrFieldComment {
   lbl: String!
   "头像"
   head_img: String!
-  "绑定用户"
+  "绑定用户 [@fk:base_usr.id]"
   usr_id: String!
   "绑定用户"
   usr_id_lbl: String!
@@ -83,7 +85,7 @@ type WxoUsrFieldComment {
   country: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -91,7 +93,7 @@ type WxoUsrFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -100,6 +102,7 @@ type WxoUsrFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"公众号用户"
 input WxoUsrInput {
   "ID"
   id: WxoUsrId
@@ -107,7 +110,7 @@ input WxoUsrInput {
   lbl: String
   "头像"
   head_img: String
-  "绑定用户"
+  "绑定用户 [@fk:base_usr.id]"
   usr_id: UsrId
   "绑定用户"
   usr_id_lbl: String

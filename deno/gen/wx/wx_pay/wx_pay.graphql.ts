@@ -6,6 +6,7 @@ import * as resolver from "./wx_pay.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxPayId
 
+"微信支付设置"
 type WxPayModel {
   "ID"
   id: WxPayId!
@@ -41,7 +42,7 @@ type WxPayModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -49,7 +50,7 @@ type WxPayModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -60,6 +61,7 @@ type WxPayModel {
   "已删除"
   is_deleted: Int!
 }
+"微信支付设置"
 type WxPayFieldComment {
   "ID"
   id: String!
@@ -95,7 +97,7 @@ type WxPayFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -103,7 +105,7 @@ type WxPayFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -112,6 +114,7 @@ type WxPayFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"微信支付设置"
 input WxPayInput {
   "ID"
   id: WxPayId

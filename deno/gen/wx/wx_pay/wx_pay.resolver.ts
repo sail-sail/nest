@@ -33,11 +33,6 @@ export async function findCountWxPay(
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
   
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
-  
   const num = await findCountWxPay(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllWxPay(
   const {
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
-  
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
   
   checkSortWxPay(sort);
   
@@ -102,11 +92,6 @@ export async function findOneWxPay(
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
   
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
-  
   checkSortWxPay(sort);
   
   const model = await findOneWxPay(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkWxPay(
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
   
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
-  
   checkSortWxPay(sort);
   
   const model = await findOneOkWxPay(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdWxPay(
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
   
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
-  
   const model = await findByIdWxPay(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkWxPay(
   const {
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
-  
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
   
   const model = await findByIdOkWxPay(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsWxPay(
     getPagePathWxPay,
   } = await import("./wx_pay.model.ts");
   
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
-  
   const models = await findByIdsWxPay(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsWxPay(
   const {
     existsWxPay,
   } = await import("./wx_pay.service.ts");
-  
-  const {
-    getPagePathWxPay,
-  } = await import("./wx_pay.model.ts");
-  
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
 
   return await existsWxPay(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkWxPay(
   const {
     findByIdsOkWxPay,
   } = await import("./wx_pay.service.ts");
-  
-  const {
-    getPagePathWxPay,
-  } = await import("./wx_pay.model.ts");
-  
-  await usePermit(
-    getPagePathWxPay(),
-    "find",
-  );
   
   const models = await findByIdsOkWxPay(ids);
   
