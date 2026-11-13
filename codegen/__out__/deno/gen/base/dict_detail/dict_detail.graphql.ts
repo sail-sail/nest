@@ -6,10 +6,11 @@ import * as resolver from "./dict_detail.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DictDetailId
 
+"系统字典明细"
 type DictDetailModel {
   "ID"
   id: DictDetailId!
-  "系统字典"
+  "系统字典 [@fk:base_dict.id]"
   dict_id: DictId!
   "系统字典"
   dict_id_lbl: String!
@@ -25,7 +26,7 @@ type DictDetailModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -33,7 +34,7 @@ type DictDetailModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -46,10 +47,11 @@ type DictDetailModel {
   "系统字段"
   is_sys: Int!
 }
+"系统字典明细"
 type DictDetailFieldComment {
   "ID"
   id: String!
-  "系统字典"
+  "系统字典 [@fk:base_dict.id]"
   dict_id: String!
   "系统字典"
   dict_id_lbl: String!
@@ -65,7 +67,7 @@ type DictDetailFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -73,7 +75,7 @@ type DictDetailFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -82,10 +84,11 @@ type DictDetailFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"系统字典明细"
 input DictDetailInput {
   "ID"
   id: DictDetailId
-  "系统字典"
+  "系统字典 [@fk:base_dict.id]"
   dict_id: DictId
   "系统字典"
   dict_id_lbl: String

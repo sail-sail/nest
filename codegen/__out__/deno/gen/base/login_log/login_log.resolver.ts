@@ -31,11 +31,6 @@ export async function findCountLoginLog(
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
   
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
-  
   const num = await findCountLoginLog(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllLoginLog(
   const {
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
-  
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
   
   checkSortLoginLog(sort);
   
@@ -100,11 +90,6 @@ export async function findOneLoginLog(
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
   
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
-  
   checkSortLoginLog(sort);
   
   const model = await findOneLoginLog(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkLoginLog(
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
   
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
-  
   checkSortLoginLog(sort);
   
   const model = await findOneOkLoginLog(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdLoginLog(
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
   
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
-  
   const model = await findByIdLoginLog(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkLoginLog(
   const {
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
-  
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
   
   const model = await findByIdOkLoginLog(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsLoginLog(
     getPagePathLoginLog,
   } = await import("./login_log.model.ts");
   
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
-  
   const models = await findByIdsLoginLog(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsLoginLog(
   const {
     existsLoginLog,
   } = await import("./login_log.service.ts");
-  
-  const {
-    getPagePathLoginLog,
-  } = await import("./login_log.model.ts");
-  
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
 
   return await existsLoginLog(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkLoginLog(
   const {
     findByIdsOkLoginLog,
   } = await import("./login_log.service.ts");
-  
-  const {
-    getPagePathLoginLog,
-  } = await import("./login_log.model.ts");
-  
-  await usePermit(
-    getPagePathLoginLog(),
-    "find",
-  );
   
   const models = await findByIdsOkLoginLog(ids);
   

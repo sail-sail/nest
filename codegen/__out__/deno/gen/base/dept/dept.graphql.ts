@@ -6,16 +6,17 @@ import * as resolver from "./dept.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DeptId
 
+"部门"
 type DeptModel {
   "ID"
   id: DeptId!
-  "父部门"
+  "父部门 [@fk:base_dept.id]"
   parent_id: DeptId!
   "父部门"
   parent_id_lbl: String!
   "名称"
   lbl: String!
-  "部门负责人"
+  "部门负责人 [@fk:base_usr.id]"
   usr_ids: [UsrId!]!
   "部门负责人"
   usr_ids_lbl: [String!]!
@@ -29,13 +30,13 @@ type DeptModel {
   is_enabled_lbl: String!
   "排序"
   order_by: Int!
-  "组织"
+  "组织 [@fk:base_org.id]"
   org_id: OrgId!
   "组织"
   org_id_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -43,7 +44,7 @@ type DeptModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -54,16 +55,17 @@ type DeptModel {
   "已删除"
   is_deleted: Int!
 }
+"部门"
 type DeptFieldComment {
   "ID"
   id: String!
-  "父部门"
+  "父部门 [@fk:base_dept.id]"
   parent_id: String!
   "父部门"
   parent_id_lbl: String!
   "名称"
   lbl: String!
-  "部门负责人"
+  "部门负责人 [@fk:base_usr.id]"
   usr_ids: String!
   "部门负责人"
   usr_ids_lbl: String!
@@ -77,13 +79,13 @@ type DeptFieldComment {
   is_enabled_lbl: String!
   "排序"
   order_by: String!
-  "组织"
+  "组织 [@fk:base_org.id]"
   org_id: String!
   "组织"
   org_id_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -91,7 +93,7 @@ type DeptFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -100,16 +102,17 @@ type DeptFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"部门"
 input DeptInput {
   "ID"
   id: DeptId
-  "父部门"
+  "父部门 [@fk:base_dept.id]"
   parent_id: DeptId
   "父部门"
   parent_id_lbl: String
   "名称"
   lbl: String
-  "部门负责人"
+  "部门负责人 [@fk:base_usr.id]"
   usr_ids: [UsrId!]
   "部门负责人"
   usr_ids_lbl: [String!]
@@ -123,7 +126,7 @@ input DeptInput {
   is_enabled_lbl: String
   "排序"
   order_by: Int
-  "组织"
+  "组织 [@fk:base_org.id]"
   org_id: OrgId
   "组织"
   org_id_lbl: String

@@ -29,7 +29,6 @@
         <template
           v-if="props.hideFields?.includes('category') !== true"
         >
-          <!-- 分类 -->
           <tm-form-item
             label="分类"
             name="category"
@@ -48,7 +47,6 @@
         <template
           v-if="props.hideFields?.includes('channel') !== true"
         >
-          <!-- 发送通道 -->
           <tm-form-item
             label="发送通道"
             name="channel"
@@ -67,7 +65,6 @@
         <template
           v-if="props.hideFields?.includes('title') !== true"
         >
-          <!-- 标题 -->
           <tm-form-item
             label="标题"
             name="title"
@@ -84,7 +81,6 @@
         <template
           v-if="props.hideFields?.includes('content') !== true"
         >
-          <!-- 内容 -->
           <tm-form-item
             label="内容"
             name="content"
@@ -102,7 +98,6 @@
         <template
           v-if="props.hideFields?.includes('route_path') !== true"
         >
-          <!-- 跳转路由 -->
           <tm-form-item
             label="跳转路由"
             name="route_path"
@@ -120,7 +115,6 @@
         <template
           v-if="props.hideFields?.includes('route_query') !== true"
         >
-          <!-- 跳转参数 -->
           <tm-form-item
             label="跳转参数"
             name="route_query"
@@ -156,7 +150,6 @@
         <template
           v-if="props.hideFields?.includes('is_sys_msg') !== true"
         >
-          <!-- 系统消息 -->
           <tm-form-item
             label="系统消息"
             name="is_sys_msg"
@@ -175,7 +168,6 @@
         <template
           v-if="props.hideFields?.includes('is_pinned') !== true"
         >
-          <!-- 置顶 -->
           <tm-form-item
             label="置顶"
             name="is_pinned"

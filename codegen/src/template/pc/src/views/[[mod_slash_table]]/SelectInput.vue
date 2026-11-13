@@ -152,7 +152,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | ""): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | "" | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | <#=modelName#>[]): void,
   (e: "clear"): void,
@@ -465,6 +465,7 @@ async function onSelectList(value?: <#=modelName#> | <#=modelName#>[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -473,6 +474,7 @@ async function onSelectList(value?: <#=modelName#> | <#=modelName#>[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -480,6 +482,7 @@ async function onSelectList(value?: <#=modelName#> | <#=modelName#>[]) {
     await refreshInputValue();
   }
   emit("update:modelLabel", modelLabel || "");
+  await nextTick();
   emit("change", value[0]);
 }
 

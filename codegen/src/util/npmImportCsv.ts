@@ -1,4 +1,5 @@
 // npm run importCsv -- wx/*
+// pnpm run importCsv wx/*
 import {
   readdirSync,
   statSync,
@@ -41,6 +42,7 @@ const __dirname = dirname(__filename);
 let argv2 = process.argv[2];
 if (!argv2) {
   console.log("npm run importCsv -- [文件路径]");
+  console.log("pnpm run importCsv [文件路径]");
   process.exit(1);
 }
 

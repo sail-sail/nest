@@ -55,6 +55,9 @@ export async function findAllFieldPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllFieldPermit: FieldPermitModel[];
   } = await query({
@@ -87,6 +90,9 @@ export async function findOneFieldPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneFieldPermit?: FieldPermitModel;
@@ -119,6 +125,9 @@ export async function findOneOkFieldPermit(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneOkFieldPermit?: FieldPermitModel;
@@ -150,6 +159,9 @@ export async function findCountFieldPermit(
   search?: FieldPermitSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findCountFieldPermit: Query["findCountFieldPermit"];
   } = await query({
@@ -427,6 +439,9 @@ export async function findLastOrderByFieldPermit(
   search?: FieldPermitSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findLastOrderByFieldPermit: Query["findLastOrderByFieldPermit"];
   } = await query({

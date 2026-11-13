@@ -33,11 +33,6 @@ export async function findCountOptbiz(
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
   
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
-  
   const num = await findCountOptbiz(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllOptbiz(
   const {
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
-  
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
   
   checkSortOptbiz(sort);
   
@@ -102,11 +92,6 @@ export async function findOneOptbiz(
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
   
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
-  
   checkSortOptbiz(sort);
   
   const model = await findOneOptbiz(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkOptbiz(
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
   
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
-  
   checkSortOptbiz(sort);
   
   const model = await findOneOkOptbiz(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdOptbiz(
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
   
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
-  
   const model = await findByIdOptbiz(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkOptbiz(
   const {
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
-  
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
   
   const model = await findByIdOkOptbiz(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsOptbiz(
     getPagePathOptbiz,
   } = await import("./optbiz.model.ts");
   
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
-  
   const models = await findByIdsOptbiz(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsOptbiz(
   const {
     existsOptbiz,
   } = await import("./optbiz.service.ts");
-  
-  const {
-    getPagePathOptbiz,
-  } = await import("./optbiz.model.ts");
-  
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
 
   return await existsOptbiz(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkOptbiz(
   const {
     findByIdsOkOptbiz,
   } = await import("./optbiz.service.ts");
-  
-  const {
-    getPagePathOptbiz,
-  } = await import("./optbiz.model.ts");
-  
-  await usePermit(
-    getPagePathOptbiz(),
-    "find",
-  );
   
   const models = await findByIdsOkOptbiz(ids);
   

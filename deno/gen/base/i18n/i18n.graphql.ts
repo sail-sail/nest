@@ -6,14 +6,15 @@ import * as resolver from "./i18n.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar I18nId
 
+"国际化"
 type I18nModel {
   "ID"
   id: I18nId!
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: LangId!
   "语言"
   lang_id_lbl: String!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId!
   "菜单"
   menu_id_lbl: String!
@@ -23,7 +24,7 @@ type I18nModel {
   lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -31,7 +32,7 @@ type I18nModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -42,14 +43,15 @@ type I18nModel {
   "已删除"
   is_deleted: Int!
 }
+"国际化"
 type I18nFieldComment {
   "ID"
   id: String!
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: String!
   "语言"
   lang_id_lbl: String!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: String!
   "菜单"
   menu_id_lbl: String!
@@ -59,7 +61,7 @@ type I18nFieldComment {
   lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -67,7 +69,7 @@ type I18nFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -76,14 +78,15 @@ type I18nFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"国际化"
 input I18nInput {
   "ID"
   id: I18nId
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: LangId
   "语言"
   lang_id_lbl: String
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId
   "菜单"
   menu_id_lbl: String

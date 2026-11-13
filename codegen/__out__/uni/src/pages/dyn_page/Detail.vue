@@ -29,7 +29,6 @@
         <template
           v-if="props.hideFields?.includes('code') !== true"
         >
-          <!-- 路由 -->
           <tm-form-item
             label="路由"
             name="code"
@@ -47,7 +46,6 @@
         <template
           v-if="props.hideFields?.includes('lbl') !== true"
         >
-          <!-- 名称 -->
           <tm-form-item
             label="名称"
             name="lbl"
@@ -101,7 +99,6 @@
         <template
           v-if="props.hideFields?.includes('order_by') !== true"
         >
-          <!-- 排序 -->
           <tm-form-item
             label="排序"
             name="order_by"
@@ -119,7 +116,6 @@
         <template
           v-if="props.hideFields?.includes('rem') !== true"
         >
-          <!-- 备注 -->
           <tm-form-item
             label="备注"
             name="rem"

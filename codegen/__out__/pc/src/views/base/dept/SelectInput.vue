@@ -126,7 +126,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: DeptId | DeptId[] | ""): void,
+  (e: "update:modelValue", value?: DeptId | DeptId[] | "" | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: DeptModel | DeptModel[]): void,
   (e: "clear"): void,
@@ -415,6 +415,7 @@ async function onSelectList(value?: DeptModel | DeptModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -423,6 +424,7 @@ async function onSelectList(value?: DeptModel | DeptModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -430,6 +432,7 @@ async function onSelectList(value?: DeptModel | DeptModel[]) {
     await refreshInputValue();
   }
   emit("update:modelLabel", modelLabel || "");
+  await nextTick();
   emit("change", value[0]);
 }
 

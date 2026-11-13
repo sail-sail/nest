@@ -14,6 +14,8 @@
     </div>
   </template>
   <div
+    un-p="x-2"
+    un-box-border
     un-overflow-hidden
     un-flex="~ [1_0_0] row basis-[inherit]"
   >

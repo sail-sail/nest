@@ -28,6 +28,14 @@ description: 适用菜单配置。
    - `pnpm run uuid`
 2. 在 `src/tables/{mod}/base_menu.{mod}.sql.csv` 中按分组写入菜单。
 
+## 放哪里(scrm 实例)
+
+- 主表菜单挂业务分组，如"售前售后"分组 `RPvxoJxySJe9ZFO4xlJGfg`
+- 明细表(子表)同父级、`is_hidden=1`，例如 `订单明细,/scrm/order_item,…,6016`
+- `order_by` 在该分组内连续递增，不要跳段：SCRM 6001~6029、财务 6030~6034、售前售后 6037~6041、日志 6050+
+- `importCsv` 会顺带生成 `base_role_menu.{mod}.sql.csv` / `base_tenant_menu.{mod}.sql.csv`，不要手写
+- 页面和菜单就绪后再按需跑 `pnpm run permit` 同步按钮权限(会连库，由人类执行)
+
 ## 适用场景
 
 - 新模块首次接入菜单

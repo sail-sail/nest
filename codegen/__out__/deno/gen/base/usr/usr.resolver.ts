@@ -33,11 +33,6 @@ export async function findCountUsr(
     getPagePathUsr,
   } = await import("./usr.model.ts");
   
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
-  
   const num = await findCountUsr(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllUsr(
   const {
     getPagePathUsr,
   } = await import("./usr.model.ts");
-  
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
   
   checkSortUsr(sort);
   
@@ -107,11 +97,6 @@ export async function findOneUsr(
     getPagePathUsr,
   } = await import("./usr.model.ts");
   
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
-  
   checkSortUsr(sort);
   
   const model = await findOneUsr(search, sort);
@@ -140,11 +125,6 @@ export async function findOneOkUsr(
     getPagePathUsr,
   } = await import("./usr.model.ts");
   
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
-  
   checkSortUsr(sort);
   
   const model = await findOneOkUsr(search, sort);
@@ -169,11 +149,6 @@ export async function findByIdUsr(
   const {
     getPagePathUsr,
   } = await import("./usr.model.ts");
-  
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
   
   const model = await findByIdUsr(id);
   
@@ -200,11 +175,6 @@ export async function findByIdOkUsr(
     getPagePathUsr,
   } = await import("./usr.model.ts");
   
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
-  
   const model = await findByIdOkUsr(id);
   
   // 密码
@@ -228,11 +198,6 @@ export async function findByIdsUsr(
     getPagePathUsr,
   } = await import("./usr.model.ts");
   
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
-  
   const models = await findByIdsUsr(ids);
   
   for (const model of models) {
@@ -253,15 +218,6 @@ export async function existsUsr(
   const {
     existsUsr,
   } = await import("./usr.service.ts");
-  
-  const {
-    getPagePathUsr,
-  } = await import("./usr.model.ts");
-  
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
 
   return await existsUsr(search);
 }
@@ -276,15 +232,6 @@ export async function findByIdsOkUsr(
   const {
     findByIdsOkUsr,
   } = await import("./usr.service.ts");
-  
-  const {
-    getPagePathUsr,
-  } = await import("./usr.model.ts");
-  
-  await usePermit(
-    getPagePathUsr(),
-    "find",
-  );
   
   const models = await findByIdsOkUsr(ids);
   

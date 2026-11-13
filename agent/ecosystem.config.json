@@ -1,0 +1,13 @@
+{
+  "apps": [{
+    "name": "nest4agent4{env}",
+    "script": "./index.js",
+    "instances": 1,
+    "autorestart": true,
+    "watch": false,
+    "env": {
+    },
+    "env_production": {
+    }
+  }]
+}

@@ -6,6 +6,7 @@ import * as resolver from "./message.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar MessageId
 
+"消息"
 type MessageModel {
   "ID"
   id: MessageId!
@@ -25,7 +26,7 @@ type MessageModel {
   route_path: String!
   "跳转参数"
   route_query: String!
-  "发送人"
+  "发送人 [@fk:base_usr.id]"
   sender_usr_id: UsrId!
   "发送人"
   sender_usr_id_lbl: String!
@@ -37,11 +38,11 @@ type MessageModel {
   is_pinned: Int!
   "置顶"
   is_pinned_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId!
   "所属组织"
   org_id_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -49,7 +50,7 @@ type MessageModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -60,6 +61,7 @@ type MessageModel {
   "已删除"
   is_deleted: Int!
 }
+"消息"
 type MessageFieldComment {
   "ID"
   id: String!
@@ -79,7 +81,7 @@ type MessageFieldComment {
   route_path: String!
   "跳转参数"
   route_query: String!
-  "发送人"
+  "发送人 [@fk:base_usr.id]"
   sender_usr_id: String!
   "发送人"
   sender_usr_id_lbl: String!
@@ -91,11 +93,11 @@ type MessageFieldComment {
   is_pinned: String!
   "置顶"
   is_pinned_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: String!
   "所属组织"
   org_id_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -103,7 +105,7 @@ type MessageFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -112,6 +114,7 @@ type MessageFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"消息"
 input MessageInput {
   "ID"
   id: MessageId
@@ -131,7 +134,7 @@ input MessageInput {
   route_path: String
   "跳转参数"
   route_query: String
-  "发送人"
+  "发送人 [@fk:base_usr.id]"
   sender_usr_id: UsrId
   "发送人"
   sender_usr_id_lbl: String
@@ -143,7 +146,7 @@ input MessageInput {
   is_pinned: Int
   "置顶"
   is_pinned_lbl: String
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId
   "所属组织"
   org_id_lbl: String

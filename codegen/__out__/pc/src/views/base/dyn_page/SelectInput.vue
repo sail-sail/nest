@@ -126,7 +126,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: DynPageId | DynPageId[] | ""): void,
+  (e: "update:modelValue", value?: DynPageId | DynPageId[] | "" | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: DynPageModel | DynPageModel[]): void,
   (e: "clear"): void,
@@ -415,6 +415,7 @@ async function onSelectList(value?: DynPageModel | DynPageModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -423,6 +424,7 @@ async function onSelectList(value?: DynPageModel | DynPageModel[]) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    await nextTick();
     emit("change", value);
     return;
   }
@@ -430,6 +432,7 @@ async function onSelectList(value?: DynPageModel | DynPageModel[]) {
     await refreshInputValue();
   }
   emit("update:modelLabel", modelLabel || "");
+  await nextTick();
   emit("change", value[0]);
 }
 

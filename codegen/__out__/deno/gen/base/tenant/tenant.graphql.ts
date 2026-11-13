@@ -6,6 +6,7 @@ import * as resolver from "./tenant.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar TenantId
 
+"租户"
 type TenantModel {
   "ID"
   id: TenantId!
@@ -13,11 +14,11 @@ type TenantModel {
   code: String!
   "名称"
   lbl: String!
-  "所属域名"
+  "所属域名 [@fk:base_domain.id]"
   domain_ids: [DomainId!]!
   "所属域名"
   domain_ids_lbl: [String!]!
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: [MenuId!]!
   "菜单权限"
   menu_ids_lbl: [String!]!
@@ -25,7 +26,7 @@ type TenantModel {
   title: String!
   "简介"
   info: String!
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: LangId!
   "语言"
   lang_id_lbl: String!
@@ -41,7 +42,7 @@ type TenantModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -49,7 +50,7 @@ type TenantModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -62,6 +63,7 @@ type TenantModel {
   "系统字段"
   is_sys: Int!
 }
+"租户"
 type TenantFieldComment {
   "ID"
   id: String!
@@ -69,11 +71,11 @@ type TenantFieldComment {
   code: String!
   "名称"
   lbl: String!
-  "所属域名"
+  "所属域名 [@fk:base_domain.id]"
   domain_ids: String!
   "所属域名"
   domain_ids_lbl: String!
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: String!
   "菜单权限"
   menu_ids_lbl: String!
@@ -81,7 +83,7 @@ type TenantFieldComment {
   title: String!
   "简介"
   info: String!
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: String!
   "语言"
   lang_id_lbl: String!
@@ -97,7 +99,7 @@ type TenantFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -105,7 +107,7 @@ type TenantFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -114,6 +116,7 @@ type TenantFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"租户"
 input TenantInput {
   "ID"
   id: TenantId
@@ -121,11 +124,11 @@ input TenantInput {
   code: String
   "名称"
   lbl: String
-  "所属域名"
+  "所属域名 [@fk:base_domain.id]"
   domain_ids: [DomainId!]
   "所属域名"
   domain_ids_lbl: [String!]
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_lbl: [String!]
@@ -133,7 +136,7 @@ input TenantInput {
   title: String
   "简介"
   info: String
-  "语言"
+  "语言 [@fk:base_lang.id]"
   lang_id: LangId
   "语言"
   lang_id_lbl: String
