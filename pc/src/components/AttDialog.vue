@@ -278,6 +278,7 @@
     ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
+    :multiple="dialogModel.multiple"
     un-hidden
     @change="onInput"
   />
@@ -355,6 +356,7 @@ type DialogModel = {
   accept?: string,
   db?: string,
   isPublic?: boolean,
+  multiple?: boolean,
 }
 
 let dialogModel = $ref<DialogModel>({
@@ -365,6 +367,7 @@ let dialogModel = $ref<DialogModel>({
   accept: "",
   db: undefined,
   isPublic: false,
+  multiple: false,
 });
 
 let modelValue = $ref("");
@@ -700,29 +703,55 @@ const fileRef = $ref<HTMLInputElement>();
 
 async function onInput() {
   if (!fileRef) return;
-  if (dialogModel.maxSize && items.length >= dialogModel.maxSize) {
-    fileRef.value = "";
-    ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, dialogModel.maxSize));
-    return;
-  }
-  const file = fileRef?.files?.[0];
+  const files = Array.from(fileRef.files ?? []);
   fileRef.value = "";
-  if (!file) return;
-  if (dialogModel?.maxFileSize && file.size > dialogModel.maxFileSize) {
-    ElMessage.error(await nsAsync(`文件大小不能超过 {0}M`, dialogModel.maxFileSize / 1024 / 1024));
+  if (files.length === 0) return;
+  const maxSize = dialogModel.maxSize || 0;
+  const remainCount = maxSize > 0 ? maxSize - items.length : files.length;
+  if (remainCount <= 0) {
+    ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, maxSize));
     return;
   }
-  const id = await uploadFile(file, undefined, {
-    db: dialogModel.db,
-    isPublic: dialogModel.isPublic,
-  });
-  if (!id) {
+  let selectFiles = files;
+  if (selectFiles.length > remainCount) {
+    selectFiles = selectFiles.slice(0, remainCount);
+    ElMessage.warning(await nsAsync(`最多只能上传 {0} 个附件，本次仅上传前 {1} 个`, maxSize, remainCount));
+  }
+  // 逐个上传，单个失败不影响其余文件
+  const uploaded: Array<{ id: string, filename: string }> = [ ];
+  for (const file of selectFiles) {
+    if (dialogModel.maxFileSize && file.size > dialogModel.maxFileSize) {
+      ElMessage.error(await nsAsync(`文件大小不能超过 {0}M`, dialogModel.maxFileSize / 1024 / 1024));
+      continue;
+    }
+    let id = "";
+    try {
+      id = await uploadFile(file, undefined, {
+        db: dialogModel.db,
+        isPublic: dialogModel.isPublic,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    if (!id) {
+      continue;
+    }
+    uploaded.push({
+      id,
+      filename: file.name,
+    });
+  }
+  if (uploaded.length === 0) {
     return;
   }
   const insertIndex = items.length > 0 ? nowIndex + 1 : 0;
   pauseIframeMedia(currentItem);
   const nextItems = [ ...items ];
-  nextItems.splice(insertIndex, 0, createItem(id, insertIndex, file.name));
+  nextItems.splice(
+    insertIndex,
+    0,
+    ...uploaded.map((item, i) => createItem(item.id, insertIndex + i, item.filename)),
+  );
   items = nextItems;
   nowIndex = insertIndex;
   syncModelValue();
