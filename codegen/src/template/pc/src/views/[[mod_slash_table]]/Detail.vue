@@ -6058,7 +6058,8 @@ async function showDialog(
   #>
   if (<#=column_name#>FluentEditor) {
     <#=column_name#>FluentEditor.root.innerHTML = "";
-  }<#
+  }
+  <#=column_name#>_loaded_html = "";<#
   }
   #><#
   }
@@ -7115,6 +7116,7 @@ async function onRefresh() {
           <#=column_name#> = await fetch(url).then((res) => res.text());
         }
         <#=column_name#>FluentEditor.root.innerHTML = <#=column_name#>;
+        <#=column_name#>_loaded_html = <#=column_name#>;
       }<#
       }
       #><#
@@ -7927,7 +7929,9 @@ async function save() {
       id: undefined,
     };<#
     if (hasIsFluentEditor) {
-    #><#
+    #>
+    // 更新成功后才删的旧附件, 先删会让上传或更新失败时正文永久丢失
+    const replacedFileIds: string[] = [ ];<#
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -7955,11 +7959,18 @@ async function save() {
     }
     #>
     
-    if (dialogModel2.<#=column_name#>) {
-      await deleteFile(dialogModel2.<#=column_name#>);
+    // 富文本: 正文没变就不动附件; 变了先传新的, 更新成功后再删旧的
+    const <#=column_name#>_old_file_id = dialogModel2.<#=column_name#>;
+    let <#=column_name#>_html = "";
+    let <#=column_name#>_changed = false;
+    if (<#=column_name#>FluentEditor) {
+      <#=column_name#>_html = <#=column_name#>FluentEditor.root.innerHTML;
+      <#=column_name#>_changed = <#=column_name#>_html !== <#=column_name#>_loaded_html;
     }
-    if (<#=column_name#>FluentEditor?.root.innerHTML) {
-      const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
+    if (<#=column_name#>_changed) {
+      // 清空正文也要留一个空文档: update 会跳过 undefined, 0 字节文件下载又是 404
+      const <#=column_name#>_upload_html = <#=column_name#>_html || "<p><br></p>";
+      const blob = new Blob([ <#=column_name#>_upload_html ], { type: "text/html" });
       const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
       dialogModel2.<#=column_name#> = await uploadFile(
         file,<#
@@ -7972,6 +7983,9 @@ async function save() {
         }
         #>
       );
+      if (<#=column_name#>_old_file_id && <#=column_name#>_old_file_id !== dialogModel2.<#=column_name#>) {
+        replacedFileIds.push(<#=column_name#>_old_file_id);
+      }
     }<#
     }
     #><#
@@ -7992,6 +8006,15 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );<#
+    if (hasIsFluentEditor) {
+    #>
+    for (const fileId of replacedFileIds) {
+      try {
+        await deleteFile(fileId);
+      } catch (err) { /* 删不掉只留孤儿附件, 不能回滚已保存的正文 */ }
+    }<#
+    }
+    #><#
     if (opts?.isRealData) {
     #>
     publish({
@@ -8814,6 +8837,8 @@ if (!column.isFluentEditor) {
 
 const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined = undefined;
+/** 载入时编辑器里的 HTML, 保存时用来判断正文有没有改 */
+let <#=column_name#>_loaded_html = "";
 
 watch(
   () => [
