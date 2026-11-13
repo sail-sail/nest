@@ -59,20 +59,20 @@
           <el-dropdown-item
             command="close"
           >
-            关闭
+            {{ ns("关闭") }}
           </el-dropdown-item>
           
           <el-dropdown-item
             command="closeOther"
             :disabled="tabs.length <= 1"
           >
-            关闭其他
+            {{ ns("关闭其他") }}
           </el-dropdown-item>
           
           <el-dropdown-item
             command="closeAll"
           >
-            全部关闭
+            {{ ns("全部关闭") }}
           </el-dropdown-item>
           
         </el-dropdown-menu>
@@ -111,6 +111,10 @@ import type {
 
 const router = useRouter();
 const tabsStore = useTabsStore();
+
+const {
+  ns,
+} = useI18n();
 
 const emit = defineEmits<{
   (e: "refreshActive_line"): void;

@@ -773,12 +773,28 @@ function openBrowserNotification(
   }
 }
 
+/// 跳转参数在后端以 JSON 字符串存储, 必须先解析成对象, 否则 router 会把字符串按字符下标拆成 0=/1= 这样的参数
+function parseRouteQuery(routeQuery?: string | Record<string, string> | null): Record<string, string> {
+  if (!routeQuery) {
+    return {};
+  }
+  if (typeof routeQuery !== "string") {
+    return routeQuery;
+  }
+  try {
+    const query = JSON.parse(routeQuery);
+    return query && typeof query === "object" ? query : {};
+  } catch {
+    return {};
+  }
+}
+
 function handleMessageTopic(payload: unknown) {
   const data = payload as {
     title?: string;
     content?: string;
     routePath?: string;
-    routeQuery?: Record<string, string>;
+    routeQuery?: string | Record<string, string>;
     receiverUsrIds?: string[];
   } | undefined;
   if (!data) {
@@ -792,29 +808,23 @@ function handleMessageTopic(payload: unknown) {
   unreadMessageCount += 1;
   const title = data.title || ns("新消息");
   const message = data.content || ns("您收到一条新消息");
+  const goToRoute = async () => {
+    const routePath = data.routePath || "/base/message/list";
+    const routeQuery = parseRouteQuery(data.routeQuery);
+    await router.push({
+      path: routePath,
+      query: routeQuery,
+    });
+  };
   ElNotification({
     title,
     message,
     type: "info",
     duration: 3000,
     position: "bottom-right",
-    onClick: async () => {
-      const routePath = data.routePath || "/base/message/list";
-      const routeQuery = data.routeQuery || {};
-      await router.push({
-        path: routePath,
-        query: routeQuery,
-      });
-    },
+    onClick: goToRoute,
   });
-  openBrowserNotification(title, message, async () => {
-    const routePath = data.routePath || "/base/message/list";
-    const routeQuery = data.routeQuery || {};
-    await router.push({
-      path: routePath,
-      query: routeQuery,
-    });
-  });
+  openBrowserNotification(title, message, goToRoute);
 }
 
 async function onDeptSelect(org_id?: OrgId) {
