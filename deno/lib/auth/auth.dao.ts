@@ -84,6 +84,34 @@ export async function getAuthModel<T extends AuthModel>(
   return authModel;
 }
 
+export async function getAuthModelByAuthorization<T extends AuthModel>(
+  authorization: string,
+): Promise<{
+  authModel: T;
+  authorization: string;
+}> {
+  let nextAuthorization = authorization;
+  let authModel: T | undefined;
+  try {
+    authModel = await verifyToken<T>(nextAuthorization);
+  } catch (err: unknown) {
+    const {
+      JWSSignatureVerificationFailed,
+      JWTExpired,
+    } = await import("jose/errors");
+    if (!(err instanceof JWTExpired || err instanceof JWSSignatureVerificationFailed)) {
+      throw err;
+    }
+    const tokenInfo = await refreshToken(nextAuthorization);
+    nextAuthorization = tokenInfo.authorization;
+    authModel = await verifyToken<T>(nextAuthorization);
+  }
+  return {
+    authModel,
+    authorization: nextAuthorization,
+  };
+}
+
 export async function get_usr_id(): Promise<UsrId | undefined>;
 export async function get_usr_id(notVerifyToken: false): Promise<UsrId>;
 export async function get_usr_id(notVerifyToken: true): Promise<UsrId | undefined>;

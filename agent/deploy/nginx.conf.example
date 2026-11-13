@@ -1,0 +1,50 @@
+# 生产反代示例：前端静态站点 + /agent/ 指向智能体服务
+#
+# 假设：
+#   - pc 构建产物在 /var/www/nest
+#   - agent 服务跑在 127.0.0.1:4002（AGENT_HOST/AGENT_PORT）
+#   - 域名 https://your.domain
+#
+# 关键点是 /agent/ 必须关闭缓冲，否则 SSE 不会实时推送。
+
+server {
+    listen 80;
+    server_name your.domain;
+
+    root /var/www/nest;
+    index index.html;
+
+    client_max_body_size 50m;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 智能体：/agent/api/*（含 SSE）、/agent/llm/* 都走这里
+    location /agent/ {
+        proxy_pass http://127.0.0.1:4002;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # SSE：不缓冲、不缓存、长连接
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        add_header X-Accel-Buffering no;
+    }
+
+    # 后端 GraphQL / MCP 不对外暴露；前端只访问 /graphql 时按原配置反代
+    location /graphql {
+        proxy_pass http://127.0.0.1:4001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

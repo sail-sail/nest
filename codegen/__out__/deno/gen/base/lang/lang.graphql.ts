@@ -6,6 +6,7 @@ import * as resolver from "./lang.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar LangId
 
+"语言"
 type LangModel {
   "ID"
   id: LangId!
@@ -21,7 +22,7 @@ type LangModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -29,7 +30,7 @@ type LangModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -42,6 +43,7 @@ type LangModel {
   "系统字段"
   is_sys: Int!
 }
+"语言"
 type LangFieldComment {
   "ID"
   id: String!
@@ -57,7 +59,7 @@ type LangFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -65,7 +67,7 @@ type LangFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -74,6 +76,7 @@ type LangFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"语言"
 input LangInput {
   "ID"
   id: LangId

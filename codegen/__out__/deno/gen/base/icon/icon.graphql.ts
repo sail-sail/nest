@@ -6,6 +6,7 @@ import * as resolver from "./icon.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar IconId
 
+"图标库"
 type IconModel {
   "ID"
   id: IconId!
@@ -25,7 +26,7 @@ type IconModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -33,7 +34,7 @@ type IconModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -44,6 +45,7 @@ type IconModel {
   "已删除"
   is_deleted: Int!
 }
+"图标库"
 type IconFieldComment {
   "ID"
   id: String!
@@ -61,7 +63,7 @@ type IconFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -69,7 +71,7 @@ type IconFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -78,6 +80,7 @@ type IconFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"图标库"
 input IconInput {
   "ID"
   id: IconId

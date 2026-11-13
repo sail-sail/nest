@@ -33,11 +33,6 @@ export async function findCountDept(
     getPagePathDept,
   } = await import("./dept.model.ts");
   
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
-  
   const num = await findCountDept(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllDept(
   const {
     getPagePathDept,
   } = await import("./dept.model.ts");
-  
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
   
   checkSortDept(sort);
   
@@ -102,11 +92,6 @@ export async function findOneDept(
     getPagePathDept,
   } = await import("./dept.model.ts");
   
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
-  
   checkSortDept(sort);
   
   const model = await findOneDept(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkDept(
     getPagePathDept,
   } = await import("./dept.model.ts");
   
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
-  
   checkSortDept(sort);
   
   const model = await findOneOkDept(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdDept(
     getPagePathDept,
   } = await import("./dept.model.ts");
   
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
-  
   const model = await findByIdDept(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkDept(
   const {
     getPagePathDept,
   } = await import("./dept.model.ts");
-  
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
   
   const model = await findByIdOkDept(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsDept(
     getPagePathDept,
   } = await import("./dept.model.ts");
   
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
-  
   const models = await findByIdsDept(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsDept(
   const {
     existsDept,
   } = await import("./dept.service.ts");
-  
-  const {
-    getPagePathDept,
-  } = await import("./dept.model.ts");
-  
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
 
   return await existsDept(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkDept(
   const {
     findByIdsOkDept,
   } = await import("./dept.service.ts");
-  
-  const {
-    getPagePathDept,
-  } = await import("./dept.model.ts");
-  
-  await usePermit(
-    getPagePathDept(),
-    "find",
-  );
   
   const models = await findByIdsOkDept(ids);
   

@@ -33,11 +33,6 @@ export async function findCountOrg(
     getPagePathOrg,
   } = await import("./org.model.ts");
   
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
-  
   const num = await findCountOrg(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllOrg(
   const {
     getPagePathOrg,
   } = await import("./org.model.ts");
-  
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
   
   checkSortOrg(sort);
   
@@ -102,11 +92,6 @@ export async function findOneOrg(
     getPagePathOrg,
   } = await import("./org.model.ts");
   
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
-  
   checkSortOrg(sort);
   
   const model = await findOneOrg(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkOrg(
     getPagePathOrg,
   } = await import("./org.model.ts");
   
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
-  
   checkSortOrg(sort);
   
   const model = await findOneOkOrg(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdOrg(
     getPagePathOrg,
   } = await import("./org.model.ts");
   
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
-  
   const model = await findByIdOrg(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkOrg(
   const {
     getPagePathOrg,
   } = await import("./org.model.ts");
-  
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
   
   const model = await findByIdOkOrg(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsOrg(
     getPagePathOrg,
   } = await import("./org.model.ts");
   
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
-  
   const models = await findByIdsOrg(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsOrg(
   const {
     existsOrg,
   } = await import("./org.service.ts");
-  
-  const {
-    getPagePathOrg,
-  } = await import("./org.model.ts");
-  
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
 
   return await existsOrg(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkOrg(
   const {
     findByIdsOkOrg,
   } = await import("./org.service.ts");
-  
-  const {
-    getPagePathOrg,
-  } = await import("./org.model.ts");
-  
-  await usePermit(
-    getPagePathOrg(),
-    "find",
-  );
   
   const models = await findByIdsOkOrg(ids);
   

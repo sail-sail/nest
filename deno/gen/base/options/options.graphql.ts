@@ -6,6 +6,7 @@ import * as resolver from "./options.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar OptionsId
 
+"系统选项"
 type OptionsModel {
   "ID"
   id: OptionsId!
@@ -27,7 +28,7 @@ type OptionsModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -35,7 +36,7 @@ type OptionsModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -50,6 +51,7 @@ type OptionsModel {
   "系统字段"
   is_sys: Int!
 }
+"系统选项"
 type OptionsFieldComment {
   "ID"
   id: String!
@@ -71,7 +73,7 @@ type OptionsFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -79,7 +81,7 @@ type OptionsFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -88,6 +90,7 @@ type OptionsFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"系统选项"
 input OptionsInput {
   "ID"
   id: OptionsId

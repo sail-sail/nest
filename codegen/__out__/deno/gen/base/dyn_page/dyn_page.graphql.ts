@@ -6,6 +6,7 @@ import * as resolver from "./dyn_page.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DynPageId
 
+"动态页面"
 type DynPageModel {
   "ID"
   id: DynPageId!
@@ -13,11 +14,11 @@ type DynPageModel {
   code: String!
   "名称"
   lbl: String!
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_menu_id: MenuId!
   "父菜单"
   parent_menu_id_lbl: String!
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: [RoleId!]!
   "所属角色"
   role_ids_lbl: [String!]!
@@ -29,7 +30,7 @@ type DynPageModel {
   is_enabled_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -37,7 +38,7 @@ type DynPageModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -50,6 +51,7 @@ type DynPageModel {
   "动态页面字段"
   dyn_page_field: [DynPageFieldModel!]!
 }
+"动态页面"
 type DynPageFieldComment {
   "ID"
   id: String!
@@ -57,11 +59,11 @@ type DynPageFieldComment {
   code: String!
   "名称"
   lbl: String!
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_menu_id: String!
   "父菜单"
   parent_menu_id_lbl: String!
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: String!
   "所属角色"
   role_ids_lbl: String!
@@ -73,7 +75,7 @@ type DynPageFieldComment {
   is_enabled_lbl: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -81,7 +83,7 @@ type DynPageFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -90,6 +92,7 @@ type DynPageFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"动态页面"
 input DynPageInput {
   "ID"
   id: DynPageId
@@ -97,11 +100,11 @@ input DynPageInput {
   code: String
   "名称"
   lbl: String
-  "父菜单"
+  "父菜单 [@fk:base_menu.id]"
   parent_menu_id: MenuId
   "父菜单"
   parent_menu_id_lbl: String
-  "所属角色"
+  "所属角色 [@fk:base_role.id]"
   role_ids: [RoleId!]
   "所属角色"
   role_ids_lbl: [String!]

@@ -33,11 +33,6 @@ export async function findCountTenant(
     getPagePathTenant,
   } = await import("./tenant.model.ts");
   
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
-  
   const num = await findCountTenant(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllTenant(
   const {
     getPagePathTenant,
   } = await import("./tenant.model.ts");
-  
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
   
   checkSortTenant(sort);
   
@@ -102,11 +92,6 @@ export async function findOneTenant(
     getPagePathTenant,
   } = await import("./tenant.model.ts");
   
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
-  
   checkSortTenant(sort);
   
   const model = await findOneTenant(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkTenant(
     getPagePathTenant,
   } = await import("./tenant.model.ts");
   
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
-  
   checkSortTenant(sort);
   
   const model = await findOneOkTenant(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdTenant(
     getPagePathTenant,
   } = await import("./tenant.model.ts");
   
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
-  
   const model = await findByIdTenant(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkTenant(
   const {
     getPagePathTenant,
   } = await import("./tenant.model.ts");
-  
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
   
   const model = await findByIdOkTenant(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsTenant(
     getPagePathTenant,
   } = await import("./tenant.model.ts");
   
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
-  
   const models = await findByIdsTenant(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsTenant(
   const {
     existsTenant,
   } = await import("./tenant.service.ts");
-  
-  const {
-    getPagePathTenant,
-  } = await import("./tenant.model.ts");
-  
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
 
   return await existsTenant(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkTenant(
   const {
     findByIdsOkTenant,
   } = await import("./tenant.service.ts");
-  
-  const {
-    getPagePathTenant,
-  } = await import("./tenant.model.ts");
-  
-  await usePermit(
-    getPagePathTenant(),
-    "find",
-  );
   
   const models = await findByIdsOkTenant(ids);
   

@@ -194,7 +194,6 @@
     un-items-center
     un-gap="y-2"
   >
-    <template v-if="true">
       
       <el-button
         plain
@@ -215,32 +214,6 @@
         </template>
         <span>刷新</span>
       </el-button>
-      
-    </template>
-    
-    <template v-else>
-      
-      <el-button
-        plain
-        @click="openView"
-      >
-        <template #icon>
-          <ElIconReading />
-        </template>
-        <span>查看</span>
-      </el-button>
-      
-      <el-button
-        plain
-        @click="onSearch(true)"
-      >
-        <template #icon>
-          <ElIconRefresh />
-        </template>
-        <span>刷新</span>
-      </el-button>
-      
-    </template>
     
     <div
       un-flex="[1_0_0]"
@@ -993,7 +966,7 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  dirtyStore.fireDirty(pageName);
+  await dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
 }

@@ -33,11 +33,6 @@ export async function findCountI18n(
     getPagePathI18n,
   } = await import("./i18n.model.ts");
   
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
-  
   const num = await findCountI18n(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllI18n(
   const {
     getPagePathI18n,
   } = await import("./i18n.model.ts");
-  
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
   
   checkSortI18n(sort);
   
@@ -102,11 +92,6 @@ export async function findOneI18n(
     getPagePathI18n,
   } = await import("./i18n.model.ts");
   
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
-  
   checkSortI18n(sort);
   
   const model = await findOneI18n(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkI18n(
     getPagePathI18n,
   } = await import("./i18n.model.ts");
   
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
-  
   checkSortI18n(sort);
   
   const model = await findOneOkI18n(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdI18n(
     getPagePathI18n,
   } = await import("./i18n.model.ts");
   
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
-  
   const model = await findByIdI18n(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkI18n(
   const {
     getPagePathI18n,
   } = await import("./i18n.model.ts");
-  
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
   
   const model = await findByIdOkI18n(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsI18n(
     getPagePathI18n,
   } = await import("./i18n.model.ts");
   
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
-  
   const models = await findByIdsI18n(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsI18n(
   const {
     existsI18n,
   } = await import("./i18n.service.ts");
-  
-  const {
-    getPagePathI18n,
-  } = await import("./i18n.model.ts");
-  
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
 
   return await existsI18n(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkI18n(
   const {
     findByIdsOkI18n,
   } = await import("./i18n.service.ts");
-  
-  const {
-    getPagePathI18n,
-  } = await import("./i18n.model.ts");
-  
-  await usePermit(
-    getPagePathI18n(),
-    "find",
-  );
   
   const models = await findByIdsOkI18n(ids);
   

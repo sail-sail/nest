@@ -20,6 +20,8 @@
     :clearable="props.disabled === true ? false : props.clearable"
     :disabled="props.disabled"
     :placeholder="props.placeholder"
+    :formatter="props.formatter"
+    :parser="props.parser"
     @change="onChange"
     @clear="onClear"
   >
@@ -124,6 +126,10 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     isReadonlyBorder?: boolean;
     align?: "left" | "center" | "right";
+    /** 输入值格式化, 仅影响显示; 与 parser 同时设置才生效 */
+    formatter?: (value: string) => string;
+    /** 输入值解析, 可在此过滤非法字符 */
+    parser?: (value: string) => string;
   }>(),
   {
     modelValue: undefined,
@@ -135,6 +141,8 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     isReadonlyBorder: true,
     align: undefined,
+    formatter: undefined,
+    parser: undefined,
   },
 );
 

@@ -29,7 +29,6 @@
         <template
           v-if="props.hideFields?.includes('code') !== true"
         >
-          <!-- 编码 -->
           <tm-form-item
             label="编码"
             name="code"
@@ -64,7 +63,6 @@
         <template
           v-if="props.hideFields?.includes('lbl') !== true"
         >
-          <!-- 名称 -->
           <tm-form-item
             label="名称"
             name="lbl"
@@ -81,7 +79,6 @@
         <template
           v-if="props.hideFields?.includes('type') !== true"
         >
-          <!-- 类型 -->
           <tm-form-item
             label="类型"
             name="type"
@@ -136,7 +133,6 @@
         <template
           v-if="props.hideFields?.includes('formula') !== true"
         >
-          <!-- 计算公式 -->
           <tm-form-item
             label="计算公式"
             name="formula"
@@ -154,7 +150,6 @@
         <template
           v-if="props.hideFields?.includes('is_required') !== true"
         >
-          <!-- 必填 -->
           <tm-form-item
             label="必填"
             name="is_required"
@@ -173,7 +168,6 @@
         <template
           v-if="props.hideFields?.includes('is_search') !== true"
         >
-          <!-- 查询条件 -->
           <tm-form-item
             label="查询条件"
             name="is_search"
@@ -192,7 +186,6 @@
         <template
           v-if="props.hideFields?.includes('width') !== true"
         >
-          <!-- 宽度 -->
           <tm-form-item
             label="宽度"
             name="width"
@@ -211,7 +204,6 @@
         <template
           v-if="props.hideFields?.includes('align') !== true"
         >
-          <!-- 对齐方式 -->
           <tm-form-item
             label="对齐方式"
             name="align"
@@ -230,7 +222,6 @@
         <template
           v-if="props.hideFields?.includes('is_mobile_list') !== true"
         >
-          <!-- 手机列表显示 -->
           <tm-form-item
             label="手机列表显示"
             name="is_mobile_list"
@@ -249,7 +240,6 @@
         <template
           v-if="props.hideFields?.includes('is_mobile_search') !== true"
         >
-          <!-- 手机列表查询 -->
           <tm-form-item
             label="手机列表查询"
             name="is_mobile_search"
@@ -268,7 +258,6 @@
         <template
           v-if="props.hideFields?.includes('order_by') !== true"
         >
-          <!-- 排序 -->
           <tm-form-item
             label="排序"
             name="order_by"

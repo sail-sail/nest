@@ -6,8 +6,7 @@
     "antfu.unocss",
     "vue.volar",
     "hongyan-prettyjson.pretty-json-vscode",
-    "dbaeumer.vscode-eslint",
-    "maggie.eslint-rules-zh-plugin"
+    "dbaeumer.vscode-eslint"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"

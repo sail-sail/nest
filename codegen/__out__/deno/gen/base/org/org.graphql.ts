@@ -6,6 +6,7 @@ import * as resolver from "./org.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar OrgId
 
+"组织"
 type OrgModel {
   "ID"
   id: OrgId!
@@ -23,7 +24,7 @@ type OrgModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -31,7 +32,7 @@ type OrgModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -42,6 +43,7 @@ type OrgModel {
   "已删除"
   is_deleted: Int!
 }
+"组织"
 type OrgFieldComment {
   "ID"
   id: String!
@@ -59,7 +61,7 @@ type OrgFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -67,7 +69,7 @@ type OrgFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -76,6 +78,7 @@ type OrgFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"组织"
 input OrgInput {
   "ID"
   id: OrgId

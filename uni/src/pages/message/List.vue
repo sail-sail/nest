@@ -89,9 +89,9 @@
   >
     <view
       v-if="!inited && visibleItems.length === 0"
-      un-m="x-3 t-3"
       un-p="x-4 y-6"
       un-box-border
+      un-h="full"
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-rounded="lg"
@@ -105,9 +105,9 @@
 
     <view
       v-else-if="inited && visibleItems.length === 0"
-      un-m="x-3 t-3"
       un-p="x-4 y-6"
       un-box-border
+      un-h="full"
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-rounded="lg"

@@ -33,11 +33,6 @@ export async function findCountRole(
     getPagePathRole,
   } = await import("./role.model.ts");
   
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
-  
   const num = await findCountRole(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllRole(
   const {
     getPagePathRole,
   } = await import("./role.model.ts");
-  
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
   
   checkSortRole(sort);
   
@@ -102,11 +92,6 @@ export async function findOneRole(
     getPagePathRole,
   } = await import("./role.model.ts");
   
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
-  
   checkSortRole(sort);
   
   const model = await findOneRole(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkRole(
     getPagePathRole,
   } = await import("./role.model.ts");
   
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
-  
   checkSortRole(sort);
   
   const model = await findOneOkRole(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdRole(
     getPagePathRole,
   } = await import("./role.model.ts");
   
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
-  
   const model = await findByIdRole(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkRole(
   const {
     getPagePathRole,
   } = await import("./role.model.ts");
-  
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
   
   const model = await findByIdOkRole(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsRole(
     getPagePathRole,
   } = await import("./role.model.ts");
   
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
-  
   const models = await findByIdsRole(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsRole(
   const {
     existsRole,
   } = await import("./role.service.ts");
-  
-  const {
-    getPagePathRole,
-  } = await import("./role.model.ts");
-  
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
 
   return await existsRole(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkRole(
   const {
     findByIdsOkRole,
   } = await import("./role.service.ts");
-  
-  const {
-    getPagePathRole,
-  } = await import("./role.model.ts");
-  
-  await usePermit(
-    getPagePathRole(),
-    "find",
-  );
   
   const models = await findByIdsOkRole(ids);
   

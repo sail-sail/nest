@@ -6,15 +6,16 @@ import * as resolver from "./message_receiver.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar MessageReceiverId
 
+"消息接收人"
 type MessageReceiverModel {
   "ID"
   id: MessageReceiverId!
-  "消息"
+  "消息 [@fk:base_message.id]"
   message_id: MessageId!
   "消息"
   message_id_lbl: String!
   message_id_content: String!
-  "接收人"
+  "接收人 [@fk:base_usr.id]"
   receiver_usr_id: UsrId!
   "接收人"
   receiver_usr_id_lbl: String!
@@ -26,11 +27,11 @@ type MessageReceiverModel {
   read_time: NaiveDateTime
   "阅读时间"
   read_time_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId!
   "所属组织"
   org_id_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -38,7 +39,7 @@ type MessageReceiverModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -49,14 +50,15 @@ type MessageReceiverModel {
   "已删除"
   is_deleted: Int!
 }
+"消息接收人"
 type MessageReceiverFieldComment {
   "ID"
   id: String!
-  "消息"
+  "消息 [@fk:base_message.id]"
   message_id: String!
   "消息"
   message_id_lbl: String!
-  "接收人"
+  "接收人 [@fk:base_usr.id]"
   receiver_usr_id: String!
   "接收人"
   receiver_usr_id_lbl: String!
@@ -68,11 +70,11 @@ type MessageReceiverFieldComment {
   read_time: String!
   "阅读时间"
   read_time_lbl: String!
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: String!
   "所属组织"
   org_id_lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -80,7 +82,7 @@ type MessageReceiverFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -89,14 +91,15 @@ type MessageReceiverFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"消息接收人"
 input MessageReceiverInput {
   "ID"
   id: MessageReceiverId
-  "消息"
+  "消息 [@fk:base_message.id]"
   message_id: MessageId
   "消息"
   message_id_content: String
-  "接收人"
+  "接收人 [@fk:base_usr.id]"
   receiver_usr_id: UsrId
   "接收人"
   receiver_usr_id_lbl: String
@@ -110,7 +113,7 @@ input MessageReceiverInput {
   read_time_lbl: String
   "阅读时间"
   read_time_save_null: Boolean
-  "所属组织"
+  "所属组织 [@fk:base_org.id]"
   org_id: OrgId
   "所属组织"
   org_id_lbl: String

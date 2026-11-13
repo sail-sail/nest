@@ -54,6 +54,8 @@ const props = withDefaults(
     separator?: string;
     color?: string;
     fontColor?: string;
+    /** 可选层级: 1 只到省, 2 只到市, 3 到区县(默认) */
+    level?: 1 | 2 | 3;
   }>(),
   {
     readonly: undefined,
@@ -65,6 +67,7 @@ const props = withDefaults(
     separator: "/",
     color: "transparent",
     fontColor: undefined,
+    level: 3,
   },
 );
 
@@ -99,7 +102,36 @@ const modelValueComp = computed<string[]>({
   },
 });
 
-const options = ref<PcaItem[]>([ ]);
+const rawOptions = ref<PcaItem[]>([ ]);
+
+/**
+ * 按层级裁剪省市区数据: 只保留前 level 层, 末层去掉 children 让其成为叶子节点
+ */
+function trimPcaByLevel(items: PcaItem[], level: number, depth = 1): PcaItem[] {
+  return items.map((item) => {
+    if (depth >= level || !item.children || item.children.length === 0) {
+      const rest: PcaItem = {
+        ...item,
+      };
+      delete rest.children;
+      return rest;
+    }
+    return {
+      ...item,
+      children: trimPcaByLevel(item.children, level, depth + 1),
+    };
+  });
+}
+
+const options = computed<PcaItem[]>(() => {
+  const data = rawOptions.value;
+  const level = props.level ?? 3;
+  if (level >= 3) {
+    return data;
+  }
+  return trimPcaByLevel(data, level <= 1 ? 1 : 2);
+});
+
 const isLoading = ref(false);
 const hasLoadError = ref(false);
 const modelStrRaw = ref("");
@@ -183,7 +215,7 @@ async function initFrame() {
   try {
     isLoading.value = true;
     hasLoadError.value = false;
-    options.value = await findAllPcaCode();
+    rawOptions.value = await findAllPcaCode();
   } catch (err) {
     hasLoadError.value = true;
     console.error(err);

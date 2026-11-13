@@ -1630,6 +1630,30 @@ export async function getSchema(
     }
   }
   
+  // 检查多对多时中间表必须有 order_by 字段
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column?.foreignKey?.type !== "many2many") {
+      continue;
+    }
+    if (column.foreignKey.showType === "dialog") {
+      continue;
+    }
+    const many2many_table = column.many2many.table;
+    const many2many_mod = column.many2many.mod;
+    if (!many2many_table || !many2many_mod) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的关联表: ${ many2many_table } 不存在!`);
+    }
+    const many2many_table_name = `${ many2many_mod }_${ many2many_table }`;
+    if (many2many_table_name === "base_dyn_page_role") {
+      continue;
+    }
+    const oldRecords = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === many2many_table_name);
+    if (!oldRecords.some((item0: TableColumn) => item0.COLUMN_NAME === "order_by")) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的关联表: ${ many2many_table_name } 中不存在 order_by 字段!`);
+    }
+  }
+  
   tablesConfigItemMap[table_name] = tables[table_name];
   return tablesConfigItemMap[table_name];
 }

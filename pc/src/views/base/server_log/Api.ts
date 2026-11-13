@@ -57,6 +57,9 @@ export async function findAllServerLog(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findAllServerLog: ServerLogModel[];
   } = await query({
@@ -89,6 +92,9 @@ export async function findOneServerLog(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneServerLog?: ServerLogModel;
@@ -121,6 +127,9 @@ export async function findOneOkServerLog(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   
   const data: {
     findOneOkServerLog?: ServerLogModel;
@@ -152,6 +161,9 @@ export async function findCountServerLog(
   search?: ServerLogSearch,
   opt?: GqlOpt,
 ) {
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }
   const data: {
     findCountServerLog: Query["findCountServerLog"];
   } = await query({
