@@ -287,6 +287,13 @@ body .el-input-number.is-without-controls .el-input__inner {
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+  &:focus .custom_input_readonly_border {
+    box-shadow: 0 0 0 1px var(--el-color-primary) inset;
+  }
   .el-input {
     box-sizing: border-box;
     flex: 1 0 0;
