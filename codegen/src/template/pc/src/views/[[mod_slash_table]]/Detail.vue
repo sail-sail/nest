@@ -1168,7 +1168,7 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
               #><#
               if (column.maxFileSize) {
               #>
-              :maxFileSize="<#=column.maxFileSize#>"<#
+              :max-file-size="<#=column.maxFileSize#>"<#
               }
               #><#
               if (column.attAccept) {
@@ -1658,7 +1658,7 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
                       #><#
                       if (column.maxFileSize) {
                       #>
-                      :maxFileSize="<#=column.maxFileSize#>"<#
+                      :max-file-size="<#=column.maxFileSize#>"<#
                       }
                       #><#
                       if (column.attAccept) {
