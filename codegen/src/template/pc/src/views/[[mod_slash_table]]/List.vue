@@ -2267,7 +2267,7 @@ if (searchByKeyword) {
                   #><#
                   if (column.maxFileSize) {
                   #>
-                  :maxFileSize="<#=column.maxFileSize#>"<#
+                  :max-file-size="<#=column.maxFileSize#>"<#
                   }
                   #><#
                   if (column.attAccept) {
