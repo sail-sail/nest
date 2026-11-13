@@ -3,9 +3,7 @@
     "janisdd.vscode-edit-csv",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
-    "howardzuo.vscode-npm-dependency",
     "ibm.output-colorizer",
-    "deanhjjiang.split-line",
     "sysoev.language-stylus",
     "antfu.unocss",
     "jock.svg",
@@ -16,10 +14,7 @@
     "denoland.vscode-deno",
     "johnsoncodehk.vscode-tsconfig-helper",
     "jacobpfeifer.pfeifer-hurl",
-    "hongyan-prettyjson.pretty-json-vscode",
-    "dbaeumer.vscode-eslint",
-    "maggie.eslint-rules-zh-plugin",
-    "VoidZero.vite-plus-extension-pack"
+    "dbaeumer.vscode-eslint"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"

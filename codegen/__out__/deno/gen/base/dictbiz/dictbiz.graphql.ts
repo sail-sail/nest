@@ -22,6 +22,7 @@ enum DictbizType {
   boolean
 }
 
+"业务字典"
 type DictbizModel {
   "ID"
   id: DictbizId!
@@ -43,7 +44,7 @@ type DictbizModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -51,7 +52,7 @@ type DictbizModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -66,6 +67,7 @@ type DictbizModel {
   "业务字典明细"
   dictbiz_detail: [DictbizDetailModel!]!
 }
+"业务字典"
 type DictbizFieldComment {
   "ID"
   id: String!
@@ -87,7 +89,7 @@ type DictbizFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -95,7 +97,7 @@ type DictbizFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -104,6 +106,7 @@ type DictbizFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"业务字典"
 input DictbizInput {
   "ID"
   id: DictbizId

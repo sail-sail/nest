@@ -7,7 +7,7 @@ export class UserAgent {
   
   /**
    * 谷歌浏览器: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
-   * 企业微信桌: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.1.11.0 Safari/537.36 Language/zh wxwork/4.0.20 (MicroMessenger/6.2) WindowsWechat  MailPlugin_Electron WeMail embeddisk
+   * 企业微信桌面端: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.6668.101 Safari/537.36 Language/zh ColorScheme/Dark wxwork/5.0.12 (MicroMessenger/6.2) WindowsWechat  MailPlugin_Electron WeMail embeddisk wwmver/3.26.511.637 noMediaCs/false
    * iPhone: mozilla/5.0 (iphone; cpu iphone os 16 11 like mac os x) applewebkit/605.1.15 (khtml, like gecko) mobile/15e148 wxwork/4.0.20 micromessenger/7.0.1 languagezh colorscheme/light
    * 微信安卓: Mozilla/5.0 (Linux; Android 10; DT1901A Build/QKQ1.191222.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5015 MMWEBSDK/20221206 MMWEBID/8573 MicroMessenger/8.0.32.2300(0x2800205D) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64
    * @type {string}
@@ -33,14 +33,12 @@ export class UserAgent {
     this.os = this.detectOs(userAgent);
     this.platform = this.detectPlatform(userAgent);
 
-    this.isWxwork = userAgent.includes("wxwork");
-    this.isWechat = userAgent.includes("wechat") || userAgent.includes("micromessenger");
+    this.isWxwork = userAgent.includes("wxwork") || userAgent.includes("windowswechat") || userAgent.includes("macwechat");
+    this.isWechat = (userAgent.includes("wechat") || userAgent.includes("micromessenger")) && !this.isWxwork;
 
     if (userAgent.includes("windowswechat")) {
-      this.isWechat = true;
       this.os = "windows";
     } else if (userAgent.includes("macwechat")) {
-      this.isWechat = true;
       this.os = "mac";
     }
   }

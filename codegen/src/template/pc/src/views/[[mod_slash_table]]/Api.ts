@@ -122,6 +122,14 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 } from "#/types.ts";<#
 }
 #><#
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
+#>
+
+import {
+  importModelsByChunk,
+} from "@/utils/excel_util.ts";<#
+}
+#><#
 if (hasBpm) {
 #>
 
@@ -791,7 +799,14 @@ export async function findAll<#=Table_Up#>(
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findAll<#=Table_Up2#>: <#=modelName#>[];
   } = await query({
@@ -835,7 +850,14 @@ export async function findOne<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   
   const data: {
     findOne<#=Table_Up2#>?: <#=modelName#>;
@@ -879,7 +901,14 @@ export async function findOneOk<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   
   const data: {
     findOneOk<#=Table_Up2#>?: <#=modelName#>;
@@ -975,7 +1004,14 @@ export async function findTree<#=Table_Up#>(
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findCount<#=Table_Up2#>: Query["findCount<#=Table_Up2#>"];
   } = await query({
@@ -1000,7 +1036,14 @@ if (hasSummary) {
 export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findSummary<#=Table_Up2#>: Query["findSummary<#=Table_Up2#>"];
   } = await query({
@@ -1670,6 +1713,7 @@ for (let i = 0; i < columns.length; i++) {
   const defaultSort = foreignKey && foreignKey.defaultSort;
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
+  const hasIsDeleted = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_deleted");
 #><#
 if (Foreign_Table_Up !== Table_Up) {
 #>
@@ -1679,7 +1723,14 @@ export async function findAll<#=Foreign_Table_Up#>(
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
@@ -1859,6 +1910,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (Foreign_Table_Up === old_Table_Up) {
       continue;
     }
+    const hasIsDeleted = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_deleted");
 #>
 
 export async function findAll<#=Foreign_Table_Up#>(
@@ -1866,7 +1918,14 @@ export async function findAll<#=Foreign_Table_Up#>(
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findAll<#=Foreign_Table_Up#>: <#=Foreign_Table_Up#>Model[];
   } = await query({
@@ -2565,45 +2624,30 @@ export async function importModels<#=Table_Up#>(
   opt.showErrMsg = false;
   opt.notLoading = true;
   
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await creates<#=Table_Up#>(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;<#
-      if (isUseI18n) {
-      #>
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));<#
-      } else {
-      #>
-      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);<#
-      }
-      #>
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
+  // 后端 creates 为单事务: 一批中任意一条失败则整批回滚, 无法直接得知出错的行;
+  // importModelsByChunk 在失败时二分拆分重试, 以定位到具体行并给出准确的成败条数
+  return importModelsByChunk(
+    inputs,
+    (items) => creates<#=Table_Up#>(
+      items,
+      UniqueType.Update,
+      opt,
+    ),
+    percentage,
+    isCancel,<#
+  if (isUseI18n) {
+  #>
+    async (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? await nsAsync("第 {0} 行导入失败: {1}", rowStart, err)
+      : await nsAsync("第 {0} 至 {1} 行导入失败(整批回滚): {2}", rowStart, rowEnd, err),<#
+  } else {
+  #>
+    (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? `第 ${ rowStart } 行导入失败: ${ err }`
+      : `第 ${ rowStart } 至 ${ rowEnd } 行导入失败(整批回滚): ${ err }`,<#
   }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  #>
+  );
 }<#
 }
 #><#
@@ -2616,7 +2660,14 @@ if (hasOrderBy) {
 export async function findLastOrderBy<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (!hasIsDeleted) {
+  #>
+  if (search) {
+    Object.assign(search, { is_deleted: undefined });
+  }<#
+  }
+  #>
   const data: {
     findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({
@@ -2852,7 +2903,7 @@ export async function getDefaultInput<#=Table_Up#>() {<#
           } else {
             defaultValue = "dayjs().format('YYYY-MM-DD')";
           }
-        } else if (defaultValue === "CURRENT_DATETIME") {
+        } else if (defaultValue === "CURRENT_DATETIME" || defaultValue === "CURRENT_TIMESTAMP") {
           defaultValue = `dayjs().format('${ valueFormat }')`;
         } else if (defaultValue?.startsWith("start_of_")) {
           defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;

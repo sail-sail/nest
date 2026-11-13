@@ -42,6 +42,8 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     </div>
   </template>
   <div
+    un-p="x-2"
+    un-box-border
     un-overflow-hidden
     un-flex="~ [1_0_0] row basis-[inherit]"
   ><#

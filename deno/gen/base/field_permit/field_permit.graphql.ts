@@ -6,10 +6,11 @@ import * as resolver from "./field_permit.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar FieldPermitId
 
+"字段权限"
 type FieldPermitModel {
   "ID"
   id: FieldPermitId!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId!
   "菜单"
   menu_id_lbl: String!
@@ -24,10 +25,11 @@ type FieldPermitModel {
   "系统字段"
   is_sys: Int!
 }
+"字段权限"
 type FieldPermitFieldComment {
   "ID"
   id: String!
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: String!
   "菜单"
   menu_id_lbl: String!
@@ -40,10 +42,11 @@ type FieldPermitFieldComment {
   "备注"
   rem: String!
 }
+"字段权限"
 input FieldPermitInput {
   "ID"
   id: FieldPermitId
-  "菜单"
+  "菜单 [@fk:base_menu.id]"
   menu_id: MenuId
   "菜单"
   menu_id_lbl: String

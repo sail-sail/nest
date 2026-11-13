@@ -6,6 +6,7 @@ import * as resolver from "./dyn_page_val.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DynPageValId
 
+"动态页面值"
 type DynPageValModel {
   "ID"
   id: DynPageValId!
@@ -17,7 +18,7 @@ type DynPageValModel {
   code: String!
   "值"
   lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -25,7 +26,7 @@ type DynPageValModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -36,6 +37,7 @@ type DynPageValModel {
   "已删除"
   is_deleted: Int!
 }
+"动态页面值"
 type DynPageValFieldComment {
   "ID"
   id: String!
@@ -47,7 +49,7 @@ type DynPageValFieldComment {
   code: String!
   "值"
   lbl: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -55,7 +57,7 @@ type DynPageValFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -64,6 +66,7 @@ type DynPageValFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"动态页面值"
 input DynPageValInput {
   "ID"
   id: DynPageValId

@@ -4,6 +4,14 @@ import {
 } from "/lib/context.ts";
 
 import {
+  get_lang_id,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
+import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
 
@@ -31,7 +39,23 @@ export async function getDictbiz(
     tenant_id = await getTenant_id();
   }
   
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
+  
   const args = new QueryArgs();
+  let lang_join = "";
+  let lang_select = "";
+  
+  if (server_i18n_enable) {
+    const lang_id = await get_lang_id();
+    if (lang_id) {
+      lang_join = `
+        left join base_dictbiz_detail_lang
+          on t.id=base_dictbiz_detail_lang.dictbiz_detail_id
+          and base_dictbiz_detail_lang.lang_id=${ args.push(lang_id) }
+      `;
+      lang_select = "base_dictbiz_detail_lang.lbl as lbl_lang,";
+    }
+  }
   
   const sql = /*sql*/ `
     select
@@ -39,6 +63,7 @@ export async function getDictbiz(
       base_dictbiz.code,
       base_dictbiz.type,
       t.lbl,
+      ${ lang_select }
       t.val
     from
       base_dictbiz_detail t
@@ -46,6 +71,7 @@ export async function getDictbiz(
       on t.dictbiz_id=base_dictbiz.id
       and base_dictbiz.is_deleted=0
       and base_dictbiz.is_enabled=1
+    ${ lang_join }
     where
       t.is_deleted=0
       and t.is_enabled=1
@@ -59,7 +85,11 @@ export async function getDictbiz(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const rsArr = await query<DictModel>(sql, args, { cacheKey1, cacheKey2 });
+  type Result = DictModel & { lbl_lang: string | null };
+  const rsArr = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  for (const rs of rsArr) {
+    rs.lbl = rs.lbl_lang || rs.lbl;
+  }
   const data: DictModel[][] = [ ];
   for (let i = 0; i < codes.length; i++) {
     const code = codes[i];

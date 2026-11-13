@@ -31,11 +31,6 @@ export async function findCountPermit(
     getPagePathPermit,
   } = await import("./permit.model.ts");
   
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
-  
   const num = await findCountPermit(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllPermit(
   const {
     getPagePathPermit,
   } = await import("./permit.model.ts");
-  
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
   
   checkSortPermit(sort);
   
@@ -100,11 +90,6 @@ export async function findOnePermit(
     getPagePathPermit,
   } = await import("./permit.model.ts");
   
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
-  
   checkSortPermit(sort);
   
   const model = await findOnePermit(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkPermit(
     getPagePathPermit,
   } = await import("./permit.model.ts");
   
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
-  
   checkSortPermit(sort);
   
   const model = await findOneOkPermit(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdPermit(
     getPagePathPermit,
   } = await import("./permit.model.ts");
   
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
-  
   const model = await findByIdPermit(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkPermit(
   const {
     getPagePathPermit,
   } = await import("./permit.model.ts");
-  
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
   
   const model = await findByIdOkPermit(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsPermit(
     getPagePathPermit,
   } = await import("./permit.model.ts");
   
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
-  
   const models = await findByIdsPermit(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsPermit(
   const {
     existsPermit,
   } = await import("./permit.service.ts");
-  
-  const {
-    getPagePathPermit,
-  } = await import("./permit.model.ts");
-  
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
 
   return await existsPermit(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkPermit(
   const {
     findByIdsOkPermit,
   } = await import("./permit.service.ts");
-  
-  const {
-    getPagePathPermit,
-  } = await import("./permit.model.ts");
-  
-  await usePermit(
-    getPagePathPermit(),
-    "find",
-  );
   
   const models = await findByIdsOkPermit(ids);
   

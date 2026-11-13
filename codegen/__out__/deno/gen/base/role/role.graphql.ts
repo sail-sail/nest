@@ -6,6 +6,7 @@ import * as resolver from "./role.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar RoleId
 
+"角色"
 type RoleModel {
   "ID"
   id: RoleId!
@@ -15,17 +16,17 @@ type RoleModel {
   lbl: String!
   "首页"
   home_url: String!
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: [MenuId!]!
   "菜单权限"
   menu_ids_lbl: [String!]!
-  "按钮权限"
+  "按钮权限 [@fk:base_permit.id]"
   permit_ids: [PermitId!]!
   "按钮权限"
   permit_ids_lbl: [String!]!
-  "数据权限"
+  "数据权限 [@fk:base_data_permit.id]"
   data_permit_ids: [DataPermitId!]!
-  "字段权限"
+  "字段权限 [@fk:base_field_permit.id]"
   field_permit_ids: [FieldPermitId!]!
   "字段权限"
   field_permit_ids_lbl: [String!]!
@@ -45,7 +46,7 @@ type RoleModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -53,7 +54,7 @@ type RoleModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -66,6 +67,7 @@ type RoleModel {
   "系统字段"
   is_sys: Int!
 }
+"角色"
 type RoleFieldComment {
   "ID"
   id: String!
@@ -75,19 +77,19 @@ type RoleFieldComment {
   lbl: String!
   "首页"
   home_url: String!
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: String!
   "菜单权限"
   menu_ids_lbl: String!
-  "按钮权限"
+  "按钮权限 [@fk:base_permit.id]"
   permit_ids: String!
   "按钮权限"
   permit_ids_lbl: String!
-  "数据权限"
+  "数据权限 [@fk:base_data_permit.id]"
   data_permit_ids: String!
   "数据权限"
   data_permit_ids_lbl: String!
-  "字段权限"
+  "字段权限 [@fk:base_field_permit.id]"
   field_permit_ids: String!
   "字段权限"
   field_permit_ids_lbl: String!
@@ -107,7 +109,7 @@ type RoleFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -115,7 +117,7 @@ type RoleFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -124,6 +126,7 @@ type RoleFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"角色"
 input RoleInput {
   "ID"
   id: RoleId
@@ -133,17 +136,17 @@ input RoleInput {
   lbl: String
   "首页"
   home_url: String
-  "菜单权限"
+  "菜单权限 [@fk:base_menu.id]"
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_lbl: [String!]
-  "按钮权限"
+  "按钮权限 [@fk:base_permit.id]"
   permit_ids: [PermitId!]
   "按钮权限"
   permit_ids_lbl: [String!]
-  "数据权限"
+  "数据权限 [@fk:base_data_permit.id]"
   data_permit_ids: [DataPermitId!]
-  "字段权限"
+  "字段权限 [@fk:base_field_permit.id]"
   field_permit_ids: [FieldPermitId!]
   "字段权限"
   field_permit_ids_lbl: [String!]

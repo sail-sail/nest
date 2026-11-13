@@ -300,14 +300,15 @@
                       <span>{{ ns('关闭其它') }}</span>
                     </el-dropdown-item>
                     
+                    <!-- 智能助手 -->
                     <el-dropdown-item
-                      v-if="usrStore.isAdmin()"
-                      @click="onClearCache"
+                      v-if="config.agentEnabled"
+                      @click="onOpenAgent"
                     >
                       <ElIcon>
-                        <ElIconDelete />
+                        <ElIconComment />
                       </ElIcon>
-                      <span>{{ ns('清空缓存') }}</span>
+                      <span>{{ ns('智能助手') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -328,6 +329,16 @@
                         <ElIconLock />
                       </ElIcon>
                       <span>{{ ns('修改密码') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      v-if="usrStore.isAdmin()"
+                      @click="onClearCache"
+                    >
+                      <ElIcon>
+                        <ElIconDelete />
+                      </ElIcon>
+                      <span>{{ ns('清空缓存') }}</span>
                     </el-dropdown-item>
                     
                     <el-dropdown-item
@@ -422,7 +433,13 @@
   <ChangePassword
     ref="changePasswordRef"
   ></ChangePassword>
-  
+
+  <!-- 智能助手 -->
+  <AgentChatDrawer
+    un-opacity="50"
+    v-if="config.agentEnabled && usrStore.authorization"
+  ></AgentChatDrawer>
+
 </el-splitter>
 </template>
 
@@ -434,6 +451,8 @@ import Tabs from "./Tabs.vue";
 import Login from "../Login.vue";
 
 import ChangePassword from "../change_password/ChangePassword.vue";
+
+import AgentChatDrawer from "@/components/AgentChatDrawer.vue";
 
 import {
   getLoginInfo,
@@ -666,6 +685,13 @@ function closeOtherTabs() {
   }
 }
 
+async function onOpenAgent() {
+  if (!config.agentEnabled) return;
+  await router.push({
+    path: "/agent",
+  });
+}
+
 // 清空缓存
 async function onClearCache() {
   try {
@@ -747,12 +773,28 @@ function openBrowserNotification(
   }
 }
 
+/// 跳转参数在后端以 JSON 字符串存储, 必须先解析成对象, 否则 router 会把字符串按字符下标拆成 0=/1= 这样的参数
+function parseRouteQuery(routeQuery?: string | Record<string, string> | null): Record<string, string> {
+  if (!routeQuery) {
+    return {};
+  }
+  if (typeof routeQuery !== "string") {
+    return routeQuery;
+  }
+  try {
+    const query = JSON.parse(routeQuery);
+    return query && typeof query === "object" ? query : {};
+  } catch {
+    return {};
+  }
+}
+
 function handleMessageTopic(payload: unknown) {
   const data = payload as {
     title?: string;
     content?: string;
     routePath?: string;
-    routeQuery?: Record<string, string>;
+    routeQuery?: string | Record<string, string>;
     receiverUsrIds?: string[];
   } | undefined;
   if (!data) {
@@ -766,29 +808,23 @@ function handleMessageTopic(payload: unknown) {
   unreadMessageCount += 1;
   const title = data.title || ns("新消息");
   const message = data.content || ns("您收到一条新消息");
+  const goToRoute = async () => {
+    const routePath = data.routePath || "/base/message/list";
+    const routeQuery = parseRouteQuery(data.routeQuery);
+    await router.push({
+      path: routePath,
+      query: routeQuery,
+    });
+  };
   ElNotification({
     title,
     message,
     type: "info",
     duration: 3000,
     position: "bottom-right",
-    onClick: async () => {
-      const routePath = data.routePath || "/base/message/list";
-      const routeQuery = data.routeQuery || {};
-      await router.push({
-        path: routePath,
-        query: routeQuery,
-      });
-    },
+    onClick: goToRoute,
   });
-  openBrowserNotification(title, message, async () => {
-    const routePath = data.routePath || "/base/message/list";
-    const routeQuery = data.routeQuery || {};
-    await router.push({
-      path: routePath,
-      query: routeQuery,
-    });
-  });
+  openBrowserNotification(title, message, goToRoute);
 }
 
 async function onDeptSelect(org_id?: OrgId) {

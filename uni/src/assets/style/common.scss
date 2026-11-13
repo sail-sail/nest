@@ -8,6 +8,7 @@ page,.tmDrawerWrap,.tmModalWrap {
   --color-placeholder: #a8abb2;
   --color-border: #e6e6e6;
   --font-color: #333333;
+  --font-label-color: #333333;
   --font-size: 32rpx;
   --font-size-sm: 28rpx;
   --page-bg: #f5f5f5;
@@ -16,6 +17,23 @@ page,.tmDrawerWrap,.tmModalWrap {
   color: var(--font-color);
   --color-gray-200: #E5E7EB;
 }
+
+// @media (prefers-color-scheme: dark) {
+//   page,.tmDrawerWrap,.tmModalWrap {
+//     --color-primary: #0163ff;
+//     --color-readonly: #606266;
+//     --color-placeholder: #a8abb2;
+//     --color-border: #3a3a3c;
+//     --font-color: #dddddd;
+//     --font-label-color: #b1b1b1;
+//     --font-size: 32rpx;
+//     --font-size-sm: 28rpx;
+//     --page-bg: #1c1c1e;
+//     font-size: var(--font-size);
+//     background-color: var(--page-bg);
+//     color: var(--font-color);
+//   }
+// }
 
 .tmFormItemLabel {
   text-align: right;

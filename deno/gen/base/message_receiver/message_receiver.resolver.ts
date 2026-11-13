@@ -33,11 +33,6 @@ export async function findCountMessageReceiver(
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
   
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
-  
   const num = await findCountMessageReceiver(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllMessageReceiver(
   const {
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
-  
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
   
   checkSortMessageReceiver(sort);
   
@@ -102,11 +92,6 @@ export async function findOneMessageReceiver(
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
   
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
-  
   checkSortMessageReceiver(sort);
   
   const model = await findOneMessageReceiver(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkMessageReceiver(
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
   
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
-  
   checkSortMessageReceiver(sort);
   
   const model = await findOneOkMessageReceiver(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdMessageReceiver(
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
   
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
-  
   const model = await findByIdMessageReceiver(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkMessageReceiver(
   const {
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
-  
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
   
   const model = await findByIdOkMessageReceiver(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsMessageReceiver(
     getPagePathMessageReceiver,
   } = await import("./message_receiver.model.ts");
   
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
-  
   const models = await findByIdsMessageReceiver(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsMessageReceiver(
   const {
     existsMessageReceiver,
   } = await import("./message_receiver.service.ts");
-  
-  const {
-    getPagePathMessageReceiver,
-  } = await import("./message_receiver.model.ts");
-  
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
 
   return await existsMessageReceiver(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkMessageReceiver(
   const {
     findByIdsOkMessageReceiver,
   } = await import("./message_receiver.service.ts");
-  
-  const {
-    getPagePathMessageReceiver,
-  } = await import("./message_receiver.model.ts");
-  
-  await usePermit(
-    getPagePathMessageReceiver(),
-    "find",
-  );
   
   const models = await findByIdsOkMessageReceiver(ids);
   

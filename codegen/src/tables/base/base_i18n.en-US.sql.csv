@@ -20,6 +20,8 @@ usxeViWkST2e3n+X5d5j8Q,eYHRCo6WQFm4TBWYzAdERg,,查询条件暂存,Query conditio
 GCBs6skUQ3GexqpWaDu9GQ,eYHRCo6WQFm4TBWYzAdERg,,回收站,RecycleBin
 StE2amFsSJiElbM7PxnwVg,eYHRCo6WQFm4TBWYzAdERg,,已选择,Selected
 6KZKnzQtTsa8FZ0fdWHnBA,eYHRCo6WQFm4TBWYzAdERg,,关闭,Close
+7LJC28zBMNknAZ8v+2p+6w,eYHRCo6WQFm4TBWYzAdERg,,关闭其他,CloseOther
+phPyVkNsv339HnrGr6WmRw,eYHRCo6WQFm4TBWYzAdERg,,全部关闭,CloseAll
 IJPZm2VfSqqG19Z9ZYWxYQ,eYHRCo6WQFm4TBWYzAdERg,,保存并继续,SaveAndContinue
 VqqkyIB1Re21lVhuvRsihw,eYHRCo6WQFm4TBWYzAdERg,,确定要重置表单吗,Are you sure to reset the form
 mbEJzZ9cTrmBjbzEKnfg8g,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} {1},Are you sure to delete the {0} selected {1}
@@ -52,14 +54,12 @@ K7T6R6BUTOmIPaAJcigjow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 启用 的 {0},Pl
 Vqkxp3edR4qWlBEd+j5lqw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 禁用 的 {0},Please select the {0} to be disabled
 veXuk6hkQwSpeCOdeq647A,eYHRCo6WQFm4TBWYzAdERg,,启用 {0} 条数据成功,Enable {0} pieces of data successfully
 i4rpKYiKSUm8+XQjG7CreA,eYHRCo6WQFm4TBWYzAdERg,,禁用 {0} 条数据成功,Disable {0} pieces of data successfully
-vi091MmERpaIolbY0wurxQ,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} {1} 成功,Restore {0} pieces of {1} successfully
 0LrK+P3jSQ+qM+tF6AQjzg,eYHRCo6WQFm4TBWYzAdERg,,请输入,Please enter
 PoSjTPGDTKeBfyCMIV7BlA,eYHRCo6WQFm4TBWYzAdERg,,请选择,Please select
 X4iqaZHZQWqYymzn+6jR3A,eYHRCo6WQFm4TBWYzAdERg,,批量导入,BatchImport
 rnt8uL28SAqd6t54qTxoFQ,eYHRCo6WQFm4TBWYzAdERg,,正在导入...,Importing...
 ZaCobtbNQzaNKD5TjUT08Q,eYHRCo6WQFm4TBWYzAdERg,,新增成功,Add successfully
 ap02DeGpSqOjwhrKB2/QTA,eYHRCo6WQFm4TBWYzAdERg,,编辑成功,Edit successfully
-+zKiTrzFQX+ND9G4vZReqQ,eYHRCo6WQFm4TBWYzAdERg,,取消,Cancel
 EtCtoR6uTHKOHm04GLjWzw,eYHRCo6WQFm4TBWYzAdERg,,保存,Save
 vZVGIYeHSoOGz7S38Z48GA,eYHRCo6WQFm4TBWYzAdERg,,上一项,Previous
 pKJZq3tvQIiV0dYXa4ifXA,eYHRCo6WQFm4TBWYzAdERg,,下一项,Next
@@ -76,8 +76,6 @@ yceC83G8Q/uTBSAQnCBtjg,eYHRCo6WQFm4TBWYzAdERg,,正在为导出加载数据,Loadi
 RYCiu4wDSaa+56MTJvPYJg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要编辑的 {0},Please select the {0} to be edited
 N6W4IAFhTgWs1L3Irraouw,eYHRCo6WQFm4TBWYzAdERg,,启用 {0} {1} 成功,Enable {0} {1} successfully
 E9ydq1wOT2KYXFgssznJrg,eYHRCo6WQFm4TBWYzAdERg,,禁用 {0} {1} 成功,Disable {0} {1} successfully
-pz4L4BanSTSTbcPMAvh9mw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 锁定 的 {0},Please select the {0} to be locked
-aWFRKUkwSbaZLeXvbuywHg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 解锁 的 {0},Please select the {0} to be unlocked
 HjaG/S3CTUGZDiRejgFcUA,eYHRCo6WQFm4TBWYzAdERg,,锁定 {0} {1} 成功,Lock {0} {1} successfully
 3BAjAiGjT92+oYwHFN5cXg,eYHRCo6WQFm4TBWYzAdERg,,解锁 {0} {1} 成功,Unlock {0} {1} successfully
 CWZ/qefeQUKsRcj4NyVLXQ,eYHRCo6WQFm4TBWYzAdERg,,只能选择 1 {0},Only 1 {0} can be selected
@@ -113,7 +111,7 @@ DU4zbJ/5TnW3AHxqD8n6hw,eYHRCo6WQFm4TBWYzAdERg,,(全部),(All)
 +sxJ+cuoRe+feANk7dKK4Q,eYHRCo6WQFm4TBWYzAdERg,,明亮模式,Light
 v8EjZv5fRhSn3zZKIMSIXw,eYHRCo6WQFm4TBWYzAdERg,,关闭其它,Close others
 h6OJpDT6RTqPK/XLphvBug,eYHRCo6WQFm4TBWYzAdERg,,打开首页,Open home page
-I6b/C/MBTdOpzhHmeJezhA,eYHRCo6WQFm4TBWYzAdERg,,修改密码,Changepassword
+I6b/C/MBTdOpzhHmeJezhA,eYHRCo6WQFm4TBWYzAdERg,,修改密码,ChangePassword
 67kkb7Y8QxSI4CF+NGIAuw,eYHRCo6WQFm4TBWYzAdERg,,退出登录,Logout
 cOkcWEbRTf23e6eHc3zu2w,eYHRCo6WQFm4TBWYzAdERg,,全选,SelectAll
 6h7IZQ0GQ/2ICSf7tDclyA,eYHRCo6WQFm4TBWYzAdERg,,数据已经存在,Data already exists
@@ -159,6 +157,40 @@ hapETeJGSYi4S5dBhQkvdQ,eYHRCo6WQFm4TBWYzAdERg,,确定退出登录?,Confirm to lo
 2Arl4LHQQ+OxPhSTXGMRvQ,eYHRCo6WQFm4TBWYzAdERg,,提示,Notice
 NfPTtF6NRbq5el7FIOM2xw,eYHRCo6WQFm4TBWYzAdERg,,(无),(None)
 dT/ThknvTP+MQhtHA+JRxA,eYHRCo6WQFm4TBWYzAdERg,,(自动生成),(Auto-generated)
+Uz4LHXZeQA2gzSf8plbT7w,eYHRCo6WQFm4TBWYzAdERg,,下载失败,Download failed
+NB7V63H+DqfCbJ5wqE6nhg,eYHRCo6WQFm4TBWYzAdERg,,第 {0} 行导入失败: {1},Row {0} import failed: {1}
+CUYSsHhpVU4DkXXxtNtd4g,eYHRCo6WQFm4TBWYzAdERg,,第 {0} 至 {1} 行导入失败(整批回滚): {2},Rows {0} to {1} import failed (the whole batch was rolled back): {2}
+v7VXAb6tht/NKgTjF2C+mA,eYHRCo6WQFm4TBWYzAdERg,,动态页面,DynamicPage
+P9EsrMZbcBbqL3HbVPvJ+w,eYHRCo6WQFm4TBWYzAdERg,,动态页面数据,DynamicPageData
+SgdTp/uEd253n6v7VCQJ0g,eYHRCo6WQFm4TBWYzAdERg,,动态页面字段,DynamicPageField
+4KW5RyhP1bWFP5siBjq8zw,eYHRCo6WQFm4TBWYzAdERg,,图标库,IconLibrary
+bKiXSn3kpgL3TER97QhEdg,eYHRCo6WQFm4TBWYzAdERg,,消息,Message
+yih44kAdz6Qarw/n4uuH1A,eYHRCo6WQFm4TBWYzAdERg,,消息接收人,MessageReceiver
+Zvq/24ZhLA/EJn66viOupQ,eYHRCo6WQFm4TBWYzAdERg,,操作前数据,DataBeforeOperation
+CTk1lzJju1UUpRO9xh7LqQ,eYHRCo6WQFm4TBWYzAdERg,,操作后数据,DataAfterOperation
+VuoCSLMJb5tddkH6Dg4OGw,eYHRCo6WQFm4TBWYzAdERg,,模块 {0} 未找到,Module {0} not found
+JvIXMsrEC2Iy6bDsXaj50Q,eYHRCo6WQFm4TBWYzAdERg,,未找到数据,No data found
+iycDAlmnPtntss7gs3NwUA,eYHRCo6WQFm4TBWYzAdERg,,系统日志,SystemLog
+8LSqp6woyPB7SYMOxwLB6A,eYHRCo6WQFm4TBWYzAdERg,,请选择需要设置租户管理员密码的 {0},Please select the {0} to set the tenant admin password
+bC9eMP6nFMHvwtyOXijzFQ,eYHRCo6WQFm4TBWYzAdERg,,设置租户管理员密码成功,Tenant admin password set successfully
+Hrh58G76d5vO12ITQoYitg,eYHRCo6WQFm4TBWYzAdERg,,已经是第一个 {0} 了,Already the first {0}
+aTCYou37aVcglB/X5aq6Sw,eYHRCo6WQFm4TBWYzAdERg,,预览失败，请下载后查看,"Preview failed, please download to view"
+GHVLc5QJcLqJFCVQVXcEMw,eYHRCo6WQFm4TBWYzAdERg,,获取文件失败,Failed to get file
+LPnQdoTiuQ4OPe0BxWLzDQ,eYHRCo6WQFm4TBWYzAdERg,,删除图标,DeleteIcon
+nqLE1NU+DUj1Ql8zL8UvEw,eYHRCo6WQFm4TBWYzAdERg,,选择图标,SelectIcon
+rHtUm0+1pUoKY0FTc1h/hQ,eYHRCo6WQFm4TBWYzAdERg,,复制成功,Copied successfully
+D9qCexGSxxo/Y4U4BFrsyg,eYHRCo6WQFm4TBWYzAdERg,,系统字典 {0} 不存在,System dictionary {0} does not exist
+0f26pryya3dgRLxkxMVFLA,eYHRCo6WQFm4TBWYzAdERg,,名称,Name
+YxUTDcjrkx4Qr26v6NRupA,eYHRCo6WQFm4TBWYzAdERg,,"最多还能上传 {0} 张图片, 已忽略多余文件","Up to {0} more images can be uploaded, extra files ignored"
+rXaWm6etldwp8TEz/A7JMw,eYHRCo6WQFm4TBWYzAdERg,,智能助手,AIAssistant
+CFr024SwXGH1Bq/o6mlo5Q,eYHRCo6WQFm4TBWYzAdERg,,新消息,NewMessage
+HI7JDdi/BH5ESm4Xz7V6Gg,eYHRCo6WQFm4TBWYzAdERg,,您收到一条新消息,You have received a new message
+WyihVM1Ets+POwgP72YWkw,eYHRCo6WQFm4TBWYzAdERg,,登 录,Login
+nM5yv+qUjK7HSYfb2fUOAg,eYHRCo6WQFm4TBWYzAdERg,,确定删除 {0},Confirm to delete {0}
+AaG+O21LckGVi5SyXy/w6Q,eYHRCo6WQFm4TBWYzAdERg,,仅当前租户,OnlyCurrentTenant
+XN9Fb+/mEKvajDW4ZfkryQ,eYHRCo6WQFm4TBWYzAdERg,,值,Value
+EsmJeYwyu/WAUzjIn1yTaQ,eYHRCo6WQFm4TBWYzAdERg,,排序,Sort
+RjX/OpR3nGCyp2jxlIGjmg,eYHRCo6WQFm4TBWYzAdERg,,备注,Remark
 ,,,,
 J+CaMSQBRb2nbqcBNToQxw,eYHRCo6WQFm4TBWYzAdERg,,菜单,Menu
 m+u0jFNWRVKuckxtHF25kQ,eYHRCo6WQFm4TBWYzAdERg,,角色,Role
@@ -195,6 +227,8 @@ Bdr9BXyoTeG5p94rO+VlTw,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,备注,Rema
 TK+Wk1pLTcWHW1iYZqrJ/A,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,创建时间,CreateTime
 0eJqdkdcTZqSIuHj/0gNfQ,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,更新人,Updater
 rsEfVMxGSAGI9diNsfZAPQ,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,更新时间,UpdateTime
+mkrvO/xCzLP35i5CNATzLA,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,首页隐藏,HomeHidden
+ScpWc7VWYqsgzyfoWkXdfQ,eYHRCo6WQFm4TBWYzAdERg,LiRTLUICQA2SRlJgYoNmnA,动态页面,DynamicPage
 ,,,,
 yMGixZooTKmMJpBnT+Gb8g,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,名称,Name
 yVh+gQOvRMiNVc0wPv2HCw,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,首页,Home
@@ -203,13 +237,16 @@ hL+pKYOrQduxGX+PE5kV3w,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,按钮权�
 GW5RUlWwRxqAK7gmL34gaA,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,数据权限,DataPermission
 yOgkz+eOTjyO1dut3etS/A,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,字段权限,FieldPermission
 uSdOl7qfRJqmr4GJBWT0XQ,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,锁定,Lock
-Ck2PivMwRL2fPZH8yyhsbQ,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,启用,Eanble
+Ck2PivMwRL2fPZH8yyhsbQ,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,启用,Enable
 uXsHNra8QLyZra7zuZSFsg,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,排序,Sort
 gQY4j5UdRDiqYSiySKmQIA,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,备注,Remark
 l5Hsb/0lTBengJfPauXAKA,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,创建人,Creator
 zhWvwAmJQiexRDBuPwL/Hw,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,创建时间,CreateTime
 gIRWf6CIQzK3S5rMyEmz7A,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,更新人,Updater
 j4IFJAPHRhW+6KDMCyN0BA,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,更新时间,UpdateTime
+qOveuIZpMnA3LBYgQCgj/g,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,编码,Code
+ZmkpGwjIWDPQOqtqJ4D4AA,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,关键字,Keyword
+JZCkGDNCGZvq0ymdqu1utg,eYHRCo6WQFm4TBWYzAdERg,1oTQS2N4TsKhvk7Rnq4hAg,接收审核消息,ReceiveAuditMessage
 ,,,,
 4lPmQ9wtRBWE5AfWrMKDLg,eYHRCo6WQFm4TBWYzAdERg,39x+H1+ORkq2kagjfYlSgw,协议,Protocol
 Kkb5ZNpPQhGVI8u2RKdtfg,eYHRCo6WQFm4TBWYzAdERg,39x+H1+ORkq2kagjfYlSgw,名称,Name
@@ -235,11 +272,23 @@ voezdR0FTdqL1mWWY0swKQ,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,创建人,C
 SZCqJWMjQPquxwmOKlXPWQ,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,创建时间,CreateTime
 kvbXYWIGQBO6qTx06WMPRw,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,更新人,Updater
 E1XXmUI8QOmHib7nybbytg,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,更新时间,UpdateTime
+66FkybOQ5hndqELZUanYsw,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,编码,Code
+xsBZhD4ktiqNV/U0N7PqpQ,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,标题,Title
+da9GmmfI8e6Pn0rCbbAdeg,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,简介,Introduction
+Ap5h8OsFbuYysGro006AJg,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,租户名称,TenantName
+S3q4/fcl98rmfBjoVmxFIQ,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,用户名,Username
+CDNPxplVNwAd3ioGkiBrhw,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,新密码,NewPassword
+A5IGxmyTHJ4qCHNfoCtDfw,eYHRCo6WQFm4TBWYzAdERg,TO8DBpthSvG2/XDWOwAqtA,admin 的新密码,AdminNewPassword
 ,,,,
 QDhAbMTFTcGk4FTMg8tLcw,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,头像,Avatar
 n7s0HZzTQgidMXoSqjFbVg,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,名称,Name
 VxDd1mqwRwa29V8DjCd9yQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,用户名,Username
 xw1n0gyrTxq5EFxUXC3xFg,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,密码,Password
+r52AhhxcjwUOV6OYNAFeHQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,确认密码,ConfirmPassword
+N70QihCmnJXXjoaDRtZEPQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,旧密码,OldPassword
+c5Q1B7qknvqyvvIdW2Es6g,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,新密码,NewPassword
+NS84IcqwgQOhiZG5UXYiiQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,修改密码,ChangePassword
+7lRAy70AD4jKDOl7oQo/dQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,用户,User
 2959mW/iQTa+c+c6cxOyrQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,所属角色,BelongRole
 exY2BM8MSM+N0mNoxEajeA,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,所属部门,BelongDepartment
 6SRYQDTESw68eVnWihgKZQ,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,所属组织,BelongOrganization
@@ -252,6 +301,8 @@ kf9D2rkiRPapSonlE4uA8A,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,创建人,C
 5pIEYGimQ9WKK4/YS4UWAA,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,创建时间,CreateTime
 7GNi1WuNSLGfB6LgQsxIqg,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,更新人,Updater
 QOSojOY8RCaWu52hrEBfBg,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,更新时间,UpdateTime
+bbwzf/UYvDKyyKd7Gm8CPA,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,类型,Type
+TVe6q4YyXhC2uH1BqaRYOg,eYHRCo6WQFm4TBWYzAdERg,AE6NzvHDQ3CSMdhPlSHCdg,拒收消息,RejectMessage
 ,,,,
 y1cXSy8cRoOASVkEvws6Qw,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,名称,Name
 LQBbBNV0Qxiuz0s5Qecn0w,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,键,Key
@@ -264,18 +315,20 @@ s9RHaEzPTQSoXEb+ohNFJg,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,创建人,C
 1oLHuGD0TqC2UX3mahzLMA,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,创建时间,CreateTime
 Cfe0uS7PQ6a55A/LU7yG/g,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,更新人,Updater
 Cv3JKCk+R8am6Q/30v+Ecg,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,更新时间,UpdateTime
+av/rXqAoaTpyOiXDm4HJfw,eYHRCo6WQFm4TBWYzAdERg,K2mq1MJTRdeqyP7f9oFTIQ,关键字,Keyword
 ,,,,
 5guN+ZLdSqOWOm+87XqxHA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,名称,Name
 QgYS4jsmQnmG/HCvgyWTUg,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,键,Key
 wen4/a4GQmK4BOjZd2NNCQ,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,值,Value
 kIi5injIS+6gAQWMuMsqbg,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,锁定,Lock
-zccGCQ7TTWu+ero7VePlBA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,启用,Eanble
+zccGCQ7TTWu+ero7VePlBA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,启用,Enable
 AmVX+w6SRDeanf74z2O74g,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,排序,Sort
 2GHHfwxnRwqzV62RxAZxag,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,备注,Remark
 TtbM6OCyQfmsx2eCqir7HQ,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,创建人,Creator
 PRtpmHVITl29iRHCMiBzNA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,创建时间,CreateTime
 64z6b6d7SXiT8lluG3OAbA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,更新人,Updater
 KBS7DtrwTtWPriyXSxVfAA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,更新时间,UpdateTime
+u6rS4YlxtJi8D7+dk9TLNA,eYHRCo6WQFm4TBWYzAdERg,m2YNsC/+RHOG66TLKjMHlA,关键字,Keyword
 ,,,,
 EkxfAfCcSTGQ5xvEYZKfgA,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,模块名称,ModuleName
 vJdeJBWeSOOpxzhzftWlPw,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,方法名称,MethodName
@@ -285,6 +338,8 @@ kW4nDiXVSAqqQKDoQjS/Pg,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,操作前�
 hWhnPRvFRvGnzcwbC1tSzA,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,操作后数据,DataAfterOperation
 vkJd/7WVTKWbwV4nqJqsNw,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,操作人,Operator
 KJtPq7vdQruesA9i5mzfjA,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,操作时间,OperationTime
+zPLf1poDKllKNTZK6b4Fmw,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,模块,Module
+cbOCtz+tConjvK8YW1RxoQ,eYHRCo6WQFm4TBWYzAdERg,ecLh8jMSQgi3N1qWaWgdsA,方法,Method
 ,,,,
 RipicvwSS1+yzOB0RHC1bw,eYHRCo6WQFm4TBWYzAdERg,URsPZOBmRrCCcqZBI4J3xw,名称,Name
 RuiCMDLmRGOyrWCmtN5sfA,eYHRCo6WQFm4TBWYzAdERg,URsPZOBmRrCCcqZBI4J3xw,锁定,Lock
@@ -320,8 +375,9 @@ oFiCPUffQ+2FINmlOTC4pg,eYHRCo6WQFm4TBWYzAdERg,UVFbKnOJRfelRv93YtbqBQ,创建人,C
 k+3g32xAR6K6kPjkKEuMzg,eYHRCo6WQFm4TBWYzAdERg,UVFbKnOJRfelRv93YtbqBQ,创建时间,CreateTime
 cSVdmxgfRkerlPthrEOTkA,eYHRCo6WQFm4TBWYzAdERg,UVFbKnOJRfelRv93YtbqBQ,更新人,Updater
 3XJe8DxqSxC9p34ge43djg,eYHRCo6WQFm4TBWYzAdERg,UVFbKnOJRfelRv93YtbqBQ,更新时间,UpdateTime
+Dfn/oPIBpzhPJ/jiPiTwqw,eYHRCo6WQFm4TBWYzAdERg,UVFbKnOJRfelRv93YtbqBQ,值,Value
 ,,,,
-7nOAxhmcRZeY3JhxsqaumQ,eYHRCo6WQFm4TBWYzAdERg,PJk939H5R8iY8o+jZ2rQkg,系统字典,Dictionary
+7nOAxhmcRZeY3JhxsqaumQ,eYHRCo6WQFm4TBWYzAdERg,PJk939H5R8iY8o+jZ2rQkg,系统字典,SystemDictionary
 ROEgMzppSjSZl4oaRo+zHA,eYHRCo6WQFm4TBWYzAdERg,PJk939H5R8iY8o+jZ2rQkg,名称,Name
 MXXPn/roTRWfz52X+ze/Zw,eYHRCo6WQFm4TBWYzAdERg,PJk939H5R8iY8o+jZ2rQkg,值,Value
 oJR1xJX8RbeCemEFn72hKA,eYHRCo6WQFm4TBWYzAdERg,PJk939H5R8iY8o+jZ2rQkg,排序,Sort
@@ -344,6 +400,7 @@ UOQLCy7qQSyt9JBUy3JTng,eYHRCo6WQFm4TBWYzAdERg,HTt8ThGSRO2Gisb0ym4XbA,创建人,C
 iixYFhW0T3iVbE3VUS50VA,eYHRCo6WQFm4TBWYzAdERg,HTt8ThGSRO2Gisb0ym4XbA,创建时间,CreateTime
 SPKNQ+sQTBG6kRiDoQ8Fjg,eYHRCo6WQFm4TBWYzAdERg,HTt8ThGSRO2Gisb0ym4XbA,更新人,Updater
 jDJkpP9GR4yRePXi5THH4g,eYHRCo6WQFm4TBWYzAdERg,HTt8ThGSRO2Gisb0ym4XbA,更新时间,UpdateTime
+y5IVrRaKebh0Ova8fQvTxA,eYHRCo6WQFm4TBWYzAdERg,HTt8ThGSRO2Gisb0ym4XbA,值,Value
 ,,,,
 819i8eB0Q7CRbZEM/EK05A,eYHRCo6WQFm4TBWYzAdERg,CLS7/z9CRoqU72vUE7vdGA,业务字典,BusinessDictionary
 x8AvzLctSH6XYs6EtrPxYg,eYHRCo6WQFm4TBWYzAdERg,CLS7/z9CRoqU72vUE7vdGA,名称,Name
@@ -385,6 +442,7 @@ mTCQpbNCSOe7XSvqdr0T3g,eYHRCo6WQFm4TBWYzAdERg,vU3glaDcRtSU6zYA02lxbA,创建人,C
 6mq6kNs+RBGhWSh7ldK1PA,eYHRCo6WQFm4TBWYzAdERg,vU3glaDcRtSU6zYA02lxbA,创建时间,CreateTime
 BGGRnvqoSV2VoODa46foBQ,eYHRCo6WQFm4TBWYzAdERg,vU3glaDcRtSU6zYA02lxbA,更新人,Updater
 9WyxdWi3S9OUoLwwvFsNig,eYHRCo6WQFm4TBWYzAdERg,vU3glaDcRtSU6zYA02lxbA,更新时间,UpdateTime
+ESEnDGWCBdMnnLEp74w/+w,eYHRCo6WQFm4TBWYzAdERg,vU3glaDcRtSU6zYA02lxbA,排序,Sort
 ,,,,
 7MkigbMOQ3ijFOhiOgnSTQ,eYHRCo6WQFm4TBWYzAdERg,udIlgfLwS4SoJ8ZnLl8CqQ,菜单,Menu
 0xuATSGFTI6PYroRpA7Nmg,eYHRCo6WQFm4TBWYzAdERg,udIlgfLwS4SoJ8ZnLl8CqQ,范围,Scope
@@ -403,10 +461,59 @@ hJ5yiCP/S+mv/6bARYNX/w,eYHRCo6WQFm4TBWYzAdERg,yOszxpUcTtCwoUZvFeXhow,创建人,C
 gm83a0ukQZCULNAT3Hsyyw,eYHRCo6WQFm4TBWYzAdERg,yOszxpUcTtCwoUZvFeXhow,创建时间,CreateTime
 XAjhKOH6R8Wlyc9XJPNMEg,eYHRCo6WQFm4TBWYzAdERg,yOszxpUcTtCwoUZvFeXhow,更新人,Updater
 TkulMFE9RJ+xaitNc5FaHQ,eYHRCo6WQFm4TBWYzAdERg,yOszxpUcTtCwoUZvFeXhow,更新时间,UpdateTime
+KrtUdQWCTftJV2/BkTelUA,eYHRCo6WQFm4TBWYzAdERg,yOszxpUcTtCwoUZvFeXhow,排序,Sort
 ,,,,
 uJ3rWlmzTNeIkW97R8SB8A,eYHRCo6WQFm4TBWYzAdERg,6Z68pDPOR9K4RYzKB0W/qQ,类型,Type
 z4dXFRvVQE2vGbwyGw0VoA,eYHRCo6WQFm4TBWYzAdERg,6Z68pDPOR9K4RYzKB0W/qQ,用户名,Username
 uUkRpauURyyaSSHnkO0jfw,eYHRCo6WQFm4TBWYzAdERg,6Z68pDPOR9K4RYzKB0W/qQ,登录成功,LoginSuccess
 ODNJGEIESLaSkBfUHFhHOQ,eYHRCo6WQFm4TBWYzAdERg,6Z68pDPOR9K4RYzKB0W/qQ,IP,IP
 x+UZ6EPrQT2dIsA+UYbATg,eYHRCo6WQFm4TBWYzAdERg,6Z68pDPOR9K4RYzKB0W/qQ,登录时间,LoginTime
+,,,,
+HTL8ztNNCnH13RTOyJBZKw,eYHRCo6WQFm4TBWYzAdERg,BFzmxWyOQp6ynDfWZakidw,图标,Icon
+vdO+ty2MuFWRLL9xB3koAw,eYHRCo6WQFm4TBWYzAdERg,BFzmxWyOQp6ynDfWZakidw,编码,Code
+c8V15MTuXsXJoBIJeIDTeg,eYHRCo6WQFm4TBWYzAdERg,BFzmxWyOQp6ynDfWZakidw,名称,Name
+my02yidiabAcSvsDny2T0w,eYHRCo6WQFm4TBWYzAdERg,BFzmxWyOQp6ynDfWZakidw,排序,Sort
+OMti4vpw2XT9dd4P/FAYug,eYHRCo6WQFm4TBWYzAdERg,BFzmxWyOQp6ynDfWZakidw,备注,Remark
+,,,,
+igx3FGeVC14IKmeUdtpG5A,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,编码,Code
+c+CBhTQBGLWu7gFWR//v4w,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,名称,Name
+bw1cibqd3NRk6GEawE+XJw,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,路由,Route
+lv8T1NEhf7ogLs98maCdgA,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,父菜单,Parent Menu
+kmkSlMsAym0oQjgJrlThyg,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,所属角色,BelongRole
+PoXJdiJuRV7nwwxab83pWw,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,排序,Sort
+WLOUMGcQa9ZjJHI9sR6IkA,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,备注,Remark
+ZWxppy/+j/OeyfSCu685vg,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,动态页面,DynamicPage
+ul+e9p76KqnefDsmyz7bow,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,类型,Type
+aUgfD2VFerJmbO1y+w4w/g,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,属性,Attributes
+j0dTFwBQDpzp2us+2qRChw,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,计算公式,Formula
+qyT05C4j24rMmjiJH776iQ,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,必填,Required
+tw90227jDcp3RTIJrngfsw,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,查询条件,SearchCondition
+o55m4IrD7tmI0sLTM/kQXA,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,宽度,Width
+w3TVI86F2UduovJ1CigKTg,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,对齐方式,Align
+I8Lb3LdzuSc6YlVk6GeaPQ,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,手机列表显示,MobileListDisplay
+Aumxpzq1Ng2yw8Clkqld8w,eYHRCo6WQFm4TBWYzAdERg,u6u2+OH9QJCw1QTvDvyFVg,手机列表查询,MobileListSearch
+,,,,
+om1VLykNTaqN4Gofr3rI1g,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,日志日期,LogDate
+U6gFZQmnbXAqZFka1Hq0+Q,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,日志时间,LogTime
+mjizhLOd5bB12nHCvgBmyw,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,日志级别,LogLevel
+IDsPdhGL9YfRL0WFz99hbw,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,模块,Module
+hRRjXkZ28szwU0k6AzDyBA,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,请求ID,RequestId
+ipc49njGBxxD2+C76KU+eA,eYHRCo6WQFm4TBWYzAdERg,Ilf3do1tTK+JDthOFoe+Pw,日志内容,LogContent
+,,,,
+WZudXADbqbVMT599q7t/Uw,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,分类,Category
+bV1w4NOcXbNwxxsrNAXQ/w,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,发送通道,Channel
+J5eWr+PLm6h0HpLcU2NijA,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,标题,Title
+m5o7jC4G0pGT3p7Ppw/y7A,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,跳转路由,RoutePath
+33M/GRjg0agJwM7RmDfOZA,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,发送人,Sender
+ZamITaPh6hve935GYAoxlw,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,系统消息,SystemMessage
+Zjgym0XWR7iEEFtAIHBNUw,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,置顶,Pinned
+wbJTTLaHB8KOq/FiYreGpQ,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,所属组织,BelongOrganization
+1B0bV9n839FB264OxhRGlg,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,内容,Content
+0gCUiuYixADiWi61BnwH3Q,eYHRCo6WQFm4TBWYzAdERg,VyNY4fkLQMWobYm1j+JsLw,跳转参数,RouteQuery
+,,,,
+JB1QZ44zlA81c1ybypRZNQ,eYHRCo6WQFm4TBWYzAdERg,uabZtuZgSsaI2lABsj7dUg,消息,Message
+iZt0/QVOgipSTz/kjZyJWA,eYHRCo6WQFm4TBWYzAdERg,uabZtuZgSsaI2lABsj7dUg,接收人,Receiver
+rup0LPJ+5njBXeFTrIyLYA,eYHRCo6WQFm4TBWYzAdERg,uabZtuZgSsaI2lABsj7dUg,已读,Read
+uNJv/vt1sff1EiC7MDWkxg,eYHRCo6WQFm4TBWYzAdERg,uabZtuZgSsaI2lABsj7dUg,阅读时间,ReadTime
+zKf9UAxWdfBnfW8hCSvb0w,eYHRCo6WQFm4TBWYzAdERg,uabZtuZgSsaI2lABsj7dUg,所属组织,BelongOrganization
 ,,,,

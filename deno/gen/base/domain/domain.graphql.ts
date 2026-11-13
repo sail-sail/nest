@@ -6,6 +6,7 @@ import * as resolver from "./domain.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DomainId
 
+"域名"
 type DomainModel {
   "ID"
   id: DomainId!
@@ -25,7 +26,7 @@ type DomainModel {
   order_by: Int!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: UsrId!
   "创建人"
   create_usr_id_lbl: String!
@@ -33,7 +34,7 @@ type DomainModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: UsrId!
   "更新人"
   update_usr_id_lbl: String!
@@ -44,6 +45,7 @@ type DomainModel {
   "已删除"
   is_deleted: Int!
 }
+"域名"
 type DomainFieldComment {
   "ID"
   id: String!
@@ -63,7 +65,7 @@ type DomainFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
+  "创建人 [@fk:base_usr.id]"
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
@@ -71,7 +73,7 @@ type DomainFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
+  "更新人 [@fk:base_usr.id]"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
@@ -80,6 +82,7 @@ type DomainFieldComment {
   "更新时间"
   update_time_lbl: String!
 }
+"域名"
 input DomainInput {
   "ID"
   id: DomainId

@@ -16,6 +16,7 @@ enum LoginLogType {
   wxo
 }
 
+"登录日志"
 type LoginLogModel {
   "ID"
   id: LoginLogId!
@@ -38,6 +39,7 @@ type LoginLogModel {
   "已删除"
   is_deleted: Int!
 }
+"登录日志"
 type LoginLogFieldComment {
   "ID"
   id: String!
@@ -58,6 +60,7 @@ type LoginLogFieldComment {
   "登录时间"
   create_time_lbl: String!
 }
+"登录日志"
 input LoginLogInput {
   "ID"
   id: LoginLogId
