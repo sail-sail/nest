@@ -4,11 +4,33 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  get_usr_id,
+  get_org_id,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findByIdOkUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as wxw_appDao from "./wxw_app.dao.ts";
 
 async function setSearchQuery(
-  _search: WxwAppSearch,
+  search: WxwAppSearch,
 ) {
+  
+  const usr_id = search.auth_usr_id || await get_usr_id(false);
+  const org_id = await get_org_id();
+  const usr_model = await findByIdOkUsr(usr_id);
+  const org_ids: OrgId[] = [ ];
+  if (!search.auth_usr_id && org_id) {
+    org_ids.push(org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  
+  search.org_id = org_ids;
   
 }
 

@@ -6,6 +6,7 @@ import * as resolver from "./wxw_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwAppId
 
+"企微应用"
 type WxwAppModel {
   "ID"
   id: WxwAppId!
@@ -15,7 +16,7 @@ type WxwAppModel {
   corpid: String!
   "应用ID"
   agentid: String!
-  "可信域名"
+  "可信域名 [@fk:base_domain.id]"
   domain_id: DomainId!
   "可信域名"
   domain_id_lbl: String!
@@ -35,9 +36,14 @@ type WxwAppModel {
   order_by: Int!
   "备注"
   rem: String!
+  "所属组织 [@fk:base_org.id]"
+  org_id: OrgId!
+  "所属组织"
+  org_id_lbl: String!
   "已删除"
   is_deleted: Int!
 }
+"企微应用"
 type WxwAppFieldComment {
   "ID"
   id: String!
@@ -47,7 +53,7 @@ type WxwAppFieldComment {
   corpid: String!
   "应用ID"
   agentid: String!
-  "可信域名"
+  "可信域名 [@fk:base_domain.id]"
   domain_id: String!
   "可信域名"
   domain_id_lbl: String!
@@ -67,7 +73,12 @@ type WxwAppFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "所属组织 [@fk:base_org.id]"
+  org_id: String!
+  "所属组织"
+  org_id_lbl: String!
 }
+"企微应用"
 input WxwAppInput {
   "ID"
   id: WxwAppId
@@ -77,7 +88,7 @@ input WxwAppInput {
   corpid: String
   "应用ID"
   agentid: String
-  "可信域名"
+  "可信域名 [@fk:base_domain.id]"
   domain_id: DomainId
   "可信域名"
   domain_id_lbl: String
@@ -97,6 +108,10 @@ input WxwAppInput {
   order_by: Int
   "备注"
   rem: String
+  "所属组织 [@fk:base_org.id]"
+  org_id: OrgId
+  "所属组织"
+  org_id_lbl: String
 }
 input WxwAppSearch {
   "已删除"
@@ -124,6 +139,14 @@ input WxwAppSearch {
   domain_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
+  "所属组织"
+  org_id: [OrgId!]
+  "所属组织"
+  org_id_is_null: Boolean
+  "所属组织"
+  org_id_lbl: [String!]
+  "所属组织"
+  org_id_lbl_like: String
 }
 type Query {
   "根据条件查找企微应用总数"

@@ -6,10 +6,11 @@ import * as resolver from "./wxw_app_token.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwAppTokenId
 
+"企微应用接口凭据"
 type WxwAppTokenModel {
   "ID"
   id: WxwAppTokenId!
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: WxwAppId!
   "企微应用"
   wxw_app_id_lbl: String!
@@ -48,10 +49,11 @@ type WxwAppTokenModel {
   "已删除"
   is_deleted: Int!
 }
+"企微应用接口凭据"
 type WxwAppTokenFieldComment {
   "ID"
   id: String!
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: String!
   "企微应用"
   wxw_app_id_lbl: String!
@@ -88,10 +90,11 @@ type WxwAppTokenFieldComment {
   "应用jsapi_ticket超时时间"
   jsapi_ticket_agent_config_expires_in: String!
 }
+"企微应用接口凭据"
 input WxwAppTokenInput {
   "ID"
   id: WxwAppTokenId
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: WxwAppId
   "企微应用"
   wxw_app_id_lbl: String

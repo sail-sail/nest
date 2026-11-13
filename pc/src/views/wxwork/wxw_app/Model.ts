@@ -53,6 +53,9 @@ export const wxwAppFields = [
   "order_by",
   // 备注
   "rem",
+  // 所属组织
+  "org_id",
+  "org_id_lbl",
   "is_deleted",
 ];
 

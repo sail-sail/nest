@@ -6,10 +6,11 @@ import * as resolver from "./wxw_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwUsrId
 
+"企微用户"
 type WxwUsrModel {
   "ID"
   id: WxwUsrId!
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: WxwAppId!
   "企微应用"
   wxw_app_id_lbl: String!
@@ -22,10 +23,11 @@ type WxwUsrModel {
   "已删除"
   is_deleted: Int!
 }
+"企微用户"
 type WxwUsrFieldComment {
   "ID"
   id: String!
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: String!
   "企微应用"
   wxw_app_id_lbl: String!
@@ -36,10 +38,11 @@ type WxwUsrFieldComment {
   "备注"
   rem: String!
 }
+"企微用户"
 input WxwUsrInput {
   "ID"
   id: WxwUsrId
-  "企微应用"
+  "企微应用 [@fk:wxwork_wxw_app.id]"
   wxw_app_id: WxwAppId
   "企微应用"
   wxw_app_id_lbl: String

@@ -27,6 +27,7 @@ declare global {
   
   /** 企微应用 */
   interface WxwAppSearch extends WxwAppSearchType {
+    auth_usr_id?: UsrId | null;
     /** 锁定 */
     is_locked?: number[] | null;
     /** 排序 */

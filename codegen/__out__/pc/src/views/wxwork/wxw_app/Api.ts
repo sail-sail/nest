@@ -2,6 +2,10 @@ import {
   UniqueType,
 } from "#/types.ts";
 
+import {
+  importModelsByChunk,
+} from "@/utils/excel_util.ts";
+
 import type {
   Query,
   Mutation,
@@ -50,6 +54,9 @@ export function intoInputWxwApp(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 所属组织
+    org_id: model?.org_id,
+    org_id_lbl: model?.org_id_lbl,
   };
   return input;
 }
@@ -587,6 +594,52 @@ export async function getListDomain() {
   return data;
 }
 
+export async function findAllOrg(
+  search?: OrgSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllOrg: OrgModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const org_models = data.findAllOrg;
+  return org_models;
+}
+
+export async function getListOrg() {
+  const data = await findAllOrg(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 企微应用 导入模板
  */
@@ -609,6 +662,7 @@ export function useDownloadImportTemplateWxwApp() {
             contactsecret
             order_by
             rem
+            org_id_lbl
           }
         }
       `,
@@ -718,38 +772,21 @@ export async function importModelsWxwApp(
   opt.showErrMsg = false;
   opt.notLoading = true;
   
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await createsWxwApp(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
-  }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  // 后端 creates 为单事务: 一批中任意一条失败则整批回滚, 无法直接得知出错的行;
+  // importModelsByChunk 在失败时二分拆分重试, 以定位到具体行并给出准确的成败条数
+  return importModelsByChunk(
+    inputs,
+    (items) => createsWxwApp(
+      items,
+      UniqueType.Update,
+      opt,
+    ),
+    percentage,
+    isCancel,
+    (rowStart, rowEnd, err) => rowStart === rowEnd
+      ? `第 ${ rowStart } 行导入失败: ${ err }`
+      : `第 ${ rowStart } 至 ${ rowEnd } 行导入失败(整批回滚): ${ err }`,
+  );
 }
 
 /**
@@ -804,6 +841,8 @@ export async function getFieldCommentsWxwApp(
           is_enabled_lbl,
           order_by,
           rem,
+          org_id,
+          org_id_lbl,
         }
       }
     `,
@@ -822,10 +861,12 @@ export function getPagePathWxwApp() {
 
 /** 新增时的默认值 */
 export async function getDefaultInputWxwApp() {
+  const usrStore = useUsrStore();
   const defaultInput: WxwAppInput = {
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    org_id: usrStore.loginInfo?.org_id,
   };
   return defaultInput;
 }

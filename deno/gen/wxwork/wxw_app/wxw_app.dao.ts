@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  useMaybeContext,
   getCacheEnabled,
 } from "/lib/context.ts";
 
@@ -52,6 +53,7 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
 
+  getAuthModel,
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -82,6 +84,10 @@ import type {
 import {
   findOneDomain,
 } from "/gen/base/domain/domain.dao.ts";
+
+import {
+  findOneOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   findByIdUsr,
@@ -166,6 +172,18 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
+  }
+  if (search?.org_id_is_null) {
+    whereQuery += ` and t.org_id is null`;
+  }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and t.org_id_lbl in (${ args.push(search.org_id_lbl) })`;
+  }
+  if (isNotEmpty(search?.org_id_lbl_like)) {
+    whereQuery += ` and t.org_id_lbl like ${ args.push("%" + sqlLike(search.org_id_lbl_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -287,6 +305,17 @@ export async function findCountWxwApp(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 所属组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -412,6 +441,17 @@ export async function findAllWxwApp(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 所属组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -641,6 +681,32 @@ export async function setIdByLblWxwApp(
     const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
     input.is_enabled_lbl = lbl;
   }
+  
+  // 所属组织
+  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
+    input.org_id_lbl = String(input.org_id_lbl).trim();
+    const orgModel = await findOneOrg(
+      {
+        lbl: input.org_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (orgModel) {
+      input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
 }
 
 // MARK: getFieldCommentsWxwApp
@@ -661,6 +727,8 @@ export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
     is_enabled_lbl: "启用",
     order_by: "排序",
     rem: "备注",
+    org_id: "所属组织",
+    org_id_lbl: "所属组织",
   };
   
   return field_comments;
@@ -838,10 +906,77 @@ export async function checkByUniqueWxwApp(
       return id;
     }
     if (uniqueType === UniqueType.Ignore) {
-      return;
+      // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+      return oldModel.id;
     }
   }
   return;
+}
+
+// MARK: getUniqueKeysWxwApp
+/** 计算唯一键, 用于同一批次内的数据去重 */
+export function getUniqueKeysWxwApp(
+  input: Readonly<WxwAppInput>,
+  is_silent_mode: boolean,
+  auth?: {
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
+  },
+): string[] {
+  
+  const keys: string[] = [ ];
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.lbl != null) {
+      parts.push(`lbl=${ input.lbl }`);
+    }
+    
+    if (parts.length === 2) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.corpid != null) {
+      parts.push(`corpid=${ input.corpid }`);
+    }
+    
+    if (input.agentid != null) {
+      parts.push(`agentid=${ input.agentid }`);
+    }
+    
+    if (parts.length === 3) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  {
+    const parts: string[] = [ ];
+    
+    const tenant_id = input.tenant_id ?? auth?.tenant_id ?? "";
+    parts.push(`tenant_id=${ tenant_id }`);
+    
+    if (input.domain_id != null) {
+      parts.push(`domain_id=${ input.domain_id }`);
+    }
+    
+    if (parts.length === 2) {
+      keys.push(parts.join(String.fromCharCode(1)));
+    }
+  }
+  
+  
+  return keys;
 }
 
 // MARK: findOneWxwApp
@@ -1480,6 +1615,14 @@ async function _creates(
   if (inputs.length === 0) {
     return [ ];
   }
+
+  const authModel = await getAuthModel();
+  const auth_org_id = authModel?.org_id;
+  for (const input of inputs) {
+    if (!input.org_id || input.org_id as unknown as string === "-") {
+      input.org_id = auth_org_id;
+    }
+  }
   
   const table = getTableNameWxwApp();
   
@@ -1487,11 +1630,87 @@ async function _creates(
   
   const ids2: WxwAppId[] = [ ];
   const inputs2: WxwAppInput[] = [ ];
+  // 同批次唯一键 -> id, 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+  const batch_map = new Map<string, WxwAppId>();
+  // Update 模式下, 同批次内的重复数据需在插入之后更新
+  const pending_updates: [ WxwAppId, WxwAppInput ][] = [ ];
+  // 批内去重所需的有效值, 只解析一次, 避免逐条查询
+  const batch_auth: {
+    tenant_id?: TenantId;
+    usr_id?: UsrId;
+  } = { };
+  const has_batch_context = !!useMaybeContext();
+  let batch_usr_id_loaded = false;
+  let batch_tenant_id_loaded = false;
   
   for (const input of inputs) {
   
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
+    }
+
+    // 所属组织
+    if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+      const org_model = await findOneOrg(
+        {
+          id: input.org_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (org_model) {
+        input.org_id_lbl = org_model.lbl;
+      }
+    }
+    
+    const new_id = shortUuidV4<WxwAppId>();
+    
+    if (has_batch_context) {
+      if (!batch_tenant_id_loaded && input.tenant_id == null) {
+        if (!batch_usr_id_loaded) {
+          batch_auth.usr_id = await get_usr_id();
+          batch_usr_id_loaded = true;
+        }
+        batch_auth.tenant_id = await getTenant_id(batch_auth.usr_id);
+        batch_tenant_id_loaded = true;
+      }
+    }
+    
+    const unique_keys = getUniqueKeysWxwApp(
+      input,
+      is_silent_mode,
+      batch_auth,
+    );
+    
+    // 同批次去重: 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+    let old_id: WxwAppId | undefined = undefined;
+    for (const key of unique_keys) {
+      const exists_id = batch_map.get(key);
+      if (exists_id) {
+        old_id = exists_id;
+        break;
+      }
+    }
+    if (old_id) {
+      const unique_type = options?.uniqueType ?? UniqueType.Throw;
+      if (unique_type === UniqueType.Throw) {
+        throw new UniqueException("企微应用 重复");
+      }
+      if (unique_type === UniqueType.Ignore) {
+        ids2.push(old_id);
+        continue;
+      }
+      if (unique_type === UniqueType.Update) {
+        pending_updates.push([ old_id, input ]);
+        ids2.push(old_id);
+        continue;
+      }
+    }
+    
+    for (const key of unique_keys) {
+      batch_map.set(key, new_id);
     }
     
     const oldModels = await findByUniqueWxwApp(input, options);
@@ -1509,6 +1728,9 @@ async function _creates(
         }
       }
       if (id) {
+        for (const key of unique_keys) {
+          batch_map.set(key, id);
+        }
         ids2.push(id);
         continue;
       }
@@ -1517,12 +1739,23 @@ async function _creates(
       inputs2.push(input);
     }
     
-    const id = shortUuidV4<WxwAppId>();
-    input.id = id;
-    ids2.push(id);
+    input.id = new_id;
+    ids2.push(new_id);
   }
   
   if (inputs2.length === 0) {
+    // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+    for (const [ id, input ] of pending_updates) {
+      await updateByIdWxwApp(
+        id,
+        input,
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+        },
+      );
+    }
     return ids2;
   }
   
@@ -1531,7 +1764,7 @@ async function _creates(
   await delCacheWxwApp();
   
   const args = new QueryArgs();
-  let sql = "insert into wxwork_wxw_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,corpid,agentid,domain_id,corpsecret,contactsecret,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wxwork_wxw_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,corpid,agentid,domain_id,corpsecret,contactsecret,is_locked,is_enabled,order_by,rem,org_id_lbl,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1679,6 +1912,16 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.org_id_lbl != null) {
+        sql += `,${ args.push(input.org_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        sql += ",default";
+      }
       sql += ")";
       if (i !== inputs2.length - 1) {
         sql += ",";
@@ -1697,6 +1940,19 @@ async function _creates(
   
   await delCacheWxwApp();
   
+  // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+  for (const [ id, input ] of pending_updates) {
+    await updateByIdWxwApp(
+      id,
+      input,
+      {
+        is_debug: options?.is_debug,
+        is_silent_mode: options?.is_silent_mode,
+        uniqueType: UniqueType.Update as unknown as Exclude<UniqueType, UniqueType.Update>,
+      },
+    );
+  }
+  
   return ids2;
 }
 
@@ -1705,6 +1961,7 @@ async function _creates(
 export async function delCacheWxwApp() {
   await delCacheCtx(`dao.sql.wxwork_wxw_app`);
   await delCacheCtx(`dao.sql.base_domain`);
+  await delCacheCtx(`dao.sql.base_org`);
 }
 
 // MARK: updateTenantByIdWxwApp
@@ -1861,6 +2118,22 @@ export async function updateByIdWxwApp(
   if (!input) {
     throw new Error("updateByIdWxwApp: input cannot be null");
   }
+
+  // 所属组织
+  if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
@@ -1949,6 +2222,17 @@ export async function updateByIdWxwApp(
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem=${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (isNotEmpty(input.org_id_lbl)) {
+    sql += `org_id_lbl=?,`;
+    args.push(input.org_id_lbl);
+    updateFldNum++;
+  }
+  if (input.org_id != null) {
+    if (input.org_id != oldModel.org_id) {
+      sql += `org_id=${ args.push(input.org_id) },`;
       updateFldNum++;
     }
   }

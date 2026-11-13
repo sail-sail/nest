@@ -33,11 +33,6 @@ export async function findCountWxwUsr(
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
   
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
-  
   const num = await findCountWxwUsr(search);
   
   return num;
@@ -59,11 +54,6 @@ export async function findAllWxwUsr(
   const {
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
-  
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
   
   checkSortWxwUsr(sort);
   
@@ -102,11 +92,6 @@ export async function findOneWxwUsr(
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
   
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
-  
   checkSortWxwUsr(sort);
   
   const model = await findOneWxwUsr(search, sort);
@@ -130,11 +115,6 @@ export async function findOneOkWxwUsr(
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
   
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
-  
   checkSortWxwUsr(sort);
   
   const model = await findOneOkWxwUsr(search, sort);
@@ -157,11 +137,6 @@ export async function findByIdWxwUsr(
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
   
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
-  
   const model = await findByIdWxwUsr(id);
   
   return model;
@@ -181,11 +156,6 @@ export async function findByIdOkWxwUsr(
   const {
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
-  
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
   
   const model = await findByIdOkWxwUsr(id);
   
@@ -207,11 +177,6 @@ export async function findByIdsWxwUsr(
     getPagePathWxwUsr,
   } = await import("./wxw_usr.model.ts");
   
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
-  
   const models = await findByIdsWxwUsr(ids);
   
   return models;
@@ -227,15 +192,6 @@ export async function existsWxwUsr(
   const {
     existsWxwUsr,
   } = await import("./wxw_usr.service.ts");
-  
-  const {
-    getPagePathWxwUsr,
-  } = await import("./wxw_usr.model.ts");
-  
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
 
   return await existsWxwUsr(search);
 }
@@ -250,15 +206,6 @@ export async function findByIdsOkWxwUsr(
   const {
     findByIdsOkWxwUsr,
   } = await import("./wxw_usr.service.ts");
-  
-  const {
-    getPagePathWxwUsr,
-  } = await import("./wxw_usr.model.ts");
-  
-  await usePermit(
-    getPagePathWxwUsr(),
-    "find",
-  );
   
   const models = await findByIdsOkWxwUsr(ids);
   

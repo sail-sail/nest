@@ -31,11 +31,6 @@ export async function findCountWxwMsg(
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
   
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
-  
   const num = await findCountWxwMsg(search);
   
   return num;
@@ -57,11 +52,6 @@ export async function findAllWxwMsg(
   const {
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
-  
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
   
   checkSortWxwMsg(sort);
   
@@ -100,11 +90,6 @@ export async function findOneWxwMsg(
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
   
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
-  
   checkSortWxwMsg(sort);
   
   const model = await findOneWxwMsg(search, sort);
@@ -128,11 +113,6 @@ export async function findOneOkWxwMsg(
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
   
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
-  
   checkSortWxwMsg(sort);
   
   const model = await findOneOkWxwMsg(search, sort);
@@ -155,11 +135,6 @@ export async function findByIdWxwMsg(
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
   
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
-  
   const model = await findByIdWxwMsg(id);
   
   return model;
@@ -179,11 +154,6 @@ export async function findByIdOkWxwMsg(
   const {
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
-  
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
   
   const model = await findByIdOkWxwMsg(id);
   
@@ -205,11 +175,6 @@ export async function findByIdsWxwMsg(
     getPagePathWxwMsg,
   } = await import("./wxw_msg.model.ts");
   
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
-  
   const models = await findByIdsWxwMsg(ids);
   
   return models;
@@ -225,15 +190,6 @@ export async function existsWxwMsg(
   const {
     existsWxwMsg,
   } = await import("./wxw_msg.service.ts");
-  
-  const {
-    getPagePathWxwMsg,
-  } = await import("./wxw_msg.model.ts");
-  
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
 
   return await existsWxwMsg(search);
 }
@@ -248,15 +204,6 @@ export async function findByIdsOkWxwMsg(
   const {
     findByIdsOkWxwMsg,
   } = await import("./wxw_msg.service.ts");
-  
-  const {
-    getPagePathWxwMsg,
-  } = await import("./wxw_msg.model.ts");
-  
-  await usePermit(
-    getPagePathWxwMsg(),
-    "find",
-  );
   
   const models = await findByIdsOkWxwMsg(ids);
   
