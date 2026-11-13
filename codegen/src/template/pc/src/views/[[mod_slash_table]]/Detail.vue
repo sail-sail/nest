@@ -6,6 +6,61 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const inlineForeignTabs = (opts?.inlineForeignTabs || [ ]).filter((item) => item.onlyCodegenDeno !== true);
 const hasInlineForeignTabs = inlineForeignTabs.length > 0;
+// 选择省市县区: 按实际配置的字段决定可选层级, 每级必须 code + lbl 成对存在
+let province_code_column = undefined;
+let province_lbl_column = undefined;
+let city_code_column = undefined;
+let city_lbl_column = undefined;
+let county_code_column = undefined;
+let county_lbl_column = undefined;
+let address_column = undefined;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.isProvinceCode) {
+    province_code_column = column;
+  }
+  if (column.isProvinceLbl) {
+    province_lbl_column = column;
+  }
+  if (column.isCityCode) {
+    city_code_column = column;
+  }
+  if (column.isCityLbl) {
+    city_lbl_column = column;
+  }
+  if (column.isCountyCode) {
+    county_code_column = column;
+  }
+  if (column.isCountyLbl) {
+    county_lbl_column = column;
+  }
+  if (column.isAddress) {
+    address_column = column;
+  }
+}
+// 地址选择层级: 0 无, 1 省, 2 省市, 3 省市区
+let pca_level = 0;
+if (province_code_column && province_lbl_column) {
+  pca_level = 1;
+  if (city_code_column && city_lbl_column) {
+    pca_level = 2;
+    if (county_code_column && county_lbl_column) {
+      pca_level = 3;
+    }
+  }
+}
+// 地址选择器在表单里承载的字段: 最深一级的名称字段
+const pca_lbl_column = pca_level === 3 ? county_lbl_column : pca_level === 2 ? city_lbl_column : pca_level === 1 ? province_lbl_column : undefined;
+// 由浅到深的代码字段
+const pca_code_columns = [ province_code_column, city_code_column, county_code_column ].slice(0, pca_level);
+// 元组类型, 如 [string, string]
+const pca_tuple_types = Array.from({ length: pca_level }, function() {
+  return "string";
+}).join(", ");
+// 承载字段即使 onlyCodegenDeno 也要在前端生成
+function isPcaLblColumn(column) {
+  return pca_lbl_column != null && column.COLUMN_NAME === pca_lbl_column.COLUMN_NAME;
+}
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -31,7 +86,7 @@ let columnNum = 0;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !isPcaLblColumn(column)) continue;
   if (column.noDetail) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -121,49 +176,6 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
-
-// 选择省市县区
-let province_code_column = undefined;
-let province_lbl_column = undefined;
-let city_code_column = undefined;
-let city_lbl_column = undefined;
-let county_code_column = undefined;
-let county_lbl_column = undefined;
-let address_column = undefined;
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  const column_name = column.COLUMN_NAME;
-  if (column.isProvinceCode) {
-    province_code_column = column;
-  }
-  if (column.isProvinceLbl) {
-    province_lbl_column = column;
-  }
-  if (column.isCityCode) {
-    city_code_column = column;
-    if (!province_code_column) {
-      throw new Error("没有配置省份字段");
-    }
-  }
-  if (column.isCityLbl) {
-    city_lbl_column = column;
-  }
-  if (column.isCountyCode) {
-    county_code_column = column;
-    if (!city_lbl_column) {
-      throw new Error("没有配置城市字段");
-    }
-  }
-  if (column.isCountyLbl) {
-    county_lbl_column = column;
-  }
-  if (column.isAddress) {
-    address_column = column;
-  }
-  if (province_code_column && province_lbl_column && city_code_column && city_lbl_column && county_code_column && county_lbl_column && address_column) {
-    break;
-  }
-}
 
 #>
 <CustomDialog
@@ -303,7 +315,7 @@ for (let i = 0; i < columns.length; i++) {
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
-          if (column.onlyCodegenDeno) continue;
+          if (column.onlyCodegenDeno && !isPcaLblColumn(column)) continue;
           if (column.noDetail) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
@@ -1200,10 +1212,15 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
             ></CustomColorPicker><#
-            } else if (column.isCountyLbl) {
+            } else if (isPcaLblColumn(column)) {
             #>
             <CustomCityPicker
               v-model="<#=column_name#>_city_picker"<#
+              if (pca_level != 3) {
+              #>
+              :level="<#=pca_level#>"<#
+              }
+              #><#
               if (isUseI18n) {
               #><#
               if (placeholderInForm) {
@@ -1451,8 +1468,15 @@ for (let i = 0; i < columns.length; i++) {
             if (inline_foreign_type === "one2many") {
           #>
           
-          <el-tab-pane
-            label="<#=inlineForeignTab.label#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="ns('<#=inlineForeignTab.label#>')"<#
+            } else {
+            #>
+            label="<#=inlineForeignTab.label#>"<#
+            }
+            #>
             name="<#=inlineForeignTab.label#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
@@ -2339,8 +2363,15 @@ for (let i = 0; i < columns.length; i++) {
             } else if (inline_foreign_type === "one2one") {
           #>
           
-          <el-tab-pane
-            label="<#=inlineForeignTab.label#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="ns('<#=inlineForeignTab.label#>')"<#
+            } else {
+            #>
+            label="<#=inlineForeignTab.label#>"<#
+            }
+            #>
             name="<#=inlineForeignTab.label#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
@@ -3213,8 +3244,15 @@ for (let i = 0; i < columns.length; i++) {
             }
             const hasIsSys = inlineMany2manyColumns.some((column) => column.COLUMN_NAME === "is_sys");
           #>
-          <el-tab-pane
-            label="<#=column_comment#>"
+          <el-tab-pane<#
+            if (isUseI18n) {
+            #>
+            :label="n('<#=column_comment#>')"<#
+            } else {
+            #>
+            label="<#=column_comment#>"<#
+            }
+            #>
             name="<#=column_name#>"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
@@ -5146,31 +5184,36 @@ let dialogModel = $ref<<#=inputName#>>({<#
 } as <#=inputName#>);
 
 let <#=table#>_model = $ref<<#=modelName#>>();<#
-if (county_lbl_column) {
+if (pca_lbl_column) {
 #>
 
 /** 选择省市区县 */
-const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string, string] | undefined>({
+const <#=pca_lbl_column.COLUMN_NAME#>_city_picker = $computed<[<#=pca_tuple_types#>] | undefined>({
   get() {
-    return [
-      dialogModel.<#=province_code_column.COLUMN_NAME#> ?? "",
-      dialogModel.<#=city_code_column.COLUMN_NAME#> ?? "",
-      dialogModel.<#=county_code_column.COLUMN_NAME#> ?? "",
-    ] as [string, string, string];
+    return [<#
+      for (let i = 0; i < pca_code_columns.length; i++) {
+    #>
+      dialogModel.<#=pca_code_columns[i].COLUMN_NAME#> ?? "",<#
+      }
+    #>
+    ] as [<#=pca_tuple_types#>];
   },
-  async set(codes) {
-    const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
-    const <#=province_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=province_code_column.COLUMN_NAME#>);
-    const <#=city_code_column.COLUMN_NAME#> = codes?.[1] ?? "";
-    const <#=city_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=city_code_column.COLUMN_NAME#>);
-    const <#=county_code_column.COLUMN_NAME#> = codes?.[2] ?? "";
-    const <#=county_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=county_code_column.COLUMN_NAME#>);
-    dialogModel.<#=province_code_column.COLUMN_NAME#> = <#=province_code_column.COLUMN_NAME#>;
-    dialogModel.<#=province_lbl_column.COLUMN_NAME#> = <#=province_lbl_column.COLUMN_NAME#>;
-    dialogModel.<#=city_code_column.COLUMN_NAME#> = <#=city_code_column.COLUMN_NAME#>;
-    dialogModel.<#=city_lbl_column.COLUMN_NAME#> = <#=city_lbl_column.COLUMN_NAME#>;
-    dialogModel.<#=county_code_column.COLUMN_NAME#> = <#=county_code_column.COLUMN_NAME#>;
-    dialogModel.<#=county_lbl_column.COLUMN_NAME#> = <#=county_lbl_column.COLUMN_NAME#>;
+  async set(codes) {<#
+    for (let i = 0; i < pca_code_columns.length; i++) {
+      const code_column = pca_code_columns[i];
+      const lbl_column = [ province_lbl_column, city_lbl_column, county_lbl_column ][i];
+    #>
+    const <#=code_column.COLUMN_NAME#> = codes?.[<#=i.toString()#>] ?? "";
+    const <#=lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=code_column.COLUMN_NAME#>);<#
+    }
+    for (let i = 0; i < pca_code_columns.length; i++) {
+      const code_column = pca_code_columns[i];
+      const lbl_column = [ province_lbl_column, city_lbl_column, county_lbl_column ][i];
+    #>
+    dialogModel.<#=code_column.COLUMN_NAME#> = <#=code_column.COLUMN_NAME#>;
+    dialogModel.<#=lbl_column.COLUMN_NAME#> = <#=lbl_column.COLUMN_NAME#>;<#
+    }
+  #>
   },
 });<#
 }
@@ -5200,7 +5243,7 @@ watchEffect(async () => {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !isPcaLblColumn(column)) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
@@ -5226,7 +5269,7 @@ watchEffect(async () => {
       ) {
         continue;
       }
-      if (column.onlyCodegenDeno) {
+      if (column.onlyCodegenDeno && !isPcaLblColumn(column)) {
         continue;
       }
       if (column.readonly) {
@@ -6015,7 +6058,8 @@ async function showDialog(
   #>
   if (<#=column_name#>FluentEditor) {
     <#=column_name#>FluentEditor.root.innerHTML = "";
-  }<#
+  }
+  <#=column_name#>_loaded_html = "";<#
   }
   #><#
   }
@@ -7072,6 +7116,7 @@ async function onRefresh() {
           <#=column_name#> = await fetch(url).then((res) => res.text());
         }
         <#=column_name#>FluentEditor.root.innerHTML = <#=column_name#>;
+        <#=column_name#>_loaded_html = <#=column_name#>;
       }<#
       }
       #><#
@@ -7884,7 +7929,9 @@ async function save() {
       id: undefined,
     };<#
     if (hasIsFluentEditor) {
-    #><#
+    #>
+    // 更新成功后才删的旧附件, 先删会让上传或更新失败时正文永久丢失
+    const replacedFileIds: string[] = [ ];<#
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -7912,11 +7959,18 @@ async function save() {
     }
     #>
     
-    if (dialogModel2.<#=column_name#>) {
-      await deleteFile(dialogModel2.<#=column_name#>);
+    // 富文本: 正文没变就不动附件; 变了先传新的, 更新成功后再删旧的
+    const <#=column_name#>_old_file_id = dialogModel2.<#=column_name#>;
+    let <#=column_name#>_html = "";
+    let <#=column_name#>_changed = false;
+    if (<#=column_name#>FluentEditor) {
+      <#=column_name#>_html = <#=column_name#>FluentEditor.root.innerHTML;
+      <#=column_name#>_changed = <#=column_name#>_html !== <#=column_name#>_loaded_html;
     }
-    if (<#=column_name#>FluentEditor?.root.innerHTML) {
-      const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
+    if (<#=column_name#>_changed) {
+      // 清空正文也要留一个空文档: update 会跳过 undefined, 0 字节文件下载又是 404
+      const <#=column_name#>_upload_html = <#=column_name#>_html || "<p><br></p>";
+      const blob = new Blob([ <#=column_name#>_upload_html ], { type: "text/html" });
       const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
       dialogModel2.<#=column_name#> = await uploadFile(
         file,<#
@@ -7929,6 +7983,9 @@ async function save() {
         }
         #>
       );
+      if (<#=column_name#>_old_file_id && <#=column_name#>_old_file_id !== dialogModel2.<#=column_name#>) {
+        replacedFileIds.push(<#=column_name#>_old_file_id);
+      }
     }<#
     }
     #><#
@@ -7949,6 +8006,15 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );<#
+    if (hasIsFluentEditor) {
+    #>
+    for (const fileId of replacedFileIds) {
+      try {
+        await deleteFile(fileId);
+      } catch (err) { /* 删不掉只留孤儿附件, 不能回滚已保存的正文 */ }
+    }<#
+    }
+    #><#
     if (opts?.isRealData) {
     #>
     publish({
@@ -8771,6 +8837,8 @@ if (!column.isFluentEditor) {
 
 const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined = undefined;
+/** 载入时编辑器里的 HTML, 保存时用来判断正文有没有改 */
+let <#=column_name#>_loaded_html = "";
 
 watch(
   () => [

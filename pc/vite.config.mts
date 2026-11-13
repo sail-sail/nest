@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite-plus";
+import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import VueJsx from "@vitejs/plugin-vue-jsx";
 // import { VitePWA } from "vite-plugin-pwa";
@@ -68,12 +68,11 @@ export default defineConfig({
     TurboConsole({
       inspector: false,
     }),
-    // @ts-ignore
     Inspector({
       toggleButtonPos: "top-left",
       lazyLoad: 500,
       disableInspectorOnEditorOpen: true,
-      launchEditor: "code",
+      launchEditor: "buddycn",
     }),
     // VueDevTools(),
     VueDevtoolsJson(),
@@ -357,20 +356,34 @@ export default defineConfig({
     open: false,
     cors: true,
     strictPort: true,
-    proxy: makeProxy(["/api", "/graphql"]),
+    proxy: {
+      ...makeProxy(["/api", "/graphql"]),
+      "/agent": {
+        target: "http://127.0.0.1:4002",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
   },
   server: {
     port: 4000,
-    host: "0.0.0.0",
     open: false,
     cors: true,
     strictPort: true,
-    proxy: makeProxy(
-      ["/api", "/graphql", "/mcp", "/.well-known", "/authorize", "/token", "/revoke", "/register"],
-      {
-        "/api": { ws: true },
-        "/graphql": { ws: true },
+    proxy: {
+      ...makeProxy(
+        ["/api", "/graphql", "/mcp", "/.well-known", "/authorize", "/token", "/revoke", "/register"],
+        {
+          "/api": { ws: true },
+        },
+      ),
+      "/agent": {
+        target: "http://127.0.0.1:4002",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
       },
-    ),
+    },
   },
 });

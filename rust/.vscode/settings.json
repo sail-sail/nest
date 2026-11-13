@@ -33,7 +33,7 @@
     ".editorconfig": true,
     "**/.npmrc": true,
     ".gitignore": true,
-    "**/.oxlintrc.json": true,
+    "**/.oxlintrc.json": true
   },
   "files.watcherExclude": {
     "**/node_modules/**": true,

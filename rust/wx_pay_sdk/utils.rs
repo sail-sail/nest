@@ -1,7 +1,7 @@
 use base64::{Engine, engine};
 use chrono::Local;
 use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, USER_AGENT};
-use rsa::{Pkcs1v15Sign, RsaPrivateKey, pkcs8::DecodePrivateKey, sha2::{Digest, Sha256}};
+use rsa::{Pkcs1v15Sign, PrivateKey, pkcs8::DecodePrivateKey, sha2::{Digest, Sha256}};
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -24,7 +24,7 @@ pub(crate) fn sha_rsa_sign<T>(
 where
   T: AsRef<str>,
 {
-  let private_key = RsaPrivateKey::from_pkcs8_pem(private_key)
+  let private_key = PrivateKey::from_pkcs8_pem(private_key)
     .map_err(crate::WxPayError::from)?;
   let mut hasher = <Sha256 as Digest>::new();
   hasher.update(content.as_ref());

@@ -136,6 +136,29 @@ mcp_allowed_origins = "https://client.example.com,https://client.example.com:443
 - 一旦配置了 `mcp_allowed_hosts` / `mcp_allowed_origins`，rmcp 会按配置值校验请求头里的 `Host` / `Origin`
 - `mcp_allowed_origins` 需要带协议；如需严格浏览器来源控制，建议显式配置而不是依赖默认值
 
+## 可选对外基地址（附件 / 图片链接必配）
+
+`oss_upload`、`oss_download_url`、`oss_image_url` 返回的是**绝对地址**，前缀取自本次 MCP 请求的来源：
+
+1. `mcp_public_base_url`（显式配置，最高优先级）
+2. `Forwarded` / `X-Forwarded-Proto` + `X-Forwarded-Host` / `X-Original-*`
+3. `Host` 请求头（兜底）
+
+agent 调 `/mcp` 用的是进程间地址（服务器上通常就是 `http://127.0.0.1:4001/mcp`），第 3 条会推导出
+`http://127.0.0.1:4001/api/oss/img/...`，浏览器打不开——点下载链接和显示图片都会失败。
+因此**只要有 agent 接入，就必须显式配置**：
+
+```dotenv
+mcp_public_base_url = "https://pms.ejsexcel.com"
+```
+
+说明:
+
+- 值写站点对外 origin，不带末尾 `/`，也不要带 `/mcp`
+- 该值同时用于 OAuth 元数据（issuer、authorize/token/register/revoke endpoint），语义就是"对外基地址"
+- 配置后不再读转发头，反向代理换域名时只改这一处
+- 站点反向代理必须能转发 `/api/oss/`，否则链接能拼出来但打不开
+
 ## 当前限制
 
 - 当前 `/mcp` 已切到基于 rmcp 的 Streamable HTTP transport，并通过 `SessionStore` 支持会话恢复；OAuth discovery、授权页、token/register/revoke 仍是当前项目内嵌实现

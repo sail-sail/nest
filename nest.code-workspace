@@ -17,6 +17,10 @@
       "deno": false
     },
     {
+      "path": "./agent",
+      "deno": false
+    },
+    {
       "path": "./codegen",
       "deno": false
     }
@@ -105,6 +109,12 @@
     "chat.useNestedAgentsMdFiles": true,
     "git.enableSmartCommit": true,
     "diffEditor.experimental.showMoves": true,
-    "diffEditor.experimental.useTrueInlineView": true
+    "diffEditor.experimental.useTrueInlineView": true,
+    "rust-analyzer.initializeStopped": true,
+    // 扩展 0.3.3113 把 implicitDrops 声明成字符串枚举(默认 "never"),
+    // 而 rustup 带的 rust-analyzer.exe(1.99.1) 仍按 boolean 解析, 会报
+    // invalid config value: /inlayHints/implicitDrops/enable
+    // 这里显式给 boolean 覆盖默认值; 等扩展与 server 版本对齐后可删掉
+    "rust-analyzer.inlayHints.implicitDrops.enable": false
   }
 }

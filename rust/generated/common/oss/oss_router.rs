@@ -219,6 +219,29 @@ pub struct DownloadQuery {
   inline: Option<String>,
 }
 
+/// 生成 Content-Disposition。
+///
+/// `filename` 只保留 ASCII 可见字符给老客户端兜底，真实文件名走 RFC 5987 的
+/// `filename*=UTF-8''`；否则中文名会以 `%E5%90%88%E5%90%8C.pdf` 原样出现在下载栏里。
+fn content_disposition(
+  kind: &str,
+  filename: &str,
+) -> String {
+  let ascii: String = filename
+    .chars()
+    .filter(|c| c.is_ascii_graphic() && *c != '"' && *c != '\\')
+    .collect();
+  let fallback = if ascii.chars().any(|c| c.is_ascii_alphanumeric()) {
+    ascii
+  } else {
+    "download".to_owned()
+  };
+  format!(
+    "{kind}; filename=\"{fallback}\"; filename*=UTF-8''{}",
+    urlencoding::encode(filename),
+  )
+}
+
 async fn _download(
   mut filename: String,
   id: String,
@@ -273,12 +296,10 @@ async fn _download(
   if filename.is_empty() {
     filename = stat.filename;
     if filename.is_empty() {
-      filename = urlencoding::encode(id.as_str()).to_string();
+      filename = id.clone();
     }
-  } else {
-    filename = urlencoding::encode(filename.as_str()).to_string();
   }
-  response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
+  response = response.header("Content-Disposition", content_disposition(attachment, &filename));
   if let Some(last_modified) = &stat.last_modified
     && !last_modified.is_empty() {
       response = response.header("Last-Modified", last_modified);
@@ -344,6 +365,9 @@ pub async fn download(
 #[derive(Deserialize, Serialize)]
 pub struct ImgQuery {
   id: String,
+  /// 可选文件名覆盖：由 oss_image_url 生成链接时带过来，决定 Content-Disposition 里的名字
+  #[serde(default)]
+  filename: Option<String>,
   inline: Option<String>,
   f: Option<String>,
   w: Option<u32>,
@@ -353,6 +377,7 @@ pub struct ImgQuery {
 async fn _img(
   ImgQuery {
     id,
+    filename,
     inline,
     f,
     w,
@@ -366,7 +391,7 @@ async fn _img(
   }
   
   let if_none_match = req.header("if-none-match");
-  let mut filename = "".to_owned();
+  let mut filename = filename.unwrap_or_default();
   let inline = inline.unwrap_or("1".to_owned());
   let attachment = match inline.as_str() {
     "1" => "inline",
@@ -407,12 +432,12 @@ async fn _img(
   if file_name_empty {
     filename = stat.filename;
     if filename.is_empty() {
-      filename = urlencoding::encode(id.as_str()).to_string();
+      filename = id.clone();
     }
-  } else {
-    filename = urlencoding::encode(filename.as_str()).to_string();
   }
-  let format = f.clone().unwrap_or("webp".to_owned());
+  // schema 里允许 webp/png/jpeg/jpg，jpeg 与 jpg 必须归一到同一支，
+  // 否则会编码成 WebP 却把后缀写成 .jpeg、Content-Type 也报错。
+  let format = f.clone().unwrap_or_else(|| "webp".to_owned()).to_lowercase();
   let cache_id = {
     let mut id = id.clone();
     if let Some(f) = &f {
@@ -431,14 +456,14 @@ async fn _img(
   };
   let output_format = match format.as_str() {
     "webp" => ImageFormat::WebP,
-    "jpg" => ImageFormat::Jpeg,
+    "jpg" | "jpeg" => ImageFormat::Jpeg,
     "png" => ImageFormat::Png,
     "ico" => ImageFormat::Ico,
     _ => ImageFormat::WebP,
   };
   let content_type = match format.as_str() {
     "webp" => "image/webp",
-    "jpg" => "image/jpeg",
+    "jpg" | "jpeg" => "image/jpeg",
     "png" => "image/png",
     "ico" => "image/x-icon",
     _ => "image/webp",
@@ -464,7 +489,7 @@ async fn _img(
         if !etag.is_empty() {
           response = response.header("ETag", etag);
         }
-        response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+        response = response.header("Content-Disposition", content_disposition(attachment, &filename));
         response = response.status(StatusCode::NOT_MODIFIED);
         return response.finish();
       } else if !etag.is_empty() {
@@ -478,7 +503,7 @@ async fn _img(
     None => false,
   };
   if !is_img {
-    response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+    response = response.header("Content-Disposition", content_disposition(attachment, &filename));
     if let Some(last_modified) = &stat.last_modified
       && !last_modified.is_empty() {
         response = response.header("Last-Modified", last_modified);
@@ -518,13 +543,13 @@ async fn _img(
       && !content_type.is_empty() {
         response = response.content_type(content_type);
       }
+    // 命中缓存时只补文件名，不要再 urlencode 一次：
+    // filename 进 content_disposition 时统一编码，这里编码会造成双重转义。
     if file_name_empty {
       filename = stat.filename;
       if filename.is_empty() {
-        filename = urlencoding::encode(cache_id.as_str()).to_string();
+        filename = cache_id.clone();
       }
-    } else {
-      filename = urlencoding::encode(filename.as_str()).to_string();
     }
     if let Some(if_none_match) = if_none_match
       && let Some(etag) = &stat.etag {
@@ -536,7 +561,7 @@ async fn _img(
           if !etag.is_empty() {
             response = response.header("ETag", etag);
           }
-          response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+          response = response.header("Content-Disposition", content_disposition(attachment, &filename));
           response = response.status(StatusCode::NOT_MODIFIED);
           return response.finish();
         } else if !etag.is_empty() {
@@ -548,7 +573,7 @@ async fn _img(
         response = response.header("ETag", etag);
       }
     
-    response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+    response = response.header("Content-Disposition", content_disposition(attachment, &filename));
     response = response.content_type(content_type);
     
     let content = tmpfile_dao::get_object_stream(&cache_id).await;
@@ -658,7 +683,7 @@ async fn _img(
           }
           response = response.header("Content-Length", len.to_string());
           response = response.content_type(content_type);
-          response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+          response = response.header("Content-Disposition", content_disposition(attachment, &filename));
           response = response.status(StatusCode::NOT_MODIFIED);
           return response.finish();
         } else if !etag.is_empty() {
@@ -672,7 +697,7 @@ async fn _img(
       }
   response = response.header("Content-Length", len.to_string());
   response = response.content_type(content_type);
-  response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+  response = response.header("Content-Disposition", content_disposition(attachment, &filename));
   response.body(content)
 }
 
@@ -680,6 +705,7 @@ async fn _img(
 pub async fn img(
   Query(ImgQuery {
     id,
+    filename,
     inline,
     f,
     w,
@@ -693,6 +719,7 @@ pub async fn img(
     .resful_scope({
       _img(ImgQuery {
         id,
+        filename,
         inline,
         f,
         w,

@@ -35,6 +35,35 @@ const hasMany2many = columns.some((column) => {
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+/**
+ * 唯一键中的自引用外键列(树形表的 parent_id 等): 空 id 代表"无上级"(根级),
+ * 插入时缺省会落成列默认值(空串), 因此校验前需把缺省值补成空 id, 保证根级也参与同级唯一校验
+ */
+const selfFkUniqueColumns = (opts?.uniques || [ ])
+  .flat()
+  .filter((unique, index, list) => list.indexOf(unique) === index)
+  .filter((unique) => {
+    const column = columns.find((item) => item.COLUMN_NAME === unique);
+    if (!column) return false;
+    if (column.ignoreCodegen) return false;
+    if (column.isVirtual) return false;
+    if (column.isPassword) return false;
+    if (column.isEncrypt) return false;
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) return false;
+    if (foreignKey.type === "many2many") return false;
+    if (foreignKey.table !== table) return false;
+    if (foreignKey.mod != null && foreignKey.mod !== mod) return false;
+    return true;
+  });
+/**
+ * 自引用外键列里的非空列: 只有这类列的缺省值会落成空串(根级), 才能补空 id;
+ * 可空列缺省即 NULL, 补空串会改变落库语义, 不参与该处理
+ */
+const selfFkNotNullUniqueColumns = selfFkUniqueColumns.filter((unique) => {
+  const column = columns.find((item) => item.COLUMN_NAME === unique);
+  return column && column.IS_NULLABLE !== "YES";
+});
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
@@ -2893,8 +2922,15 @@ if (isUseI18n) {
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_page_path_<#=table#>().into(),
+  i18n_dao::NRoute {<#
+  if (opts?.isUseDynPageFields) {
+  #>
+    route_path: Some(get_page_path_<#=table#>(None)),<#
+  } else {
+  #>
+    route_path: Some(get_page_path_<#=table#>().to_owned()),<#
+  }
+  #>
   }
 }<#
 }
@@ -3113,11 +3149,11 @@ pub async fn get_field_comments_<#=table#>(<#
       if (inline_foreign_type === "one2many") {
         num++;
     #>
-    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=inline_column_name#>: vec[<#=String(num)#>].to_owned(),<#
       } else if (inline_foreign_type === "one2one") {
         num++;
     #>
-    <#=column_name_rust#>: vec[<#=String(num)#>].to_owned(),<#
+    <#=inline_column_name#>: vec[<#=String(num)#>].to_owned(),<#
       }
     #><#
     }
@@ -3560,38 +3596,37 @@ pub async fn find_by_ids_ok_<#=table#>(
     return Err(eyre!(err_msg));
   }
   
-  let <#=table#>_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = <#=table#>_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }<#
-      if (isUseI18n) {
-      #>
-      let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = i18n_dao::ns(
-        String::from("此 {0} 已经被删除"),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
-      }
-      #>
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
+  let mut <#=table#>_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = <#=table#>_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      <#=table#>_models_res.push(model.clone());
+      continue;
+    }<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      String::from("此 {0} 已经被删除"),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(<#=table#>_models)
+  Ok(<#=table#>_models_res)
 }
 
 // MARK: find_by_ids_<#=table#>
@@ -4164,7 +4199,8 @@ pub async fn check_by_unique_<#=table#>(
     .unwrap_or_default();
   
   if unique_type == UniqueType::Ignore {
-    return Ok(None);
+    // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+    return Ok(model.id.into());
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_<#=table#>(
@@ -4893,6 +4929,74 @@ pub async fn creates_<#=table#>(
   ).await?;
   
   Ok(ids)
+}<#
+  const uniqueKeySets = (opts?.uniques || [ ]).filter((uniques) => {
+    if (!uniques || uniques.length === 0) return false;
+    return uniques.every((unique) => {
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) return false;
+      if (column.ignoreCodegen) return false;
+      if (column.isVirtual) return false;
+      if (column.isPassword) return false;
+      if (column.isEncrypt) return false;
+      return true;
+    });
+  });
+  const hasUniqueCreateUsrId = uniqueKeySets.some((item) => item.includes("create_usr_id"));
+#>
+
+/// 计算唯一键, 用于同一批次内的数据去重
+#[allow(dead_code, unused_variables, unused_mut)]
+pub fn get_unique_keys_<#=table#>(
+  input: &<#=tableUP#>Input,
+  is_silent_mode: bool,
+) -> Vec<String> {
+  let mut keys: Vec<String> = Vec::with_capacity(<#=String(uniqueKeySets.length)#>);<#
+  if (hasTenantId) {
+  #>
+  
+  let tenant_id: Option<TenantId> = input.tenant_id.or_else(get_auth_tenant_id);
+  let tenant_id = tenant_id
+    .map(|item| item.as_str().to_owned())
+    .unwrap_or_default();<#
+  }
+  if (hasUniqueCreateUsrId) {
+  #>
+  
+  let create_usr_id: Option<UsrId> = {
+    if !is_silent_mode && input.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
+      Some(auth_usr_id)
+    } else {
+      input.create_usr_id
+    }
+  };<#
+  }
+  for (const uniques of uniqueKeySets) {
+    const partsNum = uniques.length + (hasTenantId && !uniques.includes("tenant_id") ? 1 : 0);
+  #>
+  
+  {
+    let mut parts: Vec<String> = Vec::with_capacity(<#=partsNum#>);<#
+    if (hasTenantId && !uniques.includes("tenant_id")) {
+    #>
+    parts.push(format!("tenant_id={tenant_id}"));<#
+    }
+    for (const unique of uniques) {
+      const unique_rust = rustKeyEscape(unique);
+    #>
+    if let Some(<#=unique_rust#>) = <#=unique === "create_usr_id" ? "create_usr_id" : "input." + unique_rust#>.as_ref() {
+      parts.push(format!("<#=unique#>={:?}", <#=unique_rust#>));
+    }<#
+    }
+    #>
+    if parts.len() == <#=partsNum#> {
+      keys.push(parts.join("\\u{1}"));
+    }
+  }<#
+  }
+  #>
+  
+  keys
 }
 
 /// 批量创建<#=table_comment#>
@@ -5122,6 +5226,12 @@ async fn _creates(
   
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
+  // 待插入数据的 id, 与 inputs2 一一对应
+  let mut inputs2_ids: Vec<<#=Table_Up#>Id> = vec![];
+  // 同批次唯一键 -> id, 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+  let mut batch_map: HashMap<String, <#=Table_Up#>Id> = HashMap::new();
+  // Update 模式下, 同批次内的重复数据需在插入之后更新
+  let mut pending_updates: Vec<(<#=Table_Up#>Id, <#=tableUP#>Input)> = vec![];
   
   for input in inputs<#
   if (opts.langTable && isUseI18n) {
@@ -5154,6 +5264,19 @@ async fn _creates(
     #>
 
     let mut input = input;<#
+    if (selfFkNotNullUniqueColumns.length > 0) {
+    #>
+    // 空父级 = 根级: 插入时缺省会落成列默认值(空串), 补齐空 id 后根级同名同样会被拦截<#
+    for (const unique of selfFkNotNullUniqueColumns) {
+      const unique_rust = rustKeyEscape(unique);
+    #>
+    if input.<#=unique_rust#>.is_none() {
+      input.<#=unique_rust#> = Some(Default::default());
+    }<#
+    }
+    #><#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -5205,6 +5328,39 @@ async fn _creates(
     #>
     let input = input;
     
+    let new_id: <#=Table_Up#>Id = get_short_uuid().into();
+    let unique_keys = get_unique_keys_<#=table#>(
+      &input,
+      is_silent_mode,
+    );
+    
+    // 同批次去重: 本批次数据尚未入库, 需在内存中判重
+    if let Some(old_id) = unique_keys
+      .iter()
+      .find_map(|key| batch_map.get(key))
+      .cloned()
+    {
+      match unique_type {
+        UniqueType::Throw => {
+          let err_msg = "<#=table_comment#> 重复";
+          return Err(eyre!(err_msg));
+        }
+        UniqueType::Ignore => {
+          ids2.push(old_id);
+          continue;
+        }
+        UniqueType::Update => {
+          pending_updates.push((old_id.clone(), input));
+          ids2.push(old_id);
+          continue;
+        }
+      }
+    }
+    
+    for key in &unique_keys {
+      batch_map.insert(key.clone(), new_id);
+    }
+    
     let old_models = find_by_unique_<#=table#>(
       input.clone().into(),
       None,
@@ -5229,17 +5385,28 @@ async fn _creates(
         }
       }
       if let Some(id) = id {
+        for key in &unique_keys {
+          batch_map.insert(key.clone(), id);
+        }
         ids2.push(id);
         continue;
       }
-      inputs2.push(input);
-    } else {
-      inputs2.push(input);
     }
     
+    ids2.push(new_id);
+    inputs2_ids.push(new_id);
+    inputs2.push(input);
   }
   
   if inputs2.is_empty() {
+    // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+    for (id, input) in pending_updates.drain(..) {
+      update_by_id_<#=table#>(
+        id,
+        input,
+        options,
+      ).await?;
+    }
     return Ok(ids2);
   }
     
@@ -5367,7 +5534,6 @@ async fn _creates(
   
   let inputs2_len = inputs2.len();
   let mut sql_values = String::with_capacity(((2 * <#=columns.length#> + 3) * inputs2_len) * 3);
-  let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
     .clone()
@@ -5375,10 +5541,7 @@ async fn _creates(
     .enumerate()
   {
     
-    let id: <#=Table_Up#>Id = get_short_uuid().into();
-    ids2.push(id);
-    
-    inputs2_ids.push(id);
+    let id: <#=Table_Up#>Id = inputs2_ids[i];
     
     sql_values += "(?";
     args.push(id.into());<#
@@ -5829,8 +5992,13 @@ async fn _creates(
   }<#
   if (opts.langTable && isUseI18n) {
   #>
-  for input in inputs.iter() {
-    refresh_lang_by_input(input, options).await?;
+  for (input, id) in inputs2.iter().zip(inputs2_ids.iter()) {
+    let mut input = input.clone();
+    input.id = Some(*id);
+    refresh_lang_by_input(
+      &input,
+      options,
+    ).await?;
   }<#
   }
   #><#
@@ -6025,6 +6193,15 @@ async fn _creates(
   }<#
   }
   #>
+  
+  // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+  for (id, input) in pending_updates.drain(..) {
+    update_by_id_<#=table#>(
+      id,
+      input,
+      options,
+    ).await?;
+  }
   
   Ok(ids2)
 }<#
@@ -6628,14 +6805,14 @@ async fn refresh_lang_by_input(
   options: Option<Options>,
 ) -> Result<()> {
   
-  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
-    return Err(eyre!("refresh_lang_by_input: input.id is empty"));
-  }
-  
   let server_i18n_enable = get_server_i18n_enable();
   
   if !server_i18n_enable {
     return Ok(());
+  }
+  
+  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
+    return Err(eyre!("refresh_lang_by_input: input.id is empty"));
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -7175,7 +7352,17 @@ pub async fn update_by_id_<#=table#>(
   
   {
     let mut input = input.clone();
-    input.id = None;
+    input.id = None;<#
+    for (const unique of selfFkUniqueColumns) {
+      const unique_rust = rustKeyEscape(unique);
+      const uniqueColumn = columns.find((item) => item.COLUMN_NAME === unique);
+      const is_nullable = uniqueColumn.IS_NULLABLE === "YES";
+    #>
+    if input.<#=unique_rust#>.is_none() {
+      input.<#=unique_rust#> = <#=is_nullable ? `old_model.${ unique_rust }.clone()` : `Some(old_model.${ unique_rust }.clone())`#>;
+    }<#
+    }
+    #>
     
     let models = find_by_unique_<#=table#>(
       input.into(),
@@ -8608,7 +8795,7 @@ pub async fn delete_by_ids_<#=table#>(
     if old_model.is_sys == 1 {<#
       if (isUseI18n) {
       #>
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
+      let err_msg = i18n_dao::ns("不能删除系统记录".to_owned(), None).await?;<#
       } else {
       #>
       let err_msg = "不能删除系统记录";<#
@@ -10399,7 +10586,7 @@ pub async fn validate_is_enabled_<#=table#>(
       String::from("已禁用"),
       None,
     ).await?;
-    let err_msg = String::from(format!("{table_comment}{msg1}"));<#
+    let err_msg = format!("{table_comment}{msg1}");<#
     } else {
     #>
     let err_msg = String::from("<#=table_comment#>已禁用");<#
@@ -10432,7 +10619,7 @@ pub async fn validate_option_<#=table#>(
         String::from("不存在"),
         None,
       ).await?;
-      let err_msg = String::from(format!("{table_comment}{msg1}"));<#
+      let err_msg = format!("{table_comment}{msg1}");<#
       } else {
       #>
       let err_msg = String::from("<#=table_comment#>不存在");<#

@@ -142,8 +142,8 @@ async function compile() {
   let cmd = "";
   cmd += `wsl -e bash -lic `;
   cmd += `"`;
-  // cmd += `export HTTPS_PROXY="http://192.168.80.1:7729"`;
-  // cmd += ` && rustup update`;
+  // cmd += `export HTTPS_PROXY="http://172.18.192.1:7897" && `;
+  // cmd += `rustup update`;
   // cmd += ` && rustup target add x86_64-unknown-linux-musl`;
   // cmd += ` && `;
   cmd += `cargo build --bin ${ projectName } --release --target=x86_64-unknown-linux-musl`;

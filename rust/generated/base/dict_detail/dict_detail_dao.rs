@@ -1114,21 +1114,20 @@ pub async fn find_by_ids_ok_dict_detail(
     return Err(eyre!(err_msg));
   }
   
-  let dict_detail_models = ids
-    .into_iter()
-    .map(|id| {
-      let model = dict_detail_models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = String::from("此 系统字典明细 已经被删除");
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DictDetailModel>>>()?;
+  let mut dict_detail_models_res = Vec::with_capacity(len);
+  for id in ids {
+    let model = dict_detail_models
+      .iter()
+      .find(|item| item.id == id);
+    if let Some(model) = model {
+      dict_detail_models_res.push(model.clone());
+      continue;
+    }
+    let err_msg = String::from("此 系统字典明细 已经被删除");
+    return Err(eyre!(err_msg));
+  }
   
-  Ok(dict_detail_models)
+  Ok(dict_detail_models_res)
 }
 
 // MARK: find_by_ids_dict_detail
@@ -1535,7 +1534,8 @@ pub async fn check_by_unique_dict_detail(
     .unwrap_or_default();
   
   if unique_type == UniqueType::Ignore {
-    return Ok(None);
+    // 静默跳过: 返回已存在的数据 id, 调用方不会再插入
+    return Ok(model.id.into());
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_dict_detail(
@@ -1723,6 +1723,30 @@ pub async fn creates_dict_detail(
   Ok(ids)
 }
 
+/// 计算唯一键, 用于同一批次内的数据去重
+#[allow(dead_code, unused_variables, unused_mut)]
+pub fn get_unique_keys_dict_detail(
+  input: &DictDetailInput,
+  is_silent_mode: bool,
+) -> Vec<String> {
+  let mut keys: Vec<String> = Vec::with_capacity(1);
+  
+  {
+    let mut parts: Vec<String> = Vec::with_capacity(2);
+    if let Some(dict_id) = input.dict_id.as_ref() {
+      parts.push(format!("dict_id={:?}", dict_id));
+    }
+    if let Some(lbl) = input.lbl.as_ref() {
+      parts.push(format!("lbl={:?}", lbl));
+    }
+    if parts.len() == 2 {
+      keys.push(parts.join("\u{1}"));
+    }
+  }
+  
+  keys
+}
+
 /// 批量创建系统字典明细
 #[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
@@ -1742,6 +1766,12 @@ async fn _creates(
   
   let mut ids2: Vec<DictDetailId> = vec![];
   let mut inputs2: Vec<DictDetailInput> = vec![];
+  // 待插入数据的 id, 与 inputs2 一一对应
+  let mut inputs2_ids: Vec<DictDetailId> = vec![];
+  // 同批次唯一键 -> id, 本批次数据尚未入库, 无法通过数据库查询发现批内重复
+  let mut batch_map: HashMap<String, DictDetailId> = HashMap::new();
+  // Update 模式下, 同批次内的重复数据需在插入之后更新
+  let mut pending_updates: Vec<(DictDetailId, DictDetailInput)> = vec![];
   
   for input in inputs {
   
@@ -1751,6 +1781,39 @@ async fn _creates(
 
     let mut input = input;
     let input = input;
+    
+    let new_id: DictDetailId = get_short_uuid().into();
+    let unique_keys = get_unique_keys_dict_detail(
+      &input,
+      is_silent_mode,
+    );
+    
+    // 同批次去重: 本批次数据尚未入库, 需在内存中判重
+    if let Some(old_id) = unique_keys
+      .iter()
+      .find_map(|key| batch_map.get(key))
+      .cloned()
+    {
+      match unique_type {
+        UniqueType::Throw => {
+          let err_msg = "系统字典明细 重复";
+          return Err(eyre!(err_msg));
+        }
+        UniqueType::Ignore => {
+          ids2.push(old_id);
+          continue;
+        }
+        UniqueType::Update => {
+          pending_updates.push((old_id.clone(), input));
+          ids2.push(old_id);
+          continue;
+        }
+      }
+    }
+    
+    for key in &unique_keys {
+      batch_map.insert(key.clone(), new_id);
+    }
     
     let old_models = find_by_unique_dict_detail(
       input.clone().into(),
@@ -1776,17 +1839,28 @@ async fn _creates(
         }
       }
       if let Some(id) = id {
+        for key in &unique_keys {
+          batch_map.insert(key.clone(), id);
+        }
         ids2.push(id);
         continue;
       }
-      inputs2.push(input);
-    } else {
-      inputs2.push(input);
     }
     
+    ids2.push(new_id);
+    inputs2_ids.push(new_id);
+    inputs2.push(input);
   }
   
   if inputs2.is_empty() {
+    // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+    for (id, input) in pending_updates.drain(..) {
+      update_by_id_dict_detail(
+        id,
+        input,
+        options,
+      ).await?;
+    }
     return Ok(ids2);
   }
     
@@ -1817,7 +1891,6 @@ async fn _creates(
   
   let inputs2_len = inputs2.len();
   let mut sql_values = String::with_capacity(((2 * 13 + 3) * inputs2_len) * 3);
-  let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
     .clone()
@@ -1825,10 +1898,7 @@ async fn _creates(
     .enumerate()
   {
     
-    let id: DictDetailId = get_short_uuid().into();
-    ids2.push(id);
-    
-    inputs2_ids.push(id);
+    let id: DictDetailId = inputs2_ids[i];
     
     sql_values += "(?";
     args.push(id.into());
@@ -2005,6 +2075,15 @@ async fn _creates(
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
+  }
+  
+  // Update 模式下, 同批次内的重复数据在此更新(后出现的覆盖先出现的)
+  for (id, input) in pending_updates.drain(..) {
+    update_by_id_dict_detail(
+      id,
+      input,
+      options,
+    ).await?;
   }
   
   Ok(ids2)

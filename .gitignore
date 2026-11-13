@@ -18,6 +18,8 @@ npm-debug.log
 .tmp/
 dist/
 build/
+.dsh/
+.workbuddy/
 
 # 前端框架相关
 .nuxt/
