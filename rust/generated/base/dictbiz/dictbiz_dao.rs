@@ -76,7 +76,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&DictbizSearch>,
   options: Option<&Options>,
@@ -466,7 +466,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&DictbizSearch>,
   options: Option<&Options>,
@@ -575,8 +575,8 @@ pub async fn find_all_dictbiz(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -828,8 +828,8 @@ pub async fn find_count_dictbiz(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -903,7 +903,7 @@ pub async fn find_count_dictbiz(
 // MARK: get_field_comments_dictbiz
 /// 获取业务字典字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_dictbiz(
+pub fn get_field_comments_dictbiz(
   _options: Option<Options>,
 ) -> Result<DictbizFieldComment> {
   
@@ -1365,8 +1365,8 @@ pub async fn exists_dictbiz(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -3310,8 +3310,8 @@ pub async fn find_last_order_by_dictbiz(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select f.order_by from (select t.order_by
   from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);

@@ -312,7 +312,7 @@ pub async fn get_field_comments_menu(
   
   let comments = menu_dao::get_field_comments_menu(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

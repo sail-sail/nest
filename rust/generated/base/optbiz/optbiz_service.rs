@@ -388,7 +388,7 @@ pub async fn get_field_comments_optbiz(
   
   let comments = optbiz_dao::get_field_comments_optbiz(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

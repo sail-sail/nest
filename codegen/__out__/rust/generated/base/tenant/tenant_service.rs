@@ -369,7 +369,7 @@ pub async fn get_field_comments_tenant(
   
   let comments = tenant_dao::get_field_comments_tenant(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

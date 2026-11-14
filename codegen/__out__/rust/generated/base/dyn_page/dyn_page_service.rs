@@ -327,7 +327,7 @@ pub async fn get_field_comments_dyn_page(
   
   let comments = dyn_page_dao::get_field_comments_dyn_page(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

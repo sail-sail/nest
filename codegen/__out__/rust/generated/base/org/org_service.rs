@@ -388,7 +388,7 @@ pub async fn get_field_comments_org(
   
   let comments = org_dao::get_field_comments_org(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
