@@ -388,7 +388,7 @@ pub async fn get_field_comments_job(
   
   let comments = job_dao::get_field_comments_job(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

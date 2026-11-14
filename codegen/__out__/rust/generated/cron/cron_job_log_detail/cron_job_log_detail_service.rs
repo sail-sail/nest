@@ -294,7 +294,7 @@ pub async fn get_field_comments_cron_job_log_detail(
   
   let comments = cron_job_log_detail_dao::get_field_comments_cron_job_log_detail(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
