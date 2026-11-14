@@ -416,7 +416,7 @@ pub async fn get_field_comments_wxw_app(
   
   let comments = wxw_app_dao::get_field_comments_wxw_app(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

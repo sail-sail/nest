@@ -62,7 +62,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&WxwAppTokenSearch>,
   options: Option<&Options>,
@@ -583,7 +583,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&WxwAppTokenSearch>,
   options: Option<&Options>,
@@ -683,8 +683,8 @@ pub async fn find_all_wxw_app_token(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -862,8 +862,8 @@ pub async fn find_count_wxw_app_token(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -937,7 +937,7 @@ pub async fn find_count_wxw_app_token(
 // MARK: get_field_comments_wxw_app_token
 /// 获取企微应用接口凭据字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_wxw_app_token(
+pub fn get_field_comments_wxw_app_token(
   _options: Option<Options>,
 ) -> Result<WxwAppTokenFieldComment> {
   
@@ -1389,8 +1389,8 @@ pub async fn exists_wxw_app_token(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -1696,7 +1696,7 @@ pub async fn set_id_by_lbl_wxw_app_token(
     if input.token_time.is_none() {
       let field_comments = get_field_comments_wxw_app_token(
         None,
-      ).await?;
+      )?;
       let column_comment = field_comments.token_time;
       
       let err_msg = "日期格式错误";
@@ -1713,7 +1713,7 @@ pub async fn set_id_by_lbl_wxw_app_token(
     if input.jsapi_ticket_time.is_none() {
       let field_comments = get_field_comments_wxw_app_token(
         None,
-      ).await?;
+      )?;
       let column_comment = field_comments.jsapi_ticket_time;
       
       let err_msg = "日期格式错误";
@@ -1730,7 +1730,7 @@ pub async fn set_id_by_lbl_wxw_app_token(
     if input.jsapi_ticket_agent_config_time.is_none() {
       let field_comments = get_field_comments_wxw_app_token(
         None,
-      ).await?;
+      )?;
       let column_comment = field_comments.jsapi_ticket_agent_config_time;
       
       let err_msg = "日期格式错误";

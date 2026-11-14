@@ -294,7 +294,7 @@ pub async fn get_field_comments_wxw_app_token(
   
   let comments = wxw_app_token_dao::get_field_comments_wxw_app_token(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

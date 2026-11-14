@@ -59,7 +59,7 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&WxwOaApprovalDetailSearch>,
   options: Option<&Options>,
@@ -335,7 +335,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&WxwOaApprovalDetailSearch>,
   options: Option<&Options>,
@@ -420,8 +420,8 @@ pub async fn find_all_wxw_oa_approval_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -557,8 +557,8 @@ pub async fn find_count_wxw_oa_approval_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -588,7 +588,7 @@ pub async fn find_count_wxw_oa_approval_detail(
 // MARK: get_field_comments_wxw_oa_approval_detail
 /// 获取审批申请详情字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_wxw_oa_approval_detail(
+pub fn get_field_comments_wxw_oa_approval_detail(
   _options: Option<Options>,
 ) -> Result<WxwOaApprovalDetailFieldComment> {
   
@@ -1020,8 +1020,8 @@ pub async fn exists_wxw_oa_approval_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -1252,7 +1252,7 @@ pub async fn set_id_by_lbl_wxw_oa_approval_detail(
     if input.apply_time.is_none() {
       let field_comments = get_field_comments_wxw_oa_approval_detail(
         None,
-      ).await?;
+      )?;
       let column_comment = field_comments.apply_time;
       
       let err_msg = "日期格式错误";

@@ -322,7 +322,7 @@ pub async fn get_field_comments_wxw_oa_approval_detail(
   
   let comments = wxw_oa_approval_detail_dao::get_field_comments_wxw_oa_approval_detail(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

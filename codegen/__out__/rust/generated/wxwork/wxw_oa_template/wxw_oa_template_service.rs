@@ -355,7 +355,7 @@ pub async fn get_field_comments_wxw_oa_template(
   
   let comments = wxw_oa_template_dao::get_field_comments_wxw_oa_template(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
