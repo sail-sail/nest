@@ -308,7 +308,7 @@ pub async fn get_field_comments_icon(
   
   let comments = icon_dao::get_field_comments_icon(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

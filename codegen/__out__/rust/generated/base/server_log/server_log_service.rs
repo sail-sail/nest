@@ -275,7 +275,7 @@ pub async fn get_field_comments_server_log(
   
   let comments = server_log_dao::get_field_comments_server_log(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

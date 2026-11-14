@@ -275,7 +275,7 @@ pub async fn get_field_comments_permit(
   
   let comments = permit_dao::get_field_comments_permit(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

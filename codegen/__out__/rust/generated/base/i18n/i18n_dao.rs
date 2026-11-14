@@ -62,7 +62,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&I18nSearch>,
   options: Option<&Options>,
@@ -448,7 +448,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&I18nSearch>,
   options: Option<&Options>,
@@ -559,8 +559,8 @@ pub async fn find_all_i18n(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -753,8 +753,8 @@ pub async fn find_count_i18n(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -828,7 +828,7 @@ pub async fn find_count_i18n(
 // MARK: get_field_comments_i18n
 /// 获取国际化字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_i18n(
+pub fn get_field_comments_i18n(
   _options: Option<Options>,
 ) -> Result<I18nFieldComment> {
   
@@ -1287,8 +1287,8 @@ pub async fn exists_i18n(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   

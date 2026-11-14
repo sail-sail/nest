@@ -294,7 +294,7 @@ pub async fn get_field_comments_login_log(
   
   let comments = login_log_dao::get_field_comments_login_log(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

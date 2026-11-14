@@ -294,7 +294,7 @@ pub async fn get_field_comments_operation_record(
   
   let comments = operation_record_dao::get_field_comments_operation_record(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

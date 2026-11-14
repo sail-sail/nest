@@ -369,7 +369,7 @@ pub async fn get_field_comments_options(
   
   let comments = options_dao::get_field_comments_options(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

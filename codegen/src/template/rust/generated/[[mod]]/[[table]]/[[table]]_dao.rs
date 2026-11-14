@@ -793,10 +793,14 @@ if (opts?.isUseDynPageFields) {
 
 use crate::common::gql::model::JSONObject;<#
 }
+#><#
+// 只有数据权限/动态页面字段查询才会在函数体内产生 await, 其余情况生成同步函数
+const whereQueryIsAsync = !!opts?.isUseDynPageFields
+  || (hasDataPermit() && hasCreateUsrId);
 #>
 
 #[allow(unused_variables)]
-async fn get_where_query(
+<#=whereQueryIsAsync ? "async " : ""#>fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
@@ -1649,9 +1653,13 @@ async fn get_where_query(
   #>
   Ok(where_query)
 }
-
+<#
+// 只有数据权限/语言表关联时才会在函数体内产生 await, 其余情况生成同步函数
+const fromQueryIsAsync = (hasDataPermit() && hasCreateUsrId)
+  || (opts?.langTable && isUseI18n);
+#>
 #[allow(unused_variables)]
-async fn get_from_query(
+<#=fromQueryIsAsync ? "async " : ""#>fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
@@ -2033,8 +2041,8 @@ pub async fn find_all_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())<#=fromQueryIsAsync ? ".await" : ""#>?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())<#=whereQueryIsAsync ? ".await" : ""#>?;
   
   let mut sort = sort.unwrap_or_default();<#
   if (opts?.defaultSort) {
@@ -2826,8 +2834,8 @@ pub async fn find_count_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())<#=fromQueryIsAsync ? ".await" : ""#>?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())<#=whereQueryIsAsync ? ".await" : ""#>?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -2936,10 +2944,14 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 #>
 
-// MARK: get_field_comments_<#=table#>
+// MARK: get_field_comments_<#=table#><#
+// 只有 i18n/动态页面字段查询才会在函数体内产生 await, 其余情况生成同步函数
+const fieldCommentsIsAsync = isUseI18n
+  || !!opts?.isUseDynPageFields;
+#>
 /// 获取<#=table_comment#>字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_<#=table#>(<#
+pub <#=fieldCommentsIsAsync ? "async " : ""#>fn get_field_comments_<#=table#>(<#
   if (opts?.isUseDynPageFields) {
   #>
   options: Option<Options>,<#
@@ -3819,8 +3831,8 @@ pub async fn exists_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())<#=fromQueryIsAsync ? ".await" : ""#>?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())<#=whereQueryIsAsync ? ".await" : ""#>?;<#
   if (opts?.isHasForUpdate) {
   #>
   let for_update_str = if options.as_ref().and_then(|x| x.get_is_for_update()).unwrap_or(false) {
@@ -4278,7 +4290,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if input.<#=column_name_rust#>.is_none() {
       let field_comments = get_field_comments_<#=table#>(
         None,
-      ).await?;
+      )<#=fieldCommentsIsAsync ? ".await" : ""#>?;
       let column_comment = field_comments.<#=column_name_rust#>;<#
       if (isUseI18n) {
       #>
@@ -4311,7 +4323,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if input.<#=column_name_rust#>.is_none() {
       let field_comments = get_field_comments_<#=table#>(
         None,
-      ).await?;
+      )<#=fieldCommentsIsAsync ? ".await" : ""#>?;
       let column_comment = field_comments.<#=column_name_rust#>;<#
       if (isUseI18n) {
       #>
@@ -4341,7 +4353,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if input.<#=column_name_rust#>.is_none() {
       let field_comments = get_field_comments_<#=table#>(
         None,
-      ).await?;
+      )<#=fieldCommentsIsAsync ? ".await" : ""#>?;
       let column_comment = field_comments.<#=column_name_rust#>;<#
       if (isUseI18n) {
       #>
@@ -10372,8 +10384,8 @@ pub async fn find_summary_<#=table#>(
   }
   #>
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())<#=fromQueryIsAsync ? ".await" : ""#>?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())<#=whereQueryIsAsync ? ".await" : ""#>?;
   
   let sql = format!(r#"select <#=findSummaryColumns.map(function(column) { return "sum(s." + column.COLUMN_NAME + ") as " + mysqlKeyEscape(column.COLUMN_NAME); }).join(", ")#>
   from (select distinct t.id<#=findSummaryColumns.map(function(column) { return ",t." + column.COLUMN_NAME; }).join("")#> from {from_query} where {where_query}) as s"#);
@@ -10476,8 +10488,8 @@ pub async fn find_last_order_by_<#=table#>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())<#=fromQueryIsAsync ? ".await" : ""#>?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())<#=whereQueryIsAsync ? ".await" : ""#>?;
   
   let sql = format!(r#"select f.order_by from (select t.order_by
   from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);

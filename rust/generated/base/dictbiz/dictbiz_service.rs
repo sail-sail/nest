@@ -327,7 +327,7 @@ pub async fn get_field_comments_dictbiz(
   
   let comments = dictbiz_dao::get_field_comments_dictbiz(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

@@ -388,7 +388,7 @@ pub async fn get_field_comments_role(
   
   let comments = role_dao::get_field_comments_role(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

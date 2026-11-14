@@ -416,7 +416,7 @@ pub async fn get_field_comments_dept(
   
   let comments = dept_dao::get_field_comments_dept(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
