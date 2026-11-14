@@ -1961,7 +1961,7 @@ pub async fn get_field_comments_<#=table#>(
   
   let comments = <#=table#>_dao::get_field_comments_<#=table#>(
     options,
-  ).await?;
+  )<#=isUseI18n || !!opts?.isUseDynPageFields ? ".await" : ""#>?;
   
   Ok(comments)
 }<#

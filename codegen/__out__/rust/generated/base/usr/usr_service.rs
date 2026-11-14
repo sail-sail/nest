@@ -420,7 +420,7 @@ pub async fn get_field_comments_usr(
   
   let comments = usr_dao::get_field_comments_usr(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

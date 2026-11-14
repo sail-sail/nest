@@ -282,7 +282,7 @@ pub async fn get_field_comments_i18n(
   
   let comments = i18n_dao::get_field_comments_i18n(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

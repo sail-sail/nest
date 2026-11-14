@@ -308,7 +308,7 @@ pub async fn get_field_comments_dict_detail(
   
   let comments = dict_detail_dao::get_field_comments_dict_detail(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

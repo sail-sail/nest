@@ -322,7 +322,7 @@ pub async fn get_field_comments_message_receiver(
   
   let comments = message_receiver_dao::get_field_comments_message_receiver(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

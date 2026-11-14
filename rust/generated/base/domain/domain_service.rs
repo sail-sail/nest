@@ -369,7 +369,7 @@ pub async fn get_field_comments_domain(
   
   let comments = domain_dao::get_field_comments_domain(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

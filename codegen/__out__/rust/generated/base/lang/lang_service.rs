@@ -308,7 +308,7 @@ pub async fn get_field_comments_lang(
   
   let comments = lang_dao::get_field_comments_lang(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
