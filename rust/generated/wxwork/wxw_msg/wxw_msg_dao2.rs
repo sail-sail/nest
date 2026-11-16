@@ -222,6 +222,28 @@ async fn get_tenant_url_prefix(
   Ok(prefix.trim_end_matches('/').to_string())
 }
 
+/// 统一跳转接口链接, 由接口按 User-Agent 决定跳电脑端还是手机端
+fn build_redirect_url(prefix: &str, route_path: &str, route_query: &str) -> String {
+  let prefix = prefix.trim().trim_end_matches('/');
+  let route_path = route_path.trim();
+  if prefix.is_empty() || route_path.is_empty() {
+    return String::new();
+  }
+
+  let mut url = format!(
+    "{prefix}/api/app/redirect?route_path={route_path}",
+    route_path = urlencoding::encode(route_path),
+  );
+
+  let route_query = route_query.trim();
+  if !route_query.is_empty() {
+    url.push_str(&format!("&route_query={}", urlencoding::encode(route_query)));
+  }
+
+  url
+}
+
+#[allow(dead_code)]
 fn build_url_with_tenant_prefix(prefix: &str, route_path: &str, route_query: &str) -> String {
   let prefix = prefix.trim();
   let route_path = route_path.trim();
@@ -586,13 +608,8 @@ pub async fn send_message_wxwork(
     .collect::<Vec<_>>()
     .join("|");
   
-  let url = if route_path.is_empty() {
-    String::new()
-  } else {
-    build_url_with_tenant_prefix(&tenant_url_prefix, &route_path, &route_query)
-  };
-  
-  let url = "".to_string(); // 先不发 url
+  // 统一走跳转接口, 由接口按 User-Agent 决定跳电脑端还是手机端
+  let url = build_redirect_url(&tenant_url_prefix, &route_path, &route_query);
 
   let wecom_input = SendCardMsgInput {
     wxw_app_id,
