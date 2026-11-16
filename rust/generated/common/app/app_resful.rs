@@ -190,10 +190,6 @@ fn normalize_path(raw: &str) -> Option<String> {
 
 /// 电脑端路由推导手机端页面: /scrm/clue -> /pages/clue/List, /scrm/clue/pool -> /pages/clue/Pool
 fn guess_uni_path(route_path: &str) -> Option<String> {
-  // 特例: 我的跟进
-  if route_path == "/scrm/myfollow" {
-    return Some("/pages/follow/MyList".to_string());
-  }
 
   let segments = route_path
     .trim_matches('/')
@@ -202,8 +198,8 @@ fn guess_uni_path(route_path: &str) -> Option<String> {
     .collect::<Vec<_>>();
 
   match segments.as_slice() {
-    ["scrm", table] => Some(format!("/pages/{table}/List")),
-    ["scrm", table, page] => Some(format!("/pages/{table}/{}", capitalize(page))),
+    [_, table] => Some(format!("/pages/{table}/List")),
+    [_, table, page] => Some(format!("/pages/{table}/{}", capitalize(page))),
     _ => None,
   }
 }
