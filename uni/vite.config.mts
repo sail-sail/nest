@@ -109,6 +109,7 @@ export default defineConfig({
             "getDictbiz",
             "list2tree",
             "formatTimeRange",
+            "buildPageQuery",
           ],
           "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
