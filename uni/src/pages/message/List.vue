@@ -386,6 +386,37 @@ const isCurrentTabAllSelected = $computed({
   },
 });
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<MessageSearch> | string;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+    _tab_name?: string;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+    _tab_name: undefined,
+  },
+);
+
+let builtInSearch: Partial<MessageSearch> | undefined = undefined;
+
+watch(() => props.builtInSearch, () => {
+  if (typeof props.builtInSearch === "string") {
+    builtInSearch = JSON.parse(props.builtInSearch);
+  } else {
+    builtInSearch = props.builtInSearch;
+  }
+}, { immediate: true });
+
+watch(() => props._tab_name, () => {
+  if (props._tab_name) {
+    uni.setNavigationBarTitle({
+      title: props._tab_name,
+    });
+  }
+}, { immediate: true });
+
 function isRead(receiver: MessageReceiverModelType) {
   return Number(receiver.is_read) === 1;
 }
@@ -926,11 +957,25 @@ onShow(() => {
   void refreshMessages();
 });
 
-initFrame();
-
 async function initFrame() {
   await refreshMessages();
   inited = true;
 }
+
+async function initOrRefresh() {
+  if (!inited) {
+    await initFrame();
+  } else {
+    await onRefresh();
+  }
+}
+
+onLoad(async function(query?: AnyObject) {
+  await initOrRefresh();
+});
+
+defineExpose({
+  refresh: initOrRefresh,
+});
 </script>
 

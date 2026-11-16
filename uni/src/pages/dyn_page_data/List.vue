@@ -329,14 +329,34 @@ type SearchType = {
 
 const props = withDefaults(
   defineProps<{
-    builtInSearch?: Partial<DynPageDataSearch>;
+    builtInSearch?: Partial<DynPageDataSearch> | string;
     addQuery?: Record<string, string | number | boolean | null | undefined>;
+    _tab_name?: string;
   }>(),
   {
     builtInSearch: undefined,
     addQuery: undefined,
+    _tab_name: undefined,
   },
 );
+
+let builtInSearch: Partial<DynPageDataSearch> | undefined = undefined;
+
+watch(() => props.builtInSearch, () => {
+  if (typeof props.builtInSearch === "string") {
+    builtInSearch = JSON.parse(props.builtInSearch);
+  } else {
+    builtInSearch = props.builtInSearch;
+  }
+}, { immediate: true });
+
+watch(() => props._tab_name, () => {
+  if (props._tab_name) {
+    uni.setNavigationBarTitle({
+      title: props._tab_name,
+    });
+  }
+}, { immediate: true });
 
 const searchKey = "/pages/dyn_page_data/List:search";
 
@@ -523,7 +543,7 @@ function getSearchDynPageData() {
   };
   return {
     ...search2,
-    ...props.builtInSearch,
+    ...builtInSearch,
   };
 }
 
@@ -628,7 +648,15 @@ async function initFrame() {
   inited = true;
 }
 
-onLoad(async (query?: AnyObject) => {
+async function initOrRefresh() {
+  if (!inited) {
+    await initFrame();
+  } else {
+    await onRefresh();
+  }
+}
+
+onLoad(async function(query?: AnyObject) {
   const pg = query?.pg as string | undefined;
   if (!pg) {
     uni.showToast({
@@ -638,6 +666,10 @@ onLoad(async (query?: AnyObject) => {
     return;
   }
   pagePath = decodeURIComponent(pg);
-  await initFrame();
+  await initOrRefresh();
+});
+
+defineExpose({
+  refresh: initOrRefresh,
 });
 </script>
