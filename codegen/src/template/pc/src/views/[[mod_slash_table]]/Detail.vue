@@ -371,15 +371,17 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
         
         <template<#
           if (fieldPermit || !isVirtual || vIfStr) {
-        #> v-if="<#
-          if (fieldPermit) {
-        #>fieldPermit('<#=column_name#>') && <#
-          }
-        #><#
-          if (!isVirtual) {
-        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#
-          }
-        #><#=vIfStr ? ' && '+vIfStr : ''#>"<#
+            const vIfParts = [ ];
+            if (fieldPermit) {
+              vIfParts.push("fieldPermit('" + column_name + "')");
+            }
+            if (!isVirtual) {
+              vIfParts.push("(showBuildIn || builtInModel?." + column_name + " == null)");
+            }
+            if (vIfStr) {
+              vIfParts.push(vIfStr);
+            }
+        #> v-if="<#=vIfParts.join(' && ')#>"<#
           } else {
         #> v-if="true"<#
           }

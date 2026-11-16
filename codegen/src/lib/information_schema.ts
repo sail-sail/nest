@@ -865,6 +865,13 @@ async function getSchema0(
         item.searchDefaultValue = "subtract:" + item.searchRangeMax;
       }
     }
+
+    // 如果有 foreignKey.cascade_fields 那么 foreignKey.isForceJoinQuery 就默认为 true
+    if (item.foreignKey && item.foreignKey.cascade_fields && item.foreignKey.cascade_fields.length > 0) {
+      if (item.foreignKey.isForceJoinQuery == null) {
+        item.foreignKey.isForceJoinQuery = true;
+      }
+    }
     
   }
   

@@ -311,14 +311,34 @@ type SearchType = {
 
 const props = withDefaults(
   defineProps<{
-    builtInSearch?: Partial<DynPageDataSearch>;
+    builtInSearch?: Partial<DynPageDataSearch> | string;
     addQuery?: Record<string, string | number | boolean | null | undefined>;
+    _tab_name?: string;
   }>(),
   {
     builtInSearch: undefined,
     addQuery: undefined,
+    _tab_name: undefined,
   },
 );
+
+let builtInSearch: Partial<DynPageDataSearch> | undefined = undefined;
+
+watch(() => props.builtInSearch, () => {
+  if (typeof props.builtInSearch === "string") {
+    builtInSearch = JSON.parse(props.builtInSearch);
+  } else {
+    builtInSearch = props.builtInSearch;
+  }
+}, { immediate: true });
+
+watch(() => props._tab_name, () => {
+  if (props._tab_name) {
+    uni.setNavigationBarTitle({
+      title: props._tab_name,
+    });
+  }
+}, { immediate: true });
 
 const searchKey = "/pages/dyn_page_data/List:search";
 
@@ -345,20 +365,6 @@ const dyn_page_data_models_computed = computed<DynPageDataModelComputed[]>(() =>
     };
   });
 });
-
-function buildPageQuery(
-  query?: Record<string, string | number | boolean | null | undefined>,
-) {
-  const params = Object.entries(query || { })
-    .filter(([, value]) => value != null && value !== "")
-    .map(([key, value]) => {
-      return `${ key }=${ encodeURIComponent(String(value)) }`;
-    });
-  if (params.length === 0) {
-    return "";
-  }
-  return `?${ params.join("&") }`;
-}
 
 function onRadio(
   checked: boolean,
@@ -497,7 +503,7 @@ function getSearchDynPageData() {
   };
   return {
     ...search2,
-    ...props.builtInSearch,
+    ...builtInSearch,
   };
 }
 
@@ -602,5 +608,19 @@ async function initFrame() {
   inited = true;
 }
 
-initFrame();
+async function initOrRefresh() {
+  if (!inited) {
+    await initFrame();
+  } else {
+    await onRefresh();
+  }
+}
+
+onLoad(async function(query?: AnyObject) {
+  await initOrRefresh();
+});
+
+defineExpose({
+  refresh: initOrRefresh,
+});
 </script>
