@@ -703,6 +703,12 @@ async fn async_main() -> Result<(), std::io::Error> {
     //   get(generated::common::tmpfile::tmpfile_router::download),
     // );
     
+    // 统一跳转: 按 User-Agent 区分电脑端与手机端, 不需要登录校验
+    app = app.at(
+      "/api/app/redirect",
+      get(generated::common::app::app_router::redirect),
+    );
+    
     // websocket
     app = app.at(
       "/api/websocket/upgrade",

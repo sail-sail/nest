@@ -1,7 +1,7 @@
 import type {
   DictModel,
   DictHeadModel,
-} from "./lib/information_schema";
+} from "./lib/information_schema.ts";
 
 export default {
   ignoreCodegen: [
