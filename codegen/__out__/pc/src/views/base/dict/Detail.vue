@@ -243,7 +243,7 @@
                 "
                 prop="_operation"
                 label="操作"
-                width="90"
+                width="140"
                 align="center"
                 fixed="right"
               >
@@ -260,7 +260,17 @@
                   </el-button>
                   
                   <el-button
-                    v-else-if="!row.is_sys"
+                    v-if="row._type !== 'add' && !row.is_sys"
+                    size="small"
+                    plain
+                    type="info"
+                    @click="dict_detailCopy(row)"
+                  >
+                    复制
+                  </el-button>
+                  
+                  <el-button
+                    v-if="row._type !== 'add' && !row.is_sys"
                     size="small"
                     plain
                     type="danger"
@@ -951,6 +961,21 @@ async function dict_detailAdd() {
   }
   const defaultModel = await getDefaultInputDictDetail();
   dialogModel.dict_detail.push(defaultModel);
+  nextTick(() => {
+    dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
+}
+
+function dict_detailCopy(row: DictDetailModel) {
+  if (!dialogModel.dict_detail) {
+    dialogModel.dict_detail = [ ];
+  }
+  const copy_row = {
+    ...row,
+    id: undefined,
+    order_by: undefined,
+  };
+  dialogModel.dict_detail.push(copy_row);
   nextTick(() => {
     dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
   });
