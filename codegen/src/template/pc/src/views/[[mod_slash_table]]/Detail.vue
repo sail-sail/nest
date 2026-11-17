@@ -2309,7 +2309,7 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
                 label="操作"<#
                 }
                 #>
-                width="90"
+                width="<#=(opts?.noCopy !== true && !opts?.noDelete) ? 140 : 90#>"
                 align="center"
                 fixed="right"
               >
@@ -2331,15 +2331,39 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
                     }
                     #>
                   </el-button><#
+                  if (opts?.noCopy !== true) {
+                  #>
+                  
+                  <el-button
+                    v-if="row._type !== 'add'<#
+                    if (hasIsSys) {
+                    #> && !row.is_sys<#
+                    }
+                    #>"
+                    size="small"
+                    plain
+                    type="info"
+                    @click="<#=inline_column_name#>Copy(row)"
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns('复制') }}<#
+                    } else {
+                    #>
+                    复制<#
+                    }
+                    #>
+                  </el-button><#
+                  }
                   if (!opts?.noDelete) {
                   #>
                   
                   <el-button
-                    v-else<#
+                    v-if="row._type !== 'add'<#
                     if (hasIsSys) {
-                    #>-if="!row.is_sys"<#
+                    #> && !row.is_sys<#
                     }
-                    #>
+                    #>"
                     size="small"
                     plain
                     type="danger"
@@ -8319,6 +8343,15 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
   const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
   const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+  const inlineForeignHasVersion = inlineForeignColumns.some((item) => item.COLUMN_NAME === "version");
+  // 复制行时要清空的系统字段, 子表有该列才清, 与整单复制的字段覆盖保持一致
+  const inlineForeignCopyClearColumns = [
+    "order_by",
+    "is_default",
+    "is_default_lbl",
+    "is_locked",
+    "is_locked_lbl",
+  ].filter((column_name) => inlineForeignColumns.some((item) => item.COLUMN_NAME === column_name));
 #><#
 if (inline_foreign_type === "one2many") {
 #>
@@ -8344,6 +8377,29 @@ async function <#=inline_column_name#>Add() {
   }
   const defaultModel = await getDefaultInput<#=Table_Up#>();
   dialogModel.<#=inline_column_name#>.push(defaultModel);
+  nextTick(() => {
+    <#=inline_column_name#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
+}
+
+function <#=inline_column_name#>Copy(row: <#=Table_Up#>Model) {
+  if (!dialogModel.<#=inline_column_name#>) {
+    dialogModel.<#=inline_column_name#> = [ ];
+  }
+  const copy_row = {
+    ...row,
+    id: undefined,<#
+    for (const column_name of inlineForeignCopyClearColumns) {
+    #>
+    <#=column_name#>: undefined,<#
+    }
+    if (inlineForeignHasVersion) {
+    #>
+    version: 0,<#
+    }
+    #>
+  };
+  dialogModel.<#=inline_column_name#>.push(copy_row);
   nextTick(() => {
     <#=inline_column_name#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
   });
