@@ -417,7 +417,7 @@
                 "
                 prop="_operation"
                 label="操作"
-                width="90"
+                width="140"
                 align="center"
                 fixed="right"
               >
@@ -434,7 +434,17 @@
                   </el-button>
                   
                   <el-button
-                    v-else
+                    v-if="row._type !== 'add'"
+                    size="small"
+                    plain
+                    type="info"
+                    @click="dyn_page_fieldCopy(row)"
+                  >
+                    复制
+                  </el-button>
+                  
+                  <el-button
+                    v-if="row._type !== 'add'"
                     size="small"
                     plain
                     type="danger"
@@ -1124,6 +1134,21 @@ async function dyn_page_fieldAdd() {
   }
   const defaultModel = await getDefaultInputDynPageField();
   dialogModel.dyn_page_field.push(defaultModel);
+  nextTick(() => {
+    dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
+}
+
+function dyn_page_fieldCopy(row: DynPageFieldModel) {
+  if (!dialogModel.dyn_page_field) {
+    dialogModel.dyn_page_field = [ ];
+  }
+  const copy_row = {
+    ...row,
+    id: undefined,
+    order_by: undefined,
+  };
+  dialogModel.dyn_page_field.push(copy_row);
   nextTick(() => {
     dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
   });
