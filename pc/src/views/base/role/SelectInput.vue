@@ -109,9 +109,24 @@
     }"
     v-bind="$attrs"
   >
-    {{ !showReadonlyPlaceholder ? (hasModelLabel ? modelLabel : inputValue) : props.readonlyPlaceholder }}
+    <el-link
+      v-if="props.readonlyLinkDetail && !showReadonlyPlaceholder && readonlyIds.length > 0"
+      type="info"
+      @click.stop="onOpenDetail"
+    >
+      {{ readonlyText }}
+    </el-link>
+    <template
+      v-else
+    >
+      {{ readonlyText }}
+    </template>
   </div>
 </template>
+
+<Detail
+  ref="detailRef"
+></Detail>
 </template>
 
 <script lang="ts" setup>
@@ -120,6 +135,8 @@ import {
 } from "element-plus";
 
 import SelectList from "./SelectList.vue";
+
+import Detail from "./Detail.vue";
 
 import {
   findByIdsRole,
@@ -145,6 +162,8 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     readonlyPlaceholder?: string;
+    /** 只读时是否以链接形式展示, 点击弹窗查看详情 */
+    readonlyLinkDetail?: boolean;
     labelReadonly?: boolean;
     selectListReadonly?: boolean;
     validateEvent?: boolean;
@@ -159,6 +178,7 @@ const props = withDefaults(
     disabled: false,
     readonly: false,
     readonlyPlaceholder: undefined,
+    readonlyLinkDetail: true,
     labelReadonly: true,
     selectListReadonly: true,
     validateEvent: undefined,
@@ -182,6 +202,16 @@ let isInputChanging = false;
 
 const showReadonlyPlaceholder = $computed(() => {
   return props.readonly && !(hasModelLabel ? modelLabel : inputValue);
+});
+
+/** 只读时展示的文本 */
+const readonlyText = $computed(() => {
+  return !showReadonlyPlaceholder ? (hasModelLabel ? modelLabel : inputValue) : props.readonlyPlaceholder;
+});
+
+/** 只读时用于查看详情的 id 列表(multiple 时为多个) */
+const readonlyIds = $computed(() => {
+  return getModelValueArr().filter((id) => !!id);
 });
 
 watch(
@@ -434,6 +464,25 @@ async function onSelectList(value?: RoleModel | RoleModel[]) {
   emit("update:modelLabel", modelLabel || "");
   await nextTick();
   emit("change", value[0]);
+}
+
+const detailRef = useTemplateRef("detailRef");
+
+/** 只读时点击链接, 弹窗查看详情(multiple 时传入多个 id) */
+async function onOpenDetail(e?: MouseEvent) {
+  e?.stopPropagation();
+  const ids = readonlyIds;
+  if (ids.length === 0 || !detailRef.value) {
+    return;
+  }
+  await detailRef.value.showDialog({
+    title: "查看 角色",
+    action: "view",
+    isLocked: () => props.readonly || props.disabled,
+    model: {
+      ids,
+    },
+  });
 }
 
 defineExpose({

@@ -1539,7 +1539,7 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
-                const width = (column.width || 180) + 10;
+                const width = (column.width || 180) + 16;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const placeholderInForm = column.placeholderInForm;
                 const modelLabel = column.modelLabel;
