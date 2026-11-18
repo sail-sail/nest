@@ -197,6 +197,9 @@
             un-overflow-hidden
             un-items="center"
             un-gap="x-2"
+            un-b="0 b-1 solid [var(--color-border)]"
+            un-p="b-2"
+            un-box-border
           >
             
             <view
@@ -207,7 +210,7 @@
               <tm-input
                 v-model="searchStr"
                 width="100%"
-                placeholder="请输入关键字"
+                placeholder="请输入查询条件"
                 :show-clear="!!searchStr"
                 @confirm="onSearchConfirm"
               ></tm-input>
