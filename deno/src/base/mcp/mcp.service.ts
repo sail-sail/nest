@@ -48,8 +48,21 @@ import {
   searchSchema,
 } from "./schema_search.ts";
 
+import {
+  getRestEndpoint,
+  isRestEndpointName,
+  matchRestEndpoint,
+  searchRestSchema,
+} from "./rest_index.ts";
+
+import {
+  failFromError,
+  invokeOaiRoute,
+} from "/src/base/oai/oai.run.ts";
+
 const jsonRecordSchema = z.record(z.string(), z.unknown());
 const MAX_MCP_PAGE_SIZE = 2000;
+const INSTRUCTIONS = "这是内嵌在 deno 后端里的 MCP 调试入口。先调用 session_me 确认当前登录态；GraphQL 相关不清楚类型时先用 schema_search(source=graphql) 搜索，再用 schema_get 查看完整定义，最后用 graphql_execute 执行。非 GraphQL 的 HTTP 接口由 openapi 规范描述，先用 schema_search(source=rest) 找到 method 和 path，再用 rest_call 调用；附件上传下载继续用 oss_* 工具。对任何 findAll* 查询，都要显式传 page；缺 page 会被直接拒绝，pgSize 缺省按 20，超过 2000 自动降到 2000。";
 
 const loginMutation = /* GraphQL */ `
   mutation($input: LoginInput!) {
@@ -132,6 +145,7 @@ export function createNestMcpServer(
   const server = new McpServer({
     name: "nest-deno-mcp",
     version: "1.0.0",
+    instructions: INSTRUCTIONS,
   });
 
   server.registerTool(
@@ -156,38 +170,53 @@ export function createNestMcpServer(
   server.registerTool(
     "schema_search",
     {
-      title: "搜索 GraphQL schema",
-      description: "按类型名、字段名、中文描述和 SDL 片段搜索当前运行时 GraphQL schema。",
+      title: "搜索接口定义",
+      description: "按类型名、字段名、中文描述、路径和 SDL 片段搜索 GraphQL schema 或 openapi 接口。",
       inputSchema: {
-        query: z.string().min(1).describe("关键词，可输入类型名、字段名或中文描述"),
-        kind: z.enum([ "type", "input", "enum", "scalar", "interface", "union", "field" ]).optional().describe("可选：限定搜索范围"),
+        keyword: z.string().min(1).optional().describe("关键词，等价于 query；兼容 agent 的调用参数"),
+        query: z.string().min(1).optional().describe("关键词，可输入类型名、字段名、接口路径或中文描述"),
+        source: z.enum([ "graphql", "rest", "all" ]).optional().describe("接口来源：graphql / rest / all，默认 all"),
+        kind: z.enum([ "type", "input", "enum", "scalar", "interface", "union", "field", "endpoint" ]).optional().describe("可选：限定搜索范围，endpoint 表示 HTTP 接口"),
+        scope: z.enum([ "definition", "member", "all" ]).optional().describe("可选：definition / member / all，默认 all"),
+        includeSdl: z.boolean().optional().describe("可选：REST 结果是否附带完整 operation"),
         limit: z.number().int().positive().max(30).optional().describe("最多返回多少条，默认 10"),
       },
     },
-    async ({ query, kind, limit }: {
-      query: string;
-      kind?: SchemaSearchKind;
+    async ({ keyword, query, source, kind, scope, includeSdl, limit }: {
+      keyword?: string;
+      query?: string;
+      source?: "graphql" | "rest" | "all";
+      kind?: SchemaSearchKind | "endpoint";
+      scope?: "definition" | "member" | "all";
+      includeSdl?: boolean;
       limit?: number;
     }) => {
-      return toToolResult(searchSchema(query, kind as SchemaSearchKind | undefined, limit));
+      const text = (query || keyword || "").trim();
+      if (!text) {
+        throw new Error("query 或 keyword 不能为空");
+      }
+      return toToolResult(searchSchemaBySource(text, source, kind, limit, scope, includeSdl));
     },
   );
 
   server.registerTool(
     "schema_get",
     {
-      title: "获取完整 SDL",
-      description: "按类型名精确返回某个 GraphQL 类型的完整 SDL。大型聚合类型会被拒绝，请先用 schema_search 缩小范围。",
+      title: "获取完整定义",
+      description: "按名字精确返回完整定义。GraphQL 类型返回完整 SDL；HTTP 接口传 `GET /path` 或 path 本身，返回参数与响应 schema。大型聚合类型会被拒绝，请先用 schema_search 缩小范围。",
       inputSchema: {
-        name: z.string().min(1).describe("类型名，例如 UsrModel 或 LoginInput"),
-        kind: z.enum([ "type", "input", "enum", "scalar", "interface", "union" ]).optional().describe("可选：当同名存在多个 kind 时用于精确限定"),
+        name: z.string().min(1).describe("类型名（如 UsrModel）或接口标识（如 GET /api/oai/system/ping）"),
+        kind: z.enum([ "type", "input", "enum", "scalar", "interface", "union", "endpoint" ]).optional().describe("可选：当同名存在多个 kind 时用于精确限定，endpoint 表示 HTTP 接口"),
       },
     },
     async ({ name, kind }: {
       name: string;
-      kind?: Exclude<SchemaSearchKind, "field">;
+      kind?: Exclude<SchemaSearchKind, "field"> | "endpoint";
     }) => {
-      return toToolResult(getSchemaDefinition(name, kind));
+      if (isRestEndpointName(name, kind)) {
+        return toToolResult(getRestEndpoint(name));
+      }
+      return toToolResult(getSchemaDefinition(name, kind as Exclude<SchemaSearchKind, "field"> | undefined));
     },
   );
 
@@ -217,37 +246,112 @@ export function createNestMcpServer(
   );
 
   server.registerTool(
+    "rest_call",
+    {
+      title: "调用 openapi 接口",
+      description: "调用 openapi 规范里的 HTTP 接口（非 GraphQL）。path 必须来自 schema_search(source=rest) 的结果，返回统一响应信封。附件上传下载请继续用 oss_* 工具。",
+      inputSchema: {
+        path: z.string().min(1).describe("完整路径，例如 /api/oai/system/ping"),
+        method: z.string().optional().describe("请求方法，默认 GET，支持大小写"),
+        query: jsonRecordSchema.optional().describe("query 参数，值会被转成字符串"),
+        body: z.unknown().optional().describe("JSON 请求体，可以是对象、数组或基础类型"),
+      },
+    },
+    async ({ path, method, query, body }: {
+      path: string;
+      method?: string;
+      query?: Record<string, unknown>;
+      body?: unknown;
+    }) => {
+      const nextMethod = (method || "GET").trim().toUpperCase();
+      const nextPath = path.trim();
+      if (![ "GET", "POST", "PUT", "PATCH", "DELETE" ].includes(nextMethod)) {
+        return toToolResult({
+          error: `不支持的 method: ${ nextMethod }`,
+        });
+      }
+      if (!nextPath.startsWith("/") || nextPath.startsWith("//")) {
+        return toToolResult({
+          error: "path 必须以 / 开头，例如 /api/oai/system/ping",
+        });
+      }
+
+      const matched = matchRestEndpoint(nextMethod, nextPath);
+      if (!matched) {
+        return toToolResult({
+          error: `${ nextMethod } ${ nextPath } 不在 openapi 规范里`,
+          action: "先用 schema_search 且 source=rest 搜到准确 path 再调用",
+        });
+      }
+
+      try {
+        const result = await invokeOaiRoute(matched.route, {
+          authorization: options.auth.authorization,
+          params: matched.params,
+          query: toQueryStrings(query),
+          body,
+          headers: new Headers({
+            Authorization: `Bearer ${ options.auth.authorization }`,
+            TenantId: String(options.auth.authModel.tenant_id || ""),
+          }),
+        });
+        return toToolResult({
+          status: 200,
+          body: result,
+        });
+      } catch (err) {
+        return toToolResult({
+          status: 200,
+          body: failFromError(err),
+        });
+      }
+    },
+  );
+
+  server.registerTool(
     "oss_upload",
     {
       title: "上传附件到 OSS",
-      description: "把 base64 文件内容上传到当前系统 OSS，并返回文件 id 与可访问 URL。",
+      description: "把 base64 文件内容上传到当前系统 OSS，并返回文件 id 与可访问 URL。文件内容参数推荐使用 contentBase64，兼容旧的 base64。",
       inputSchema: {
+        id: z.string().optional().describe("可选：指定附件 id"),
         filename: z.string().min(1).describe("文件名，例如 contract.pdf"),
-        base64: z.string().min(1).describe("文件的 base64 内容，可包含 data: 前缀"),
+        contentBase64: z.string().optional().describe("文件的 base64 内容，推荐使用，可包含 data: 前缀；与 base64 二选一"),
+        base64: z.string().optional().describe("兼容旧参数，与 contentBase64 二选一"),
         contentType: z.string().optional().describe("可选 MIME type"),
-        is_public: z.boolean().optional().describe("是否公开文件，默认 false"),
+        isPublic: z.boolean().optional().describe("是否公开文件，默认 false"),
+        is_public: z.boolean().optional().describe("兼容旧参数，含义同 isPublic"),
         once: z.number().int().positive().optional().describe("可选 once 标记"),
         db: z.string().optional().describe("可选 db 参数"),
       },
     },
-    async ({ filename, base64, contentType, is_public, once, db }: {
+    async ({ id: fileId, filename, contentBase64, base64, contentType, isPublic, is_public, once, db }: {
+      id?: string;
       filename: string;
-      base64: string;
+      contentBase64?: string;
+      base64?: string;
       contentType?: string;
+      isPublic?: boolean;
       is_public?: boolean;
       once?: number;
       db?: string;
     }) => {
-      const bytes = decodeBase64Payload(base64);
+      const payload = contentBase64 || base64;
+      if (!payload) {
+        throw new Error("contentBase64 不能为空");
+      }
+      const is_public_value = isPublic ?? is_public ?? false;
+      const bytes = decodeBase64Payload(payload);
       const file = new File([ bytes ], filename, {
         type: contentType || guessContentType(filename),
       });
       const id = await ossService.upload(
         file,
         {
+          id: fileId,
           once,
-          is_public,
-          tenant_id: is_public ? undefined : options.auth.authModel.tenant_id,
+          is_public: is_public_value,
+          tenant_id: is_public_value ? undefined : options.auth.authModel.tenant_id,
           db,
         },
       );
@@ -277,19 +381,19 @@ export function createNestMcpServer(
       inputSchema: {
         id: z.string().min(1).describe("附件 id"),
         filename: z.string().optional().describe("可选文件名覆盖"),
-        inline: z.boolean().optional().describe("是否内联展示，默认 false"),
+        inline: z.union([ z.boolean(), z.string() ]).optional().describe("是否内联展示，支持 true/false/1/0，默认 false"),
       },
     },
     async ({ id, filename, inline }: {
       id: string;
       filename?: string;
-      inline?: boolean;
+      inline?: boolean | string;
     }) => {
       return toToolResult({
         url: await buildOssUrl(options.auth, "download", {
           id,
           filename,
-          inline,
+          inline: parseInlineFlag(inline),
         }),
       });
     },
@@ -303,17 +407,25 @@ export function createNestMcpServer(
       inputSchema: {
         id: z.string().min(1).describe("附件 id"),
         filename: z.string().optional().describe("可选文件名覆盖"),
-        inline: z.boolean().optional().describe("是否内联展示，默认 true"),
-        f: z.string().optional().describe("可选图片格式参数"),
-        w: z.number().int().positive().optional().describe("可选宽度"),
-        h: z.number().int().positive().optional().describe("可选高度"),
-        q: z.number().int().positive().max(100).optional().describe("可选质量，1-100"),
+        inline: z.union([ z.boolean(), z.string() ]).optional().describe("是否内联展示，支持 true/false/1/0，默认 true"),
+        format: z.string().optional().describe("可选图片格式参数"),
+        width: z.number().int().positive().optional().describe("可选宽度"),
+        height: z.number().int().positive().optional().describe("可选高度"),
+        quality: z.number().int().positive().max(100).optional().describe("可选质量，1-100"),
+        f: z.string().optional().describe("兼容旧参数，含义同 format"),
+        w: z.number().int().positive().optional().describe("兼容旧参数，含义同 width"),
+        h: z.number().int().positive().optional().describe("兼容旧参数，含义同 height"),
+        q: z.number().int().positive().max(100).optional().describe("兼容旧参数，含义同 quality"),
       },
     },
-    async ({ id, filename, inline, f, w, h, q }: {
+    async ({ id, filename, inline, format, width, height, quality, f, w, h, q }: {
       id: string;
       filename?: string;
-      inline?: boolean;
+      inline?: boolean | string;
+      format?: string;
+      width?: number;
+      height?: number;
+      quality?: number;
       f?: string;
       w?: number;
       h?: number;
@@ -323,11 +435,11 @@ export function createNestMcpServer(
         url: await buildOssUrl(options.auth, "img", {
           id,
           filename,
-          inline,
-          f,
-          w,
-          h,
-          q,
+          inline: parseInlineFlag(inline),
+          f: format ?? f,
+          w: width ?? w,
+          h: height ?? h,
+          q: quality ?? q,
         }),
       });
     },
@@ -564,6 +676,119 @@ function unwrapGraphqlField<T>(
     throw new Error(`GraphQL 响应缺少字段 ${ fieldName }`);
   }
   return payload.data[fieldName] as T;
+}
+
+function searchSchemaBySource(
+  query: string,
+  source: "graphql" | "rest" | "all" = "all",
+  kind?: SchemaSearchKind | "endpoint",
+  limit?: number,
+  scope?: "definition" | "member" | "all",
+  includeSdl?: boolean,
+) {
+  if (source === "rest") {
+    return searchRestSchema(query, limit, kind, scope, includeSdl);
+  }
+
+  const graphqlItems = kind === "endpoint"
+    ? [ ]
+    : filterByScope(
+      withSource(searchSchema(query, kind, limit), "graphql").items,
+      scope,
+    );
+
+  if (source === "graphql") {
+    return {
+      total: graphqlItems.length,
+      source: "graphql",
+      items: graphqlItems,
+    };
+  }
+
+  const restResult = searchRestSchema(query, limit, kind, scope, includeSdl);
+  const restItems = restResult.items;
+  const nextLimit = Math.min(Math.max(limit ?? 10, 1), 30);
+  const items: unknown[] = [ ];
+  for (let i = 0; i < Math.max(graphqlItems.length, restItems.length); i++) {
+    if (graphqlItems[i]) {
+      items.push(graphqlItems[i]);
+    }
+    if (restItems[i]) {
+      items.push(restItems[i]);
+    }
+    if (items.length >= nextLimit) {
+      break;
+    }
+  }
+
+  return {
+    total: items.length,
+    source: "all",
+    items,
+  };
+}
+
+function filterByScope(
+  items: unknown[],
+  scope?: "definition" | "member" | "all",
+) {
+  if (!scope || scope === "all") {
+    return items;
+  }
+  return items.filter(function(item) {
+    const matchType = (item as { matchType?: string }).matchType;
+    return scope === "member"
+      ? matchType === "field"
+      : matchType === "definition";
+  });
+}
+
+function parseInlineFlag(
+  value?: boolean | string,
+) {
+  if (value == null) {
+    return undefined;
+  }
+  if (typeof value === "boolean") {
+    return value;
+  }
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "1" || normalized === "true") {
+    return true;
+  }
+  if (normalized === "0" || normalized === "false") {
+    return false;
+  }
+  return undefined;
+}
+
+function toQueryStrings(
+  query?: Record<string, unknown>,
+) {
+  const next: Record<string, unknown> = { };
+  for (const [ key, value ] of Object.entries(query || { })) {
+    if (Array.isArray(value)) {
+      next[key] = value.map(String);
+    } else if (value != null) {
+      next[key] = String(value);
+    }
+  }
+  return next;
+}
+
+function withSource<T extends { items: unknown[] }>(
+  result: T,
+  source: string,
+) {
+  return {
+    ...result,
+    items: result.items.map(function(item) {
+      return {
+        source,
+        ...(item as Record<string, unknown>),
+      };
+    }),
+  };
 }
 
 function toToolResult(
