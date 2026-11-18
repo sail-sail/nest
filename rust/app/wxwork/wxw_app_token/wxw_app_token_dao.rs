@@ -10,6 +10,7 @@ use generated::common::context::{
   Options,
   get_req_id,
   get_now,
+  naive_local_timestamp,
 };
 
 use generated::base::usr::usr_dao::find_by_id_ok_usr;
@@ -1108,7 +1109,7 @@ pub async fn get_access_token(
     None,
   ).await?;
   let now = get_now();
-  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(now);
   if wxw_app_token_model.is_none() {
     let (
       access_token,
@@ -1136,7 +1137,7 @@ pub async fn get_access_token(
   let expires_in = wxw_app_token_model.expires_in as i64;
   let token_time = wxw_app_token_model.token_time;
   let token_time_sec = token_time
-    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .map(naive_local_timestamp)
     .unwrap_or(0);
   if force
     || expires_in == 0
@@ -1211,7 +1212,7 @@ pub async fn get_contact_access_token(
     None,
   ).await?;
   let now = get_now();
-  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(now);
   if wxw_app_token_model.is_none() {
     let (
       access_token,
@@ -1239,7 +1240,7 @@ pub async fn get_contact_access_token(
   let expires_in = wxw_app_token_model.expires_in as i64;
   let token_time = wxw_app_token_model.token_time;
   let token_time_sec = token_time
-    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .map(naive_local_timestamp)
     .unwrap_or(0);
   if force
     || expires_in == 0
@@ -1328,13 +1329,13 @@ async fn get_jsapi_ticket(
   let wxw_app_token_model = find_or_init_wxw_app_token_model(wxw_app_id).await?;
   
   let now = get_now();
-  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(now);
   
   let jsapi_ticket = wxw_app_token_model.jsapi_ticket;
   let jsapi_ticket_expires_in = wxw_app_token_model.jsapi_ticket_expires_in as i64;
   let jsapi_ticket_time = wxw_app_token_model.jsapi_ticket_time;
   let jsapi_ticket_time_sec = jsapi_ticket_time
-    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .map(naive_local_timestamp)
     .unwrap_or(0);
   
   if force
@@ -1408,7 +1409,7 @@ pub async fn get_jsapi_ticket_signature(
   ).await?;
   
   let nonce_str = uuid::Uuid::new_v4().to_string().replace('-', "");
-  let timestamp = (get_now().and_utc().timestamp_millis() / 1000).to_string();
+  let timestamp = naive_local_timestamp(get_now()).to_string();
   
   let signature = format!(
     "jsapi_ticket={jsapi_ticket}&noncestr={nonce_str}&timestamp={timestamp}&url={url}",
@@ -1448,7 +1449,7 @@ pub async fn get_jsapi_ticket_agent_config(
   let wxw_app_token_model = find_or_init_wxw_app_token_model(wxw_app_id).await?;
   
   let now = get_now();
-  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(now);
   
   let corpid = wxw_app_model.corpid;
   let corpsecret = wxw_app_model.corpsecret;
@@ -1460,7 +1461,7 @@ pub async fn get_jsapi_ticket_agent_config(
   let jsapi_ticket_agent_config_expires_in = wxw_app_token_model.jsapi_ticket_agent_config_expires_in as i64;
   let jsapi_ticket_agent_config_time = wxw_app_token_model.jsapi_ticket_agent_config_time;
   let jsapi_ticket_agent_config_time_sec = jsapi_ticket_agent_config_time
-    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .map(naive_local_timestamp)
     .unwrap_or(0);
   
   if force
@@ -1536,7 +1537,7 @@ pub async fn get_jsapi_ticket_agent_config_signature(
   ).await?;
   
   let nonce_str = uuid::Uuid::new_v4().to_string().replace('-', "");
-  let timestamp = (get_now().and_utc().timestamp_millis() / 1000).to_string();
+  let timestamp = naive_local_timestamp(get_now()).to_string();
   
   let signature = format!(
     "jsapi_ticket={jsapi_ticket}&noncestr={nonce_str}&timestamp={timestamp}&url={url}",

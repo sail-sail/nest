@@ -23,6 +23,7 @@ use crate::common::context::{
   get_auth_id_ok,
   get_now,
   get_req_id,
+  naive_local_timestamp,
 };
 use crate::common::util::http::client;
 use crate::wxwork::wxw_app::wxw_app_dao::{
@@ -130,7 +131,7 @@ async fn get_access_token(
   ).await?;
 
   let now = get_now();
-  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(now);
   if wxw_app_token_model.is_none() {
     let (access_token, expires_in) = fetch_access_token(&corpid, &corpsecret).await?;
     create_wxw_app_token(
@@ -153,7 +154,7 @@ async fn get_access_token(
   let expires_in = wxw_app_token_model.expires_in as i64;
   let token_time = wxw_app_token_model.token_time;
   let token_time_sec = token_time
-    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .map(naive_local_timestamp)
     .unwrap_or(0);
 
   if force || expires_in == 0 || access_token.is_empty() || token_time_sec == 0 || now_sec - token_time_sec >= expires_in {
