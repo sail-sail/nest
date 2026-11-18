@@ -17,6 +17,7 @@ tracing-attributes = "0.1.31"
 async-trait = "0.1.92"
 tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "net", "fs", "io-util", "sync", "time", "signal"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket", "sse"] }
+poem-openapi = { version = "5.1.16" }
 async-graphql = { version = "8.0.0-rc.5", features = ["decimal", "time", "chrono", "chrono-tz", "tracing", "raw_value", "boxed-trait"], default-features = false }
 slab = "0.4.12"
 chrono = { version = "0.4.45", features = ["serde"] }
@@ -104,6 +105,7 @@ tracing-appender.workspace = true
 tracing-attributes.workspace = true
 tokio.workspace = true
 poem.workspace = true
+poem-openapi.workspace = true
 async-graphql.workspace = true
 slab.workspace = true
 chrono.workspace = true
