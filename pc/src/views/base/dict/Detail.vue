@@ -187,7 +187,7 @@
               <el-table-column
                 prop="lbl"
                 label="名称"
-                width="250"
+                width="256"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -204,7 +204,7 @@
               <el-table-column
                 prop="val"
                 label="值"
-                width="250"
+                width="256"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -221,7 +221,7 @@
               <el-table-column
                 prop="rem"
                 label="备注"
-                width="230"
+                width="236"
                 header-align="center"
               >
                 <template #default="{ row }">
