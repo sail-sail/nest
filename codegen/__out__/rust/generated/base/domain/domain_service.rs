@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::domain_model::*;
 use super::domain_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_domain(
   options: Option<Options>,
 ) -> Result<Vec<DomainId>> {
   
+  for domain_input in domain_inputs.iter() {
+    domain_dao::validate_domain(
+      domain_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let domain_ids = domain_dao::creates_domain(
     domain_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_domain(
   mut domain_input: DomainInput,
   options: Option<Options>,
 ) -> Result<DomainId> {
+  
+  domain_dao::validate_domain(
+    &domain_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = domain_dao::get_is_locked_by_id_domain(
     domain_id,

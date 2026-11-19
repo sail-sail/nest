@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::optbiz_model::*;
 use super::optbiz_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizId>> {
   
+  for optbiz_input in optbiz_inputs.iter() {
+    optbiz_dao::validate_optbiz(
+      optbiz_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let optbiz_ids = optbiz_dao::creates_optbiz(
     optbiz_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_optbiz(
   mut optbiz_input: OptbizInput,
   options: Option<Options>,
 ) -> Result<OptbizId> {
+  
+  optbiz_dao::validate_optbiz(
+    &optbiz_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = optbiz_dao::get_is_locked_by_id_optbiz(
     optbiz_id,

@@ -185,7 +185,8 @@ use crate::base::message::message_model::MessageInput;<#
 #>
 
 use super::<#=table#>_model::*;
-use super::<#=table#>_dao;<#
+use super::<#=table#>_dao;
+use crate::common::validators::ValidateMode;<#
 if (hasAudit && auditTable_Up) {
 #>
 
@@ -708,7 +709,14 @@ pub async fn set_id_by_lbl_<#=table#>(
 pub async fn creates_<#=table#>(
   <#=table#>_inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
-) -> Result<Vec<<#=Table_Up#>Id>> {<#
+) -> Result<Vec<<#=Table_Up#>Id>> {
+  
+  for <#=table#>_input in <#=table#>_inputs.iter() {
+    <#=table#>_dao::validate_<#=table#>(
+      <#=table#>_input,
+      ValidateMode::Create,
+    )?;
+  }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -804,7 +812,12 @@ pub async fn update_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   mut <#=table#>_input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
+) -> Result<<#=Table_Up#>Id> {
+  
+  <#=table#>_dao::validate_<#=table#>(
+    &<#=table#>_input,
+    ValidateMode::Update,
+  )?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   

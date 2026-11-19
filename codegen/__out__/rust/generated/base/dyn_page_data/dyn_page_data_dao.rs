@@ -61,6 +61,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -2797,4 +2798,26 @@ pub async fn validate_option_dyn_page_data(
   };
   
   Ok(model)
+}
+
+// MARK: validate_dyn_page_data
+/// 校验动态页面数据增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_dyn_page_data(
+  input: &DynPageDataInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 关联页面路由
+  chars_max_length(
+    input.ref_code.clone(),
+    100,
+    "关联页面路由",
+  )?;
+  
+  Ok(())
 }

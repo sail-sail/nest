@@ -51,6 +51,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -4084,4 +4085,77 @@ pub async fn validate_option_tenant(
   };
   
   Ok(model)
+}
+
+// MARK: validate_tenant
+/// 校验租户增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_tenant(
+  input: &TenantInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "名称",
+    )?;
+  
+    // 所属域名
+    required(
+      input.domain_ids.as_ref().filter(|v| !v.is_empty()).is_none() && input.domain_ids_lbl.as_ref().filter(|v| !v.is_empty()).is_none(),
+      "所属域名",
+    )?;
+  
+    // 语言
+    required(
+      input.lang_id.filter(|v| !v.is_empty()).is_none(),
+      "语言",
+    )?;
+  }
+  
+  // 编码
+  chars_max_length(
+    input.code.clone(),
+    20,
+    "编码",
+  )?;
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    45,
+    "名称",
+  )?;
+  
+  // 标题
+  chars_max_length(
+    input.title.clone(),
+    45,
+    "标题",
+  )?;
+  
+  // 简介
+  chars_max_length(
+    input.info.clone(),
+    100,
+    "简介",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

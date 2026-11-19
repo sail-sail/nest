@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::dict_model::*;
 use super::dict_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictId>> {
   
+  for dict_input in dict_inputs.iter() {
+    dict_dao::validate_dict(
+      dict_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dict_ids = dict_dao::creates_dict(
     dict_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_dict(
   mut dict_input: DictInput,
   options: Option<Options>,
 ) -> Result<DictId> {
+  
+  dict_dao::validate_dict(
+    &dict_input,
+    ValidateMode::Update,
+  )?;
   
   let dict_id = dict_dao::update_by_id_dict(
     dict_id,

@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::menu_model::*;
 use super::menu_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -221,6 +222,13 @@ pub async fn creates_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
+  for menu_input in menu_inputs.iter() {
+    menu_dao::validate_menu(
+      menu_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let menu_ids = menu_dao::creates_menu(
     menu_inputs,
     options,
@@ -236,6 +244,11 @@ pub async fn update_by_id_menu(
   mut menu_input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuId> {
+  
+  menu_dao::validate_menu(
+    &menu_input,
+    ValidateMode::Update,
+  )?;
   
   let menu_id = menu_dao::update_by_id_menu(
     menu_id,
