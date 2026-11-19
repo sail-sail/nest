@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wxw_usr_model::*;
 use super::wxw_usr_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wxw_usr(
   options: Option<Options>,
 ) -> Result<Vec<WxwUsrId>> {
   
+  for wxw_usr_input in wxw_usr_inputs.iter() {
+    wxw_usr_dao::validate_wxw_usr(
+      wxw_usr_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_usr_ids = wxw_usr_dao::creates_wxw_usr(
     wxw_usr_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wxw_usr(
   mut wxw_usr_input: WxwUsrInput,
   options: Option<Options>,
 ) -> Result<WxwUsrId> {
+  
+  wxw_usr_dao::validate_wxw_usr(
+    &wxw_usr_input,
+    ValidateMode::Update,
+  )?;
   
   let wxw_usr_id = wxw_usr_dao::update_by_id_wxw_usr(
     wxw_usr_id,

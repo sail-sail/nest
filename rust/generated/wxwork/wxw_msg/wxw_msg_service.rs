@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wxw_msg_model::*;
 use super::wxw_msg_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgId>> {
   
+  for wxw_msg_input in wxw_msg_inputs.iter() {
+    wxw_msg_dao::validate_wxw_msg(
+      wxw_msg_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_msg_ids = wxw_msg_dao::creates_wxw_msg(
     wxw_msg_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wxw_msg(
   mut wxw_msg_input: WxwMsgInput,
   options: Option<Options>,
 ) -> Result<WxwMsgId> {
+  
+  wxw_msg_dao::validate_wxw_msg(
+    &wxw_msg_input,
+    ValidateMode::Update,
+  )?;
   
   let wxw_msg_id = wxw_msg_dao::update_by_id_wxw_msg(
     wxw_msg_id,

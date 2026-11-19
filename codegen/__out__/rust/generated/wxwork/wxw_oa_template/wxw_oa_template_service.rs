@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::wxw_oa_template_model::*;
 use super::wxw_oa_template_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_wxw_oa_template(
   options: Option<Options>,
 ) -> Result<Vec<WxwOaTemplateId>> {
   
+  for wxw_oa_template_input in wxw_oa_template_inputs.iter() {
+    wxw_oa_template_dao::validate_wxw_oa_template(
+      wxw_oa_template_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_oa_template_ids = wxw_oa_template_dao::creates_wxw_oa_template(
     wxw_oa_template_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_wxw_oa_template(
   mut wxw_oa_template_input: WxwOaTemplateInput,
   options: Option<Options>,
 ) -> Result<WxwOaTemplateId> {
+  
+  wxw_oa_template_dao::validate_wxw_oa_template(
+    &wxw_oa_template_input,
+    ValidateMode::Update,
+  )?;
   
   let wxw_oa_template_id = wxw_oa_template_dao::update_by_id_wxw_oa_template(
     wxw_oa_template_id,

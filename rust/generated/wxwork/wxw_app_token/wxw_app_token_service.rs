@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wxw_app_token(
   options: Option<Options>,
 ) -> Result<Vec<WxwAppTokenId>> {
   
+  for wxw_app_token_input in wxw_app_token_inputs.iter() {
+    wxw_app_token_dao::validate_wxw_app_token(
+      wxw_app_token_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_app_token_ids = wxw_app_token_dao::creates_wxw_app_token(
     wxw_app_token_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wxw_app_token(
   mut wxw_app_token_input: WxwAppTokenInput,
   options: Option<Options>,
 ) -> Result<WxwAppTokenId> {
+  
+  wxw_app_token_dao::validate_wxw_app_token(
+    &wxw_app_token_input,
+    ValidateMode::Update,
+  )?;
   
   let wxw_app_token_id = wxw_app_token_dao::update_by_id_wxw_app_token(
     wxw_app_token_id,

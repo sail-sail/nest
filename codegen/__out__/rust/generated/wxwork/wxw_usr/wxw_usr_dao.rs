@@ -45,6 +45,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3196,4 +3197,57 @@ pub async fn validate_option_wxw_usr(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wxw_usr
+/// 校验企微用户增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wxw_usr(
+  input: &WxwUsrInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 企微应用
+    required(
+      input.wxw_app_id.filter(|v| !v.is_empty()).is_none(),
+      "企微应用",
+    )?;
+  
+    // 姓名
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "姓名",
+    )?;
+  }
+  
+  // 姓名
+  chars_max_length(
+    input.lbl.clone(),
+    44,
+    "姓名",
+  )?;
+  
+  // 企微用户
+  chars_max_length(
+    input.userid.clone(),
+    64,
+    "企微用户",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::wxw_oa_approval_detail_model::*;
 use super::wxw_oa_approval_detail_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_wxw_oa_approval_detail(
   options: Option<Options>,
 ) -> Result<Vec<WxwOaApprovalDetailId>> {
   
+  for wxw_oa_approval_detail_input in wxw_oa_approval_detail_inputs.iter() {
+    wxw_oa_approval_detail_dao::validate_wxw_oa_approval_detail(
+      wxw_oa_approval_detail_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_oa_approval_detail_ids = wxw_oa_approval_detail_dao::creates_wxw_oa_approval_detail(
     wxw_oa_approval_detail_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_wxw_oa_approval_detail(
   mut wxw_oa_approval_detail_input: WxwOaApprovalDetailInput,
   options: Option<Options>,
 ) -> Result<WxwOaApprovalDetailId> {
+  
+  wxw_oa_approval_detail_dao::validate_wxw_oa_approval_detail(
+    &wxw_oa_approval_detail_input,
+    ValidateMode::Update,
+  )?;
   
   let wxw_oa_approval_detail_id = wxw_oa_approval_detail_dao::update_by_id_wxw_oa_approval_detail(
     wxw_oa_approval_detail_id,

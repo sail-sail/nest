@@ -44,6 +44,7 @@ use crate::common::context::{
   get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -2203,4 +2204,65 @@ pub async fn validate_option_wxw_oa_approval_detail(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wxw_oa_approval_detail
+/// 校验审批申请详情增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wxw_oa_approval_detail(
+  input: &WxwOaApprovalDetailInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 审批申请状态
+    required(
+      input.sp_status.is_none(),
+      "审批申请状态",
+    )?;
+  }
+  
+  // 审批编号
+  chars_max_length(
+    input.sp_no.clone(),
+    45,
+    "审批编号",
+  )?;
+  
+  // 审批申请类型名称
+  chars_max_length(
+    input.sp_name.clone(),
+    100,
+    "审批申请类型名称",
+  )?;
+  
+  // 模板ID
+  chars_max_length(
+    input.template_id.clone(),
+    60,
+    "模板ID",
+  )?;
+  
+  // 申请人
+  chars_max_length(
+    input.applyer_userid.clone(),
+    60,
+    "申请人",
+  )?;
+  
+  // 批量申请人
+  chars_max_length(
+    input.batch_applyer_userid.clone(),
+    60,
+    "批量申请人",
+  )?;
+  
+  Ok(())
 }

@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::wxw_app_model::*;
 use super::wxw_app_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_wxw_app(
   options: Option<Options>,
 ) -> Result<Vec<WxwAppId>> {
   
+  for wxw_app_input in wxw_app_inputs.iter() {
+    wxw_app_dao::validate_wxw_app(
+      wxw_app_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxw_app_ids = wxw_app_dao::creates_wxw_app(
     wxw_app_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_wxw_app(
   mut wxw_app_input: WxwAppInput,
   options: Option<Options>,
 ) -> Result<WxwAppId> {
+  
+  wxw_app_dao::validate_wxw_app(
+    &wxw_app_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = wxw_app_dao::get_is_locked_by_id_wxw_app(
     wxw_app_id,

@@ -45,6 +45,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3223,4 +3224,79 @@ pub async fn validate_option_wxw_app_token(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wxw_app_token
+/// 校验企微应用接口凭据增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wxw_app_token(
+  input: &WxwAppTokenInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 企微应用
+    required(
+      input.wxw_app_id.filter(|v| !v.is_empty()).is_none(),
+      "企微应用",
+    )?;
+  }
+  
+  // 类型corp和contact
+  chars_max_length(
+    input.r#type.clone(),
+    10,
+    "类型corp和contact",
+  )?;
+  
+  // 企业ID
+  chars_max_length(
+    input.corpid.clone(),
+    18,
+    "企业ID",
+  )?;
+  
+  // 密钥
+  chars_max_length(
+    input.corpsecret.clone(),
+    120,
+    "密钥",
+  )?;
+  
+  // 通讯录密钥
+  chars_max_length(
+    input.contactsecret.clone(),
+    120,
+    "通讯录密钥",
+  )?;
+  
+  // 令牌
+  chars_max_length(
+    input.access_token.clone(),
+    600,
+    "令牌",
+  )?;
+  
+  // 企业jsapi_ticket
+  chars_max_length(
+    input.jsapi_ticket.clone(),
+    600,
+    "企业jsapi_ticket",
+  )?;
+  
+  // 应用jsapi_ticket
+  chars_max_length(
+    input.jsapi_ticket_agent_config.clone(),
+    600,
+    "应用jsapi_ticket",
+  )?;
+  
+  Ok(())
 }

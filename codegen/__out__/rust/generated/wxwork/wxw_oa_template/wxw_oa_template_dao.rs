@@ -47,6 +47,7 @@ use crate::common::context::{
   get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3326,4 +3327,71 @@ pub async fn validate_option_wxw_oa_template(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wxw_oa_template
+/// 校验审批模板增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wxw_oa_template(
+  input: &WxwOaTemplateInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 模板名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "模板名称",
+    )?;
+  
+    // 模板ID
+    required(
+      input.template_id.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "模板ID",
+    )?;
+  }
+  
+  // 流程图
+  chars_max_length(
+    input.flow_img.clone(),
+    22,
+    "流程图",
+  )?;
+  
+  // 模板名称
+  chars_max_length(
+    input.lbl.clone(),
+    100,
+    "模板名称",
+  )?;
+  
+  // 模板ID
+  chars_max_length(
+    input.template_id.clone(),
+    60,
+    "模板ID",
+  )?;
+  
+  // 业务类型
+  chars_max_length(
+    input.business_type.clone(),
+    45,
+    "业务类型",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

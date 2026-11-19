@@ -43,6 +43,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -2814,4 +2815,78 @@ pub async fn validate_option_wxw_msg(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wxw_msg
+/// 校验企微消息增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wxw_msg(
+  input: &WxwMsgInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 企微应用
+    required(
+      input.wxw_app_id.filter(|v| !v.is_empty()).is_none(),
+      "企微应用",
+    )?;
+  
+    // 发送状态
+    required(
+      input.errcode.is_none(),
+      "发送状态",
+    )?;
+  }
+  
+  // 发送状态
+  chars_max_length(
+    input.errcode.clone(),
+    5,
+    "发送状态",
+  )?;
+  
+  // 成员ID
+  chars_max_length(
+    input.touser.clone(),
+    256,
+    "成员ID",
+  )?;
+  
+  // 标题
+  chars_max_length(
+    input.title.clone(),
+    64,
+    "标题",
+  )?;
+  
+  // 描述
+  chars_max_length(
+    input.description.clone(),
+    256,
+    "描述",
+  )?;
+  
+  // 按钮文字
+  chars_max_length(
+    input.btntxt.clone(),
+    4,
+    "按钮文字",
+  )?;
+  
+  // 错误信息
+  chars_max_length(
+    input.errmsg.clone(),
+    256,
+    "错误信息",
+  )?;
+  
+  Ok(())
 }
