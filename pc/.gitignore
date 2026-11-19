@@ -38,6 +38,8 @@ public/wasm-feature-detect.js
 public/excel_template/**/*.xlsx
 public/import_template/**/*.xlsx
 public/file-viewer/
+public/vendor/
+public/flyfish-viewer-assets.json
 
 # IDE 和编辑器文件
 .vscode/settings.json
