@@ -132,7 +132,7 @@ function asRecord(value: unknown): Record<string, unknown> {
  */
 function isRetryable(tool: ToolName): boolean {
   if (config.readonly) return true;
-  return tool !== "graphql_execute" && tool !== "oss_upload";
+  return tool !== "graphql_execute" && tool !== "oss_upload" && tool !== "rest_call";
 }
 
 interface ResolvedUpload {
@@ -375,6 +375,13 @@ export async function startBridge(): Promise<BridgeHandle> {
       if (tool === "graphql_execute" && config.readonly) {
         const query = typeof callArgs.query === "string" ? callArgs.query : "";
         assertReadonlyQuery(query);
+      }
+
+      if (tool === "rest_call" && config.readonly) {
+        const method = typeof callArgs.method === "string" ? callArgs.method.toUpperCase() : "GET";
+        if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+          throw new ReadonlyViolation(`当前智能体为只读模式，不允许 ${method} 请求`);
+        }
       }
 
       const result = await mcpPool.call(token, tool, callArgs, { retryable: isRetryable(tool) });
