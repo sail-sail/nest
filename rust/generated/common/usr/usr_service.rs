@@ -282,7 +282,7 @@ pub async fn login(
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
-  let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
+  let exp = crate::common::context::naive_local_timestamp(now) + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_id,

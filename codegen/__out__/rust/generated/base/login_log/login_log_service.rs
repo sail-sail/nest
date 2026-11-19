@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::login_log_model::*;
 use super::login_log_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogId>> {
   
+  for login_log_input in login_log_inputs.iter() {
+    login_log_dao::validate_login_log(
+      login_log_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let login_log_ids = login_log_dao::creates_login_log(
     login_log_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_login_log(
   mut login_log_input: LoginLogInput,
   options: Option<Options>,
 ) -> Result<LoginLogId> {
+  
+  login_log_dao::validate_login_log(
+    &login_log_input,
+    ValidateMode::Update,
+  )?;
   
   let login_log_id = login_log_dao::update_by_id_login_log(
     login_log_id,

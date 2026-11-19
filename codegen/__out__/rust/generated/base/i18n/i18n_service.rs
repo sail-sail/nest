@@ -19,6 +19,7 @@ use crate::common::options::options_dao::update_i18n_version;
 
 use super::i18n_model::*;
 use super::i18n_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -218,6 +219,13 @@ pub async fn creates_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
   
+  for i18n_input in i18n_inputs.iter() {
+    i18n_dao::validate_i18n(
+      i18n_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let i18n_ids = i18n_dao::creates_i18n(
     i18n_inputs,
     options,
@@ -235,6 +243,11 @@ pub async fn update_by_id_i18n(
   mut i18n_input: I18nInput,
   options: Option<Options>,
 ) -> Result<I18nId> {
+  
+  i18n_dao::validate_i18n(
+    &i18n_input,
+    ValidateMode::Update,
+  )?;
   
   let i18n_id = i18n_dao::update_by_id_i18n(
     i18n_id,

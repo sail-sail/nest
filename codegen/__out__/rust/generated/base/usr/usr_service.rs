@@ -22,6 +22,7 @@ use super::usr_sync_dao::sync_usr_lbl_by_usr_id;
 
 use super::usr_model::*;
 use super::usr_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -225,6 +226,13 @@ pub async fn creates_usr(
   options: Option<Options>,
 ) -> Result<Vec<UsrId>> {
   
+  for usr_input in usr_inputs.iter() {
+    usr_dao::validate_usr(
+      usr_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let usr_ids = usr_dao::creates_usr(
     usr_inputs,
     options,
@@ -264,6 +272,11 @@ pub async fn update_by_id_usr(
   mut usr_input: UsrInput,
   options: Option<Options>,
 ) -> Result<UsrId> {
+  
+  usr_dao::validate_usr(
+    &usr_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = usr_dao::get_is_locked_by_id_usr(
     usr_id,

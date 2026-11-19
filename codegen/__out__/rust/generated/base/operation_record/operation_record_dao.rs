@@ -43,6 +43,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -2559,4 +2560,65 @@ pub async fn validate_option_operation_record(
   };
   
   Ok(model)
+}
+
+// MARK: validate_operation_record
+/// 校验操作记录增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_operation_record(
+  input: &OperationRecordInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 操作
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "操作",
+    )?;
+  }
+  
+  // 模块
+  chars_max_length(
+    input.module.clone(),
+    50,
+    "模块",
+  )?;
+  
+  // 模块名称
+  chars_max_length(
+    input.module_lbl.clone(),
+    50,
+    "模块名称",
+  )?;
+  
+  // 方法
+  chars_max_length(
+    input.method.clone(),
+    50,
+    "方法",
+  )?;
+  
+  // 方法名称
+  chars_max_length(
+    input.method_lbl.clone(),
+    50,
+    "方法名称",
+  )?;
+  
+  // 操作
+  chars_max_length(
+    input.lbl.clone(),
+    100,
+    "操作",
+  )?;
+  
+  Ok(())
 }

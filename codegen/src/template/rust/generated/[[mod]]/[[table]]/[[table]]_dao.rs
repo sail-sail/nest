@@ -347,7 +347,8 @@ use crate::common::context::{
   }
   #>
 };
-use crate::common::exceptions::service_exception::ServiceException;<#
+use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;<#
 if (hasIsIcon) {
 #>
 
@@ -5254,14 +5255,6 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }<#
-    if (false) {
-    #>
-    
-    validate(
-      &input,
-    )?;<#
-    }
-    #><#
     if (mod === "base" && table === "role") {
     #>
     
@@ -7294,14 +7287,6 @@ pub async fn update_by_id_<#=table#>(
       return get_not_permit_err_fn().await;
     }
   }<#
-  }
-  #><#
-  if (false) {
-  #>
-  
-  validate(
-    &input,
-  )?;<#
   }
   #><#
   if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
@@ -10653,204 +10638,320 @@ pub async fn validate_option_<#=table#>(
   
   Ok(model)
 }<#
-if (false) {
+
+// ---------- 校验(validate_xxx): 同步函数, 函数体内不允许出现 .await ----------
+// 字符串类型: 用 chars_max_length / chars_min_length 校验
+const validateStringDataTypes = [ "varchar", "char", "text", "tinytext", "mediumtext", "longtext", "enum", "set" ];
+// 整数类型: 用 maximum / minimum / multiple_of 校验
+const validateIntDataTypes = [ "int", "integer", "tinyint", "smallint", "mediumint", "bigint" ];
+// 小数类型: 只支持 maximum / minimum(multiple_of 不支持 Decimal)
+const validateDecimalDataTypes = [ "decimal", "numeric" ];
+// 必填校验排除的系统字段和自动维护字段
+const validateRequiredSkipColumnNames = [
+  "id",
+  "org_id",
+  "tenant_id",
+  "is_sys",
+  "is_deleted",
+  "is_hidden",
+  "is_locked",
+  "is_enabled",
+  "order_by",
+  "version",
+  "create_usr_id",
+  "update_usr_id",
+  "create_time",
+  "update_time",
+];
+// 新增时需要校验必填的字段
+const validateRequiredColumns = columns.filter(function(column) {
+  if (column.ignoreCodegen) return false;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) return false;
+  if (validateRequiredSkipColumnNames.includes(column.COLUMN_NAME)) return false;
+  if (column.COLUMN_NAME.startsWith("is_")) return false;
+  if (column.isPassword) return false;
+  if (column.require !== true) return false;
+  if (column.noAdd) return false;
+  if (column.noDetail) return false;
+  if (column.readonly) return false;
+  if (column.isVirtual) return false;
+  return true;
+});
+// rust 字符串字面量
+const validateRustStr = function(str) {
+  return "\"" + String(str)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, "\\\"")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n")
+    .replace(/\t/g, "\\t") + "\"";
+};
+// 是否生成了 <字段>_lbl 字段
+const validateHasColumnLbl = function(column) {
+  if (column.modelLabel) return true;
+  if (column.dict || column.dictbiz) return true;
+  if ([ "date", "datetime" ].includes(column.DATA_TYPE)) return true;
+  if (column.foreignKey && column.foreignKey.lbl) return true;
+  return false;
+};
+// 必填判空表达式: 空字符串/空数组/空id 都视为未填写
+const validateRequiredEmptyExpr = function(column) {
+  const column_name = column.COLUMN_NAME;
+  const column_name_rust = rustKeyEscape(column_name);
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.multiple) {
+    if (!validateHasColumnLbl(column)) {
+      return `input.${ column_name_rust }.as_ref().filter(|v| !v.is_empty()).is_none()`;
+    }
+    return `input.${ column_name_rust }.as_ref().filter(|v| !v.is_empty()).is_none() && input.${ column_name }_lbl.as_ref().filter(|v| !v.is_empty()).is_none()`;
+  }
+  if (column_name === "id" || foreignKey) {
+    return `input.${ column_name_rust }.filter(|v| !v.is_empty()).is_none()`;
+  }
+  if (column.dict || column.dictbiz) {
+    return `input.${ column_name_rust }.is_none()`;
+  }
+  if (validateStringDataTypes.includes(column.DATA_TYPE)) {
+    return `input.${ column_name_rust }.as_ref().filter(|s| !s.is_empty()).is_none()`;
+  }
+  return `input.${ column_name_rust }.is_none()`;
+};
+// 数值字面量(decimal 需要转成 Decimal)
+const validateNumberLiteral = function(column, num) {
+  if (validateDecimalDataTypes.includes(column.DATA_TYPE)) {
+    return `rust_decimal::Decimal::from(${ String(num) })`;
+  }
+  return String(num);
+};
+// 用到的校验器
+const validateUsedValidators = new Set();
+const validateBodyLines = [ ];
+const validatePushLines = function(lines) {
+  validateBodyLines.push("  ");
+  for (let i = 0; i < lines.length; i++) {
+    validateBodyLines.push(lines[i]);
+  }
+};
+// 新增时校验必填
+if (validateRequiredColumns.length > 0) {
+  validateUsedValidators.add("required");
+  validateBodyLines.push("  // 新增时校验必填");
+  validateBodyLines.push("  if mode == ValidateMode::Create {");
+  for (let i = 0; i < validateRequiredColumns.length; i++) {
+    const column = validateRequiredColumns[i];
+    const column_comment = column.COLUMN_COMMENT || "";
+    validatePushLines([
+      "    // " + column_comment,
+      "    required(",
+      "      " + validateRequiredEmptyExpr(column) + ",",
+      "      " + validateRustStr(column_comment) + ",",
+      "    )?;",
+    ]);
+  }
+  validateBodyLines.push("  }");
+}
+// 按字段生成校验
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+  if (column.isVirtual) continue;
+  if (column.isPassword) continue;
+  const column_name = column.COLUMN_NAME;
+  if ([ "is_sys", "is_deleted", "tenant_id" ].includes(column_name)) continue;
+  const column_name_rust = rustKeyEscape(column_name);
+  const data_type = column.DATA_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
+  const label = validateRustStr(column_comment);
+  const foreignKey = column.foreignKey;
+  const validators = column.validators || [ ];
+  if (validators.length === 0) continue;
+  // id 的长度由 Id 类型(scalar 解析)保证, 外键单值同理, 不再校验 chars_*
+  if (column_name === "id" || (foreignKey && !foreignKey.multiple)) continue;
+  if (foreignKey && foreignKey.multiple) {
+    const has_column_lbl = validateHasColumnLbl(column);
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+      if (validator.max_items != null) {
+        validateUsedValidators.add("max_items");
+        const lines = [
+          "  // " + column_comment,
+          "  max_items(",
+          "    input." + column_name_rust + ".as_ref(),",
+          "    " + String(validator.max_items) + ",",
+          "    " + label + ",",
+          "  )?;",
+        ];
+        if (has_column_lbl) {
+          lines.push("  max_items(");
+          lines.push("    input." + column_name + "_lbl.as_ref(),");
+          lines.push("    " + String(validator.max_items) + ",");
+          lines.push("    " + label + ",");
+          lines.push("  )?;");
+        }
+        validatePushLines(lines);
+      }
+      if (validator.min_items != null) {
+        validateUsedValidators.add("min_items");
+        const lines = [
+          "  // " + column_comment,
+          "  min_items(",
+          "    input." + column_name_rust + ".as_ref(),",
+          "    " + String(validator.min_items) + ",",
+          "    " + label + ",",
+          "  )?;",
+        ];
+        if (has_column_lbl) {
+          lines.push("  min_items(");
+          lines.push("    input." + column_name + "_lbl.as_ref(),");
+          lines.push("    " + String(validator.min_items) + ",");
+          lines.push("    " + label + ",");
+          lines.push("  )?;");
+        }
+        validatePushLines(lines);
+      }
+    }
+    continue;
+  }
+  for (let j = 0; j < validators.length; j++) {
+    const validator = validators[j];
+    if (validator.maximum != null && (validateIntDataTypes.includes(data_type) || validateDecimalDataTypes.includes(data_type))) {
+      validateUsedValidators.add("maximum");
+      validatePushLines([
+        "  // " + column_comment,
+        "  maximum(",
+        "    input." + column_name_rust + ",",
+        "    " + validateNumberLiteral(column, validator.maximum) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.minimum != null && (validateIntDataTypes.includes(data_type) || validateDecimalDataTypes.includes(data_type))) {
+      validateUsedValidators.add("minimum");
+      validatePushLines([
+        "  // " + column_comment,
+        "  minimum(",
+        "    input." + column_name_rust + ",",
+        "    " + validateNumberLiteral(column, validator.minimum) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.multiple_of != null && validateIntDataTypes.includes(data_type)) {
+      validateUsedValidators.add("multiple_of");
+      validatePushLines([
+        "  // " + column_comment,
+        "  multiple_of(",
+        "    input." + column_name_rust + ",",
+        "    " + String(validator.multiple_of) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.chars_max_length != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("chars_max_length");
+      validatePushLines([
+        "  // " + column_comment,
+        "  chars_max_length(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + String(validator.chars_max_length) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.chars_min_length != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("chars_min_length");
+      validatePushLines([
+        "  // " + column_comment,
+        "  chars_min_length(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + String(validator.chars_min_length) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.regex != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("regex");
+      validatePushLines([
+        "  // " + column_comment,
+        "  regex(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + validateRustStr(validator.regex) + ",",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.email != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("email");
+      validatePushLines([
+        "  // " + column_comment,
+        "  email(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.url != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("url");
+      validatePushLines([
+        "  // " + column_comment,
+        "  url(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+    if (validator.ip != null && validateStringDataTypes.includes(data_type)) {
+      validateUsedValidators.add("ip");
+      validatePushLines([
+        "  // " + column_comment,
+        "  ip(",
+        "    input." + column_name_rust + ".clone(),",
+        "    " + label + ",",
+        "  )?;",
+      ]);
+    }
+  }
+}
+const validateImportLines = [
+  "required",
+  "max_items",
+  "min_items",
+  "maximum",
+  "minimum",
+  "multiple_of",
+  "chars_max_length",
+  "chars_min_length",
+  "regex",
+  "email",
+  "url",
+  "ip",
+].filter(function(name) {
+  return validateUsedValidators.has(name);
+}).map(function(name) {
+  return "  use crate::common::validators::" + name + "::" + name + ";";
+}).join("\n");
+const validateSections = [ ];
+if (validateImportLines) {
+  validateSections.push(validateImportLines);
+}
+if (validateBodyLines.length > 0) {
+  // 去掉首行的空行, 空行由分节时的分隔行提供
+  validateSections.push(validateBodyLines.join("\n").replace(/^ {2}\n/, ""));
+}
+validateSections.push("  Ok(())");
+const validateFnBody = validateSections.join("\n  \n");
 #>
 
-/// 校验
-#[allow(unused_imports)]
-pub fn validate(
+// MARK: validate_<#=table#>
+/// 校验<#=table_comment#>增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_<#=table#>(
   input: &<#=tableUP#>Input,
+  mode: ValidateMode,
 ) -> Result<()> {
   
-  use crate::common::validators::max_items::max_items;
-  use crate::common::validators::min_items::min_items;
-  use crate::common::validators::maximum::maximum;
-  use crate::common::validators::minimum::minimum;
-  use crate::common::validators::chars_max_length::chars_max_length;
-  use crate::common::validators::chars_min_length::chars_min_length;
-  use crate::common::validators::multiple_of::multiple_of;
-  use crate::common::validators::regex::regex;
-  use crate::common::validators::email::email;
-  use crate::common::validators::url::url;
-  use crate::common::validators::ip::ip;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    const data_type = column.DATA_TYPE;
-    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
-    const column_comment = column.COLUMN_COMMENT || "";
-    const isPassword = column.isPassword;
-    if (isPassword) continue;
-    const foreignKey = column.foreignKey;
-    const validators = column.validators || [ ];
-    if (validators.length === 0) {
-      continue;
-    }
-  #><#
-      if ((foreignKey || column.dict || column.dictbiz) && foreignKey?.multiple) {
-  #>
-  
-  // <#=column_comment#><#
-  for (let j = 0; j < validators.length; j++) {
-    const validator = validators[j];
-  #><#
-    if (validator.max_items != null) {
-  #>
-  max_items(
-    input.<#=column_name_rust#>.as_ref(),
-    <#=validator.max_items#>,
-    "",
-  )?;
-  max_items(
-    input.<#=column_name#>_lbl.as_ref(),
-    <#=validator.max_items#>,
-    &field_comments.<#=column_name#>_lbl,
-  )?;<#
-    } else if (validator.min_items != null) {
-  #>
-  min_items(
-    input.<#=column_name_rust#>.as_ref(),
-    <#=validator.min_items#>,
-    "",
-  )?;
-  min_items(
-    input.<#=column_name#>_lbl.as_ref(),
-    <#=validator.min_items#>,
-    &field_comments.<#=column_name#>_lbl,
-  )?;<#
-    }
-  #><#
-  }
-  #><#
-      } else if ((foreignKey || column.dict || column.dictbiz) && !foreignKey?.multiple) {
-  #>
-  
-  // <#=column_comment#><#
-  for (let j = 0; j < validators.length; j++) {
-    const validator = validators[j];
-  #><#
-    if (validator.chars_max_length != null) {
-  #>
-  chars_max_length(
-    input.<#=column_name_rust#>.clone(),
-    <#=validator.chars_max_length#>,
-    "",
-  )?;<#
-    }
-  #><#
-    if (validator.chars_min_length != null) {
-  #>
-  chars_min_length(
-    input.<#=column_name_rust#>.clone(),
-    <#=validator.chars_min_length#>,
-    "",
-  )?;<#
-    }
-  #><#
-    }
-  #><#
-    } else {
-  #>
-  
-  // <#=column_comment#><#
-  if (validators && validators.length > 0) {
-  #><#
-  for (let j = 0; j < validators.length; j++) {
-    const validator = validators[j];
-  #><#
-    if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  maximum(
-    input.<#=column_name_rust#>.as_ref(),
-    <#=validator.maximum#>,
-    "",
-  )?;<#
-    } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  minimum(
-    input.<#=column_name_rust#>.as_ref(),
-    <#=validator.minimum#>,
-    "",
-  )?;<#
-    } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  multiple_of(
-    input.<#=column_name_rust#>.as_ref(),
-    <#=validator.multiple_of#>,
-    "",
-  )?;<#
-    } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  chars_max_length(
-    input.<#=column_name_rust#>.clone(),
-    <#=validator.chars_max_length#>,
-    "",
-  )?;<#
-    } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  chars_min_length(
-    input.<#=column_name_rust#>.clone(),
-    <#=validator.chars_min_length#>,
-    "",
-  )?;<#
-    } else if (validator.email && data_type === "varchar") {
-  #>
-  email(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    } else if (validator.url && data_type === "varchar") {
-  #>
-  url(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    } else if (validator.ip && data_type === "varchar") {
-  #>
-  ip(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    } else if (validator.regex && data_type === "varchar") {
-  #>
-  regex(
-    input.<#=column_name_rust#>.clone(),
-    "<#=validator.regex#>".to_owned(),
-    "",
-  )?;<#
-    } else if (validator.email && data_type === "varchar") {
-  #>
-  email(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    } else if (validator.url && data_type === "varchar") {
-  #>
-  url(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    } else if (validator.ip && data_type === "varchar") {
-  #>
-  ip(
-    input.<#=column_name_rust#>.clone(),
-    "",
-  )?;<#
-    }
-  #><#
-  }
-  #><#
-    }
-  #><#
-  }
-  #><#
-  }
-  #>
-  
-  Ok(())
-}<#
+<#=validateFnBody#>
 }
-#>

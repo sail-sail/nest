@@ -954,9 +954,12 @@ async function getSchema0(
         chars_min_length: 22,
       });
     } else if (record.foreignKey && record.foreignKey.multiple) {
-      record.validators.push({
-        max_items: Math.floor(record.CHARACTER_MAXIMUM_LENGTH / 22),
-      });
+      const max_items = Math.floor(Number(record.CHARACTER_MAXIMUM_LENGTH) / 22);
+      if (Number.isFinite(max_items) && max_items > 0) {
+        record.validators.push({
+          max_items,
+        });
+      }
     } else if (record.DATA_TYPE === "varchar" || record.DATA_TYPE === "char") {
       if (record.CHARACTER_MAXIMUM_LENGTH) {
         record.validators.push({

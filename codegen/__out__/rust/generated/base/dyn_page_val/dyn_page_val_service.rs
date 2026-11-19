@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::dyn_page_val_model::*;
 use super::dyn_page_val_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_dyn_page_val(
   options: Option<Options>,
 ) -> Result<Vec<DynPageValId>> {
   
+  for dyn_page_val_input in dyn_page_val_inputs.iter() {
+    dyn_page_val_dao::validate_dyn_page_val(
+      dyn_page_val_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dyn_page_val_ids = dyn_page_val_dao::creates_dyn_page_val(
     dyn_page_val_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_dyn_page_val(
   mut dyn_page_val_input: DynPageValInput,
   options: Option<Options>,
 ) -> Result<DynPageValId> {
+  
+  dyn_page_val_dao::validate_dyn_page_val(
+    &dyn_page_val_input,
+    ValidateMode::Update,
+  )?;
   
   let dyn_page_val_id = dyn_page_val_dao::update_by_id_dyn_page_val(
     dyn_page_val_id,

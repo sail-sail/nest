@@ -44,6 +44,7 @@ use crate::common::context::{
   get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3371,4 +3372,90 @@ pub async fn validate_option_message(
   };
   
   Ok(model)
+}
+
+// MARK: validate_message
+/// 校验消息增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_message(
+  input: &MessageInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 分类
+    required(
+      input.category.is_none(),
+      "分类",
+    )?;
+  
+    // 发送通道
+    required(
+      input.channel.is_none(),
+      "发送通道",
+    )?;
+  
+    // 标题
+    required(
+      input.title.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "标题",
+    )?;
+  
+    // 发送人
+    required(
+      input.sender_usr_id.filter(|v| !v.is_empty()).is_none(),
+      "发送人",
+    )?;
+  }
+  
+  // 分类
+  chars_max_length(
+    input.category.clone(),
+    20,
+    "分类",
+  )?;
+  
+  // 发送通道
+  chars_max_length(
+    input.channel.clone(),
+    20,
+    "发送通道",
+  )?;
+  
+  // 标题
+  chars_max_length(
+    input.title.clone(),
+    100,
+    "标题",
+  )?;
+  
+  // 内容
+  chars_max_length(
+    input.content.clone(),
+    2000,
+    "内容",
+  )?;
+  
+  // 跳转路由
+  chars_max_length(
+    input.route_path.clone(),
+    200,
+    "跳转路由",
+  )?;
+  
+  // 跳转参数
+  chars_max_length(
+    input.route_query.clone(),
+    1000,
+    "跳转参数",
+  )?;
+  
+  Ok(())
 }

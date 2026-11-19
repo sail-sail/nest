@@ -154,81 +154,11 @@ pub async fn method_name(
 }
 ```
 
-### REST
+### REST / OpenAPI
 
-文件结构（最小实现）：
-
-```text
-app/{mod}/{table}/
-├── {table}_router.rs
-├── {table}_restful.rs
-├── mod.rs
-└── {table}_service.rs
-```
-
-`{table}_router.rs`（注册路由）：
-
-```rust
-use poem::Route;
-use poem::post;
-
-pub fn create_routes() -> Route {
-  Route::new()
-    .at(
-      "/{table}/do_action",
-      post({table}_restful::do_action),
-    )
-}
-```
-
-`mod.rs`（模块内注册）：
-
-```rust
-pub mod {table}_router;
-pub mod {table}_restful;
-pub mod {table}_service;
-```
-
-`{table}_restful.rs`（入口鉴权 + 构建 Ctx + 调 service）：
-
-```rust
-use poem::web::Json;
-use poem::Result;
-use generated::common::context::Ctx;
-
-pub async fn do_action(
-  req: Json<{Table}Input>,
-) -> Result<Json<{Table}Output>> {
-  // 该示例包含写操作, 因此开启事务
-  let data = Ctx::poem_builder()
-    .with_auth()?
-    .with_tran()
-    .build()
-    .scope({
-      {table}_service::do_action(
-        req.0,
-        None,
-      )
-    }).await?;
-
-  Ok(Json(data))
-}
-```
-
-`{table}_service.rs` 保持与 GraphQL 同一套业务逻辑，统一复用 generated DAO。
-
-路由挂载（在 `app/lib.rs` 或对应聚合路由处）：
-
-```rust
-use poem::Route;
-
-pub fn app_routes() -> Route {
-  Route::new().nest(
-    "/api",
-    {mod}::{table}::{table}_router::create_routes(),
-  )
-}
-```
+- 业务 HTTP 接口：见 `oai-api`，用 `#[OpenApi]` + `R<T>` + `scope_auth`，挂在 `/api/oai/{module}` 下
+- 系统级接口（附件、WebSocket、外部回调）：见 `rest-api`，用原生 `#[handler]` + `Ctx::resful_builder`
+- 两层都复用同一套 `*_service.rs` 业务逻辑，不要在 oai / resful 层重写
 
 ## 常用 DAO 函数
 

@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::dictbiz_model::*;
 use super::dictbiz_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizId>> {
   
+  for dictbiz_input in dictbiz_inputs.iter() {
+    dictbiz_dao::validate_dictbiz(
+      dictbiz_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dictbiz_ids = dictbiz_dao::creates_dictbiz(
     dictbiz_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_dictbiz(
   mut dictbiz_input: DictbizInput,
   options: Option<Options>,
 ) -> Result<DictbizId> {
+  
+  dictbiz_dao::validate_dictbiz(
+    &dictbiz_input,
+    ValidateMode::Update,
+  )?;
   
   let dictbiz_id = dictbiz_dao::update_by_id_dictbiz(
     dictbiz_id,
