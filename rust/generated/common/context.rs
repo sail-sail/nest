@@ -209,10 +209,43 @@ pub fn get_req_id() -> Arc<String> {
 }
 
 /// 获取当前请求的时间点
+///
+/// 不在请求上下文里时(如后台任务)退回到当前时间, 不 panic
 pub fn get_now() -> NaiveDateTime {
-  CTX.with(|ctx| {
+  CTX.try_with(|ctx| {
     ctx.now
-  })
+  }).unwrap_or_else(|_| Local::now().naive_local())
+}
+
+/// 把本地墙钟时间转成 Unix 时间戳(秒)
+///
+/// `get_now()` 返回的是 `Local::now().naive_local()`, 属于本地墙钟时间;
+/// 直接 `.and_utc()` 会把它当成 UTC, 在 UTC+8 下就会多出 28800 秒
+pub fn naive_local_timestamp(now: NaiveDateTime) -> i64 {
+  match now.and_local_timezone(Local) {
+    chrono::LocalResult::Single(time) => time.timestamp(),
+    // 夏令时回拨时同一本地时间对应两个时刻, 取较早的一次, 保证结果稳定
+    chrono::LocalResult::Ambiguous(earliest, _) => earliest.timestamp(),
+    // 夏令时跳变时这个本地时间并不存在; 用当前时区偏移折算,
+    // 不要退回按 UTC 解释, 那正好是本函数要修掉的偏移问题
+    chrono::LocalResult::None => now.and_utc().timestamp() + local_offset_seconds(),
+  }
+}
+
+/// 把本地墙钟时间转成 Unix 时间戳(毫秒)
+pub fn naive_local_timestamp_millis(now: NaiveDateTime) -> i64 {
+  match now.and_local_timezone(Local) {
+    chrono::LocalResult::Single(time) => time.timestamp_millis(),
+    chrono::LocalResult::Ambiguous(earliest, _) => earliest.timestamp_millis(),
+    chrono::LocalResult::None => now.and_utc().timestamp_millis() + local_offset_seconds() * 1000,
+  }
+}
+
+/// 当前时区相对 UTC 的偏移(秒)
+///
+/// 只用于兜底本地时间在夏令时跳变中不存在的情况
+fn local_offset_seconds() -> i64 {
+  Local::now().offset().local_minus_utc() as i64
 }
 
 /// 获取当前登录用户
@@ -1263,6 +1296,25 @@ impl Ctx {
     }).await
   }
   
+  /// openapi 上下文
+  ///
+  /// 复用 restful 的鉴权链路, 但返回强类型结果而不是 `poem::Response`,
+  /// 这样 openapi handler 才能用返回类型推导出响应 schema;
+  /// 同时把上下文里的 token 一并返回, 由调用方决定是否回写到响应头
+  pub async fn oai_scope<F, T>(self, f: F) -> Result<(T, Option<String>)>
+    where
+      F: core::future::Future<Output = Result<T>>,
+      T: Send + Debug,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let res = f.await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      let auth_token = ctx.auth_token.clone();
+      ctx.ok(res).await.map(|value| (value, auth_token))
+    }).await
+  }
+  
   pub async fn resful_scope<F, R>(self, f: F) -> Result<poem::Response>
     where
       F: core::future::Future<Output = R>,
@@ -1896,6 +1948,11 @@ pub struct CtxBuilder<'a> {
   
   old_auth_token: Option<String>,
   
+  /// 调用方显式传入的 token(openapi handler 拿不到 `poem::Request` 时用)
+  ///
+  /// 只作为鉴权输入, 不参与响应头回写; 回写只看 `auth_token`
+  input_auth_token: Option<String>,
+  
   auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
@@ -1912,6 +1969,12 @@ pub struct CtxBuilder<'a> {
   
   client_tenant_id: Option<TenantId>,
   
+  /// 是否 restful 上下文
+  ///
+  /// 原生 poem handler 能拿到 `poem::Request`, 由 `with_resful_req` 隐式置位;
+  /// openapi handler 拿不到 `poem::Request`, 需要 `with_resful_token` 显式置位
+  is_resful: bool,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1920,7 +1983,7 @@ impl <'a> CtxBuilder<'a> {
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
     let now = Local::now().naive_local();
-    let req_id = now.and_utc().timestamp_millis().to_string();
+    let req_id = naive_local_timestamp_millis(now).to_string();
     
     let client_tenant_id = if let Some(gql_ctx) = gql_ctx {
       gql_ctx.data_opt::<super::auth::auth_model::ClientTenantId>().cloned()
@@ -1941,6 +2004,8 @@ impl <'a> CtxBuilder<'a> {
       is_silent_mode: false,
       is_creating: None,
       client_tenant_id,
+      is_resful: false,
+      input_auth_token: None,
     }
   }
   
@@ -1955,6 +2020,22 @@ impl <'a> CtxBuilder<'a> {
     self.client_tenant_id = client_tenant_id;
     
     self.resful_req = Some(resful_req);
+    self.is_resful = true;
+    self
+  }
+  
+  /// 不使用 `poem::Request` 构建 restful 上下文
+  ///
+  /// openapi handler 只能拿到 header 等零散参数, 拿不到完整的 `poem::Request`,
+  /// 因此在这里显式传入 token 和租户, 由调用方负责提取
+  pub fn with_resful_token(
+    mut self,
+    auth_token: Option<String>,
+    client_tenant_id: Option<TenantId>,
+  ) -> CtxBuilder<'a> {
+    self.input_auth_token = auth_token;
+    self.client_tenant_id = client_tenant_id;
+    self.is_resful = true;
     self
   }
   
@@ -1966,6 +2047,9 @@ impl <'a> CtxBuilder<'a> {
   
   /// 获取token, graphql跟restful的获取方式不一样
   fn get_auth_token(&self) -> Option<String> {
+    if let Some(auth_token) = &self.input_auth_token {
+      return Some(auth_token.clone());
+    }
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.data_opt
         ::<super::auth::auth_model::AuthToken>()
@@ -2028,7 +2112,7 @@ impl <'a> CtxBuilder<'a> {
     };
     let now = self.now;
     let server_tokentimeout = server_token_timeout();
-    let now_sec = now.and_utc().timestamp_millis() / 1000;
+    let now_sec = naive_local_timestamp(now);
     if now_sec - server_tokentimeout > auth_model.exp {
       if now_sec - server_tokentimeout * 2 > auth_model.exp {
         return Err(eyre!("refresh_token_expired"));
@@ -2099,7 +2183,7 @@ impl <'a> CtxBuilder<'a> {
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
-      is_resful: self.resful_req.is_some(),
+      is_resful: self.is_resful || self.resful_req.is_some(),
       old_auth_token: self.old_auth_token,
       auth_token: self.auth_token,
       auth_model: self.auth_model,

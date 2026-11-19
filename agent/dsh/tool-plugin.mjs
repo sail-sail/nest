@@ -162,13 +162,14 @@ export function apply(ctx) {
   ctx.tools.register(
     tool(
       "schema_search",
-      "搜索当前服务的 GraphQL schema，定位 Query、Mutation、Input、返回类型和字段签名。不清楚表名/字段名时先用它。",
+      "搜索当前服务的接口。默认同时搜索 GraphQL schema 和 openapi 描述的 HTTP 接口：GraphQL 用于定位 Query、Mutation、Input、返回类型和字段签名；HTTP 接口用于定位 method 和 path，找到后用 rest_call 调用。不清楚表名/字段名/接口路径时先用它。",
       {
-        keyword: { type: "string", required: true, description: "搜索关键词，例如 usr、order、tenant" },
-        kind: { type: "string", description: "可选：按类型种类过滤，例如 type、input、enum、scalar" },
+        keyword: { type: "string", required: true, description: "搜索关键词，例如 usr、order、tenant、ping" },
+        source: { type: "string", description: "可选：all / graphql / rest，默认 all 同时搜索两边" },
+        kind: { type: "string", description: "可选：按类型种类过滤，例如 type、input、enum、scalar、endpoint" },
         scope: { type: "string", description: "可选：definition / member / all，默认 all" },
         limit: { type: "number", description: "可选：返回条数上限" },
-        includeSdl: { type: "boolean", description: "可选：是否在结果里附带 SDL" },
+        includeSdl: { type: "boolean", description: "可选：是否在结果里附带 SDL 或接口定义" },
       },
     ),
   );
@@ -176,10 +177,10 @@ export function apply(ctx) {
   ctx.tools.register(
     tool(
       "schema_get",
-      "按精确类型名返回完整 SDL。先用 schema_search 找到类型名，再用它看完整定义；过大的聚合类型会被拒绝。",
+      "按名字精确返回完整定义。GraphQL 类型返回完整 SDL；HTTP 接口传 `GET /path` 或 path 本身，返回参数与响应 schema；过大的聚合类型会被拒绝。",
       {
-        name: { type: "string", required: true, description: "精确类型名，例如 Usr、FindAllUsrInput" },
-        kind: { type: "string", description: "可选：类型种类" },
+        name: { type: "string", required: true, description: "精确类型名（Usr、FindAllUsrInput）或接口标识（GET /api/oai/system/ping）" },
+        kind: { type: "string", description: "可选：类型种类，接口用 endpoint" },
       },
     ),
   );
@@ -196,6 +197,19 @@ export function apply(ctx) {
         variables: { type: "object", additionalProperties: true, description: "可选：变量对象" },
         operationName: { type: "string", description: "可选：多操作时的 operationName" },
         clientTenantId: { type: "string", description: "可选：客户端指定的租户 id" },
+      },
+    ),
+  );
+
+  ctx.tools.register(
+    tool(
+      "rest_call",
+      "调用 openapi 规范里的 HTTP 接口（非 GraphQL）。path 必须先通过 schema_search 且 source=rest 查到，返回状态码和 JSON 响应体。附件上传下载请继续用 oss_* 工具。",
+      {
+        path: { type: "string", required: true, description: "完整路径，例如 /api/oai/system/ping" },
+        method: { type: "string", description: "可选：GET / POST / PUT / DELETE / PATCH，默认 GET" },
+        query: { type: "object", additionalProperties: true, description: "可选：query 参数" },
+        body: { type: "object", additionalProperties: true, description: "可选：JSON 请求体" },
       },
     ),
   );

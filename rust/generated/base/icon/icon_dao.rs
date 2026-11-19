@@ -46,6 +46,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use sha2::Digest;
 use base64::Engine;
@@ -3060,4 +3061,63 @@ pub async fn validate_option_icon(
   };
   
   Ok(model)
+}
+
+// MARK: validate_icon
+/// 校验图标库增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_icon(
+  input: &IconInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 图标
+    required(
+      input.img.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "图标",
+    )?;
+  
+    // 编码
+    required(
+      input.code.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "编码",
+    )?;
+  
+    // 名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "名称",
+    )?;
+  }
+  
+  // 编码
+  chars_max_length(
+    input.code.clone(),
+    40,
+    "编码",
+  )?;
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    40,
+    "名称",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

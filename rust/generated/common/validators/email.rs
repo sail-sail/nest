@@ -1,10 +1,9 @@
 use color_eyre::eyre::{Result, eyre};
 use fast_chemail::is_valid_email;
 
-use crate::common::i18n::i18n_dao::ns;
-
+/// 校验邮箱格式
 #[allow(dead_code)]
-pub async fn email(
+pub fn email(
   value: Option<String>,
   label: &str,
 ) -> Result<()> {
@@ -18,16 +17,9 @@ pub async fn email(
     return Ok(());
   }
   
-  let msg = ns(
-    "邮件格式不正确".into(),
-    None,
-  ).await?;
-  
-  let mut err_msg = String::new();
-  err_msg.push_str(label);
-  err_msg.push(' ');
-  err_msg.push_str(&msg);
-  let err_msg = err_msg;
+  let err_msg = format!(
+    "{label} 邮件格式不正确",
+  );
   
   Err(eyre!(err_msg))
 }

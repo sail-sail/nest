@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::message_model::*;
 use super::message_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_message(
   options: Option<Options>,
 ) -> Result<Vec<MessageId>> {
   
+  for message_input in message_inputs.iter() {
+    message_dao::validate_message(
+      message_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let message_ids = message_dao::creates_message(
     message_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_message(
   mut message_input: MessageInput,
   options: Option<Options>,
 ) -> Result<MessageId> {
+  
+  message_dao::validate_message(
+    &message_input,
+    ValidateMode::Update,
+  )?;
   
   let message_id = message_dao::update_by_id_message(
     message_id,

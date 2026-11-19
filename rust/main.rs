@@ -417,6 +417,20 @@ fn cleanup_old_log_files(
   }
 }
 
+/// 输出合并后的 openapi 文档
+#[handler]
+fn oai_spec_handler() -> Response {
+  match app::oai_spec() {
+    Ok(spec) => Response::builder()
+      .content_type("application/json; charset=utf-8")
+      .body(spec.to_owned()),
+    Err(err) => Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .content_type("application/json; charset=utf-8")
+      .body(serde_json::json!({ "error": err }).to_string()),
+  }
+}
+
 fn main() -> Result<(), std::io::Error> {
   let runtime = tokio::runtime::Builder::new_current_thread()
     .enable_all()
@@ -722,6 +736,12 @@ async fn async_main() -> Result<(), std::io::Error> {
     
     // 注册 业务路由
     app = app::register_routes(app);
+    
+    // 注册 openapi 业务路由
+    app = app::register_oai_routes(app);
+    
+    // openapi 文档, 标准规范入口
+    app = app.at("/openapi.json", get(oai_spec_handler));
     
     app
   };

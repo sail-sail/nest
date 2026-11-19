@@ -1,11 +1,9 @@
-use std::collections::HashMap;
 use std::fmt::Display;
 use color_eyre::eyre::{Result, eyre};
 
-use crate::common::i18n::i18n_dao;
-
+/// 校验数字不能小于 n
 #[allow(dead_code)]
-pub async fn minimum<T>(
+pub fn minimum<T>(
   value: Option<T>,
   n: T,
   label: &str,
@@ -23,19 +21,9 @@ where
     return Ok(());
   }
   
-  let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".into(), n.to_string());
-  
-  let msg = i18n_dao::ns(
-    "不能小于 {0}".into(),
-    map.into(),
-  ).await?;
-  
-  let mut err_msg = String::new();
-  err_msg.push_str(label);
-  err_msg.push(' ');
-  err_msg.push_str(&msg);
-  let err_msg = err_msg;
+  let err_msg = format!(
+    "{label} 不能小于 {n}",
+  );
   
   Err(eyre!(err_msg))
 }

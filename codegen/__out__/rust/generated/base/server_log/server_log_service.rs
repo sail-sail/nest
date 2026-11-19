@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::server_log_model::*;
 use super::server_log_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_server_log(
   options: Option<Options>,
 ) -> Result<Vec<ServerLogId>> {
   
+  for server_log_input in server_log_inputs.iter() {
+    server_log_dao::validate_server_log(
+      server_log_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let server_log_ids = server_log_dao::creates_server_log(
     server_log_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_server_log(
   mut server_log_input: ServerLogInput,
   options: Option<Options>,
 ) -> Result<ServerLogId> {
+  
+  server_log_dao::validate_server_log(
+    &server_log_input,
+    ValidateMode::Update,
+  )?;
   
   let server_log_id = server_log_dao::update_by_id_server_log(
     server_log_id,

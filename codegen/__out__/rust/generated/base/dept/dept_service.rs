@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::dept_model::*;
 use super::dept_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
+  for dept_input in dept_inputs.iter() {
+    dept_dao::validate_dept(
+      dept_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dept_ids = dept_dao::creates_dept(
     dept_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_dept(
   mut dept_input: DeptInput,
   options: Option<Options>,
 ) -> Result<DeptId> {
+  
+  dept_dao::validate_dept(
+    &dept_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = dept_dao::get_is_locked_by_id_dept(
     dept_id,

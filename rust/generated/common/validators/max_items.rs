@@ -1,11 +1,9 @@
-use std::collections::HashMap;
 use std::ops::Deref;
 use color_eyre::eyre::{Result, eyre};
 
-use crate::common::i18n::i18n_dao;
-
+/// 校验数组的最大数量
 #[allow(dead_code)]
-pub async fn max_items<T: Deref<Target = [E]>, E>(
+pub fn max_items<T: Deref<Target = [E]>, E>(
   value: Option<&T>,
   len: usize,
   label: &str,
@@ -20,19 +18,9 @@ pub async fn max_items<T: Deref<Target = [E]>, E>(
     return Ok(());
   }
   
-  let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".into(), len.to_string());
-  
-  let msg = i18n_dao::ns(
-    "数量不能超过 {0}".into(),
-    map.into(),
-  ).await?;
-  
-  let mut err_msg = String::new();
-  err_msg.push_str(label);
-  err_msg.push(' ');
-  err_msg.push_str(&msg);
-  let err_msg = err_msg;
+  let err_msg = format!(
+    "{label} 数量不能超过 {len}",
+  );
   
   Err(eyre!(err_msg))
 }

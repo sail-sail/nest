@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::lang_model::*;
 use super::lang_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_lang(
   options: Option<Options>,
 ) -> Result<Vec<LangId>> {
   
+  for lang_input in lang_inputs.iter() {
+    lang_dao::validate_lang(
+      lang_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let lang_ids = lang_dao::creates_lang(
     lang_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_lang(
   mut lang_input: LangInput,
   options: Option<Options>,
 ) -> Result<LangId> {
+  
+  lang_dao::validate_lang(
+    &lang_input,
+    ValidateMode::Update,
+  )?;
   
   let lang_id = lang_dao::update_by_id_lang(
     lang_id,

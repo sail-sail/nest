@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::operation_record_model::*;
 use super::operation_record_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_operation_record(
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordId>> {
   
+  for operation_record_input in operation_record_inputs.iter() {
+    operation_record_dao::validate_operation_record(
+      operation_record_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let operation_record_ids = operation_record_dao::creates_operation_record(
     operation_record_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_operation_record(
   mut operation_record_input: OperationRecordInput,
   options: Option<Options>,
 ) -> Result<OperationRecordId> {
+  
+  operation_record_dao::validate_operation_record(
+    &operation_record_input,
+    ValidateMode::Update,
+  )?;
   
   let operation_record_id = operation_record_dao::update_by_id_operation_record(
     operation_record_id,
