@@ -177,8 +177,12 @@ export async function existByIdUsr(
  */
 export async function validateUsr(
   input: UsrInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await usrDao.validateUsr(input);
+  await usrDao.validateUsr(input, options);
 }
 
 /**
@@ -190,6 +194,10 @@ export async function createsUsr(
     uniqueType?: UniqueType;
   },
 ): Promise<UsrId[]> {
+  
+  for (const input of inputs) {
+    await validateUsr(input, { mode: "create" });
+  }
   const usr_ids = await usrDao.createsUsr(inputs, options);
   
   return usr_ids;
@@ -202,6 +210,8 @@ export async function updateByIdUsr(
   usr_id: UsrId,
   input: UsrInput,
 ): Promise<UsrId> {
+  
+  await validateUsr(input, { mode: "update" });
   
   const is_locked = await usrDao.getIsLockedByIdUsr(usr_id);
   if (is_locked) {

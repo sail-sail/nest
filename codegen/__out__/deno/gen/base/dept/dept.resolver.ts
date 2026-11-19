@@ -221,7 +221,6 @@ export async function createsDept(
 ): Promise<DeptId[]> {
   
   const {
-    validateDept,
     setIdByLblDept,
     createsDept,
   } = await import("./dept.service.ts");
@@ -244,8 +243,6 @@ export async function createsDept(
     
     await setIdByLblDept(input);
     
-    await validateDept(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDept(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDept(
   
   const {
     setIdByLblDept,
-    validateDept,
     updateByIdDept,
   } = await import("./dept.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDept(
   intoInputDept(input);
   
   await setIdByLblDept(input);
-  
-  await validateDept(input);
   
   await usePermit(
     getPagePathDept(),

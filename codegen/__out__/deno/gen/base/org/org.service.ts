@@ -170,8 +170,12 @@ export async function existByIdOrg(
  */
 export async function validateOrg(
   input: OrgInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await orgDao.validateOrg(input);
+  await orgDao.validateOrg(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsOrg(
     uniqueType?: UniqueType;
   },
 ): Promise<OrgId[]> {
+  
+  for (const input of inputs) {
+    await validateOrg(input, { mode: "create" });
+  }
   const org_ids = await orgDao.createsOrg(inputs, options);
   
   return org_ids;
@@ -195,6 +203,8 @@ export async function updateByIdOrg(
   org_id: OrgId,
   input: OrgInput,
 ): Promise<OrgId> {
+  
+  await validateOrg(input, { mode: "update" });
   
   const is_locked = await orgDao.getIsLockedByIdOrg(org_id);
   if (is_locked) {

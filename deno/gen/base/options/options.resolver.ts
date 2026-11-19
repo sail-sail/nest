@@ -221,7 +221,6 @@ export async function createsOptions(
 ): Promise<OptionsId[]> {
   
   const {
-    validateOptions,
     setIdByLblOptions,
     createsOptions,
   } = await import("./options.service.ts");
@@ -244,8 +243,6 @@ export async function createsOptions(
     
     await setIdByLblOptions(input);
     
-    await validateOptions(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsOptions(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdOptions(
   
   const {
     setIdByLblOptions,
-    validateOptions,
     updateByIdOptions,
   } = await import("./options.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdOptions(
   intoInputOptions(input);
   
   await setIdByLblOptions(input);
-  
-  await validateOptions(input);
   
   await usePermit(
     getPagePathOptions(),

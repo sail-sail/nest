@@ -1053,11 +1053,21 @@ export async function validateOptionDynPageData(
 /** 动态页面数据增加和修改时校验输入 */
 export async function validateDynPageData(
   input: Readonly<DynPageDataInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsDynPageData(input.ref_code);
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

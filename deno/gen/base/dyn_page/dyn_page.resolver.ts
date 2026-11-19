@@ -221,7 +221,6 @@ export async function createsDynPage(
 ): Promise<DynPageId[]> {
   
   const {
-    validateDynPage,
     setIdByLblDynPage,
     createsDynPage,
   } = await import("./dyn_page.service.ts");
@@ -244,8 +243,6 @@ export async function createsDynPage(
     
     await setIdByLblDynPage(input);
     
-    await validateDynPage(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDynPage(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDynPage(
   
   const {
     setIdByLblDynPage,
-    validateDynPage,
     updateByIdDynPage,
   } = await import("./dyn_page.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDynPage(
   intoInputDynPage(input);
   
   await setIdByLblDynPage(input);
-  
-  await validateDynPage(input);
   
   await usePermit(
     getPagePathDynPage(),

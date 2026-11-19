@@ -221,7 +221,6 @@ export async function createsMenu(
 ): Promise<MenuId[]> {
   
   const {
-    validateMenu,
     setIdByLblMenu,
     createsMenu,
   } = await import("./menu.service.ts");
@@ -244,8 +243,6 @@ export async function createsMenu(
     
     await setIdByLblMenu(input);
     
-    await validateMenu(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsMenu(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdMenu(
   
   const {
     setIdByLblMenu,
-    validateMenu,
     updateByIdMenu,
   } = await import("./menu.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdMenu(
   intoInputMenu(input);
   
   await setIdByLblMenu(input);
-  
-  await validateMenu(input);
   
   await usePermit(
     getPagePathMenu(),

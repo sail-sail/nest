@@ -170,8 +170,12 @@ export async function existByIdDynPageVal(
  */
 export async function validateDynPageVal(
   input: DynPageValInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dyn_page_valDao.validateDynPageVal(input);
+  await dyn_page_valDao.validateDynPageVal(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsDynPageVal(
     uniqueType?: UniqueType;
   },
 ): Promise<DynPageValId[]> {
+  
+  for (const input of inputs) {
+    await validateDynPageVal(input, { mode: "create" });
+  }
   const dyn_page_val_ids = await dyn_page_valDao.createsDynPageVal(inputs, options);
   
   return dyn_page_val_ids;
@@ -195,6 +203,8 @@ export async function updateByIdDynPageVal(
   dyn_page_val_id: DynPageValId,
   input: DynPageValInput,
 ): Promise<DynPageValId> {
+  
+  await validateDynPageVal(input, { mode: "update" });
   
   dyn_page_val_id = await dyn_page_valDao.updateByIdDynPageVal(dyn_page_val_id, input);
   

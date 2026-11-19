@@ -192,8 +192,12 @@ export async function existByIdDept(
  */
 export async function validateDept(
   input: DeptInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await deptDao.validateDept(input);
+  await deptDao.validateDept(input, options);
 }
 
 /**
@@ -205,6 +209,10 @@ export async function createsDept(
     uniqueType?: UniqueType;
   },
 ): Promise<DeptId[]> {
+  
+  for (const input of inputs) {
+    await validateDept(input, { mode: "create" });
+  }
   const dept_ids = await deptDao.createsDept(inputs, options);
   
   return dept_ids;
@@ -217,6 +225,8 @@ export async function updateByIdDept(
   dept_id: DeptId,
   input: DeptInput,
 ): Promise<DeptId> {
+  
+  await validateDept(input, { mode: "update" });
   
   const is_locked = await deptDao.getIsLockedByIdDept(dept_id);
   if (is_locked) {

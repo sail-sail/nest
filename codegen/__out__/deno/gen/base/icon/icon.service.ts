@@ -170,8 +170,12 @@ export async function existByIdIcon(
  */
 export async function validateIcon(
   input: IconInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await iconDao.validateIcon(input);
+  await iconDao.validateIcon(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsIcon(
     uniqueType?: UniqueType;
   },
 ): Promise<IconId[]> {
+  
+  for (const input of inputs) {
+    await validateIcon(input, { mode: "create" });
+  }
   const icon_ids = await iconDao.createsIcon(inputs, options);
   
   return icon_ids;
@@ -195,6 +203,8 @@ export async function updateByIdIcon(
   icon_id: IconId,
   input: IconInput,
 ): Promise<IconId> {
+  
+  await validateIcon(input, { mode: "update" });
   
   icon_id = await iconDao.updateByIdIcon(icon_id, input);
   

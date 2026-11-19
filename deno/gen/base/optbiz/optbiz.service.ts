@@ -170,8 +170,12 @@ export async function existByIdOptbiz(
  */
 export async function validateOptbiz(
   input: OptbizInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await optbizDao.validateOptbiz(input);
+  await optbizDao.validateOptbiz(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsOptbiz(
     uniqueType?: UniqueType;
   },
 ): Promise<OptbizId[]> {
+  
+  for (const input of inputs) {
+    await validateOptbiz(input, { mode: "create" });
+  }
   const optbiz_ids = await optbizDao.createsOptbiz(inputs, options);
   
   return optbiz_ids;
@@ -203,6 +211,8 @@ export async function updateByIdOptbiz(
   optbiz_id: OptbizId,
   input: OptbizInput,
 ): Promise<OptbizId> {
+  
+  await validateOptbiz(input, { mode: "update" });
   
   const old_model = await optbizDao.findByIdOkOptbiz(optbiz_id);
   

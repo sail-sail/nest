@@ -1729,11 +1729,44 @@ export async function validateOptionUsr(
 /** 用户增加和修改时校验输入 */
 export async function validateUsr(
   input: Readonly<UsrInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsUsr();
+
+  
+  if (mode === "create") {
+    
+    // 名称
+    await validators.required(
+      input.lbl,
+      fieldComments.lbl,
+    );
+    
+    // 用户名
+    await validators.required(
+      input.username,
+      fieldComments.username,
+    );
+    
+    // 类型
+    await validators.required(
+      input.type,
+      fieldComments.type,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

@@ -170,8 +170,12 @@ export async function existByIdDictDetail(
  */
 export async function validateDictDetail(
   input: DictDetailInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dict_detailDao.validateDictDetail(input);
+  await dict_detailDao.validateDictDetail(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsDictDetail(
     uniqueType?: UniqueType;
   },
 ): Promise<DictDetailId[]> {
+  
+  for (const input of inputs) {
+    await validateDictDetail(input, { mode: "create" });
+  }
   const dict_detail_ids = await dict_detailDao.createsDictDetail(inputs, options);
   
   return dict_detail_ids;
@@ -195,6 +203,8 @@ export async function updateByIdDictDetail(
   dict_detail_id: DictDetailId,
   input: DictDetailInput,
 ): Promise<DictDetailId> {
+  
+  await validateDictDetail(input, { mode: "update" });
   
   const old_model = await dict_detailDao.findByIdOkDictDetail(dict_detail_id);
   

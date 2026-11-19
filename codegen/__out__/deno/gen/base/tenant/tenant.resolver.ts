@@ -221,7 +221,6 @@ export async function createsTenant(
 ): Promise<TenantId[]> {
   
   const {
-    validateTenant,
     setIdByLblTenant,
     createsTenant,
   } = await import("./tenant.service.ts");
@@ -244,8 +243,6 @@ export async function createsTenant(
     
     await setIdByLblTenant(input);
     
-    await validateTenant(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsTenant(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdTenant(
   
   const {
     setIdByLblTenant,
-    validateTenant,
     updateByIdTenant,
   } = await import("./tenant.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdTenant(
   intoInputTenant(input);
   
   await setIdByLblTenant(input);
-  
-  await validateTenant(input);
   
   await usePermit(
     getPagePathTenant(),

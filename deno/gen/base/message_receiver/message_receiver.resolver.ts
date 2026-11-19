@@ -221,7 +221,6 @@ export async function createsMessageReceiver(
 ): Promise<MessageReceiverId[]> {
   
   const {
-    validateMessageReceiver,
     setIdByLblMessageReceiver,
     createsMessageReceiver,
   } = await import("./message_receiver.service.ts");
@@ -244,8 +243,6 @@ export async function createsMessageReceiver(
     
     await setIdByLblMessageReceiver(input);
     
-    await validateMessageReceiver(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsMessageReceiver(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdMessageReceiver(
   
   const {
     setIdByLblMessageReceiver,
-    validateMessageReceiver,
     updateByIdMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdMessageReceiver(
   intoInputMessageReceiver(input);
   
   await setIdByLblMessageReceiver(input);
-  
-  await validateMessageReceiver(input);
   
   await usePermit(
     getPagePathMessageReceiver(),

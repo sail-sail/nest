@@ -1213,11 +1213,44 @@ export async function validateOptionDictbiz(
 /** 业务字典增加和修改时校验输入 */
 export async function validateDictbiz(
   input: Readonly<DictbizInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsDictbiz();
+
+  
+  if (mode === "create") {
+    
+    // 编码
+    await validators.required(
+      input.code,
+      fieldComments.code,
+    );
+    
+    // 名称
+    await validators.required(
+      input.lbl,
+      fieldComments.lbl,
+    );
+    
+    // 数据类型
+    await validators.required(
+      input.type,
+      fieldComments.type,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

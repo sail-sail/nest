@@ -170,8 +170,12 @@ export async function existByIdRole(
  */
 export async function validateRole(
   input: RoleInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await roleDao.validateRole(input);
+  await roleDao.validateRole(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsRole(
     uniqueType?: UniqueType;
   },
 ): Promise<RoleId[]> {
+  
+  for (const input of inputs) {
+    await validateRole(input, { mode: "create" });
+  }
   const role_ids = await roleDao.createsRole(inputs, options);
   
   return role_ids;
@@ -195,6 +203,8 @@ export async function updateByIdRole(
   role_id: RoleId,
   input: RoleInput,
 ): Promise<RoleId> {
+  
+  await validateRole(input, { mode: "update" });
   
   const is_locked = await roleDao.getIsLockedByIdRole(role_id);
   if (is_locked) {

@@ -170,8 +170,12 @@ export async function existByIdDictbiz(
  */
 export async function validateDictbiz(
   input: DictbizInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dictbizDao.validateDictbiz(input);
+  await dictbizDao.validateDictbiz(input, options);
 }
 
 /**
@@ -186,6 +190,7 @@ export async function createsDictbiz(
   
   for (const input of inputs) {
     input.is_add = undefined;
+    await validateDictbiz(input, { mode: "create" });
   }
   
   const dictbiz_ids = await dictbizDao.createsDictbiz(inputs, options);
@@ -201,6 +206,8 @@ export async function updateByIdDictbiz(
 ): Promise<DictbizId> {
   
   input.is_add = undefined;
+  
+  await validateDictbiz(input, { mode: "update" });
   
   dictbiz_id = await dictbizDao.updateByIdDictbiz(dictbiz_id, input);
   

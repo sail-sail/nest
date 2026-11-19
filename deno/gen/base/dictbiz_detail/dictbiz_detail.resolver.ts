@@ -221,7 +221,6 @@ export async function createsDictbizDetail(
 ): Promise<DictbizDetailId[]> {
   
   const {
-    validateDictbizDetail,
     setIdByLblDictbizDetail,
     createsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
@@ -244,8 +243,6 @@ export async function createsDictbizDetail(
     
     await setIdByLblDictbizDetail(input);
     
-    await validateDictbizDetail(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDictbizDetail(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDictbizDetail(
   
   const {
     setIdByLblDictbizDetail,
-    validateDictbizDetail,
     updateByIdDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDictbizDetail(
   intoInputDictbizDetail(input);
   
   await setIdByLblDictbizDetail(input);
-  
-  await validateDictbizDetail(input);
   
   await usePermit(
     getPagePathDictbizDetail(),

@@ -221,7 +221,6 @@ export async function createsRole(
 ): Promise<RoleId[]> {
   
   const {
-    validateRole,
     setIdByLblRole,
     createsRole,
   } = await import("./role.service.ts");
@@ -244,8 +243,6 @@ export async function createsRole(
     
     await setIdByLblRole(input);
     
-    await validateRole(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsRole(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdRole(
   
   const {
     setIdByLblRole,
-    validateRole,
     updateByIdRole,
   } = await import("./role.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdRole(
   intoInputRole(input);
   
   await setIdByLblRole(input);
-  
-  await validateRole(input);
   
   await usePermit(
     getPagePathRole(),

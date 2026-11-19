@@ -192,8 +192,12 @@ export async function existByIdMessage(
  */
 export async function validateMessage(
   input: MessageInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await messageDao.validateMessage(input);
+  await messageDao.validateMessage(input, options);
 }
 
 /**
@@ -205,6 +209,10 @@ export async function createsMessage(
     uniqueType?: UniqueType;
   },
 ): Promise<MessageId[]> {
+  
+  for (const input of inputs) {
+    await validateMessage(input, { mode: "create" });
+  }
   const message_ids = await messageDao.createsMessage(inputs, options);
   
   return message_ids;
@@ -217,6 +225,8 @@ export async function updateByIdMessage(
   message_id: MessageId,
   input: MessageInput,
 ): Promise<MessageId> {
+  
+  await validateMessage(input, { mode: "update" });
   
   message_id = await messageDao.updateByIdMessage(message_id, input);
   

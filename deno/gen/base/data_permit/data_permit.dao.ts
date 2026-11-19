@@ -1189,11 +1189,44 @@ export async function validateOptionDataPermit(
 /** 数据权限增加和修改时校验输入 */
 export async function validateDataPermit(
   input: Readonly<DataPermitInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsDataPermit();
+
+  
+  if (mode === "create") {
+    
+    // 菜单
+    await validators.required(
+      input.menu_id,
+      fieldComments.menu_id,
+    );
+    
+    // 范围
+    await validators.required(
+      input.scope,
+      fieldComments.scope,
+    );
+    
+    // 类型
+    await validators.required(
+      input.type,
+      fieldComments.type,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

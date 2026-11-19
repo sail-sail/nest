@@ -1445,11 +1445,44 @@ export async function validateOptionTenant(
 /** 租户增加和修改时校验输入 */
 export async function validateTenant(
   input: Readonly<TenantInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsTenant();
+
+  
+  if (mode === "create") {
+    
+    // 名称
+    await validators.required(
+      input.lbl,
+      fieldComments.lbl,
+    );
+    
+    // 所属域名
+    await validators.required(
+      input.domain_ids ?? input.domain_ids_lbl,
+      fieldComments.domain_ids,
+    );
+    
+    // 语言
+    await validators.required(
+      input.lang_id,
+      fieldComments.lang_id,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

@@ -221,7 +221,6 @@ export async function createsMessage(
 ): Promise<MessageId[]> {
   
   const {
-    validateMessage,
     setIdByLblMessage,
     createsMessage,
   } = await import("./message.service.ts");
@@ -244,8 +243,6 @@ export async function createsMessage(
     
     await setIdByLblMessage(input);
     
-    await validateMessage(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsMessage(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdMessage(
   
   const {
     setIdByLblMessage,
-    validateMessage,
     updateByIdMessage,
   } = await import("./message.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdMessage(
   intoInputMessage(input);
   
   await setIdByLblMessage(input);
-  
-  await validateMessage(input);
   
   await usePermit(
     getPagePathMessage(),

@@ -1192,11 +1192,38 @@ export async function validateOptionMessageReceiver(
 /** 消息接收人增加和修改时校验输入 */
 export async function validateMessageReceiver(
   input: Readonly<MessageReceiverInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsMessageReceiver();
+
+  
+  if (mode === "create") {
+    
+    // 消息
+    await validators.required(
+      input.message_id,
+      fieldComments.message_id,
+    );
+    
+    // 接收人
+    await validators.required(
+      input.receiver_usr_id,
+      fieldComments.receiver_usr_id,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

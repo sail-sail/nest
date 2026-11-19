@@ -1149,11 +1149,44 @@ export async function validateOptionDictDetail(
 /** 系统字典明细增加和修改时校验输入 */
 export async function validateDictDetail(
   input: Readonly<DictDetailInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsDictDetail();
+
+  
+  if (mode === "create") {
+    
+    // 系统字典
+    await validators.required(
+      input.dict_id,
+      fieldComments.dict_id,
+    );
+    
+    // 名称
+    await validators.required(
+      input.lbl,
+      fieldComments.lbl,
+    );
+    
+    // 值
+    await validators.required(
+      input.val,
+      fieldComments.val,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

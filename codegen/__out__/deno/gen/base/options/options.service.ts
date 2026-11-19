@@ -170,8 +170,12 @@ export async function existByIdOptions(
  */
 export async function validateOptions(
   input: OptionsInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await optionsDao.validateOptions(input);
+  await optionsDao.validateOptions(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsOptions(
     uniqueType?: UniqueType;
   },
 ): Promise<OptionsId[]> {
+  
+  for (const input of inputs) {
+    await validateOptions(input, { mode: "create" });
+  }
   const options_ids = await optionsDao.createsOptions(inputs, options);
   
   return options_ids;
@@ -203,6 +211,8 @@ export async function updateByIdOptions(
   options_id: OptionsId,
   input: OptionsInput,
 ): Promise<OptionsId> {
+  
+  await validateOptions(input, { mode: "update" });
   
   const old_model = await optionsDao.findByIdOkOptions(options_id);
   

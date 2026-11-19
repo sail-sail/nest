@@ -220,7 +220,6 @@ export async function updateByIdPermit(
   
   const {
     setIdByLblPermit,
-    validatePermit,
     updateByIdPermit,
   } = await import("./permit.service.ts");
   
@@ -233,8 +232,6 @@ export async function updateByIdPermit(
   intoInputPermit(input);
   
   await setIdByLblPermit(input);
-  
-  await validatePermit(input);
   
   await usePermit(
     getPagePathPermit(),

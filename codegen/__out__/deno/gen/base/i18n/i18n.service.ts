@@ -174,8 +174,12 @@ export async function existByIdI18n(
  */
 export async function validateI18n(
   input: I18nInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await i18nDao.validateI18n(input);
+  await i18nDao.validateI18n(input, options);
 }
 
 /**
@@ -187,6 +191,10 @@ export async function createsI18n(
     uniqueType?: UniqueType;
   },
 ): Promise<I18nId[]> {
+  
+  for (const input of inputs) {
+    await validateI18n(input, { mode: "create" });
+  }
   const i18n_ids = await i18nDao.createsI18n(inputs, options);
   
   await update_i18n_version();
@@ -201,6 +209,8 @@ export async function updateByIdI18n(
   i18n_id: I18nId,
   input: I18nInput,
 ): Promise<I18nId> {
+  
+  await validateI18n(input, { mode: "update" });
   
   i18n_id = await i18nDao.updateByIdI18n(i18n_id, input);
   

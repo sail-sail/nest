@@ -917,11 +917,32 @@ export async function validateOptionServerLog(
 /** 系统日志增加和修改时校验输入 */
 export async function validateServerLog(
   input: Readonly<ServerLogInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsServerLog();
+
+  
+  if (mode === "create") {
+    
+    // 日志级别
+    await validators.required(
+      input.level,
+      fieldComments.level,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

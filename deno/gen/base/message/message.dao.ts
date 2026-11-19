@@ -1264,11 +1264,50 @@ export async function validateOptionMessage(
 /** 消息增加和修改时校验输入 */
 export async function validateMessage(
   input: Readonly<MessageInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsMessage();
+
+  
+  if (mode === "create") {
+    
+    // 分类
+    await validators.required(
+      input.category,
+      fieldComments.category,
+    );
+    
+    // 发送通道
+    await validators.required(
+      input.channel,
+      fieldComments.channel,
+    );
+    
+    // 标题
+    await validators.required(
+      input.title,
+      fieldComments.title,
+    );
+    
+    // 发送人
+    await validators.required(
+      input.sender_usr_id,
+      fieldComments.sender_usr_id,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

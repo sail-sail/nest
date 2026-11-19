@@ -170,8 +170,12 @@ export async function existByIdOperationRecord(
  */
 export async function validateOperationRecord(
   input: OperationRecordInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await operation_recordDao.validateOperationRecord(input);
+  await operation_recordDao.validateOperationRecord(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsOperationRecord(
     uniqueType?: UniqueType;
   },
 ): Promise<OperationRecordId[]> {
+  
+  for (const input of inputs) {
+    await validateOperationRecord(input, { mode: "create" });
+  }
   const operation_record_ids = await operation_recordDao.createsOperationRecord(inputs, options);
   
   return operation_record_ids;
@@ -195,6 +203,8 @@ export async function updateByIdOperationRecord(
   operation_record_id: OperationRecordId,
   input: OperationRecordInput,
 ): Promise<OperationRecordId> {
+  
+  await validateOperationRecord(input, { mode: "update" });
   
   operation_record_id = await operation_recordDao.updateByIdOperationRecord(operation_record_id, input);
   

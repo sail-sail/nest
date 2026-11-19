@@ -192,8 +192,12 @@ export async function existByIdMessageReceiver(
  */
 export async function validateMessageReceiver(
   input: MessageReceiverInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await message_receiverDao.validateMessageReceiver(input);
+  await message_receiverDao.validateMessageReceiver(input, options);
 }
 
 /**
@@ -205,6 +209,10 @@ export async function createsMessageReceiver(
     uniqueType?: UniqueType;
   },
 ): Promise<MessageReceiverId[]> {
+  
+  for (const input of inputs) {
+    await validateMessageReceiver(input, { mode: "create" });
+  }
   const message_receiver_ids = await message_receiverDao.createsMessageReceiver(inputs, options);
   
   return message_receiver_ids;
@@ -217,6 +225,8 @@ export async function updateByIdMessageReceiver(
   message_receiver_id: MessageReceiverId,
   input: MessageReceiverInput,
 ): Promise<MessageReceiverId> {
+  
+  await validateMessageReceiver(input, { mode: "update" });
   
   message_receiver_id = await message_receiverDao.updateByIdMessageReceiver(message_receiver_id, input);
   

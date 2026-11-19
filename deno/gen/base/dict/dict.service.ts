@@ -170,8 +170,12 @@ export async function existByIdDict(
  */
 export async function validateDict(
   input: DictInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dictDao.validateDict(input);
+  await dictDao.validateDict(input, options);
 }
 
 /**
@@ -186,6 +190,7 @@ export async function createsDict(
   
   for (const input of inputs) {
     input.is_add = undefined;
+    await validateDict(input, { mode: "create" });
   }
   
   const dict_ids = await dictDao.createsDict(inputs, options);
@@ -201,6 +206,10 @@ export async function updateByIdDict(
 ): Promise<DictId> {
   
   input.is_add = undefined;
+  
+  await validateDict(input, { mode: "update" });
+  
+  const old_model = await dictDao.findByIdOkDict(dict_id);
   
   dict_id = await dictDao.updateByIdDict(dict_id, input);
   

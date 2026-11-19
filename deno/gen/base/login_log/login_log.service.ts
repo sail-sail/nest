@@ -170,8 +170,12 @@ export async function existByIdLoginLog(
  */
 export async function validateLoginLog(
   input: LoginLogInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await login_logDao.validateLoginLog(input);
+  await login_logDao.validateLoginLog(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsLoginLog(
     uniqueType?: UniqueType;
   },
 ): Promise<LoginLogId[]> {
+  
+  for (const input of inputs) {
+    await validateLoginLog(input, { mode: "create" });
+  }
   const login_log_ids = await login_logDao.createsLoginLog(inputs, options);
   
   return login_log_ids;
@@ -195,6 +203,8 @@ export async function updateByIdLoginLog(
   login_log_id: LoginLogId,
   input: LoginLogInput,
 ): Promise<LoginLogId> {
+  
+  await validateLoginLog(input, { mode: "update" });
   
   login_log_id = await login_logDao.updateByIdLoginLog(login_log_id, input);
   

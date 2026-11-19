@@ -252,7 +252,6 @@ export async function createsUsr(
 ): Promise<UsrId[]> {
   
   const {
-    validateUsr,
     setIdByLblUsr,
     createsUsr,
   } = await import("./usr.service.ts");
@@ -275,8 +274,6 @@ export async function createsUsr(
     
     await setIdByLblUsr(input);
     
-    await validateUsr(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsUsr(inputs, { uniqueType });
@@ -293,7 +290,6 @@ export async function updateByIdUsr(
   
   const {
     setIdByLblUsr,
-    validateUsr,
     updateByIdUsr,
   } = await import("./usr.service.ts");
   
@@ -306,8 +302,6 @@ export async function updateByIdUsr(
   intoInputUsr(input);
   
   await setIdByLblUsr(input);
-  
-  await validateUsr(input);
   
   await usePermit(
     getPagePathUsr(),

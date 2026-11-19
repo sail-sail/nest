@@ -221,7 +221,6 @@ export async function createsOrg(
 ): Promise<OrgId[]> {
   
   const {
-    validateOrg,
     setIdByLblOrg,
     createsOrg,
   } = await import("./org.service.ts");
@@ -244,8 +243,6 @@ export async function createsOrg(
     
     await setIdByLblOrg(input);
     
-    await validateOrg(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsOrg(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdOrg(
   
   const {
     setIdByLblOrg,
-    validateOrg,
     updateByIdOrg,
   } = await import("./org.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdOrg(
   intoInputOrg(input);
   
   await setIdByLblOrg(input);
-  
-  await validateOrg(input);
   
   await usePermit(
     getPagePathOrg(),

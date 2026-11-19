@@ -200,8 +200,12 @@ export async function existByIdServerLog(
  */
 export async function validateServerLog(
   input: ServerLogInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await server_logDao.validateServerLog(input);
+  await server_logDao.validateServerLog(input, options);
 }
 
 /**
@@ -213,6 +217,10 @@ export async function createsServerLog(
     uniqueType?: UniqueType;
   },
 ): Promise<ServerLogId[]> {
+  
+  for (const input of inputs) {
+    await validateServerLog(input, { mode: "create" });
+  }
   const server_log_ids = await server_logDao.createsServerLog(inputs, options);
   
   return server_log_ids;
@@ -225,6 +233,8 @@ export async function updateByIdServerLog(
   server_log_id: ServerLogId,
   input: ServerLogInput,
 ): Promise<ServerLogId> {
+  
+  await validateServerLog(input, { mode: "update" });
   
   server_log_id = await server_logDao.updateByIdServerLog(server_log_id, input);
   

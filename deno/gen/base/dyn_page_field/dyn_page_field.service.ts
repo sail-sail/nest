@@ -170,8 +170,12 @@ export async function existByIdDynPageField(
  */
 export async function validateDynPageField(
   input: DynPageFieldInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dyn_page_fieldDao.validateDynPageField(input);
+  await dyn_page_fieldDao.validateDynPageField(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsDynPageField(
     uniqueType?: UniqueType;
   },
 ): Promise<DynPageFieldId[]> {
+  
+  for (const input of inputs) {
+    await validateDynPageField(input, { mode: "create" });
+  }
   const dyn_page_field_ids = await dyn_page_fieldDao.createsDynPageField(inputs, options);
   
   return dyn_page_field_ids;
@@ -195,6 +203,8 @@ export async function updateByIdDynPageField(
   dyn_page_field_id: DynPageFieldId,
   input: DynPageFieldInput,
 ): Promise<DynPageFieldId> {
+  
+  await validateDynPageField(input, { mode: "update" });
   
   dyn_page_field_id = await dyn_page_fieldDao.updateByIdDynPageField(dyn_page_field_id, input);
   

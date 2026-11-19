@@ -1129,11 +1129,32 @@ export async function validateOptionOrg(
 /** 组织增加和修改时校验输入 */
 export async function validateOrg(
   input: Readonly<OrgInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsOrg();
+
+  
+  if (mode === "create") {
+    
+    // 名称
+    await validators.required(
+      input.lbl,
+      fieldComments.lbl,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

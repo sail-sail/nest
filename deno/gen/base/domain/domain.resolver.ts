@@ -221,7 +221,6 @@ export async function createsDomain(
 ): Promise<DomainId[]> {
   
   const {
-    validateDomain,
     setIdByLblDomain,
     createsDomain,
   } = await import("./domain.service.ts");
@@ -244,8 +243,6 @@ export async function createsDomain(
     
     await setIdByLblDomain(input);
     
-    await validateDomain(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDomain(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDomain(
   
   const {
     setIdByLblDomain,
-    validateDomain,
     updateByIdDomain,
   } = await import("./domain.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDomain(
   intoInputDomain(input);
   
   await setIdByLblDomain(input);
-  
-  await validateDomain(input);
   
   await usePermit(
     getPagePathDomain(),

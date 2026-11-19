@@ -221,7 +221,6 @@ export async function createsDataPermit(
 ): Promise<DataPermitId[]> {
   
   const {
-    validateDataPermit,
     setIdByLblDataPermit,
     createsDataPermit,
   } = await import("./data_permit.service.ts");
@@ -244,8 +243,6 @@ export async function createsDataPermit(
     
     await setIdByLblDataPermit(input);
     
-    await validateDataPermit(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDataPermit(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDataPermit(
   
   const {
     setIdByLblDataPermit,
-    validateDataPermit,
     updateByIdDataPermit,
   } = await import("./data_permit.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDataPermit(
   intoInputDataPermit(input);
   
   await setIdByLblDataPermit(input);
-  
-  await validateDataPermit(input);
   
   await usePermit(
     getPagePathDataPermit(),

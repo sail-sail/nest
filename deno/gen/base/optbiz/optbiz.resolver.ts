@@ -221,7 +221,6 @@ export async function createsOptbiz(
 ): Promise<OptbizId[]> {
   
   const {
-    validateOptbiz,
     setIdByLblOptbiz,
     createsOptbiz,
   } = await import("./optbiz.service.ts");
@@ -244,8 +243,6 @@ export async function createsOptbiz(
     
     await setIdByLblOptbiz(input);
     
-    await validateOptbiz(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsOptbiz(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdOptbiz(
   
   const {
     setIdByLblOptbiz,
-    validateOptbiz,
     updateByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdOptbiz(
   intoInputOptbiz(input);
   
   await setIdByLblOptbiz(input);
-  
-  await validateOptbiz(input);
   
   await usePermit(
     getPagePathOptbiz(),

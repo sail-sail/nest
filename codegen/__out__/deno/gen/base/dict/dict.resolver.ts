@@ -221,7 +221,6 @@ export async function createsDict(
 ): Promise<DictId[]> {
   
   const {
-    validateDict,
     setIdByLblDict,
     createsDict,
   } = await import("./dict.service.ts");
@@ -244,8 +243,6 @@ export async function createsDict(
     
     await setIdByLblDict(input);
     
-    await validateDict(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsDict(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdDict(
   
   const {
     setIdByLblDict,
-    validateDict,
     updateByIdDict,
   } = await import("./dict.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdDict(
   intoInputDict(input);
   
   await setIdByLblDict(input);
-  
-  await validateDict(input);
   
   await usePermit(
     getPagePathDict(),

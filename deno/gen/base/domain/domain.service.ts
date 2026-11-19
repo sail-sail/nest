@@ -170,8 +170,12 @@ export async function existByIdDomain(
  */
 export async function validateDomain(
   input: DomainInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await domainDao.validateDomain(input);
+  await domainDao.validateDomain(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsDomain(
     uniqueType?: UniqueType;
   },
 ): Promise<DomainId[]> {
+  
+  for (const input of inputs) {
+    await validateDomain(input, { mode: "create" });
+  }
   const domain_ids = await domainDao.createsDomain(inputs, options);
   
   return domain_ids;
@@ -195,6 +203,8 @@ export async function updateByIdDomain(
   domain_id: DomainId,
   input: DomainInput,
 ): Promise<DomainId> {
+  
+  await validateDomain(input, { mode: "update" });
   
   const is_locked = await domainDao.getIsLockedByIdDomain(domain_id);
   if (is_locked) {

@@ -221,7 +221,6 @@ export async function createsIcon(
 ): Promise<IconId[]> {
   
   const {
-    validateIcon,
     setIdByLblIcon,
     createsIcon,
   } = await import("./icon.service.ts");
@@ -244,8 +243,6 @@ export async function createsIcon(
     
     await setIdByLblIcon(input);
     
-    await validateIcon(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsIcon(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdIcon(
   
   const {
     setIdByLblIcon,
-    validateIcon,
     updateByIdIcon,
   } = await import("./icon.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdIcon(
   intoInputIcon(input);
   
   await setIdByLblIcon(input);
-  
-  await validateIcon(input);
   
   await usePermit(
     getPagePathIcon(),

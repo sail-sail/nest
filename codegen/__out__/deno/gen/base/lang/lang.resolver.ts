@@ -221,7 +221,6 @@ export async function createsLang(
 ): Promise<LangId[]> {
   
   const {
-    validateLang,
     setIdByLblLang,
     createsLang,
   } = await import("./lang.service.ts");
@@ -244,8 +243,6 @@ export async function createsLang(
     
     await setIdByLblLang(input);
     
-    await validateLang(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await createsLang(inputs, { uniqueType });
@@ -262,7 +259,6 @@ export async function updateByIdLang(
   
   const {
     setIdByLblLang,
-    validateLang,
     updateByIdLang,
   } = await import("./lang.service.ts");
   
@@ -275,8 +271,6 @@ export async function updateByIdLang(
   intoInputLang(input);
   
   await setIdByLblLang(input);
-  
-  await validateLang(input);
   
   await usePermit(
     getPagePathLang(),

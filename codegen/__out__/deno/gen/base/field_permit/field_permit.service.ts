@@ -170,8 +170,12 @@ export async function existByIdFieldPermit(
  */
 export async function validateFieldPermit(
   input: FieldPermitInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await field_permitDao.validateFieldPermit(input);
+  await field_permitDao.validateFieldPermit(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsFieldPermit(
     uniqueType?: UniqueType;
   },
 ): Promise<FieldPermitId[]> {
+  
+  for (const input of inputs) {
+    await validateFieldPermit(input, { mode: "create" });
+  }
   const field_permit_ids = await field_permitDao.createsFieldPermit(inputs, options);
   
   return field_permit_ids;
@@ -195,6 +203,8 @@ export async function updateByIdFieldPermit(
   field_permit_id: FieldPermitId,
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
+  
+  await validateFieldPermit(input, { mode: "update" });
   
   const old_model = await field_permitDao.findByIdOkFieldPermit(field_permit_id);
   

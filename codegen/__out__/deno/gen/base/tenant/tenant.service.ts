@@ -170,8 +170,12 @@ export async function existByIdTenant(
  */
 export async function validateTenant(
   input: TenantInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await tenantDao.validateTenant(input);
+  await tenantDao.validateTenant(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsTenant(
     uniqueType?: UniqueType;
   },
 ): Promise<TenantId[]> {
+  
+  for (const input of inputs) {
+    await validateTenant(input, { mode: "create" });
+  }
   const tenant_ids = await tenantDao.createsTenant(inputs, options);
   
   return tenant_ids;
@@ -195,6 +203,8 @@ export async function updateByIdTenant(
   tenant_id: TenantId,
   input: TenantInput,
 ): Promise<TenantId> {
+  
+  await validateTenant(input, { mode: "update" });
   
   const is_locked = await tenantDao.getIsLockedByIdTenant(tenant_id);
   if (is_locked) {

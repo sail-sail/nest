@@ -170,8 +170,12 @@ export async function existByIdDictbizDetail(
  */
 export async function validateDictbizDetail(
   input: DictbizDetailInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await dictbiz_detailDao.validateDictbizDetail(input);
+  await dictbiz_detailDao.validateDictbizDetail(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsDictbizDetail(
     uniqueType?: UniqueType;
   },
 ): Promise<DictbizDetailId[]> {
+  
+  for (const input of inputs) {
+    await validateDictbizDetail(input, { mode: "create" });
+  }
   const dictbiz_detail_ids = await dictbiz_detailDao.createsDictbizDetail(inputs, options);
   
   return dictbiz_detail_ids;
@@ -195,6 +203,8 @@ export async function updateByIdDictbizDetail(
   dictbiz_detail_id: DictbizDetailId,
   input: DictbizDetailInput,
 ): Promise<DictbizDetailId> {
+  
+  await validateDictbizDetail(input, { mode: "update" });
   
   dictbiz_detail_id = await dictbiz_detailDao.updateByIdDictbizDetail(dictbiz_detail_id, input);
   

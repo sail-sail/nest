@@ -170,8 +170,12 @@ export async function existByIdLang(
  */
 export async function validateLang(
   input: LangInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await langDao.validateLang(input);
+  await langDao.validateLang(input, options);
 }
 
 /**
@@ -183,6 +187,10 @@ export async function createsLang(
     uniqueType?: UniqueType;
   },
 ): Promise<LangId[]> {
+  
+  for (const input of inputs) {
+    await validateLang(input, { mode: "create" });
+  }
   const lang_ids = await langDao.createsLang(inputs, options);
   
   return lang_ids;
@@ -195,6 +203,8 @@ export async function updateByIdLang(
   lang_id: LangId,
   input: LangInput,
 ): Promise<LangId> {
+  
+  await validateLang(input, { mode: "update" });
   
   lang_id = await langDao.updateByIdLang(lang_id, input);
   

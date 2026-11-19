@@ -1001,11 +1001,38 @@ export async function validateOptionLoginLog(
 /** 登录日志增加和修改时校验输入 */
 export async function validateLoginLog(
   input: Readonly<LoginLogInput>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
+  const mode = options?.mode ?? "update";
   const fieldComments = await getFieldCommentsLoginLog();
+
+  
+  if (mode === "create") {
+    
+    // 类型
+    await validators.required(
+      input.type,
+      fieldComments.type,
+    );
+    
+    // 用户名
+    await validators.required(
+      input.username,
+      fieldComments.username,
+    );
+    
+  }
   
   // ID
   await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  await validators.chars_min_length(
     input.id,
     22,
     fieldComments.id,

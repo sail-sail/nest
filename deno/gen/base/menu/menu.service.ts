@@ -173,8 +173,12 @@ export async function existByIdMenu(
  */
 export async function validateMenu(
   input: MenuInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await menuDao.validateMenu(input);
+  await menuDao.validateMenu(input, options);
 }
 
 /**
@@ -186,6 +190,10 @@ export async function createsMenu(
     uniqueType?: UniqueType;
   },
 ): Promise<MenuId[]> {
+  
+  for (const input of inputs) {
+    await validateMenu(input, { mode: "create" });
+  }
   const menu_ids = await menuDao.createsMenu(inputs, options);
   
   return menu_ids;
@@ -198,6 +206,8 @@ export async function updateByIdMenu(
   menu_id: MenuId,
   input: MenuInput,
 ): Promise<MenuId> {
+  
+  await validateMenu(input, { mode: "update" });
   
   menu_id = await menuDao.updateByIdMenu(menu_id, input);
   

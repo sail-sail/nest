@@ -404,8 +404,12 @@ export async function existByIdTenant(
  */
 export async function validateTenant(
   input: TenantInput,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await tenantDao.validateTenant(input);
+  await tenantDao.validateTenant(input, options);
 }
 
 /**
@@ -417,6 +421,10 @@ export async function createsTenant(
     uniqueType?: UniqueType;
   },
 ): Promise<TenantId[]> {
+  
+  for (const input of inputs) {
+    await validateTenant(input, { mode: "create" });
+  }
   const source_tenant_id = await getTenant_id();
   const source_dictbiz_models = await getSourceDictbizModels(source_tenant_id);
   const source_optbiz_models = await getSourceOptbizModels(source_tenant_id);
@@ -448,6 +456,8 @@ export async function updateByIdTenant(
   tenant_id: TenantId,
   input: TenantInput,
 ): Promise<TenantId> {
+  
+  await validateTenant(input, { mode: "update" });
   
   const is_locked = await tenantDao.getIsLockedByIdTenant(tenant_id);
   if (is_locked) {
