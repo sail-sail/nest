@@ -27,6 +27,7 @@ use crate::base::usr::usr_dao::{
 
 use super::cron_job_model::*;
 use super::cron_job_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -263,7 +264,11 @@ pub async fn creates_cron_job(
   options: Option<Options>,
 ) -> Result<Vec<CronJobId>> {
   
-  for cron_job_input in &cron_job_inputs {
+  for cron_job_input in cron_job_inputs.iter() {
+    cron_job_dao::validate_cron_job(
+      cron_job_input,
+      ValidateMode::Create,
+    )?;
     if let Some(cron) = cron_job_input.cron.as_deref() {
       validate_cron_expression(cron)?;
     }
@@ -301,6 +306,11 @@ pub async fn update_by_id_cron_job(
   mut cron_job_input: CronJobInput,
   options: Option<Options>,
 ) -> Result<CronJobId> {
+  
+  cron_job_dao::validate_cron_job(
+    &cron_job_input,
+    ValidateMode::Update,
+  )?;
   
   if let Some(cron) = cron_job_input.cron.as_deref() {
     validate_cron_expression(cron)?;

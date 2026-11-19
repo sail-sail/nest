@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::job_model::*;
 use super::job_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_job(
   options: Option<Options>,
 ) -> Result<Vec<JobId>> {
   
+  for job_input in job_inputs.iter() {
+    job_dao::validate_job(
+      job_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let job_ids = job_dao::creates_job(
     job_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_job(
   mut job_input: JobInput,
   options: Option<Options>,
 ) -> Result<JobId> {
+  
+  job_dao::validate_job(
+    &job_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = job_dao::get_is_locked_by_id_job(
     job_id,

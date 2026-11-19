@@ -47,6 +47,7 @@ use crate::common::context::{
   get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3947,4 +3948,82 @@ pub async fn validate_option_cron_job(
   };
   
   Ok(model)
+}
+
+// MARK: validate_cron_job
+/// 校验定时任务增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_cron_job(
+  input: &CronJobInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "名称",
+    )?;
+  
+    // 任务
+    required(
+      input.job_id.filter(|v| !v.is_empty()).is_none(),
+      "任务",
+    )?;
+  
+    // Cron表达式
+    required(
+      input.cron.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "Cron表达式",
+    )?;
+  
+    // 执行用户
+    required(
+      input.exec_usr_id.filter(|v| !v.is_empty()).is_none(),
+      "执行用户",
+    )?;
+  
+    // 时区
+    required(
+      input.timezone.is_none(),
+      "时区",
+    )?;
+  }
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    50,
+    "名称",
+  )?;
+  
+  // Cron表达式
+  chars_max_length(
+    input.cron.clone(),
+    50,
+    "Cron表达式",
+  )?;
+  
+  // 时区
+  chars_max_length(
+    input.timezone.clone(),
+    20,
+    "时区",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

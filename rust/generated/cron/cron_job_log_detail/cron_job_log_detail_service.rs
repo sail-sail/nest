@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::cron_job_log_detail_model::*;
 use super::cron_job_log_detail_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_cron_job_log_detail(
   options: Option<Options>,
 ) -> Result<Vec<CronJobLogDetailId>> {
   
+  for cron_job_log_detail_input in cron_job_log_detail_inputs.iter() {
+    cron_job_log_detail_dao::validate_cron_job_log_detail(
+      cron_job_log_detail_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let cron_job_log_detail_ids = cron_job_log_detail_dao::creates_cron_job_log_detail(
     cron_job_log_detail_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_cron_job_log_detail(
   mut cron_job_log_detail_input: CronJobLogDetailInput,
   options: Option<Options>,
 ) -> Result<CronJobLogDetailId> {
+  
+  cron_job_log_detail_dao::validate_cron_job_log_detail(
+    &cron_job_log_detail_input,
+    ValidateMode::Update,
+  )?;
   
   let cron_job_log_detail_id = cron_job_log_detail_dao::update_by_id_cron_job_log_detail(
     cron_job_log_detail_id,
