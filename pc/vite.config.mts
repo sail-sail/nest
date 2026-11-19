@@ -92,6 +92,9 @@ export default defineConfig({
     }),
     fileViewerRenderers({
       scan: false,
+      // 复制 PDF.js 的 worker / cMaps / standard fonts / CJK 回退字体等离线资源，
+      // 否则 PDF 中的中文（未嵌入字体的 CID 字体）无法解码，预览时文字整片空白
+      copyAssets: process.env.NODE_ENV === "production",
       preset: "office",
       formats: [
         "xls",
