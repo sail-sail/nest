@@ -23,7 +23,7 @@ export async function chars_min_length(
     return;
   }
   const err_msg = await ns(
-    "长度不能超过 {0}",
+    "长度不能小于 {0}",
     len,
   );
   throw new ServiceException(`${ label } ${ err_msg }`, "validate_chars_min_length");

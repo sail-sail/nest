@@ -7,7 +7,7 @@ import {
 } from "/src/base/i18n/i18n.ts";
 
 // IP地址正则表达式
-const REG = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/gm;
+const REG = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
 
 export async function ip(
   value?: string | null,

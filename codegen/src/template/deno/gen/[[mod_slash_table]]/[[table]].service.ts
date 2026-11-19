@@ -638,8 +638,12 @@ export async function existById<#=Table_Up#>(
  */
 export async function validate<#=Table_Up#>(
   input: <#=inputName#>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ): Promise<void> {
-  await <#=table#>Dao.validate<#=Table_Up#>(input);
+  await <#=table#>Dao.validate<#=Table_Up#>(input, options);
 }
 
 /**
@@ -650,7 +654,11 @@ export async function creates<#=Table_Up#>(
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<<#=Table_Up#>Id[]> {<#
+): Promise<<#=Table_Up#>Id[]> {
+  
+  for (const input of inputs) {
+    await validate<#=Table_Up#>(input, { mode: "create" });
+  }<#
   if (hasAudit) {
   #>
   
@@ -702,7 +710,9 @@ export async function getEditableDataPermitsByIds<#=Table_Up#>(
 export async function updateById<#=Table_Up#>(
   <#=table#>_id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-): Promise<<#=Table_Up#>Id> {<#
+): Promise<<#=Table_Up#>Id> {
+  
+  await validate<#=Table_Up#>(input, { mode: "update" });<#
   if (
     (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) ||
     hasAudit

@@ -780,7 +780,6 @@ export async function creates<#=Table_Up2#>(
 ): Promise<<#=Table_Up#>Id[]> {
   
   const {
-    validate<#=Table_Up2#>,
     setIdByLbl<#=Table_Up2#>,
     creates<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
@@ -833,8 +832,6 @@ export async function creates<#=Table_Up2#>(
     
     await setIdByLbl<#=Table_Up2#>(input);
     
-    await validate<#=Table_Up2#>(input);
-    
   }
   const uniqueType = unique_type;
   const ids = await creates<#=Table_Up2#>(inputs, { uniqueType });<#
@@ -874,7 +871,6 @@ export async function updateById<#=Table_Up2#>(
   
   const {
     setIdByLbl<#=Table_Up2#>,
-    validate<#=Table_Up2#>,
     updateById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
   if (!is_with_auth_optional) {
@@ -896,9 +892,7 @@ export async function updateById<#=Table_Up2#>(
   
   intoInput<#=Table_Up#>(input);
   
-  await setIdByLbl<#=Table_Up2#>(input);
-  
-  await validate<#=Table_Up2#>(input);<#
+  await setIdByLbl<#=Table_Up2#>(input);<#
   if (!is_with_auth_optional) {
   #>
   

@@ -6,7 +6,7 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-const REG = /^[a-zA-Z0-9_\-\.]+@[a-zA-Z0-9_\-\.]+$/gm;
+const REG = /^[a-zA-Z0-9_\-\.]+@[a-zA-Z0-9_\-\.]+$/;
 
 export async function email(
   value?: string | null,

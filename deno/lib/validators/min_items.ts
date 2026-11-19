@@ -20,7 +20,7 @@ export async function min_items(
   }
   label = label || "";
   const value_len = value.length;
-  if (value_len <= len) {
+  if (value_len >= len) {
     return;
   }
   const err_msg = await ns(

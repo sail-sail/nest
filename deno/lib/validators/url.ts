@@ -6,7 +6,7 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-const REG = /^https?:\/\/[a-zA-Z0-9_\-\.]+$/gm;
+const REG = /^https?:\/\/[a-zA-Z0-9_\-\.]+$/;
 
 export async function url(
   value?: string | null,

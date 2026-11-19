@@ -4100,8 +4100,88 @@ export async function validateOption<#=Table_Up#>(
 /** <#=table_comment#>增加和修改时校验输入 */
 export async function validate<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
+  options?: {
+    /** create: 校验必填; update: 只校验已传字段 */
+    mode?: "create" | "update";
+  },
 ) {
-  const fieldComments = await getFieldComments<#=Table_Up#>();<#
+  const mode = options?.mode ?? "update";
+  const fieldComments = await getFieldComments<#=Table_Up#>();
+<#
+  const stringDataTypes = [
+    "varchar",
+    "char",
+    "text",
+    "tinytext",
+    "mediumtext",
+    "longtext",
+    "enum",
+    "set",
+  ];
+  const numberDataTypes = [
+    "int",
+    "integer",
+    "tinyint",
+    "smallint",
+    "mediumint",
+    "bigint",
+    "decimal",
+    "numeric",
+    "float",
+    "double",
+  ];
+  const requiredSkipColumnNames = [
+    "id",
+    "org_id",
+    "tenant_id",
+    "is_sys",
+    "is_deleted",
+    "is_hidden",
+    "is_locked",
+    "is_enabled",
+    "order_by",
+    "version",
+    "create_usr_id",
+    "update_usr_id",
+    "create_time",
+    "update_time",
+  ];
+  const requiredColumns = columns.filter(function(column) {
+    if (column.ignoreCodegen) return false;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) return false;
+    if (requiredSkipColumnNames.includes(column.COLUMN_NAME)) return false;
+    if (column.COLUMN_NAME.startsWith("is_")) return false;
+    if (column.isPassword) return false;
+    if (column.require !== true) return false;
+    if (column.noAdd) return false;
+    if (column.noDetail) return false;
+    if (column.readonly) return false;
+    if (column.isVirtual) return false;
+    return true;
+  });
+  if (requiredColumns.length > 0) {
+#>
+  
+  if (mode === "create") {<#
+    for (let i = 0; i < requiredColumns.length; i++) {
+      const column = requiredColumns[i];
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const isMultiple = foreignKey?.multiple === true;
+  #>
+    
+    // <#=column_comment#>
+    await validators.required(
+      input.<#=column_name#><# if (isMultiple) { #> ?? input.<#=column_name#>_lbl<# } #>,
+      fieldComments.<#=column_name#>,
+    );<#
+    }
+  #>
+    
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -4135,96 +4215,26 @@ export async function validate<#=Table_Up#>(
   #>
   await validators.max_items(
     input.<#=column_name#>,
-    <#=validator.max_items#>,
+    <#=String(validator.max_items)#>,
     fieldComments.<#=column_name#>,
   );
   await validators.max_items(
     input.<#=column_name#>_lbl,
-    <#=validator.max_items#>,
+    <#=String(validator.max_items)#>,
     fieldComments.<#=column_name#>_lbl,
   );<#
-    } else if (validator.min_items != null) {
+    }
+    if (validator.min_items != null) {
   #>
   await validators.min_items(
     input.<#=column_name#>,
-    <#=validator.min_items#>,
+    <#=String(validator.min_items)#>,
     fieldComments.<#=column_name#>,
   );
   await validators.min_items(
     input.<#=column_name#>_lbl,
-    <#=validator.min_items#>,
+    <#=String(validator.min_items)#>,
     fieldComments.<#=column_name#>_lbl,
-  );<#
-    }
-  #><#
-    }
-  #><#
-    } else if ((foreignKey || column.dict || column.dictbiz) && !foreignKey?.multiple) {
-  #><#
-    for (let j = 0; j < validators.length; j++) {
-      const validator = validators[j];
-  #>
-  
-  // <#=column_comment#><#
-    if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.maximum(
-    input.<#=column_name#>,
-    <#=validator.maximum#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.minimum(
-    input.<#=column_name#>,
-    <#=validator.minimum#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  await validators.multiple_of(
-    input.<#=column_name#>,
-    <#=validator.multiple_of#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.chars_max_length(
-    input.<#=column_name#>,
-    <#=validator.chars_max_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.chars_min_length(
-    input.<#=column_name#>,
-    <#=validator.chars_min_length#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.regex(
-    input.<#=column_name#>,
-    "<#=validator.regex#>",
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.email != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.email(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.url != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.url(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
-  );<#
-    } else if (validator.ip != null && [ "varchar", "text" ].includes(data_type)) {
-  #>
-  await validators.ip(
-    input.<#=column_name#>,
-    fieldComments.<#=column_name#>,
   );<#
     }
   #><#
@@ -4237,18 +4247,72 @@ export async function validate<#=Table_Up#>(
   #>
   
   // <#=column_comment#><#
-    if (validator.chars_max_length != null) {
+    if (validator.maximum != null && numberDataTypes.includes(data_type)) {
+  #>
+  await validators.maximum(
+    input.<#=column_name#>,
+    <#=String(validator.maximum)#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.minimum != null && numberDataTypes.includes(data_type)) {
+  #>
+  await validators.minimum(
+    input.<#=column_name#>,
+    <#=String(validator.minimum)#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.multiple_of != null && numberDataTypes.includes(data_type)) {
+  #>
+  await validators.multiple_of(
+    input.<#=column_name#>,
+    <#=String(validator.multiple_of)#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.chars_max_length != null && stringDataTypes.includes(data_type)) {
   #>
   await validators.chars_max_length(
     input.<#=column_name#>,
-    <#=validator.chars_max_length#>,
+    <#=String(validator.chars_max_length)#>,
     fieldComments.<#=column_name#>,
   );<#
-    } else if (validator.chars_min_length != null) {
+    }
+    if (validator.chars_min_length != null && stringDataTypes.includes(data_type)) {
   #>
   await validators.chars_min_length(
     input.<#=column_name#>,
-    <#=validator.chars_min_length#>,
+    <#=String(validator.chars_min_length)#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.regex != null && stringDataTypes.includes(data_type)) {
+  #>
+  await validators.regex(
+    input.<#=column_name#>,
+    <#=JSON.stringify(validator.regex)#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.email != null && stringDataTypes.includes(data_type)) {
+  #>
+  await validators.email(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.url != null && stringDataTypes.includes(data_type)) {
+  #>
+  await validators.url(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    }
+    if (validator.ip != null && stringDataTypes.includes(data_type)) {
+  #>
+  await validators.ip(
+    input.<#=column_name#>,
     fieldComments.<#=column_name#>,
   );<#
     }

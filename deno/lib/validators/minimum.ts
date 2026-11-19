@@ -18,7 +18,7 @@ export async function minimum(
     return;
   }
   label = label || "";
-  if (value <= len) {
+  if (value >= len) {
     return;
   }
   const err_msg = await ns(

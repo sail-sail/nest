@@ -1,5 +1,6 @@
 export * from "./chars_max_length.ts";
 export * from "./chars_min_length.ts";
+export * from "./required.ts";
 export * from "./max_items.ts";
 export * from "./min_items.ts";
 export * from "./maximum.ts";
