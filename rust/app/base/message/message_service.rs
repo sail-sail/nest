@@ -38,6 +38,20 @@ pub async fn send_message(
   send_message_dao2(input, receiver_usr_ids, options).await
 }
 
+/// 发送系统消息并推送企微
+/// 企微记录通过 sys_message_id 关联站内消息, 点开企微链接时两条一起标记已读
+pub async fn send_message_with_wxwork(
+  input: MessageInput,
+  receiver_usr_ids: Vec<UsrId>,
+  options: Option<Options>
+) -> Result<MessageModel> {
+  generated::base::message::message_dao2::send_message_with_wxwork(
+    input,
+    receiver_usr_ids,
+    options,
+  ).await
+}
+
 /// 标记消息接收记录为已读
 pub async fn mark_message_receiver_as_read(
   id: MessageReceiverId,
