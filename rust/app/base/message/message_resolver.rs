@@ -2,7 +2,7 @@ use color_eyre::eyre::Result;
 use tracing::info;
 use generated::common::context::Options;
 
-use generated::base::message::message_model::{MessageInput, MessageModel};
+use generated::base::message::message_model::{MessageId, MessageInput, MessageModel};
 use generated::base::message_receiver::message_receiver_model::MessageReceiverId;
 use generated::common::context::get_req_id;
 use generated::base::usr::usr_model::UsrId;
@@ -50,4 +50,19 @@ pub async fn mark_message_receiver_as_read(
   );
 
   message_service::mark_message_receiver_as_read(id, options).await
+}
+
+/// 按消息ID标记当前用户已读(企微消息会联动关联的站内消息)
+#[function_name::named]
+pub async fn mark_my_message_read_by_message_id(
+  message_id: MessageId,
+  options: Option<Options>,
+) -> Result<bool> {
+  info!(
+    "{req_id} {function_name}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+
+  message_service::mark_my_message_read_by_message_id(message_id, options).await
 }

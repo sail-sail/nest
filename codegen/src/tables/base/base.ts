@@ -1837,6 +1837,13 @@ export default defineConfig({
         isSwitch: false,
       },
       {
+        COLUMN_NAME: "sys_message_id",
+        notForeignKeyById: true,
+        readonly: true,
+        noList: true,
+        noDetail: true,
+      },
+      {
         COLUMN_NAME: "org_id",
         require: false,
       },

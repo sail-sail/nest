@@ -97,6 +97,9 @@ pub struct MessageModel {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: String,
+  /// 关联站内消息
+  #[graphql(name = "sys_message_id")]
+  pub sys_message_id: String,
   /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: OrgId,
@@ -155,6 +158,8 @@ impl FromRow<'_, MySqlRow> for MessageModel {
     // 置顶
     let is_pinned: u8 = row.try_get("is_pinned")?;
     let is_pinned_lbl = is_pinned.to_string();
+    // 关联站内消息
+    let sys_message_id: String = row.try_get("sys_message_id")?;
     // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
@@ -200,6 +205,7 @@ impl FromRow<'_, MySqlRow> for MessageModel {
       is_sys_msg_lbl,
       is_pinned,
       is_pinned_lbl,
+      sys_message_id,
       org_id,
       org_id_lbl,
       create_usr_id,
@@ -266,6 +272,9 @@ pub struct MessageFieldComment {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: String,
+  /// 关联站内消息
+  #[graphql(name = "sys_message_id")]
+  pub sys_message_id: String,
   /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: String,
@@ -362,6 +371,12 @@ pub struct MessageSearch {
   /// 置顶
   #[graphql(skip)]
   pub is_pinned: Option<Vec<u8>>,
+  /// 关联站内消息
+  #[graphql(skip)]
+  pub sys_message_id: Option<String>,
+  /// 关联站内消息
+  #[graphql(skip)]
+  pub sys_message_id_like: Option<String>,
   /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
@@ -483,6 +498,13 @@ impl std::fmt::Debug for MessageSearch {
     if let Some(ref is_pinned) = self.is_pinned {
       item = item.field("is_pinned", is_pinned);
     }
+    // 关联站内消息
+    if let Some(ref sys_message_id) = self.sys_message_id {
+      item = item.field("sys_message_id", sys_message_id);
+    }
+    if let Some(ref sys_message_id_like) = self.sys_message_id_like {
+      item = item.field("sys_message_id_like", sys_message_id_like);
+    }
     // 所属组织
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
@@ -589,6 +611,9 @@ pub struct MessageInput {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: Option<String>,
+  /// 关联站内消息
+  #[graphql(name = "sys_message_id")]
+  pub sys_message_id: Option<String>,
   /// 所属组织 [@fk:base_org.id]
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
@@ -671,6 +696,9 @@ impl std::fmt::Debug for MessageInput {
     if let Some(ref is_pinned) = self.is_pinned {
       item = item.field("is_pinned", is_pinned);
     }
+    if let Some(ref sys_message_id) = self.sys_message_id {
+      item = item.field("sys_message_id", sys_message_id);
+    }
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
@@ -728,6 +756,8 @@ impl From<MessageModel> for MessageInput {
       // 置顶
       is_pinned: model.is_pinned.into(),
       is_pinned_lbl: model.is_pinned_lbl.into(),
+      // 关联站内消息
+      sys_message_id: model.sys_message_id.into(),
       // 所属组织
       org_id: model.org_id.into(),
       org_id_lbl: model.org_id_lbl.into(),
@@ -777,6 +807,8 @@ impl From<MessageInput> for MessageSearch {
       is_sys_msg: input.is_sys_msg.map(|x| vec![x]),
       // 置顶
       is_pinned: input.is_pinned.map(|x| vec![x]),
+      // 关联站内消息
+      sys_message_id: input.sys_message_id,
       // 所属组织
       org_id: input.org_id.map(|x| vec![x]),
       // 所属组织
