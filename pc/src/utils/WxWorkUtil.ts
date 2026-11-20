@@ -91,6 +91,7 @@ export async function initWxWorkSso() {
         return false;
       }
       usrStore.authorization = loginModel.authorization;
+      usrStore.usr_id = loginModel.usr_id;
       usrStore.username = loginModel.username;
       usrStore.tenant_id = loginModel.tenant_id;
       usrStore.lang = loginModel.lang ?? "";
@@ -175,6 +176,7 @@ export async function createWWLoginPanel(
         const tabsStore = useTabsStore();
         const indexStore = useIndexStore();
         usrStore.authorization = loginModel.authorization;
+        usrStore.usr_id = loginModel.usr_id;
         usrStore.username = loginModel.username;
         usrStore.tenant_id = loginModel.tenant_id;
         usrStore.lang = loginModel.lang ?? "";
