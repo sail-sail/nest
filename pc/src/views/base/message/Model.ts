@@ -53,6 +53,8 @@ export const messageFields = [
   // 置顶
   "is_pinned",
   "is_pinned_lbl",
+  // 关联站内消息
+  "sys_message_id",
   // 所属组织
   "org_id",
   "org_id_lbl",

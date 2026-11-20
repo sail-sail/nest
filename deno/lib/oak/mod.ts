@@ -9,6 +9,7 @@ import ossRouter from "/lib/oss/oss.router.ts";
 import websocketRouter from "../websocket/websocket.router.ts";
 import healthRouter from "/lib/health/health.router.ts";
 import mcpRouter from "/lib/mcp/mcp.router.ts";
+import appRouter from "/lib/app/app.router.ts";
 import { oaiMiddleware, oaiRouter } from "/src/base/oai/oai.router.ts";
 
 export function initApp() {
@@ -25,6 +26,7 @@ export function initApp() {
   app.use(websocketRouter.routes());
   app.use(healthRouter.routes());
   app.use(mcpRouter.routes());
+  app.use(appRouter.routes());
   
   return app;
 }

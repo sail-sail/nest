@@ -14,6 +14,8 @@ defineGraphql(resolver, /* GraphQL */ `
     sendMessage(input: MessageInput!, receiver_usr_ids: [UsrId!]!): MessageModel!
     "标记消息接收记录为已读"
     markMessageReceiverAsRead(id: MessageReceiverId!): Boolean!
+    "按消息ID标记当前用户已读, 企微消息会同时把关联的站内消息标记已读"
+    markMyMessageReadByMessageId(message_id: MessageId!): Boolean!
   }
 
 `);

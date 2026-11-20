@@ -33,3 +33,15 @@ export async function markMessageReceiverAsRead(id: MessageReceiverId) {
 
   return await markMessageReceiverAsReadService(id);
 }
+
+/** 按消息ID标记当前用户已读(企微消息会联动关联的站内消息) */
+export async function markMyMessageReadByMessageId(message_id: MessageId) {
+  const {
+    markMyMessageReadByMessageId: markMyMessageReadByMessageIdService,
+  } = await import("./message.service.ts");
+
+  const context = useContext();
+  context.is_tran = true;
+
+  return await markMyMessageReadByMessageIdService(message_id);
+}

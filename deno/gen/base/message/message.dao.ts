@@ -170,6 +170,12 @@ async function getWhereQuery(
   if (search?.is_pinned != null) {
     whereQuery += ` and t.is_pinned in (${ args.push(search.is_pinned) })`;
   }
+  if (search?.sys_message_id != null) {
+    whereQuery += ` and t.sys_message_id=${ args.push(search.sys_message_id) }`;
+  }
+  if (isNotEmpty(search?.sys_message_id_like)) {
+    whereQuery += ` and t.sys_message_id like ${ args.push("%" + sqlLike(search?.sys_message_id_like) + "%") }`;
+  }
   if (search?.org_id != null) {
     whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
@@ -781,6 +787,7 @@ export async function getFieldCommentsMessage(): Promise<MessageFieldComment> {
     is_sys_msg_lbl: "系统消息",
     is_pinned: "置顶",
     is_pinned_lbl: "置顶",
+    sys_message_id: "关联站内消息",
     org_id: "所属组织",
     org_id_lbl: "所属组织",
     create_usr_id: "创建人",
@@ -1362,6 +1369,13 @@ export async function validateMessage(
     fieldComments.sender_usr_id,
   );
   
+  // 关联站内消息
+  await validators.chars_max_length(
+    input.sys_message_id,
+    22,
+    fieldComments.sys_message_id,
+  );
+  
   // 所属组织
   await validators.chars_max_length(
     input.org_id,
@@ -1652,7 +1666,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_message(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,category,channel,title,content,route_path,route_query,sender_usr_id_lbl,sender_usr_id,is_sys_msg,is_pinned,org_id_lbl,org_id)values";
+  let sql = "insert into base_message(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,category,channel,title,content,route_path,route_query,sender_usr_id_lbl,sender_usr_id,is_sys_msg,is_pinned,sys_message_id,org_id_lbl,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1797,6 +1811,11 @@ async function _creates(
       }
       if (input.is_pinned != null) {
         sql += `,${ args.push(input.is_pinned) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.sys_message_id != null) {
+        sql += `,${ args.push(input.sys_message_id) }`;
       } else {
         sql += ",default";
       }
@@ -2096,6 +2115,12 @@ export async function updateByIdMessage(
   if (input.is_pinned != null) {
     if (input.is_pinned != oldModel.is_pinned) {
       sql += `is_pinned=${ args.push(input.is_pinned) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.sys_message_id != null) {
+    if (input.sys_message_id != oldModel.sys_message_id) {
+      sql += `sys_message_id=${ args.push(input.sys_message_id) },`;
       updateFldNum++;
     }
   }

@@ -35,6 +35,9 @@ declare global {
     is_sys_msg?: number[] | null;
     /** 置顶 */
     is_pinned?: number[] | null;
+    /** 关联站内消息 */
+    sys_message_id?: string;
+    sys_message_id_like?: string;
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;

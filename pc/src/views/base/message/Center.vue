@@ -616,8 +616,18 @@ async function markAsRead(item: MessageCenterItem) {
 async function openDetail(item: MessageCenterItem) {
   selectSingleItem(item, activeTab === "unread" ? "unread" : "read");
   await markAsRead(item);
-  selectedItem = item;
-  detailVisible = true;
+  const routePath = item.message?.route_path;
+  if (!routePath) {
+    return;
+  }
+  await router.push({
+    path: routePath,
+    query: {
+      ...getRouteQuery(item.message?.route_query),
+      // 目标页落地后兜底再标记一次, 避免这里的请求失败导致消息仍是未读
+      ...(item.receiver.message_id ? { _message_id: item.receiver.message_id } : {}),
+    },
+  });
 }
 
 async function markSelectedAsRead() {

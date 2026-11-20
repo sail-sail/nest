@@ -38,6 +38,8 @@ type MessageModel {
   is_pinned: Int!
   "置顶"
   is_pinned_lbl: String!
+  "关联站内消息"
+  sys_message_id: String!
   "所属组织 [@fk:base_org.id]"
   org_id: OrgId!
   "所属组织"
@@ -93,6 +95,8 @@ type MessageFieldComment {
   is_pinned: String!
   "置顶"
   is_pinned_lbl: String!
+  "关联站内消息"
+  sys_message_id: String!
   "所属组织 [@fk:base_org.id]"
   org_id: String!
   "所属组织"
@@ -146,6 +150,8 @@ input MessageInput {
   is_pinned: Int
   "置顶"
   is_pinned_lbl: String
+  "关联站内消息"
+  sys_message_id: String
   "所属组织 [@fk:base_org.id]"
   org_id: OrgId
   "所属组织"

@@ -843,14 +843,26 @@ async function markAsRead(item: MessageCenterItem) {
   }
 }
 
-function handleMessageTap(item: MessageCenterItem) {
+async function handleMessageTap(item: MessageCenterItem) {
   if (isEditing) {
     toggleItemSelection(item, !isItemSelected(item));
     return;
   }
-  selectedItem = item;
-  detailVisible = true;
-  void markAsRead(item);
+  await markAsRead(item);
+  const routePath = item.message?.route_path;
+  if (!routePath) {
+    await refreshMessages(false);
+    return;
+  }
+  const jumped = await navigateToMessageRoute(
+    routePath,
+    item.message?.route_query,
+    // 目标页落地后兜底再标记一次, 避免这里的请求失败导致消息仍是未读
+    item.receiver.message_id ? { _message_id: String(item.receiver.message_id) } : undefined,
+  );
+  if (!jumped) {
+    await refreshMessages(false);
+  }
 }
 
 async function markSelectedAsRead() {

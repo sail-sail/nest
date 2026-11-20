@@ -833,7 +833,7 @@ CREATE TABLE if not exists `base_message` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `category` varchar(20) NOT NULL DEFAULT '' COMMENT '分类,dict:message_category',
   -- 系统 sys, 邮件 email, 短信 sms, 企业微信 wecom, 钉钉 dingtalk, 飞书 feishu (is_sys=0, is_add=0, 多选项, 逗号分隔)
-  `channel` varchar(20) NOT NULL DEFAULT 'pc' COMMENT '发送通道,dict:message_channel',
+  `channel` varchar(20) NOT NULL DEFAULT 'sys' COMMENT '发送通道,dict:message_channel',
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
   `content` varchar(2000) NOT NULL DEFAULT '' COMMENT '内容',
   `route_path` varchar(200) NOT NULL DEFAULT '' COMMENT '跳转路由',
@@ -842,6 +842,8 @@ CREATE TABLE if not exists `base_message` (
   `sender_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '发送人名称',
   `is_sys_msg` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统消息,dict:yes_no',
   `is_pinned` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '置顶,dict:yes_no',
+  -- 企业微信等推送通道的记录, 指向产生它的站内消息(sys 通道), 空串表示没有关联
+  `sys_message_id` varchar(22) NOT NULL DEFAULT '' COMMENT '关联站内消息',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
   `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
