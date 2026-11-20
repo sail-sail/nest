@@ -27,7 +27,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        刷新
+        <span>刷新</span>
       </el-button>
     </div>
 
