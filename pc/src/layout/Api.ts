@@ -132,6 +132,7 @@ export async function wxwLoginByCode(
         wxwLoginByCode(input: $input) {
           authorization
           org_id
+          usr_id
           username
           name
           tenant_id
