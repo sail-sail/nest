@@ -842,6 +842,8 @@ CREATE TABLE if not exists `base_message` (
   `sender_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '发送人名称',
   `is_sys_msg` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统消息,dict:yes_no',
   `is_pinned` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '置顶,dict:yes_no',
+  -- 企业微信等推送通道的记录, 指向产生它的站内消息(sys 通道), 空串表示没有关联
+  `sys_message_id` varchar(22) NOT NULL DEFAULT '' COMMENT '关联站内消息',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
   `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',

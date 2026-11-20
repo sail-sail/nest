@@ -3,6 +3,8 @@ import {
   useTmConfig,
 } from "./uni_modules/tm-ui/libs/config";
 
+import { handleMessageReadFromQuery } from "./utils/message_read";
+
 const tm = useTmConfig()
 tm.config.mode = "light";
 
@@ -14,9 +16,21 @@ onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
   
+  // 企微消息落地: URL 带 _message_id 时异步标记已读, 不阻塞启动
+  handleMessageReadFromQuery(options?.query);
+  
+  // #ifdef H5
+  await initWxWorkCfg();
+  // #endif
+  
   await checkLogin(options);
   
 }));
+
+onShow((options?: App.LaunchShowOption) => {
+  // 从后台切回时落地页可能换了, 同样处理一次
+  handleMessageReadFromQuery(options?.query);
+});
 
 </script>
 
