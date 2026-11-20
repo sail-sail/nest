@@ -21,7 +21,6 @@ use crate::common::context::{
 };
 use crate::common::websocket::websocket_dao::publish;
 use crate::base::usr::usr_model::UsrId;
-use crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork;
 
 /// 获取当前用户未读消息数量
 pub async fn get_current_user_unread_message_count(
@@ -91,26 +90,6 @@ pub async fn send_message(
   }
 
   Ok(message)
-}
-
-/// 发送站内系统消息并推送企微
-/// 站内消息先落库, 企微记录通过 sys_message_id 指向它, 点开企微链接时两条一起标记已读
-/// 站内消息发送失败不阻断企微推送, 与原有成对调用的容错行为保持一致
-pub async fn send_message_with_wxwork(
-  input: MessageInput,
-  receiver_usr_ids: Vec<UsrId>,
-  options: Option<Options>,
-) -> Result<MessageModel> {
-  let req_id = get_req_id();
-  let sys_message_id = match send_message(input.clone(), receiver_usr_ids.clone(), options).await {
-    Ok(message) => Some(message.id),
-    Err(err) => {
-      tracing::error!("{req_id} 发送站内消息失败, 继续推送企微消息: {err:?}");
-      None
-    },
-  };
-
-  send_message_wxwork(input, receiver_usr_ids, sys_message_id, options).await
 }
 
 #[cfg(test)]

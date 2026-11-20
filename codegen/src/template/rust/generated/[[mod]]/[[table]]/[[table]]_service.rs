@@ -1107,7 +1107,7 @@ pub async fn audit_submit_<#=table#>(
   
   let receiver_usr_ids = receiver_usr_ids2;
   
-  crate::base::message::message_dao2::send_message_with_wxwork(
+  crate::base::message::message_dao2::send_message(
     next_message,
     receiver_usr_ids,
     options,
@@ -1269,7 +1269,7 @@ pub async fn audit_pass_<#=table#>(
   
   let receiver_usr_ids = receiver_usr_ids2;
   
-  crate::base::message::message_dao2::send_message_with_wxwork(
+  crate::base::message::message_dao2::send_message(
     next_message,
     receiver_usr_ids,
     options,
@@ -1302,7 +1302,7 @@ pub async fn audit_pass_<#=table#>(
   
   if !old_model.create_usr_id.is_empty() {
     
-    crate::base::message::message_dao2::send_message_with_wxwork(
+    crate::base::message::message_dao2::send_message(
       next_message,
       receiver_usr_ids,
       options,
@@ -1442,7 +1442,7 @@ pub async fn audit_reject_<#=table#>(
   
   if !old_model.create_usr_id.is_empty() {
     
-    crate::base::message::message_dao2::send_message_with_wxwork(
+    crate::base::message::message_dao2::send_message(
       next_message,
       receiver_usr_ids,
       options,
@@ -1588,7 +1588,7 @@ pub async fn audit_reverse_<#=table#>(
   
   let receiver_usr_ids = receiver_usr_ids2;
   
-  crate::base::message::message_dao2::send_message_with_wxwork(
+  crate::base::message::message_dao2::send_message(
     next_message,
     receiver_usr_ids,
     options,
@@ -1717,7 +1717,7 @@ pub async fn audit_review_<#=table#>(
   
   if !old_model.create_usr_id.is_empty() {
     
-    crate::base::message::message_dao2::send_message_with_wxwork(
+    crate::base::message::message_dao2::send_message(
       next_message,
       receiver_usr_ids,
       options,
