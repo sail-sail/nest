@@ -17,6 +17,8 @@ pub struct RedirectQuery {
   pub uni_path: Option<String>,
   /// 强制端: pc / uni, 不传时按 User-Agent 判断
   pub target: Option<String>,
+  /// 消息ID, 会以 _message_id 透传给落地页, 落地页据此标记消息已读
+  pub message_id: Option<String>,
 }
 
 /// 统一跳转: 电脑端跳 /#/route_path, 手机端跳 /uni/#/uni_path
@@ -34,7 +36,16 @@ pub async fn redirect(
   };
 
   let uni_path = query.uni_path.as_deref().and_then(normalize_path);
-  let pairs = parse_query_pairs(query.route_query.as_deref().unwrap_or_default());
+  let mut pairs = parse_query_pairs(query.route_query.as_deref().unwrap_or_default());
+  // 企微消息带的 message_id 统一转成落地页的 _message_id, 与业务参数区分开
+  if let Some(message_id) = query
+    .message_id
+    .as_deref()
+    .map(str::trim)
+    .filter(|item| !item.is_empty())
+  {
+    pairs.push(("_message_id".to_string(), message_id.to_string()));
+  }
 
   let target = query.target.as_deref().unwrap_or_default().trim().to_lowercase();
   let is_uni = match target.as_str() {
@@ -256,7 +267,7 @@ fn build_pc_url(
   append_query(format!("{origin}/#{route_path}"), pairs)
 }
 
-/// 手机端: _tab_name 平铺, 其余参数打包进 builtInSearch(JSON)
+/// 手机端: _tab_name / _message_id 平铺, 其余参数打包进 builtInSearch(JSON)
 fn build_uni_url(
   origin: &str,
   uni_path: &str,
@@ -266,7 +277,7 @@ fn build_uni_url(
   let mut built_in_search = Map::new();
 
   for (key, value) in pairs {
-    if key == "_tab_name" {
+    if key == "_tab_name" || key == "_message_id" {
       flat_pairs.push((key.clone(), value.clone()));
     } else {
       built_in_search.insert(key.clone(), Value::String(value.clone()));
@@ -335,11 +346,54 @@ mod tests {
   }
 
   #[test]
+  fn test_build_uni_url_with_message_id() {
+    // _message_id 必须平铺, 否则手机端页面 onLoad 取不到
+    let pairs = vec![
+      (
+        "_message_id".to_string(),
+        "BbHX0bHjcD+R0ywWhzFPkA".to_string(),
+      ),
+      (
+        "id".to_string(),
+        "AaHX0bHjcD+R0ywWhzFPkA".to_string(),
+      ),
+    ];
+    let expected = format!(
+      "https://cloud.pomeas.cn/uni/#/pages/clue/List?_message_id={message_id}&builtInSearch={search}",
+      message_id = urlencoding::encode("BbHX0bHjcD+R0ywWhzFPkA"),
+      search = urlencoding::encode(r#"{"id":"AaHX0bHjcD+R0ywWhzFPkA"}"#),
+    );
+    assert_eq!(
+      build_uni_url("https://cloud.pomeas.cn", "/pages/clue/List", &pairs),
+      expected,
+    );
+  }
+
+  #[test]
+  fn test_build_pc_url_with_message_id() {
+    let pairs = vec![
+      (
+        "id".to_string(),
+        "AaHX0bHjcD+R0ywWhzFPkA".to_string(),
+      ),
+      (
+        "_message_id".to_string(),
+        "BbHX0bHjcD+R0ywWhzFPkA".to_string(),
+      ),
+    ];
+    assert_eq!(
+      build_pc_url("https://cloud.pomeas.cn", "/scrm/clue", &pairs),
+      "https://cloud.pomeas.cn/#/scrm/clue?id=AaHX0bHjcD%2BR0ywWhzFPkA&_message_id=BbHX0bHjcD%2BR0ywWhzFPkA",
+    );
+  }
+
+  #[test]
   fn test_guess_uni_path() {
     assert_eq!(guess_uni_path("/scrm/clue"), Some("/pages/clue/List".to_string()));
     assert_eq!(guess_uni_path("/scrm/clue/pool"), Some("/pages/clue/Pool".to_string()));
     assert_eq!(guess_uni_path("/scrm/myfollow"), Some("/pages/follow/MyList".to_string()));
-    assert_eq!(guess_uni_path("/base/usr"), None);
+    assert_eq!(guess_uni_path("/base/usr"), Some("/pages/usr/List".to_string()));
+    assert_eq!(guess_uni_path("/scrm"), None);
   }
 
   #[test]

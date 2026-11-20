@@ -12,6 +12,10 @@ import {
 
 import Layout1 from "@/layout/layout1/index.vue";
 
+import scrmRoutes from "./scrm.ts";
+
+import { handleMessageReadFromQuery } from "@/utils/message_read";
+
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
   ...getMenuRoutesFromStorage(),
@@ -78,6 +82,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
+  // 企微消息落地: URL 带 _message_id 时异步标记已读, 不阻塞导航
+  handleMessageReadFromQuery(to.query as Record<string, unknown>);
+
   const agentEnabled = String(import.meta.env.VITE_AGENT_ENABLED ?? "").trim().toLowerCase() === "true";
   if (to.path === "/agent" && !agentEnabled) {
     return { path: "/index" };

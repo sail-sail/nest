@@ -54,6 +54,8 @@ export function intoInputMessage(
     // 置顶
     is_pinned: model?.is_pinned,
     is_pinned_lbl: model?.is_pinned_lbl,
+    // 关联站内消息
+    sys_message_id: model?.sys_message_id,
     // 所属组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,
@@ -762,6 +764,7 @@ export async function getFieldCommentsMessage(
           is_sys_msg_lbl,
           is_pinned,
           is_pinned_lbl,
+          sys_message_id,
           org_id,
           org_id_lbl,
           create_usr_id,

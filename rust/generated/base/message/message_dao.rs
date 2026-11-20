@@ -74,7 +74,7 @@ fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 17 * 6);
+  let mut where_query = String::with_capacity(80 * 18 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -372,6 +372,25 @@ fn get_where_query(
       where_query.push_str(" and t.is_pinned in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  // 关联站内消息
+  {
+    let sys_message_id = match search {
+      Some(item) => item.sys_message_id.clone(),
+      None => None,
+    };
+    if let Some(sys_message_id) = sys_message_id {
+      where_query.push_str(" and t.sys_message_id=?");
+      args.push(sys_message_id.into());
+    }
+    let sys_message_id_like = match search {
+      Some(item) => item.sys_message_id_like.clone(),
+      None => None,
+    };
+    if let Some(sys_message_id_like) = sys_message_id_like && !sys_message_id_like.is_empty() {
+      where_query.push_str(" and t.sys_message_id like ?");
+      args.push(format!("%{}%", sql_like(&sys_message_id_like)).into());
     }
   }
   // 所属组织
@@ -1058,6 +1077,7 @@ pub fn get_field_comments_message(
     is_sys_msg_lbl: "系统消息".into(),
     is_pinned: "置顶".into(),
     is_pinned_lbl: "置顶".into(),
+    sys_message_id: "关联站内消息".into(),
     org_id: "所属组织".into(),
     org_id_lbl: "所属组织".into(),
     create_usr_id: "创建人".into(),
@@ -2242,7 +2262,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 17 * 3 + 60);
+  let mut sql_fields = String::with_capacity(80 * 18 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2272,13 +2292,15 @@ async fn _creates(
   sql_fields += ",is_sys_msg";
   // 置顶
   sql_fields += ",is_pinned";
+  // 关联站内消息
+  sql_fields += ",sys_message_id";
   // 所属组织
   sql_fields += ",org_id_lbl";
   // 所属组织
   sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity(((2 * 17 + 3) * inputs2_len) * 3);
+  let mut sql_values = String::with_capacity(((2 * 18 + 3) * inputs2_len) * 3);
   
   for (i, input) in inputs2
     .clone()
@@ -2467,6 +2489,13 @@ async fn _creates(
     if let Some(is_pinned) = input.is_pinned {
       sql_values += ",?";
       args.push(is_pinned.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 关联站内消息
+    if let Some(sys_message_id) = input.sys_message_id {
+      sql_values += ",?";
+      args.push(sys_message_id.into());
     } else {
       sql_values += ",default";
     }
@@ -2843,7 +2872,7 @@ pub async fn update_by_id_message(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity((80 * 17 + 20) * 3);
+  let mut sql_fields = String::with_capacity((80 * 18 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2911,6 +2940,12 @@ pub async fn update_by_id_message(
     field_num += 1;
     sql_fields += "is_pinned=?,";
     args.push(is_pinned.into());
+  }
+  // 关联站内消息
+  if let Some(sys_message_id) = input.sys_message_id.clone() {
+    field_num += 1;
+    sql_fields += "sys_message_id=?,";
+    args.push(sys_message_id.into());
   }
   // 所属组织
   if let Some(org_id_lbl) = input.org_id_lbl {
@@ -3455,6 +3490,13 @@ pub fn validate_message(
     input.route_query.clone(),
     1000,
     "跳转参数",
+  )?;
+  
+  // 关联站内消息
+  chars_max_length(
+    input.sys_message_id.clone(),
+    22,
+    "关联站内消息",
   )?;
   
   Ok(())
