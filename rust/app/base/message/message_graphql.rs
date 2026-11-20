@@ -1,7 +1,7 @@
 use async_graphql::{Context, Object};
 use color_eyre::eyre::Result;
 
-use generated::base::message::message_model::{MessageInput, MessageModel};
+use generated::base::message::message_model::{MessageId, MessageInput, MessageModel};
 use generated::base::message_receiver::message_receiver_model::MessageReceiverId;
 use generated::common::context::Ctx;
 use generated::base::usr::usr_model::UsrId;
@@ -58,6 +58,21 @@ impl MessageMutation {
       .build()
       .scope({
         message_resolver::mark_message_receiver_as_read(id, None)
+      }).await
+  }
+
+  /// 按消息ID标记当前用户已读, 企微消息会同时把关联的站内消息标记已读
+  #[graphql(name = "markMyMessageReadByMessageId")]
+  async fn mark_my_message_read_by_message_id(
+    &self,
+    ctx: &Context<'_>,
+    message_id: MessageId,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        message_resolver::mark_my_message_read_by_message_id(message_id, None)
       }).await
   }
 }
