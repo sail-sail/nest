@@ -124,7 +124,8 @@ export default function() {
       tenant_id.value = tenant_id0;
     },
     get usr_id() {
-      return usr_id.value!;
+      // 企业微信 SSO 登录不写 store.usr.usr_id, 用 loginInfo 兜底, 否则依赖 usr_id 的页面(如消息中心)会一直不发请求
+      return usr_id.value || loginInfo.value?.usr_id || ("" as unknown as UsrId);
     },
     set usr_id(usr_id0: UsrId) {
       usr_id.value = usr_id0;

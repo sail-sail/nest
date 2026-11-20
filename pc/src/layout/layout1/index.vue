@@ -876,6 +876,7 @@ async function initFrame() {
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
+      usrStore.usr_id = loginInfo.usr_id;
       unreadMessageCount = unreadCount;
     } else {
       const [
@@ -887,6 +888,7 @@ async function initFrame() {
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
+      usrStore.usr_id = loginInfo.usr_id;
       usrStore.lang = loginInfo.lang ?? "";
       usrStore.username = loginInfo.username;
       unreadMessageCount = unreadCount;

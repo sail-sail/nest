@@ -1,6 +1,9 @@
 // deno-lint-ignore-file
 const SSH2Promise = require("ssh2-promise");
 const fs = require("fs/promises");
+const path = require("node:path");
+const os = require("node:os");
+const child_process = require("node:child_process");
 const { randomUUID } = require("node:crypto");
 const ecosystem = require(`${ __dirname }/../../ecosystem.config.json`);
 const publish_cnf = require(`${ __dirname }/publish_cnf.js`);
@@ -70,7 +73,6 @@ console.log(publishPath);
   }
   
   let num = 0;
-  console.log("已上传文件数: ");
   const treeDir = async function(dir) {
     const files = await fs.readdir(`${ buildPath }/${ dir }`);
     for (let i = 0; i < files.length; i++) {
@@ -92,7 +94,60 @@ console.log(publishPath);
       }
     }
   };
-  await treeDir("");
+  
+  // 本地打包成 tar.gz 后只上传一个压缩包, 服务器端解压, 避免大量小文件逐个 fastPut
+  const archiveFile = path.join(os.tmpdir(), `${ projectName }_${ uuid }.tar.gz`);
+  const remoteArchive = `${ publishBase }/${ projectName }_${ uuid }.tar.gz`;
+  let useArchive = process.env.PUBLISH_NO_TAR !== "1";
+  
+  if (useArchive) {
+    try {
+      console.log("本地打包: ", archiveFile);
+      // 在 buildPath 下打包 ".", 保证 .env.* 等隐藏文件一并进包
+      child_process.execFileSync("tar", ["-czf", archiveFile, "."], { cwd: buildPath });
+      const stats = await fs.stat(archiveFile);
+      console.log(`打包完成: ${ (stats.size / 1024 / 1024).toFixed(2) } MB`);
+    } catch (err) {
+      console.error("本地打包失败, 回退到逐文件上传: ", err.message);
+      useArchive = false;
+    }
+  }
+  
+  if (useArchive) {
+    try {
+      let percent = 0;
+      console.log("上传压缩包: ", remoteArchive);
+      await sftp.fastPut(archiveFile, remoteArchive, {
+        step: (transferred, chunk, total) => {
+          const current = Math.floor(transferred / total * 100);
+          if (current >= percent + 10) {
+            percent = current;
+            console.log(`已上传 ${ current }%`);
+          }
+        },
+      });
+      // 解压到临时目录后删除压缩包, 后续步骤仍从 publishPathTmp 取文件, 流程不变
+      const cmd = `tar -xzf ${ remoteArchive } -C ${ publishPathTmp } && rm -f ${ remoteArchive }`;
+      console.log(cmd);
+      data = await ssh.exec(cmd);
+      if (data) {
+        console.log(data);
+      }
+      num = Number((await ssh.exec(`find ${ publishPathTmp } -type f | wc -l`) || "").trim()) || 0;
+    } catch (err) {
+      console.error("压缩包发布失败, 回退到逐文件上传: ", err.message);
+      useArchive = false;
+      await ssh.exec(`rm -f ${ remoteArchive } ; rm -rf ${ publishPathTmp } ; mkdir -p ${ publishPathTmp }`).catch(() => {});
+    } finally {
+      await fs.unlink(archiveFile).catch(() => {});
+    }
+  }
+  
+  if (!useArchive) {
+    console.log("已上传文件数: ");
+    await treeDir("");
+  }
+  console.log(`上传完成, 共 ${ num } 个文件`);
   
   if (commands.length === 0) {
     try {

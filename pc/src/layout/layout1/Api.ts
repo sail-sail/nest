@@ -199,6 +199,7 @@ export async function getLoginInfo(
         getLoginInfo {
           lbl
           username
+          usr_id
           role_codes
           lang
           tenant_id
