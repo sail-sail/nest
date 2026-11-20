@@ -9,7 +9,7 @@ use color_eyre::eyre::{Result, eyre};
 
 use crate::base::domain::domain_dao::find_by_id_domain;
 use crate::base::message::message_dao::create_return_message;
-use crate::base::message::message_model::{MessageInput, MessageModel};
+use crate::base::message::message_model::{MessageId, MessageInput, MessageModel};
 use crate::base::message_receiver::message_receiver_dao::creates_message_receiver;
 use crate::base::message_receiver::message_receiver_model::MessageReceiverInput;
 use crate::base::tenant::tenant_dao::find_by_id_tenant;
@@ -224,7 +224,13 @@ async fn get_tenant_url_prefix(
 }
 
 /// 统一跳转接口链接, 由接口按 User-Agent 决定跳电脑端还是手机端
-fn build_redirect_url(prefix: &str, route_path: &str, route_query: &str) -> String {
+/// message_id 会由跳转接口转成落地页的 _message_id, 落地页据此标记本条消息已读
+fn build_redirect_url(
+  prefix: &str,
+  route_path: &str,
+  route_query: &str,
+  message_id: &str,
+) -> String {
   let prefix = prefix.trim().trim_end_matches('/');
   let route_path = route_path.trim();
   if prefix.is_empty() || route_path.is_empty() {
@@ -239,6 +245,11 @@ fn build_redirect_url(prefix: &str, route_path: &str, route_query: &str) -> Stri
   let route_query = route_query.trim();
   if !route_query.is_empty() {
     url.push_str(&format!("&route_query={}", urlencoding::encode(route_query)));
+  }
+
+  let message_id = message_id.trim();
+  if !message_id.is_empty() {
+    url.push_str(&format!("&message_id={}", urlencoding::encode(message_id)));
   }
 
   url
@@ -496,12 +507,17 @@ pub async fn send_card_msg(
 pub async fn send_message_wxwork(
   input: MessageInput,
   receiver_usr_ids: Vec<UsrId>,
+  sys_message_id: Option<MessageId>,
   options: Option<Options>,
 ) -> Result<MessageModel> {
   let req_id = get_req_id();
   let sender_usr_id = get_auth_id_ok()?;
   let mut message_input = normalize_wecom_system_message(input);
   message_input.sender_usr_id = Some(sender_usr_id);
+  // 关联产生这条企微消息的站内消息, 点开链接时据此把站内消息一并标记已读
+  if message_input.sys_message_id.is_none() {
+    message_input.sys_message_id = sys_message_id.map(|id| id.to_string());
+  }
 
   let title = message_input.title.clone().unwrap_or_else(|| "新消息".into()).to_string();
   let content = message_input.content.clone().unwrap_or_else(|| "您收到一条新消息".into()).to_string();
@@ -610,7 +626,8 @@ pub async fn send_message_wxwork(
     .join("|");
   
   // 统一走跳转接口, 由接口按 User-Agent 决定跳电脑端还是手机端
-  let url = build_redirect_url(&tenant_url_prefix, &route_path, &route_query);
+  // 链接带上本条企微消息的 id, 落地页据此把这条消息(及其关联的站内消息)标记已读
+  let url = build_redirect_url(&tenant_url_prefix, &route_path, &route_query, message.id.as_str());
 
   let wecom_input = SendCardMsgInput {
     wxw_app_id,
