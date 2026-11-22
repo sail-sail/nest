@@ -5,62 +5,34 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 
 # 表配置规范
 
-## 表配置路径
-`codegen/src/tables/{mod}/{mod}.ts`
+## 适用范围
 
-## 完整类型定义
-`codegen/src/config.ts`
+- 配置文件：`codegen/src/tables/{mod}/{mod}.ts`
+- 完整类型：`codegen/src/config.ts`
+- 先读同模块 `{mod}.sql`；SQL 建表规则见 [create-table](../create-table/SKILL.md)
+- 地址、经纬度和地图选点见 [address-lnglat](../address-lnglat/SKILL.md)，本文件不重复展开
+- 禁止执行 `pnpm run initdb`；AI 不连接数据库、不运行 `codegen`
 
-## 地址/经纬度固定规范
+## 必守规则
 
-如果表有地址字段且需要地图定位，必须同时处理：
-
-- `province_code` / `province_lbl`
-- `city_code` / `city_lbl`
-- `county_code` / `county_lbl`
-- `address`
-- `longitude` / `latitude`
-
-并且在详情页保留通用 `LngLatPickerDialog.vue`，按统一模式添加 “拾取经纬度” 按钮与 `showDialog({ address, longitude, latitude })` 回填逻辑。不要在页面里重复写地图选点代码，不要只保存一个坐标值。
-
----
-
-## 必读：最容易漏掉的规则
-
-| 检查项 | 必要动作 | 例外/备注 |
-|--------|----------|-----------|
-| `lbl` 字段 | 在 `columns` 中显式写出 | 纯中间表、日志表、或 SQL 本身没有 `lbl` 时除外 |
-| `modelLabel` | `xxx_id` 对应存在 `xxx_id_lbl` 时，给 `xxx_id` 配置 `modelLabel` | `xxx_id_lbl` 无需再单独写入 `columns` |
-| 审计字段 | 通常补齐 `create_usr_id/create_time/update_usr_id/update_time` | 按表实际用途判断 |
-| 配置换行 | `opts` 和 `columns` 维持多行结构 | 不要压成单行 |
-
-尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
-
-### 1. lbl 字段必须在 columns 中显式写出
+1. 所有需要生成到前后端的业务字段，必须在 `columns` 中显式声明。不要假设 SQL 字段会自动出现在页面。
+2. SQL 有 `lbl` 时，业务主表必须声明：
 
 ```ts
 { COLUMN_NAME: "lbl" },
 ```
 
-`lbl` 的 width/align/require/search 有默认值，但字段本身必须显式写入 `columns`，属性可以省略。除非是纯中间表、日志表、或 SQL 本身没有 `lbl`。
-
-### 2. modelLabel 强制规则
-
-如果 SQL 中某个外键 `xxx_id` 有对应的 `xxx_id_lbl` 冗余字段，则**必须**配置：
+3. SQL 有 `xxx_id_lbl` 时，必须给对应 `xxx_id` 配置 `modelLabel`，且不要再声明 `xxx_id_lbl`：
 
 ```ts
 {
   COLUMN_NAME: "xxx_id",
   modelLabel: "xxx_id_lbl",
 },
-// xxx_id_lbl 无需再单独出现在 columns 中
 ```
 
-不配置会导致 codegen 报错：`字段 xxx_id 的 modelLabel 未设置, 却有 xxx_id_lbl 字段`
-
-注意命名陷阱：`xxx_id_lbl` 字段存在时，codegen 只按上述规则报错提示配置 `modelLabel`；但像 `biz_lbl`、`receiver_province_lbl` 这类**不是** `xxx_id_lbl` 命名的冗余标签字段，需要单独写入 `columns`，不享受 modelLabel 推断。
-
-### 3. 审计字段通常需要补齐
+4. `biz_lbl`、`receiver_province_lbl` 等不符合 `xxx_id_lbl` 命名的标签字段，需要单独写入 `columns`。
+5. 表需要审计信息时，显式补齐存在于 SQL 的字段：
 
 ```ts
 { COLUMN_NAME: "create_usr_id" },
@@ -69,172 +41,83 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 { COLUMN_NAME: "update_time" },
 ```
 
-### 4. 配置文件结构需换行
+6. `opts`、`columns` 必须多行；每个表块上方写 `// 中文表名`，与 SQL 的 `-- 中文表名` 对应。
+7. 不熟悉的属性先查 `config.ts` 或仓库同类表，不要猜属性名。
+
+## 可省略的字段属性
+
+字段必须先写入 `columns`；下列项目只表示写入后可依赖默认值。
+
+| 字段 | 默认行为 |
+|---|---|
+| `lbl` | 默认宽度、左对齐、必填、可搜索、固定左侧 |
+| `*_id` / `*_ids` | 自动推断外键 |
+| 字典注释 `dict:` / `dictbiz:` | 自动识别字典，不写 `foreignKey` |
+| `is_*` / `tinyint unsigned` | `isSwitch: true` |
+| 数字 / `decimal` | 默认右对齐、宽度 100 |
+| `date` / `datetime` | 默认宽度 160 |
+| `rem` | 默认宽度 280、左对齐 |
+| `order_by` | 自动作为默认升序字段 |
+| `isFluentEditor: true` | 默认 `noList: true` |
+| 省市区字段 | 按 `province_*`、`city_*`、`county_*` 后缀自动识别 |
+
+`is_*` 要显示“是/否”文本或只读文本时，显式配置 `isSwitch: false`。
+
+## 不要手写的自动配置
+
+| 配置 | 规则 |
+|---|---|
+| `opts.hasSelectInput` | 被 `selectType: "selectInput"` 引用时自动推断；仅强制关闭时显式写 |
+| `opts.uniques` 中的自动编码字段 | `autoCode` 自动追加 |
+| 字典字段的 `foreignKey` | SQL 注释已有 `dict:` / `dictbiz:` 时自动识别 |
+| `opts.defaultSort` | 按 `autoCode`、`order_by`、`create_time` 自动推断 |
+| `opts.isUniApi` | `isUniPage` 已包含 Uni API 能力，不重复写 |
+
+## 排序
+
+- `opts.defaultSort` 同时影响 PC 和 Uni
+- 未配置时依次使用 `autoCode` 降序、`order_by` 升序、`create_time` 降序
+- 仅某页面需要特殊排序时，在 `findAll*` 的 `sort` 参数中覆盖，不改表级配置
+
+## 审核流
+
+SQL 的状态枚举和审核表结构见 [create-table](../create-table/SKILL.md)。
+
+### 主表
+
+- 审核配置中的 `column`、`auditMod`、`auditTable` 要显式写，不能依赖类型注释中的“默认值”
+- 主表 `columns` 中保留 `{ COLUMN_NAME: "audit" }`；codegen 会自动设为只读
+- 有 `reviewed` 枚举时，codegen 会强制启用 `hasReviewed`
+- 不需要复核时，不要保留 `reviewed` 枚举；不要试图用 `hasReviewed: false` 覆盖推断
+- 需要反审核时必须显式写 `hasReverse: true`
 
 ```ts
-ec_order: {
-  opts: { ... },
-  columns: [ ... ],
+"{mod}_{table}": {
+  opts: {
+    audit: {
+      column: "audit",
+      auditMod: "{mod}",
+      auditTable: "{table}_audit",
+      hasReviewed: true,
+      hasReverse: true,
+    },
+  },
+  columns: [
+    { COLUMN_NAME: "audit" },
+  ],
 },
 ```
 
-- 每个表块上方写一行 `// 中文表名` 注释，与 `{mod}.sql` 里的 `-- 中文表名` 对应
+占位符需替换成真实模块名和表名。
 
-### 5. 新表生成前的安全执行顺序
+### 审核流水表
 
-- 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
-- 建表和配置表之后, 应等人类来执行代码生成, 禁止连接数据库修改数据
-
----
-
-## 新表最小检查清单
-
-1. 按 SQL 中真实存在且需要生成到前后端的字段，逐一显式写入 `columns`
-2. 如果 SQL 有 `lbl`，`columns` 中通常也要显式写 `{ COLUMN_NAME: "lbl" }`
-3. 如果有 `xxx_id_lbl`，对应的 `xxx_id` 必须配置 `modelLabel`
-4. 大部分表需要补齐审计字段
-
-## 默认属性（写入 columns 后可省略的属性）
-
-下表表示字段已写入 `columns` 后，可不额外再写的属性。**不代表字段本身可以省略。**
-
-| 字段/类型 | 默认行为 |
-|-----------|----------|
-| `lbl` | width/align/require/search 已有默认 |
-| `*_id` / `*_ids` | `foreignKey` 自动推断 |
-| `*_id` 非外键字段 | 需设置 `notForeignKeyById: true`（如 `req_id`、`transaction_id`） |
-| 数字类型 | align:right, width:100 |
-| date/datetime | width:160 |
-| decimal | width:100 |
-| rem | width:280, align:left |
-| `*_province_code` | 自动识别省份 |
-| 有 `,dictbiz:` 或 `,dict:` 标注的字段 | 无需配置 `foreignKey` |
-| 所有 `is_*` 布尔字段 | `isSwitch` 默认 true，显示文本或只读时要显式 `isSwitch: false` |
-| `order_by` | 无需配置 |
-| `isFluentEditor` | noList 默认 true |
-
-## 不用手写的配置(别漏也别乱加)
-
-| 配置 | 原因 |
-|------|------|
-| `opts.hasSelectInput` | 被别的表用 `selectType: "selectInput"` 引用时自动为 true |
-| `opts.uniques` 里的自动编号字段 | `autoCode` 自动追加 |
-| 字典字段的 `foreignKey` | 有 `dict:` / `dictbiz:` 标注就自动识别 |
-| `defaultSort`(表里有 `autoCode` 时) | 自动用编号字段降序 |
-
-## 常用 opts 配置
-
-| 配置项 | 用途 |
-|--------|------|
-| `opts.uniques` | 唯一约束，元素是字段名数组，如 `[["code"], ["lbl"]]`；带 `autoCode` 的编码字段会自动追加，无需手写 |
-| `opts.defaultSort` | 默认排序，不配置则为 `create_time` 降序 |
-| `opts.cache` | 是否缓存 |
-| `opts.log` | 操作日志，开启后增改自动记录到 `operation_record` 表 |
-| `opts.audit` | 审核流 |
-| `opts.history_table` | 历史表名，配置后增改自动写入历史表 |
-| `opts.sys_fields` | 系统保护字段，`is_sys=1` 时禁止修改 |
-| `opts.dataPermit` | 行级数据权限 |
-| `opts.filterDataByCreateUsr` | 非 admin 只能看自己的数据 |
-| `opts.hasOrgId` | 组织维度过滤 |
-| `opts.inlineForeignTabs` | 内联关联表 |
-| `opts.cascadeUpdateFields` | 级联更新冗余字段 |
-| `opts.is_with_auth_optional` | 可选认证，跳过 permit 检查 |
-| `opts.isRealData` | 实时数据推送 |
-| `opts.searchByKeyword` | 统一关键字搜索 |
-| `opts.isUniApi` | 生成 uni 端 Api；配了 `isUniPage` 时自动为 true，不用重复写；带审核的主表其审核流水表也会自动继承 |
-
-### defaultSort 是全局配置
-
-`opts.defaultSort` 同时影响 PC 和 uni 端。某端需要特殊排序时，不要修改 `opts.defaultSort`，而应在页面代码中通过 `findAll*` 的 sort 参数传入：
-
-```typescript
-await findAllXxx(search, page, [
-  { prop: "type", order: "ascending" },
-  { prop: "create_time", order: "descending" },
-]);
-```
-
-## 审核流 (audit)
-
-- 主表配置 `opts.audit` 时，必须同时存在对应的审核流水表 `{mod}_{table}_audit`（SQL 与 `{mod}.ts` 都要建）；codegen 找不到审核表会直接报错 `审核表: xxx 不存在`
-- 审核流水表不需要 `opts.audit`，只需标准 columns（见下文示例）
-- 审核流水表不注册独立菜单，前端通过主表的 `AuditListDialog` 查看流水
-- 主表 `audit` 字段在 columns 中只写 `{ COLUMN_NAME: "audit" }`，codegen 会自动置 `readonly: true`
+- 配置键必须使用完整表名 `{mod}_{table}_audit`
+- 审核流水表不配置自己的 `opts.audit`
+- 审核流水表不注册独立菜单
 
 ```ts
-opts: {
-  audit: {
-    column: "audit",           // 审核字段，默认 audit
-    auditMod: "base",          // 审核模块，默认当前模块
-    auditTable: "usr_audit",   // 审核表名，默认 [表名]_audit
-    hasReviewed: true,          // 是否启用复核；audit 枚举含 reviewed 时 codegen 会自动推断为 true，可省略
-    hasReverse: true,           // 是否生成反审核能力，必须显式写 true，无自动推断
-  },
-}
-```
-
-- `hasReviewed`：SQL 枚举含 `reviewed` 时自动为 true，不写也会生成复核；需要显式写 `false` 的场景是枚举含 `reviewed` 但不想开放复核
-- `hasReverse`：不写就不生成反审核按钮与 mutation，需要反审核必须显式 `true`
-
-### 标准状态设计
-
-如果业务有“复核”环节，主表和审核流水表的 `audit` 枚举建议统一为：
-
-```sql
-ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected')
-```
-
-对应配置：
-
-```ts
-audit: {
-  column: "audit",
-  auditMod: "scrm",
-  auditTable: "clue_audit",
-  hasReviewed: true,
-  hasReverse: true,
-}
-```
-
-如果业务没有“复核”环节，建议枚举改为：
-
-```sql
-ENUM('unsubmited', 'unaudited', 'audited', 'rejected')
-```
-
-对应配置：
-
-```ts
-audit: {
-  column: "audit",
-  auditMod: "base",
-  auditTable: "example_audit",
-  hasReviewed: false,
-  hasReverse: true,
-}
-```
-
-### 标准行为约定
-
-- 新增记录时审核字段默认是 `Unsubmited`
-- `audit_submit`: `unsubmited` / `rejected` -> `unaudited`
-- `audit_pass`: `unaudited` -> `audited`
-- `audit_reject`: `unaudited`，以及有复核时的 `audited` -> `rejected`
-- `audit_review`: `audited` -> `reviewed`（仅 `hasReviewed: true`）
-- `audit_reverse`: 回退到上一状态，不新增新枚举值
-  - `reviewed -> audited`
-  - `audited -> unaudited`
-  - `unaudited -> unsubmited`
-  - `unsubmited`、`rejected` 不允许反审核
-- `audit_reject` 操作接收 `auditTableInput` 类型，记录拒绝原因
-- 删除/还原/彻底删除时会级联处理审核记录
-
-### 审核流水表配置
-
-审核流水表 `columns` 至少保持以下结构：
-
-```ts
-scrm_clue_audit: {
+"{mod}_{table}_audit": {
   opts: {
     defaultSort: {
       prop: "audit_time",
@@ -243,16 +126,12 @@ scrm_clue_audit: {
   },
   columns: [
     {
-      COLUMN_NAME: "clue_id",
-      modelLabel: "clue_id_lbl",
+      COLUMN_NAME: "{table}_id",
+      modelLabel: "{table}_id_lbl",
       isCascadeUpdateModelLabel: true,
-      foreignKey: {
-        selectType: "selectInput",
-      },
+      foreignKey: { selectType: "selectInput" },
     },
-    {
-      COLUMN_NAME: "audit",
-    },
+    { COLUMN_NAME: "audit" },
     {
       COLUMN_NAME: "audit_usr_id",
       modelLabel: "audit_usr_id_lbl",
@@ -270,291 +149,166 @@ scrm_clue_audit: {
     { COLUMN_NAME: "update_usr_id" },
     { COLUMN_NAME: "update_time" },
   ],
-}
+},
 ```
 
-- 审核流水表的外键字段必须配置 `modelLabel`
-- `{table}_id` 推荐配置 `isCascadeUpdateModelLabel: true`，避免主表名称变化后流水表标签不更新
-- `audit_usr_id` 也推荐按标准用户外键去配置
+反审核复用现有状态做回退，不新增枚举值。
 
-### 当前仓库约定
+## 外键与多对多
 
-- 如果决定启用标准审核能力，建议在 `opts.audit` 中显式写出 `hasReverse: true`
-- 不要为“反审核”额外新增枚举值；标准方案就是回退到上一个已存在状态
-- 以后 AI 创建带审核的新表时，优先复用 `scrm_clue` / `scrm_clue_audit` 这一对表的设计，而不是重新发明审核字段或审核流水结构
+### 命名推断
 
-## 树形结构 (list_tree + parent_id)
-
-```ts
-scrm_category: {
-  opts: {
-    list_tree: true, // 自身是一棵树
-  },
-  columns: [
-    {
-      COLUMN_NAME: "parent_id",
-      modelLabel: "parent_id_lbl",
-      require: false,
-      placeholderInForm: "上级类目, 默认为一级类目",
-      foreignKey: {
-        mod: "scrm",
-        table: "category",       // 自引用，指向本表
-        lbl: "lbl",
-        selectType: "tree" as const, // 树形选择
-      },
-    },
-  ],
-}
-```
-
-## 系统记录保护 (sys_fields)
-
-```ts
-opts: {
-  sys_fields: ["name", "type"],  // is_sys=1 时这些字段不可改
-}
-```
-
-## filterDataByCreateUsr 创建人数据过滤
-
-- 非 admin 用户只能看到自己创建的记录
-- admin 不受限制
-- 自动在 resolver 层注入 `search.create_usr_id` 过滤
-
-## hasOrgId 组织维度过滤
-
-- 非 admin 查询时自动将 `org_id` 过滤为用户所属组织 ID 列表
-
-## is_with_auth_optional 可选认证
-
-- GraphQL 层使用 `.with_auth_optional()?` 替代 `.with_auth()?`
-- mutation 不再调用 `use_permit()` 进行权限检查
-- 需要自行在业务层处理权限
-
-## isRealData 实时数据推送
-
-- `opts.isRealData: true` 或 `opts.hasVersion: true` 时启用
-- 自动生成 WebSocket 实时推送
-
-## searchByKeyword 统一关键字搜索
-
-```ts
-opts: {
-  searchByKeyword: {
-    prop: "keyword",
-    fields: ["name", "code", "rem"],
-    lbl: "关键字",
-    placeholder: "请输入名称或编号",
-    showInPcList: true,
-  },
-}
-```
-
-## 外键相关
-
-### 不以 _id/_ids 结尾的字段不会被推断为外键
-
-如 `notify_usrs` 这类存 id 列表但命名不带 `_ids` 后缀的字段，按普通字符串字段处理；需要外键行为就改字段名以 `_ids` 结尾。
-
-### 跨模块多态外键需 notForeignKeyById
-
-`xxx_id` 字段如果实际引用多个不同模块的表（如 `biz_id` 配合 `biz_type`），要显式配置 `notForeignKeyById: true`，否则 codegen 会按字段名前缀错误推断外键表。
-
-### 外键数据量大时用 selectInput
+- `xxx_id`、`xxx_ids` 才会自动推断外键
+- 命名不符合真实关联表时，显式写 `foreignKey.mod/table`
+- 多态字段或并非外键的 `*_id`，配置 `notForeignKeyById: true`
+- 大数据量选择器用 `selectType: "selectInput"`
 
 ```ts
 {
   COLUMN_NAME: "usr_id",
-  foreignKey: { selectType: "selectInput" },
+  modelLabel: "usr_id_lbl",
+  foreignKey: {
+    mod: "base",
+    table: "usr",
+    selectType: "selectInput",
+  },
   search: true,
   isSearchByLbl: true,
-}
+},
 ```
 
-### isCascadeUpdateModelLabel 级联更新标签
+### 多对多虚拟字段
+
+`xxx_ids` 是主表虚拟字段，不建在主表 SQL，不单独登记中间表配置。中间表只在 SQL 中创建。
+
+可直接推断的 `usr_ids`、`role_ids`，只需：
+
+```ts
+{ COLUMN_NAME: "usr_ids" },
+```
+
+带业务前缀、关联表或中间表无法按名推断时，显式配置：
+
+```ts
+{
+  COLUMN_NAME: "cc_usr_ids",
+  COLUMN_COMMENT: "抄送人",
+  many2many: {
+    mod: "{mod}",
+    table: "doc_cc",
+    column1: "doc_id",
+    column2: "usr_id",
+  },
+  foreignKey: {
+    mod: "base",
+    table: "usr",
+    selectType: "selectInput",
+    isSearchByLbl: true,
+  },
+},
+```
+
+- `many2many.table` 不含模块前缀
+- `column1` / `column2` 对应标准 `{主表}_id` / `{关联表}_id` 时可省略
+- 中间表必须有 `order_by`，规则见建表规范
+
+### 级联标签
+
+外键有 `modelLabel` 且关联名称变化时必须同步标签：
 
 ```ts
 {
   COLUMN_NAME: "product_sku_id",
   modelLabel: "product_sku_id_lbl",
-  isCascadeUpdateModelLabel: true,  // lbl 变化自动更新引用它的表
+  isCascadeUpdateModelLabel: true,
 },
 ```
 
-或表级别配置更灵活的级联：
+跨多个字段同步时使用表级 `cascadeUpdateFields`。
+
+## 常用表结构
+
+| 场景 | 配置要点 |
+|---|---|
+| 树 | `opts.list_tree: true`；`parent_id` 配 `modelLabel`、自引用 `foreignKey` 和 `selectType: "tree"` |
+| 内联子表 | `opts.inlineForeignTabs` 写子表 `mod/table/column/label`；需要更大详情弹窗时配 `detailCustomDialogType`、`detailFormCols` |
+| Uni 内联子表 | 配 `uni_list_page_fields`；子表 `isUniPage.hasDetailModal: true` |
+| Uni 列表 | `isUniPage.list_page` 配 `search_fields/lbl_field/lbl2_fields/right_field/is_export_excel` |
+| 关键字搜索 | `searchByKeyword` 配 `prop/fields`；PC 列表显示时加 `showInPcList: true` |
+
+## 自动编码
 
 ```ts
-opts: {
-  cascadeUpdateFields: [{
-    watchColumn: "lbl",
-    mod: "base", table: "usr",
-    idColumn: "usr_id",
-    column: "usr_id_lbl",
-  }],
-}
-```
-
-## 聚合关系 (inlineForeignTabs)
-
-```ts
-ec_order: {
-  opts: {
-    inlineForeignTabs: [{
-      mod: "ec", table: "order_detail",
-      label: "订单明细", column: "order_id",
-      uni_list_page_fields: [ "product_id_lbl", "quantity" ], // 移动端内联表格显示列
-    }],
-    detailCustomDialogType: "medium",
-    detailFormCols: 3,
-  }
-}
-```
-
-- 主表同时有 `isUniPage` 时，inline 子表应配 `uni_list_page_fields`，并且子表自身的 `opts.isUniPage` 配 `hasDetailModal: true`
-
-## 自动编码字段
-
-```ts
-// 序列字段名跟随编码字段名: code -> code_seq/code_date_seq, lbl -> lbl_seq/lbl_date_seq
-{ COLUMN_NAME: "code_date_seq", onlyCodegenDeno: true }, // 仅 dateSeq 编码需要
 { COLUMN_NAME: "code_seq", onlyCodegenDeno: true },
 {
   COLUMN_NAME: "code",
-  align: "center", search: false, width: 100,
-  readonly: true, readonlyPlaceholder: "(自动生成)",
+  align: "center",
+  search: false,
+  width: 100,
+  readonly: true,
+  readonlyPlaceholder: "(自动生成)",
   autoCode: {
-    prefix: "JS", seq: "code_seq", seqPadStart0: 3,
-    // suffix: "SN",        // 可选，编码后缀
-    // dateSeq: "code_date_seq",  // 可选，日期序列，字段名是 [编码字段]_date_seq
-    // dateFormat: "YYYYMMDD",    // 可选，日期格式
+    prefix: "JS",
+    seq: "code_seq",
+    seqPadStart0: 3,
+    // dateSeq: "code_date_seq",
+    // dateFormat: "YYYYMMDD",
+    // suffix: "SN",
   },
   searchByArray: true,
 },
 ```
 
-- `onlyCodegenDeno`: 只生成后端，不生成到前端
-- `onlyCodegenDenoButApi`: 只生成后端，但生成到前端的`Api.ts`字段
-- 序列字段必须在 SQL 中建出并在 columns 中写出（配 `onlyCodegenDeno: true`），codegen 会校验存在性，缺失会报错
-- 带 `autoCode` 的字段自动追加唯一约束（无 dateSeq 时 `[字段]`，有 dateSeq 时 `[dateSeq, 字段]`），`opts.uniques` 无需再手写该字段
-- 带 `autoCode` 还会自动加 `search` / `sortable`，未配 `defaultSort` 时自动用该字段降序
+- 序列字段必须存在于 SQL 和 `columns`
+- `onlyCodegenDeno` 表示只生成后端；`onlyCodegenDenoButApi` 同时保留前端 API 字段
+- `autoCode` 自动追加唯一约束、搜索、排序和默认排序
+- 日期序列唯一约束为 `[dateSeq, 编码字段]`
+- `code_date_seq` 仅 dateSeq 场景需要
 
-## COLUMN_DEFAULT 特殊默认值
+## 默认值与校验
 
-建表时 `COLUMN_DEFAULT` 支持以下特殊值，codegen 会在新增时自动替换：
+动态默认值通过 `COLUMN_DEFAULT` 配置：
 
-| 特殊值 | 含义 |
-|--------|------|
-| `CURRENT_USR_ID` | 当前登录用户 ID |
-| `CURRENT_ORG_ID` | 当前用户所属组织 ID |
+| 值 | 含义 |
+|---|---|
+| `CURRENT_USR_ID` / `CURRENT_USERNAME` | 当前用户 ID / 用户名 |
+| `CURRENT_ORG_ID` | 当前组织 ID |
 | `CURRENT_TENANT_ID` | 当前租户 ID |
-| `CURRENT_USERNAME` | 当前用户名 |
-| `CURRENT_DATE` / `CURRENT_DATETIME` | 当前日期/时间 |
-| `start_of_day` ~ `end_of_second` | dayjs 时间范围 |
+| `CURRENT_DATE` / `CURRENT_DATETIME` | 当前日期 / 时间 |
+| `start_of_day` ～ `end_of_second` | dayjs 时间边界 |
 
-- **前端默认值只有这一个来源**：配置里没有 `defaultValue` 项。数值要"默认 0"就写 SQL `NOT NULL DEFAULT 0`，日期要"默认今天"就写 `DEFAULT (CURRENT_DATE)` 并在配置里标 `COLUMN_DEFAULT: "CURRENT_DATE"`
-- 数字字段 `require: true` 只生成 `el-form` 的 required 规则，`0` 算已填；要"必须大于 0"得加 `validators: [{ minimum: 1 }]`
-- 数字字段默认 `isHideZero = true`(值为 0 时页面上不显示)，业务上 0 有意义时显式写 `isHideZero: false`
+- 普通 `0`、日期等默认值由 SQL 默认值提供；不要虚构 `defaultValue`
+- 数字 `require: true` 允许 `0`；要求大于 0 时加 `validators: [{ minimum: 1 }]`
+- 数字默认 `isHideZero: true`；业务中 `0` 有意义时配置 `isHideZero: false`
 
-## 密码字段 (isPassword)
-
-- 列字段配置 `isPassword: true` 后，所有查询返回自动清空该字段
-- 密码字段永远不会发送到前端
-
-## is_hidden 字段自动过滤
-
-- 表有 `is_hidden` 字段时，所有查询自动过滤 `search.is_hidden = Some(vec![0])`
-- **隐藏记录默认不出现在任何查询结果中**
-
-## 唯一约束 (uniques)
+## 唯一约束
 
 ```ts
 opts: {
-  uniques: [["mod", "code"]],  // 组合唯一
-}
-```
-
-- 冲突处理通过后端 `Options::set_unique_type()` 控制：
-  - `Ignore`: 静默跳过
-  - `Update`: 自动转为更新
-  - `Throw`: 抛出错误
-- 该规则同时适用于**同一批次内**的重复数据（`_creates` 在内存中用 `get_unique_keys_<table>` 判重）：
-  `Throw` 整批报错、`Ignore` 跳过该条、`Update` 以批次中最后一条为准（插入完成后再按 id 更新）
-- 唯一约束仅为应用层校验，DDL 不含 UNIQUE 索引；因此批内重复若未在内存判重就会真的插进去
-
-## noAdd + noEdit 占位 mutation
-
-- `opts.noAdd === true` 且 `opts.noEdit === true` 时，codegen 生成占位 mutation `noAddNoEdit<Table>()`
-- 目的是让 Input 类型在 GraphQL schema 中保持有效，这是正常行为
-
-## 字段权限 (fieldPermit)
-
-- 列字段配置 `fieldPermit: true` 后启用字段级权限控制
-- 查询和修改时自动进行权限检查
-
-## isHideZero
-
-- `isHideZero: true`: CustomInputNumber 值为 0 时隐藏显示，默认 true
-- 需要显示 0 时显式配置 `:is-hide-zero="false"`
-
-## uni 手机端页面 (isUniPage)
-
-```ts
-opts: {
-  isUniPage: {
-    list_page: {
-      search_fields: ["name", "status"],
-      lbl_field: "lbl",
-      lbl2_fields: ["code", "rem"],
-      right_field: "create_time",
-      is_export_excel: false,
-    },
-    hasDetailModal: true,
-  },
-}
-```
-
-## PC Excel 导入
-
-- 列表页自动生成 Excel 导入功能
-- 列字段配置 `noImport: true` 可跳过该字段的导入
-
-## 关于城市地址
-
-- 地址固定有多个字段, 如果 `province_code` 或者 `*_province_code` 则自动识别为身份, codegen 会自动识别是省份编码无需其它配置, `province_lbl` 则是省份中文
-- `city_code`, `city_lbl`, `county_code`, `county_lbl` 同理, 剩下的详细地址则是 `address` 或者 `*_address`
-
-```ts
-{
-  COLUMN_NAME: "contact_name",
-  width: 120,
-  search: true,
-},
-{
-  COLUMN_NAME: "contact_phone",
-  width: 120,
-  search: true,
-},
-{
-  COLUMN_NAME: "province_code",
-},
-{
-  COLUMN_NAME: "province_lbl",
-},
-{
-  COLUMN_NAME: "city_code",
-},
-{
-  COLUMN_NAME: "city_lbl",
-},
-{
-  COLUMN_NAME: "county_code",
-},
-{
-  COLUMN_NAME: "county_lbl",
-  COLUMN_COMMENT: "省市区",
-},
-{
-  COLUMN_NAME: "address",
-  isTextarea: false,
+  uniques: [ [ "mod", "code" ] ],
 },
 ```
+
+`Options::set_unique_type()` 决定冲突行为：
+
+- `Ignore`：跳过
+- `Update`：转更新
+- `Throw`：整批报错
+
+唯一约束只在应用层校验，不能替代数据库并发保证。
+
+## 特殊行为速查
+
+| 配置 | 行为 |
+|---|---|
+| `sys_fields` | `is_sys=1` 时禁止修改指定字段 |
+| `filterDataByCreateUsr` | 普通用户仅查询自己创建的数据，admin 不受限 |
+| `hasOrgId` | SQL 有 `org_id` 时自动启用，查询注入当前用户可访问组织 |
+| `dataPermit` | 启用行级数据权限 |
+| `is_with_auth_optional` | 允许未登录查询，但会跳过生成权限检查；业务层必须自行鉴权 |
+| `isRealData` | 启用 WebSocket；表有 `version` 时自动启用 |
+| `is_hidden` | 默认只查询 `0`，隐藏记录不进入列表 |
+| `isPassword` | 密码字段不进入前端查询结果或 API 字段 |
+| `fieldPermit` | 启用字段级查询、修改权限 |
+| `noImport` / `noExport` | 跳过 PC Excel 导入或导出 |
+| `noAdd: true` + `noEdit: true` | 生成 `noAddNoEdit<Table>()` 占位 mutation，属正常行为 |

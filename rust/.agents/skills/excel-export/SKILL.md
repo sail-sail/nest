@@ -1,213 +1,154 @@
 ---
 name: excel-export
-description: 移动端导出Excel时使用
+description: Uni 移动端列表导出 Excel 时使用
 ---
 
 # Excel 导出
 
-后端 Rust + xlsx_handlebars + rust-embed，前端 uni.downloadFile。
+后端暂无实际业务样例。实现前确认 `{mod}`、`{table}`、搜索类型和模板字段。
 
-> 注意:
-> 1. 此功能在项目中尚未有实际使用案例，以下内容是参考模式。
-> 2. 示例里的 `{mod}`、`{table}` 以及历史示例中出现过的 `spc` 都是占位符；其中 `spc` 仅表示某个业务模块名，落地时要替换成真实模块路径，例如 `app/base/usr/`。
-> 3. 开始实现前，先确认模块目录、导出路由和模板文件名，再按下面片段替换。
+## 固定约定
 
-## 文件结构
+- 手写代码放 `app/{mod}/{table}/`，不绕过 generated 查询服务
+- 模板放同一目录，`rust-embed` 的 folder 写 `{mod}/{table}/`
+- 前端生成地址是 `{cfg.url}/{mod}/export_excel_{table}`；后端路由固定为 `/api/{mod}/export_excel_{table}`
+- 导出必须显式设置 `is_result_limit: false`
 
-```rust/app/{mod}/
-├── {table}_model.rs           # ExportExcel{Table}Asset
-├── {table}_service.rs         # 导出逻辑
-├── {table}_resful.rs          # HTTP 处理
-├── {table}_router.rs          # 路由 handler
-└── export_excel_{table}.xlsx  # 模板(放在编译时能访问的路径)
+## 前端
+
+对应表配置开启，并按现有 codegen 流程重新生成：
+
+```ts
+opts: {
+  isUniPage: {
+    list_page: {
+      is_export_excel: true,
+    },
+  },
+}
 ```
 
-根据用户提供的项目结构，如果存在集中式的路由文件，则在 `app/lib.rs` 的 `register_routes` 中注册；如果是简单项目，则在 `main.rs` 中注册。
+生成器已处理登录态、租户、`uni.downloadFile`、状态检查和 `uni.openDocument`，不要另写下载 URL。
 
-## 1. model.rs - 嵌入模板
+## 后端
+
+在现有 `{table}_model.rs`、`{table}_service.rs`、`{table}_resful.rs`、`{table}_router.rs` 中追加逻辑；模板命名为 `export_excel_{table}.xlsx`，新模块同时更新 `mod.rs`。
+
+### Model
 
 ```rust
+#[derive(Debug, serde::Deserialize)]
+pub struct ExportExcel{Table}Query {
+  pub search: Option<String>,
+  pub page: Option<String>,
+  pub sort: Option<String>,
+}
+
 #[derive(rust_embed::Embed)]
-#[folder = "app/{mod}/{table}/"]
+#[folder = "{mod}/{table}/"]
 #[include = "export_excel_{table}.xlsx"]
 pub struct ExportExcel{Table}Asset;
 ```
 
-## 2. service.rs - 导出逻辑
-
-模板读取或渲染失败时，记录模板文件名和底层错误，并返回前端可理解的导出失败提示，不要直接把原始异常文本暴露给用户。
+### Service
 
 ```rust
-use color_eyre::eyre::{Result, eyre};
-use tracing::error;
-
-use generated::common::context::Options;
-use generated::{mod}::{table}::{table}_service::find_all_{table};
-use generated::{mod}::{table}::{table}_model::TableSearch;
-use super::{mod}::{table}_model::ExportExcel{Table}Asset;
-
 pub async fn export_excel_{table}(
   search: Option<{Table}Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<(Vec<u8>, String)> {
-  let template_name = "export_excel_{table}.xlsx";
-  
   let models = find_all_{table}(
     search,
-    page,
+    Some(PageInput {
+      is_result_limit: Some(false),
+      ..page.unwrap_or_default()
+    }),
     sort,
     options,
   ).await?;
-  
+
+  let template_name = "export_excel_{table}.xlsx";
   let template = ExportExcel{Table}Asset::get(template_name)
     .ok_or_else(|| {
-      error!(template_name = template_name, "excel 模板不存在");
+      error!(template_name, "excel 模板不存在");
       eyre!("导出失败，请检查模板配置")
     })?;
-  
+
   let buf = xlsx_handlebars::render_template(
     template.data.into_owned(),
     &serde_json::json!({ "{table}_models": models }),
-  ).map_err(|e| {
-    error!(template_name = template_name, error = %e, "excel 模板渲染失败");
+  ).map_err(|err| {
+    error!(template_name, error = %err, "excel 模板渲染失败");
     eyre!("导出失败，请稍后重试")
   })?;
-  
-  Ok((buf, "导出.xlsx".to_string()))
+
+  Ok((buf, "{Table}.xlsx".to_string()))
 }
 ```
 
-## 3. resful.rs - HTTP 请求
+模板语法：
 
-在解析 `search`、`page`、`sort` 参数时，如果遇到无效的 JSON 字符串，必须返回 Http 400 错误，而不能静默消耗错误并将值设为 `None`。
-
-```rust
-#[function_name::named]
-pub async fn export_excel_{table}(
-  search: Option<String>,
-  page: Option<String>,
-  sort: Option<String>,
-  options: Option<Options>,
-) -> Result<Response> {
-  fn parse_query_json<T: serde::de::DeserializeOwned>(
-    field: &str,
-    raw: Option<String>,
-  ) -> Result<Option<T>> {
-    match raw {
-      Some(s) => serde_json::from_str::<T>(&s)
-        .map(Some)
-        .map_err(|_| poem::Error::from_string(
-          format!("参数 {field} 不是合法 JSON"),
-          poem::http::StatusCode::BAD_REQUEST,
-        )),
-      None => Ok(None),
-    }
-  }
-  
-  let search = parse_query_json("search", search)?;
-  let page = parse_query_json("page", page)?;
-  let sort = parse_query_json("sort", sort)?;
-  
-  info!(
-    "{req_id} {function_name}: {search:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  let (buf, filename) = {table}_service::export_excel_{table}(
-    search, page, sort, options,
-  ).await?;
-  
-  Ok(Response::builder()
-    .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    .header("Content-Disposition", format!("attachment; filename=\"{}\"", urlencoding::encode(&filename)))
-    .body(buf))
-}
+```handlebars
+{{#each {table}_models}}
+  {{lbl}}
+{{/each}}
 ```
 
-## 4. router.rs - 路由
+查询必须调用 generated service，保留权限、租户和数据过滤；底层异常只记录日志。
+
+### Resful
+
+- `search`、`page`、`sort` 无效 JSON 返回 400
+- 读取、查询或渲染失败返回安全提示
+- 文件响应：
 
 ```rust
-use poem::{Request, Response, handler, web::Query};
-use serde::Deserialize;
-use generated::common::context::Ctx;
-use super::{table}_resful;
+Response::builder()
+  .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  .header(
+    "Content-Disposition",
+    format!("attachment; filename=\"{}\"", urlencoding::encode(&filename)),
+  )
+  .body(buf)
+```
 
-#[derive(Deserialize)]
-struct ExportExcel{Table}Request {
-  search: Option<String>,
-  page: Option<String>,
-  sort: Option<String>,
-}
+### Router
 
+```rust
 #[handler]
 pub async fn export_excel_{table}(
   req: &Request,
-  Query(params): Query<ExportExcel{Table}Request>,
+  Query(query): Query<ExportExcel{Table}Query>,
 ) -> Result<Response> {
   Ctx::resful_builder(Some(req))
     .with_auth()?
     .build()
     .resful_scope({
       {table}_resful::export_excel_{table}(
-        params.search,
-        params.page,
-        params.sort,
+        query.search,
+        query.page,
+        query.sort,
         None,
       ).await
-    }).await
+    })
+    .await
 }
 ```
 
-## 5. 路由注册
-
-在 `main.rs` 的 app 构建区域添加:
+在 `app/lib.rs::register_routes` 注册：
 
 ```rust
 app = app.at(
-  "/api/{mod}/{table}/export_excel_{table}",
-  get(app::{mod}::{table}::{table}_router::export_excel_{table}),
+  "/api/{mod}/export_excel_{table}",
+  get({mod}::{table}::{table}_router::export_excel_{table}),
 );
 ```
 
-或在 `app/lib.rs` 的 `register_routes` 中:
+## 验证
 
-```rust
-pub fn register_routes(app: Route) -> Route {
-  let mut app = app;
-  app = app.at(
-    "/api/{mod}/{table}/export_excel_{table}",
-    get({mod}::{table}::{table}_router::export_excel_{table}),
-  );
-  app
-}
-```
-
-## Excel 模板语法
-
-```handlebars
-{{#each {table}_models}}
-  {{lbl}}
-  {{order_date}}
-{{/each}}
-```
-
-## 前端调用
-
-```typescript
-// Api2.ts
-export function exportExcel(
-  search: Search,
-  page: PageInput,
-  sort: SortInput[],
-) {
-  const params = new URLSearchParams({
-    search: JSON.stringify(search),
-    page: JSON.stringify(page),
-    sort: JSON.stringify(sort),
-  });
-  return `${ baseUrl }/api/{mod}/{table}/export_excel_{table}?${ params.toString() }`;
-}
-```
+- `cargo check -p app`
+- `uni` 下运行 `pnpm run typecheck`
+- 文件可下载打开且包含全部匹配数据
+- 三种 JSON 参数分别传非法值，均返回 400
