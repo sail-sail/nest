@@ -1,65 +1,69 @@
 ---
 name: websocket
-description: WebSocket 使用规范. 需要在前端订阅后端事件通知时使用
-compatibility: Vue 3 + Deno 后端
+description: 前端订阅后端 WebSocket 事件通知时使用
+compatibility: Vue 3 / uni-app + Deno
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # WebSocket 使用规范
 
-## 架构
+## 路径
 
-```
-uni/src/compositions/websocket.ts  (移动端客户端)
-  ├── subscribe(topic, callback)   - 订阅主题
-  └── unSubscribe(topic, callback) - 取消订阅
+- PC：`pc/src/compositions/websocket.ts`
+- Uni：`uni/src/compositions/websocket.ts`
+- 后端：`deno/lib/websocket/websocket.dao.ts`
 
-src/compositions/websocket.ts (PC端客户端)
-  ├── subscribe(topic, callback)   - 订阅主题
-  └── unSubscribe(topic, callback) - 取消订阅
+## 前端订阅
 
-deno 后端: lib/websocket
-  └── websocket_dao.publish(topic, payload) - 推送消息到前端
-```
-
-## 使用示例
-
-### 前端订阅 (Vue/TS)
-
-```typescript
+```ts
+import {
+  onBeforeUnmount,
+  onMounted,
+} from "vue";
 import {
   subscribe,
   unSubscribe,
 } from "@/compositions/websocket.ts";
 
-try {
-  await subscribe("newBookingOrder", (data) => {
-    // data: 后端推送的 payload
-    // 处理通知/更新 UI 等
-  });
-} catch (err) {
-  // 订阅失败时记录错误，并根据业务决定是否提示用户或重试
-  console.error("subscribe newBookingOrder failed", err);
+type NewBookingOrder = {
+  booking_order_id: string;
+};
+
+const topic = "newBookingOrder";
+
+function handleNewBookingOrder(data: NewBookingOrder | undefined) {
+  if (!data) {
+    return;
+  }
+  // 更新 UI
 }
 
-try {
-  await unSubscribe("newBookingOrder", callback);
-} catch (err) {
-  // 取消订阅失败时同样要记录，避免重复订阅或页面卸载后残留监听
-  console.error("unSubscribe newBookingOrder failed", err);
-}
+onMounted(async () => {
+  await subscribe<NewBookingOrder>(topic, handleNewBookingOrder);
+});
+
+onBeforeUnmount(async () => {
+  await unSubscribe(topic, handleNewBookingOrder);
+});
 ```
 
-### 后端发布 (Deno)
+## 后端发布
 
-```typescript
+```ts
 import { publish } from "/lib/websocket/websocket.dao.ts";
 
-await publish(
-  "newBookingOrder",
-  {
+await publish({
+  topic: "newBookingOrder",
+  payload: {
     booking_order_id: id.toString(),
-  }
-);
+  },
+});
 ```
+
+## 关键约束
+
+- 前后端 `topic` 必须完全一致。
+- 回调只接收 `payload`；取消单个订阅时必须传入同一函数引用。
+- 组件卸载前取消订阅；不传回调会移除该 `topic` 的全部监听。
+- WebSocket 只推送给当前在线连接，不提供离线持久化或补偿。

@@ -44,7 +44,7 @@ src/{mod}/{table}/
 | 审计字段 | `create_usr_id`, `create_time`, `update_usr_id`, `update_time` |
 | 外键 | `xxx_id` + `xxx_id_lbl` (显示名称) |
 | 多租户 | `tenant_id`, `org_id` 自动隔离 |
-| 事务 | 增删改 `context.is_tran = true`, 查询不设置 |
+| 事务 | 增删改在 Resolver 调用 `set_is_tran(true)`, 查询不设置 |
 | 认证 | 默认需登录, 公开接口设 `context.notVerifyToken = true` |
 | 错误 | `throw "中文提示"` 或 `lib/exceptions/service.exception.ts` 业务错误, `throw new Error()` 系统错误, |
 

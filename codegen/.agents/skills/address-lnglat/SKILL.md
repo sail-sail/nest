@@ -1,47 +1,27 @@
 ---
 name: address-lnglat
-description: 地址字段与经纬度固定规范。凡是地址表需要地图定位时，按此顺序处理。
+description: 地址表接入地图定位时，统一字段组、PC 选点组件和经纬度回填规则。
 ---
 
-# 地址/经纬度固定规范
+# 地址/经纬度
 
-## 触发条件
+## 适用范围
 
-只要表涉及“地址定位 / 地理坐标 / 选点定位”，并且有地址字段，就按此规则处理。
+业务表需要“地址输入 + 地图选点”，且包含 PC 详情页时使用。仅采集当前定位、没有地址字段时不套用本规范。
 
-### 必须同时存在的字段
+## 固定要求
 
-- `province_code` / `province_lbl`
-- `city_code` / `city_lbl`
-- `county_code` / `county_lbl`
-- `address`
-- `longitude` / `latitude`
+### 1. 字段必须成组
 
-如果业务需要经纬度，`longitude` 和 `latitude` 必须同时存在，不能只留一个。
+- 地址组：`province_code` / `province_lbl`、`city_code` / `city_lbl`、`county_code` / `county_lbl`、`address`
+- 经纬度组：`longitude` / `latitude`，数据库用 `decimal(10,6)`，必须同时存在
+- 地址字段可使用统一业务前缀，如 `receiver_province_code`、`receiver_address`；页面代码按实际字段名替换
 
-## 统一行为
+### 2. PC 详情页必须复用公共选点组件
 
-### 1. 生成代码后，保留通用地图拾取组件
-
-在详情页里保留通用组件：
-
-```vue
-<LngLatPickerDialog
-  ref="lngLatPickerDialogRef"
-></LngLatPickerDialog>
-```
-
-并绑定：
-
-```ts
-const lngLatPickerDialogRef = $(useTemplateRef("lngLatPickerDialogRef"));
-```
-
-不要在页面内重复造地图选点逻辑，统一使用 `src/components/LngLatPickerDialog.vue`。
-
-### 2. 地址补全时用统一拼接
-
-需要按“省+市+区县+详细地址”组装为定位地址：
+- 使用 `src/components/LngLatPickerDialog.vue`，禁止在页面内重复实现地图选点
+- 保留 “拾取经纬度” 按钮，并绑定 `lngLatPickerDialogRef`
+- 按“省 + 市 + 区县 + 详细地址”顺序拼接定位地址；过滤空值
 
 ```ts
 function getPickAddress() {
@@ -54,49 +34,15 @@ function getPickAddress() {
 }
 ```
 
-### 3. 统一拾取经纬度逻辑
+### 3. 经纬度必须整组成对回填
 
-```ts
-async function onPickLngLat() {
-  if (!lngLatPickerDialogRef) {
-    return;
-  }
+- 调用 `showDialog({ address, longitude, latitude })`；现有坐标转换为 `number`
+- 取消时不改数据；确认时必须同时拿到经纬度，任一缺失就提示手动处理并返回
+- 回填时同时 `new Decimal(result.longitude)`、`new Decimal(result.latitude)`
+- 表单使用 `CustomInputNumber`，保留 `:precision="6"` 和 `:max="9999.999999"`；保存、展示、校验不得只处理一个坐标
 
-  const result = await lngLatPickerDialogRef.showDialog({
-    title: "拾取经纬度",
-    address: getPickAddress(),
-    longitude: dialogModel.longitude == null ? undefined : Number(dialogModel.longitude),
-    latitude: dialogModel.latitude == null ? undefined : Number(dialogModel.latitude),
-  });
+## 完成检查
 
-  if (result?.type !== "confirm") {
-    return;
-  }
-  if (result.longitude == null || result.latitude == null) {
-    ElMessage.warning("请手动粘贴经纬度");
-    return;
-  }
-
-  dialogModel.longitude = new Decimal(result.longitude);
-  dialogModel.latitude = new Decimal(result.latitude);
-  ElMessage.success("已获取坐标");
-}
-```
-
-### 4. 统一数据类型和展示规则
-
-- `longitude` / `latitude` 用 `Decimal` 维护，保留 6 位小数
-- 显示时使用 `CustomInputNumber`，并带 `:precision="6"` / `:max="9999.999999"`
-- 相关字段不允许只保留一个坐标值
-
-## 生成后必须检查
-
-1. 详情页是否有 “拾取经纬度” 按钮
-2. 是否使用了通用 `LngLatPickerDialog.vue`
-3. 地址拼接是否包含 `province_lbl + city_lbl + county_lbl + address`
-4. `longitude` 和 `latitude` 是否同时保存、展示、校验
-5. 是否保留 `Decimal` 精度处理，而不是裸 `number` 直接覆盖
-
-## 固定结论
-
-地址定位能力是固定规范，不属于页面个性化逻辑。只要地址表需要定位，就必须在表字段和详情页中同步补齐：`address + province/city/county + longitude + latitude`，并接入通用 `LngLatPickerDialog.vue`。
+1. 地址字段、经纬度字段均成组且名称匹配
+2. PC 详情页使用公共组件，未重复实现地图逻辑
+3. 地址拼接、数值转换、成对回填和 6 位小数处理均正确
