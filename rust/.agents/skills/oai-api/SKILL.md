@@ -1,44 +1,31 @@
 ---
 name: oai-api
-description: 业务 HTTP 接口开发规范. 新增非 GraphQL 的业务接口(给前端和 AI 调用)时使用
+description: Rust 业务 HTTP 接口开发规范. 给前端、AI 或外部工具调用的 JSON 接口必须使用
 ---
 
-# 业务接口开发 (OpenAPI)
+# 业务 HTTP 接口 (OpenAPI)
 
-## 何时使用
+## 先判定
 
-- 新增业务 HTTP 接口(非 GraphQL)
-- 接口需要被 AI 通过 MCP 搜索到并调用
-- 需要标准 openapi 文档给外部工具
+**给前端、AI 或外部工具调用的 JSON 业务接口必须走 OpenAPI。**
 
-## 不适用
+- GraphQL 接口不适用
+- 附件、WebSocket / SSE、第三方回调、健康检查、重定向走 `rest-api`
 
-以下系统级接口仍用原生 poem,见 `rest-api`:
-
-- 附件上传 / 下载(multipart、二进制流)
-- WebSocket / SSE
-- 第三方 webhook 回调
-- 健康检查、重定向
-
-## 路径规范
-
-业务接口统一挂在 `/api/oai` 下,按模块分前缀:
+## 路径与分层
 
 ```text
 /api/oai/{module}/{action}
-```
 
-`nest` 决定模块前缀,handler 里的 `path` 只写模块内相对路径,不要再写 `/api/oai`。
-
-## 目录结构
-
-```text
 app/{mod}/{table}/
-├── {table}_oai.rs      # #[OpenApi] impl, 薄壳, 只做参数提取和上下文
+├── {table}_oai.rs      # 参数提取、鉴权上下文、DTO 转换
 ├── {table}_service.rs  # 业务逻辑, 与 GraphQL 共用
-├── {table}_model.rs    # 输入输出类型
+├── {table}_model.rs    # DTO
 └── mod.rs
 ```
+
+- `nest` 使用 `/api/oai/{module}`
+- handler 的 `path` 只写 `/action`,禁止重复写 `/api/oai`
 
 ## Handler 模板
 
@@ -47,7 +34,7 @@ use poem_openapi::param::Header;
 use poem_openapi::payload::{Json, Response as OaiResponse};
 use poem_openapi::{Object, OpenApi, OpenApiService};
 
-use crate::base::oai::types::{OaiAuth, R, scope_auth_tran};
+use crate::base::oai::types::{OaiAuth, R, scope_auth};
 
 /// 业务接口
 pub struct {Table}Api;
@@ -55,24 +42,23 @@ pub struct {Table}Api;
 /// 返回数据
 #[derive(Object, Debug)]
 struct ActionData {
-  /// 字段说明会进 openapi 文档
+  /// 数据 ID
   id: String,
 }
 
 #[OpenApi]
 impl {Table}Api {
-  /// 接口说明会作为 operation summary
-  #[oai(path = "/do-action", method = "post")]
-  async fn do_action(
+  /// 操作说明,会作为 OpenAPI summary
+  #[oai(path = "/get-action", method = "get")]
+  async fn get_action(
     &self,
     #[oai(name = "Authorization")] auth: Header<Option<String>>,
     #[oai(name = "TenantId")] tenant: Header<Option<String>>,
   ) -> OaiResponse<Json<R<Option<ActionData>>>> {
-    scope_auth_tran(
+    scope_auth(
       OaiAuth::new(auth.0, tenant.0),
       async move {
-        // 复用现有业务层
-        let data = {table}_service::do_action(None).await?;
+        let data = {table}_service::get_action(None).await?;
         Ok(ActionData {
           id: data.id.as_str().to_owned(),
         })
@@ -86,93 +72,66 @@ pub fn service() -> OpenApiService<{Table}Api, ()> {
 }
 ```
 
-读写选择：
+OAI 层只做参数提取、上下文、DTO 转换;业务逻辑放 service。
 
-| 场景 | 用哪个 | 事务 |
-|---|---|---|
-| 查询、只读 | `scope_auth` | 不开 |
-| 多表、多条记录写入、导入, 需要整体成功或失败 | `scope_auth_tran` | 开启, 失败整体回滚 |
-| 单表单条非核心记录写入 | `scope_auth` | 不开 |
+## 鉴权与事务
 
-是否需要事务看业务, 不是所有写操作都要。项目里只有 `ctx.is_tran` 为真才会 `begin()`, 涉及多表或多条记录的写入漏用 `scope_auth_tran` 会留下半截数据。
+| 场景 | 用法 |
+|---|---|
+| 已登录、无需事务 | `scope_auth` |
+| 多步骤或多记录写入,失败必须整体回滚 | `scope_auth_tran` |
 
-不需要登录的接口直接返回,不走 `scope_auth`:
+不要让所有写操作都开事务。匿名接口直接返回 `Json(R::ok(data))`,不走 `scope_auth`。
 
-```rust
-#[oai(path = "/public-info", method = "get")]
-async fn public_info(&self) -> Json<R<PublicData>> {
-  Json(R::ok(PublicData { /* ... */ }))
-}
-```
-
-## 注册(两处都要)
+## 注册: 必须两处
 
 ```rust
-// app/lib.rs — 第一处: 挂路由
-#[allow(unused_mut, clippy::let_and_return)]
-pub fn register_oai_routes(app: Route) -> Route {
-  let mut app = app;
+// app/lib.rs: 挂路由
+app = app.nest(
+  "/api/oai/{module}",
+  {mod}::{table}::{table}_oai::service(),
+);
 
-  app = app.nest(
-    "/api/oai/system",
-    base::oai::system::service(),
-  );
-
-  app = app.nest(
-    "/api/oai/{module}",
-    {mod}::{table}::{table}_oai::service(),
-  );
-
-  app
-}
-
-// app/lib.rs — 第二处: 合并文档
-pub fn oai_modules() -> Vec<base::oai::OaiModule> {
-  vec![
-    base::oai::OaiModule::new("system", base::oai::system::service().spec()),
-    base::oai::OaiModule::new("{module}", {mod}::{table}::{table}_oai::service().spec()),
-  ]
-}
+// app/lib.rs: 合并 spec
+base::oai::OaiModule::new(
+  "{module}",
+  {mod}::{table}::{table}_oai::service().spec(),
+),
 ```
 
-漏掉第二处的后果很隐蔽:接口浏览器能直接访问,但 `/openapi.json` 里没有,AI 搜不到,`rest_call` 会以「不在 openapi 规范里」拒绝。
+缺第二处时接口可直接访问,但不会进入 `/openapi.json`,AI 搜不到,`rest_call` 也会拒绝。
 
 ## 响应约定
 
-- 统一 `R<T>`:`{ code, message, data }`
-- 业务错误走 `code` + `message`,HTTP 仍然返回 200
-- 鉴权失败 `code = 401`,其余业务错误自定
-- 返回值用 `R<Option<T>>`:出错时 `data` 为 null,响应结构稳定,响应 schema 才能生成完整
-- 鉴权接口返回 `OaiResponse<Json<R<Option<T>>>>` 并用 `.into_json()` 收尾:只有 token 真正续期时才回写 `Authorization`(未过期不回写,与原生 REST 一致),前端据此续期。不要图省事换成 `Json(...)`,那样 token 不会续期
+- 统一使用 `R<T>`:`{ code, message, data }`
+- `scope_auth` / `scope_auth_tran` 返回 `R<Option<T>>`;错误时 `data = null`,HTTP 仍为 200
+- 鉴权失败 `code = 401`;业务错误保留业务码,其他错误为 500
+- 鉴权 handler 必须返回 `OaiResponse<Json<R<Option<T>>>>`,并以 `.into_json()` 收尾;否则续期 token 不会写回 `Authorization`
 
 ## 参数来源
 
 | 来源 | 写法 |
 |---|---|
-| 路径参数 | `#[oai(path = "/item/:id", method = "get")]` 参数名 `id` |
-| query 参数 | 普通参数,名字不出现在 path 里 |
-| 请求体 | `body: Data<&MyInput>` |
-| 请求头 | `#[oai(name = "X-Foo")] foo: Header<Option<String>>` |
+| 路径参数 | `#[oai(path = "/item/:id", method = "get")]` + `id: Path<String>` |
+| Query | `page: Query<Option<u32>>` |
+| JSON 请求体 | `body: Json<MyInput>` |
+| 请求头 | `#[oai(name = "TenantId")] tenant: Header<Option<String>>` |
 
-路径参数沿用 poem 的 `:name` 写法,参数类型用 `poem_openapi::param::Path<T>`。
+`Path`、`Query`、`Header` 来自 `poem_openapi::param`,`Json` 来自 `poem_openapi::payload`。
 
-生成规范时 `:name` 会转成 `{name}`。`schema_search` 的结果里带 `pathParameters`;
-AI 调用 `rest_call` 时把 `{name}` 换成真实值即可,`rest_call` 按路径段做模板匹配,
-不会因为「规范和实际路径不一致」被拒。
+handler 使用 `:name`;生成 OpenAPI 时变为 `{name}`。AI 调用 `rest_call` 时必须替换成实际值。
 
-## 检查清单
+## 硬约束
 
-- 路径在 `/api/oai/{module}` 前缀下,不要和 `/api/oss`、`/api/health`、`/api/websocket`、`/api/wxwork` 等原生路由重叠(`nest` 前缀重叠时 poem 行为未定义)
-- 同一前缀下不要混用 `#[oai]` 和原生 `#[handler]`;混合挂在同一个 `nest` 里会导致内层 404 且不回落
-- `#[derive(Object)]` 的 struct 名全局唯一:合并多模块 spec 时 `components.schemas` 按名字覆盖,冲突就加 `#[oai(rename = "...")]`
-- `R<T>` 里的 `T` 要满足 `Type + ParseFromJSON + ToJSON`,derive `Object` 就够;自定义类型(Decimal 等)需单独实现 `Type`
-- 加完接口跑 `cargo check`,再访问 `/openapi.json` 确认新路径出现
+- 不要把 `#[oai]` 与原生 `#[handler]` 混挂到同一个 `nest`
+- 不要与 `/api/oss`、`/api/health`、`/api/websocket`、`/api/wxwork` 等前缀重叠
+- `Object` DTO 名必须全局唯一;冲突时用 `#[oai(rename = "...")]`
+- DTO 字段必须使用 OpenAPI 支持的类型。避免 `serde_json::Value`,其 schema 无约束、AI 无法可靠解析
+- `Decimal` 等领域类型不要直接放进 DTO;先转成 String,或确认启用了对应的 `poem-openapi` feature
+- handler、字段用 doc comment,它们会进入 AI 搜索和 OpenAPI 文档
 
-## 常见错误
+## 验收
 
-| 现象 | 原因 |
-|---|---|
-| `rest_call` 报「不在 openapi 规范里」 | 忘了在 `oai_modules` 里加 spec |
-| 接口 404 | `nest` 前缀和 `path` 拼错了,或者两个 `nest` 前缀重叠 |
-| 编译报 trait bound | 返回类型没实现 `ApiResponse`,或 `Object` 字段类型没实现 `Type` |
-| 文档里字段是 `null` schema | 用了 `serde_json::Value` 之类没有 `Type` 实现的类型 |
+1. `cargo check`
+2. 访问 `/openapi.json`,确认完整 path 和 schema 存在
+3. 用 `schema_search(source=rest)` 能搜到该接口

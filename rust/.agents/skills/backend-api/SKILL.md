@@ -1,279 +1,177 @@
 ---
 name: backend-api
-description: 当需要修改后端与新API开发时使用
+description: Rust 自定义 GraphQL API 开发；新增或修改 Query、Mutation、聚合查询、权限或事务时使用
 compatibility: Rust + async-graphql
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Rust GraphQL 后端接口开发
 
-## 何时使用
+## 适用边界
 
-- 新增或修改自定义 Query、Mutation
-- 涉及 Upload 时转看 graphql-upload
-- 组合多个 generated DAO 做聚合查询或特殊流程
-- 增加业务校验、日志、权限、事务
-- 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`（`*_model.rs` 按需新增）
+- 自定义 Query / Mutation、跨表查询或业务流程：使用本技能
+- GraphQL 文件上传：转 `graphql-upload`
+- 非 GraphQL 业务 HTTP 接口：转 `oai-api`
+- 附件、WebSocket、外部回调等系统接口：转 `rest-api`
+- PC / uni 调用层：分别转 `pc-graphql-frontend` / `uni-graphql-frontend`
 
-## 放置映射
+## 放置与依赖
 
-| 场景 | 放置位置 | 规则 |
-|------|------|------|
-| 业务接口/流程编排（Query、Mutation、聚合查询、业务校验、日志、事务） | `app/{mod}/{table}/` | 默认都在手写层实现 |
-| 前端调用自定义 GraphQL | PC: `src/views/{mod}/{table}/Api2.ts`；uni: `src/pages/{table}/Api2.ts` | 不要改生成的 `Api.ts` |
-| 需要补基础能力并被多个 generated 文件复用 | `generated/{mod}/{table}/` | 仅在 `app/` 无法完成且存在跨 generated 复用时放这里 |
+- 手写业务默认放 `app/{mod}/{table}/`
+- `generated/{mod}/{table}/` 提供基础 CRUD；优先复用，确需跨 generated 复用时再扩展
+- 扩展 generated 优先新增 `*_dao2.rs`、`*_service2.rs` 等文件，并在 `mod.rs` 声明
+- 依赖方向只能是 `app -> generated`，禁止 `generated -> app`
 
-- 扩展 `generated/` 时，优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需让 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs`。
-
-## 依赖边界
-
-- `app/{mod}/{table}/` 是默认手写业务入口
-- `generated/{mod}/{table}/` 是基础 CRUD 层，扩展规则见上表
-- 只允许 `app -> generated`，不允许 `generated -> app`
-
-## 标准分层
+## 分层
 
 ```text
 app/{mod}/{table}/
 ├── {table}_graphql.rs
 ├── {table}_resolver.rs
-├── {table}_dao.rs        (可选, 多数情况 generated 已够)
-└── {table}_service.rs
+├── {table}_service.rs
+├── {table}_model.rs  # 可选，app 专用输入输出
+└── {table}_dao.rs    # 可选，generated 无法覆盖时
 ```
 
-| 层 | 文件 | 职责 |
-|----|------|------|
-| GraphQL | `*_graphql.rs` | 定义接口、权限入口、构建 `Ctx` |
-| Resolver | `*_resolver.rs` | `#[function_name::named]` 日志、转调 Service |
-| Model | `*_model.rs` | 可选，仅在 app 层定义专用输入输出类型时新增 |
-| Service | `*_service.rs` | 业务逻辑、事务内流程、调用 DAO |
-| DAO | `*_dao.rs` | 数据库查询与写入 (通常用 generated 的即可) |
+| 层 | 职责 |
+|---|---|
+| GraphQL | 定义字段、构建 `Ctx`、鉴权/事务、调用 resolver |
+| Resolver | 日志、权限、输入预处理、调用 service |
+| Service | 业务规则、事务内流程、组合 DAO |
+| DAO | 数据库读写；优先调用 generated DAO |
 
-## 最小实现模式
-
-### GraphQL
+## GraphQL 入口
 
 ```rust
-use async_graphql::{Context, Object};
-use generated::common::context::Ctx;
-
 #[derive(Default)]
-pub struct {Table}Mutation;
+pub struct TableAppMutation;
 
-#[Object(name = "{Table}Mutation")]
-impl {Table}Mutation {
-  #[graphql(name = "mutateMethod")]
-  async fn mutate_method(
+#[Object(rename_args = "snake_case")]
+impl TableAppMutation {
+  #[graphql(name = "doSomething")]
+  async fn do_something(
     &self,
     ctx: &Context<'_>,
     #[graphql(name = "input")]
-    input: {Table}Input,
-  ) -> Result<ReturnType> {
-
+    input: TableInput,
+  ) -> Result<TableId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
       .build()
       .scope({
-        {table}_resolver::mutate_method(
-          input,
-          None,
-        )
+        table_resolver::do_something(input, None)
       }).await
   }
 }
 ```
 
-### Resolver
+- 业务接口默认 `.with_auth()?`；仅明确匿名的入口可省略
+- 多表、多记录写入必须 `.with_tran()`；只读查询不加
+- 单表单记录写入是否开事务按业务原子性决定
+
+## Resolver
 
 ```rust
-use tracing::info;
-use generated::common::context::{
-  Options,
-  get_req_id,
-};
-
 #[function_name::named]
-pub async fn method_name(
-  input: ParamType,
+pub async fn do_something(
+  input: TableInput,
   options: Option<Options>,
-) -> Result<ReturnType> {
-  
+) -> Result<TableId> {
   info!(
-    "{req_id} {function_name}: {input:?}",
+    "{req_id} {function_name}: input: {input:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  {table}_service::method_name(
-    input,
-    options,
-  ).await
-}
-```
 
-### Service
-
-```rust
-use color_eyre::eyre::{Result, eyre};
-
-use generated::common::context::{
-  Options,
-  get_auth_id_ok,
-  get_now,
-};
-use generated::common::exceptions::service_exception::ServiceException;
-
-pub async fn method_name(
-  input: ParamType,
-  options: Option<Options>,
-) -> Result<ReturnType> {
-  
-  if input.is_empty() {
-    return Err(eyre!(ServiceException {
-      message: "参数不能为空".into(),
-      trace: true,
-      ..Default::default()
-    }));
-  }
-  
-  let usr_id: UsrId = get_auth_id_ok()?;
-  let now = get_now();
-  
-  let model = find_one_ok_{table}(
-    Some({Table}Search {
-      field: Some(input),
-      ..Default::default()
-    }),
-    None,
-    options,
+  use_permit(
+    String::from(get_page_path_table()),
+    String::from("action"),
   ).await?;
 
-  Ok(model)
+  table_service::do_something(input, options).await
 }
 ```
 
-### REST / OpenAPI
+- `#[function_name::named]` 只为 `function_name!()` 提供名称，不会自动记录日志
+- Resolver 保持薄层；不要把业务判断和多表流程写在这里
+- 需要权限时在 Resolver 调 `use_permit`
 
-- 业务 HTTP 接口：见 `oai-api`，用 `#[OpenApi]` + `R<T>` + `scope_auth`，挂在 `/api/oai/{module}` 下
-- 系统级接口（附件、WebSocket、外部回调）：见 `rest-api`，用原生 `#[handler]` + `Ctx::resful_builder`
-- 两层都复用同一套 `*_service.rs` 业务逻辑，不要在 oai / resful 层重写
+## Service
 
-## 常用 DAO 函数
-
-| 函数 | 用途 |
-|------|------|
-| `find_by_id[_ok]_{table}` | 按 ID 查单条 |
-| `find_by_ids[_ok]_{table}` | 按多个 ID 查询 |
-| `find_one[_ok]_{table}` | 按条件查单条 |
-| `find_all_{table}` | 按条件查列表 |
-| `create[_return]_{table}` | 创建 |
-| `update_by_id[_return]_{table}` | 按 ID 更新 |
-| `delete_by_ids_{table}` | 逻辑删除 |
-| `force_delete_by_ids_{table}` | 彻底删除 |
-| `validate_option_{table}` | 校验 `None` |
-| `validate_is_enabled_{table}` | 校验是否启用 |
-
-- 对于有逻辑删除字段 `is_deleted` 的表，只有被删除 `delete_by_ids_{table}` 的记录才能被彻底删除 `force_delete_by_ids_{table}`，否则被跳过不删除也不报错
-
-## 常用上下文函数
+- 业务错误统一使用 `ServiceException`：
 
 ```rust
-use generated::common::context::{
-  get_auth_id_ok,
-  get_auth_tenant_id_ok,
-  get_now,
-  get_short_uuid,
-  get_req_id,
-};
+return Err(eyre!(ServiceException {
+  message: "业务错误".into(),
+  trace: true,
+  ..Default::default()
+}));
 ```
 
-## 编码规则
+- 标准 CRUD 需保留 generated service 的校验和副作用时，调用 generated service；纯查询或底层改写可直接用 DAO
+- 不在 GraphQL、Resolver、OAI、REST 层重复实现业务逻辑
 
-1. 类型与参数
+## DAO 约定
 
-- `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
-- Input 中 `_lbl` 字段无需传递，DAO 会自动生成
-- 函数定义和调用时，多参数统一换行
-- 数据库布尔列统一是 `tinyint unsigned`，模型字段为 `u8`（0/1），系统中没有 `bool` 字段：判断写 `xxx == 1`，赋值/入参写 `Some(1)`，默认值写 `0`，前端读到的也是数字而非 true/false
+| 函数 | 用途 |
+|---|---|
+| `find_by_id[_ok]_{table}` | 按 ID 查询，`_ok` 表示不存在时报错 |
+| `find_by_ids[_ok]_{table}` | 按多个 ID 查询 |
+| `find_one[_ok]_{table}` / `find_all_{table}` | 条件查询 |
+| `create[_return]_{table}` / `update_by_id[_return]_{table}` | 新增 / 修改 |
+| `delete_by_ids_{table}` / `force_delete_by_ids_{table}` | 逻辑删除 / 彻底删除 |
 
-2. 事务与鉴权
+- 有 `is_deleted` 的表只能物理删除已逻辑删除的记录
+- 需要行锁时复用 generated DAO：表配置 `opts.isHasForUpdate: true` 后，在事务内传
+  `Options::from(options).set_is_for_update(Some(true)).into()`
+- 不要为 `for update` 绕过 generated DAO 改写手写 SQL
+- 普通外键字段只传 ID；generated DAO 会补齐配置的 `*_id_lbl`，不要重复传空值
 
-- 修改涉及多个表或多条记录的操作必须加 `.with_tran()`；仅涉及单表单条非核心记录修改时可不加
-- 需要登录的接口加 `.with_auth()?`
+## 强制规则
 
-3. 查询与锁
-
-- 需要行锁时，优先复用 generated DAO。若表在 codegen 配置里已开启 `opts.isHasForUpdate: true`，则在事务内调用 `find_one[_ok]_*`、`find_by_id[_ok]_*`、`find_all_*` 时传 `Options::from(options).set_is_for_update(Some(true)).into()` 追加 `for update`，不要为了加锁回退到手写 SQL
-
-4. 附件与冗余字段
-
-- 如需操作附件，使用 [generated/common/oss/oss_dao.rs](../../../generated/common/oss/oss_dao.rs)
-- service 层业务开发过程中，若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl`，则 create/update 要传入显示名称，否则可不传
-
-5. 错误与日志
-
-- 业务错误使用 `ServiceException` 而非裸 `eyre!()`：`eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
-- resolver 层必须加 `#[function_name::named]` 宏，用于自动日志记录
-
-6. 格式保持
-
-- 手动编辑时，空白行缩进与周围代码保持一致
-- 除非用户明确要求，不要额外执行 `cargo fmt` 做整文件格式化
-
-7. generated service 导入风格（统一约定）
-
-- 默认优先“函数级 use 终点”写法，例如 `use generated::{mod}::{table}::{table}_service::find_by_id_ok_{table};`，然后直接调用 `find_by_id_ok_{table}(...)`；DAO 层同理
+- `Options` 与所有 ID 类型均为 `Copy`，不要 `.clone()`
+- 布尔数据库列用 `tinyint unsigned` / `u8`，只使用 `0/1`：判断 `xxx == 1`，写入 `Some(1)`
+- 时间戳使用 `naive_local_timestamp` / `naive_local_timestamp_millis`；`get_now()` 是本地墙钟时间，禁止直接 `.and_utc().timestamp()`
+- generated import 优先使用函数级 `use`；调用点避免大段模块前缀
+- 保持 2 空格缩进和现有空白行风格；不要执行 `cargo fmt`
 
 ## 模块注册
 
-在 `app/lib.rs` 中注册:
+先在 `app/{mod}/{table}/mod.rs` 声明文件：
 
 ```rust
-// 顶层 Query/Mutation 合并
+pub mod table_graphql;
+pub mod table_resolver;
+pub mod table_service;
+pub mod table_model; // 仅定义时需要
+pub mod table_dao;   // 仅定义时需要
+```
+
+已有业务模块时，把 GraphQL 类型加入 `app/{mod}/mod.rs` 的聚合对象：
+
+```rust
 #[derive(MergedObject, Default)]
-pub struct Query(
-  generated::common::CommonQuery,
-  generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
-  ccs::card::card_graphql::CardQuery,
-  // ... 新增模块加在这里
+pub struct XxxAppMutation(
+  self::table::table_graphql::TableAppMutation,
 );
+```
+
+只有新增顶层模块时，才需要在 `app/lib.rs`：
+
+```rust
+pub mod xxx;
 
 #[derive(MergedObject, Default)]
 pub struct Mutation(
-  generated::common::CommonMutation,
-  generated::GenMutation,
-  ccs::card::card_graphql::CardMutation,
-  ccs::order::order_graphql::OrderMutation,
-  // ... 新增模块加在这里
+  // ...
+  xxx::XxxAppMutation,
 );
 ```
 
-每个 `app/{mod}/{table}/mod.rs` 只需声明:
-```rust
-pub mod {table}_graphql;
-pub mod {table}_resolver;
-pub mod {table}_service;
-// 若在 app 层定义了专用输入输出类型, 再加 pub mod {table}_model;
-```
+## 变更后验证
 
-## 接口变更后的类型生成
-
-在 `rust/` 目录执行 `npm run gqlgen`，会导出 schema 并更新前端类型：
-
-- `rust/generated/common/gql/schema.graphql`（导出的 schema）
-- `pc/src/typings/types.ts`
-- `uni/src/typings/types.ts`
-
-前端 `pc/graphql.config.js` 以 `rust/generated/common/gql/schema.graphql` 校验 `Api.ts` / `Api2.ts` 里的 GraphQL 字符串，所以新增 mutation/query 后如果还没跑 `gqlgen`，编辑器会报 `Cannot query field "xxx" on type "Mutation"`，跑一次即可消除；不要在类型文件里手工补，跑 `gqlgen` 会整体重写。
-
-## 技术栈
-
-- **Web 框架**: poem (REST) + async-graphql (GraphQL)
-- **数据库**: MySQL (sqlx)
-- **运行时**: tokio
-- **序列化**: serde_json
-- **错误处理**: color-eyre
-- **日志**: tracing + tracing-subscriber
+- 在 `rust/` 执行 `cargo check`
+- GraphQL schema 有变化时执行 `npm run gqlgen`，更新 schema 与 PC / uni 类型
+- 禁止手工修改生成的类型文件或 PC / uni `Api.ts`
