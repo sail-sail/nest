@@ -22,10 +22,10 @@
     "@deepseek-ai/dsh-sdk-client": "0.2.2-rc.5",
     "@deepseek-ai/dsh-token-meter": "0.2.2-rc.5",
     "@deepseek-ai/dsh-tools": "0.2.2-rc.5",
-    "@hono/node-server": "2.1.9",
+    "@hono/node-server": "2.1.11",
     "@modelcontextprotocol/sdk": "1.32.2",
     "graphql": "17.1.0",
-    "hono": "4.13.19"
+    "hono": "4.13.20"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

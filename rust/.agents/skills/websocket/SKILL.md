@@ -1,62 +1,57 @@
 ---
 name: websocket
-description: WebSocket 使用规范. 需要在前端订阅后端事件通知时使用
+description: 前端订阅或后端发布 WebSocket 事件时使用
 compatibility: Vue 3 + Rust 后端
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # WebSocket 使用规范
 
-## 架构
+## 强制规则
 
-```
-uni/src/compositions/websocket.ts  (移动端客户端)
-  ├── subscribe(topic, callback)   - 订阅主题
-  └── unSubscribe(topic, callback) - 取消订阅
+1. 前端只能通过 `@/compositions/websocket.ts` 订阅，禁止新建连接、自行重连或手写心跳。
+2. 订阅必须成对取消；`unSubscribe` 必须传入订阅时的同一个 `callback`，否则会移除该 `topic` 的全部回调。
+3. `topic` 是大小写敏感的完整字符串，发布端和订阅端必须逐字符一致。
+4. `payload` 可能为空；回调必须按 `T | undefined` 处理。
+5. PC 组件优先使用 `useSubscribe`；Uni 或需要手动控制生命周期时使用 `subscribe` / `unSubscribe`。
+6. 后端只调用 `websocket_dao::publish` 发布。它返回 `()`，无在线订阅者时静默跳过，不能作为业务成功依据。
 
-src/compositions/websocket.ts (PC端客户端)
-  └── (同上)
+## 前端订阅
 
-rust 后端: generated/common/websocket
-  ├── websocket_dao::publish(topic, payload)    - 推送消息到前端
-  ├── websocket_dao::subscribe_client_topics()  - 订阅主题
-  └── websocket_dao::un_subscribe_client_topics() - 取消订阅
-```
+```ts
+import {
+  subscribe,
+  unSubscribe,
+} from "@/compositions/websocket.ts";
 
-## 使用示例
+const topic = `${usr_id}/message`;
+const onMessage = (data: MessagePayload | undefined) => {
+  if (!data) return;
+  refresh();
+};
 
-### 前端订阅 (Vue/TS)
-
-```typescript
-import { subscribe } from "@/compositions/websocket.ts";
-
-await subscribe("newBookingOrder", (data) => {
-  // data: 后端推送的 payload
-  // 处理通知/更新 UI 等
-});
+onMounted(() => subscribe(topic, onMessage));
+onBeforeUnmount(() => unSubscribe(topic, onMessage));
 ```
 
-### 后端发布 (Rust)
+PC 组件可直接调用 `useSubscribe<MessagePayload>(topic, onMessage)`，由封装自动处理挂载和卸载。
+
+## 后端发布
 
 ```rust
-generated::common::websocket::websocket_dao::publish(
-  "newBookingOrder".to_string(),
+use generated::common::websocket::websocket_dao::publish;
+
+publish(
+  format!("{usr_id}/message"),
   Some(serde_json::json!({
-    "booking_order_id": id.to_string(),
+    "messageId": message_id,
   })),
 ).await;
 ```
 
-## 后端路由
+## 实现位置
 
-- 升级路径: `/api/websocket/upgrade`
-- 连接参数: `?clientId=xxx&pwd=xxx`
-- 客户端支持 `subscribe`、`unSubscribe`、`ping` 三种操作（`ping` 心跳维持由底层库自动处理，业务代码无需手动调用）
-
-## 注意事项
-
-1. 推送行为: `publish()` 返回 `()`, 不返回 `Result`; 如果目标客户端未连接, `publish` 内部会静默跳过, 不会报错。
-2. 连接模型: 一个 clientId 可以连接多个 socket, 通过 connection_id 区分。
-3. 主题约束: 主题名是大小写敏感的字符串, 建议用驼峰命名。
-4. 异常处理: 如果连接断开, 底层库会自动尝试重连, 业务侧无需捕获网络错误; 如果 `subscribe` 失败, 请使用 `try/catch` 捕获 promise 异常并提供用户提示。
+- PC: `pc/src/compositions/websocket.ts`
+- Uni: `uni/src/compositions/websocket.ts`
+- 后端: `rust/generated/common/websocket/websocket_dao.rs`

@@ -1,131 +1,48 @@
 ---
 name: uni-spec
-description: 移动端页面开发规范。开发 UI 界面时使用
+description: Uni 移动端页面、表单、生命周期与样式开发规范
 compatibility: Uni-app + UnoCSS
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
-## skill 边界
+# 使用边界
 
-- `uni-spec` 负责页面开发规范、样式规范、通用页面约定
-- `tm-ui-components` 负责 tm-ui 组件参数/事件/插槽/ref 与源码映射
-- 需要查组件 API 时优先查看 `.agents/skills/tm-ui-components/references/components/*.md`, 涉及行为差异再核对 `src/uni_modules/tm-ui/components/`
+- `uni-spec` 负责页面、表单、生命周期、样式与通用约定。
+- tm-ui 组件的 props、events、slots、ref 先查 `tm-ui-components`。
+- 自定义 GraphQL 接口遵守 `uni-graphql-frontend`，不要在本规范中重复约定。
+- 组件文档与源码不一致时，以 `src/uni_modules/tm-ui/components/` 源码为准。
 
-## 编码规范
-1. 响应式与自动导入：使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）；vue 相关的类型和 API 如 `ref`、`computed` 等都无需导入，直接使用即可，因为 `vite.config.mts` 配置了自动导入 `AutoImport`
-2. 书写格式：当 `[ ]` 代表的是值时中间有空格，例如: `const arr = [ 1, 2, 3 ];`、`const arr = [ ];`，`{ }` 也同理；函数定义和调用时参数统一换行，vue 组件属性也统一换行
-3. 模板排版：空白行代码缩进要保持和上一行一致，方便后续添加代码；大块标签之间要留空行；结构标签上面写上注释
-4. 代码检查：使用 `pnpm typecheck`；`tsconfig_tc.json` 才是正确的类型检查配置，`tsconfig.json` 只是为了编辑器提示
+# 核心编码约定
 
-# form表单
+1. 使用 Vue Macros 的 `$ref`、`$computed`；Vue、uni-app API 由 `AutoImport` 提供，无需手动导入。
+2. 数组、对象值内留空格：`[ 1, 2 ]`、`{ }`；函数参数与组件属性统一换行，不混排。
+3. 模板中大块标签之间留空行；结构标签上写简短注释；空白行缩进与上一行一致。
+4. 使用 `pnpm typecheck`。该命令以 `tsconfig_tc.json` 检查并执行 ESLint；`tsconfig.json` 主要服务编辑器提示。
 
-- `tm-form-item` 组件中如果不需要校验必填则必须添加 `:required="false"` 属性, 否则会默认校验必填, 例:
+# 表单与初始化
 
-```vue
-<!-- 编码 -->
-<tm-form-item
-  label="编码"
-  name="code"
-  :required="false"
->
-  <CustomInput
-    v-model="usr_input.code"
-    placeholder="请输入 编码"
-  ></CustomInput>
-</tm-form-item>
-```
+## 必填标记
 
-# 常用类库
-- `dayjs` - 处理日期时间, 可直接使用, 无需引入
-- `decimal.js` - 处理精确小数计算, 金额计算, 可直接使用, 无需引入
-- `numeral` - 数字格式化, 可直接使用, 无需引入
+- `tm-form-item` 的 `required` 默认显示 `*`。
+- 非必填字段必须写 `:required="false"`，否则会错误显示必填标记。
+- 该属性只控制标记；真正的校验规则由 `tm-form` 的 `rules` 决定。
 
-# 常用开发技巧
+## 异步初始化
 
-## 本地静态 Icon
-- 当前 uni 仓库已在 `uno.config.ts` 和 `uno_uni.config.ts` 中通过 UnoCSS `presetIcons` 注册了 `iconfont` collection，会自动读取 `src/assets/iconfont/{icon_name}.svg`
-- 对这类本地单色 svg 图标, 优先使用 `un-i="iconfont-图标名"` 挂在 `view` / `text` 等普通节点上，不要再写成 `image + src`，也不要用 `new URL(...svg, import.meta.url)` 去手动引资源
-- 图标颜色、尺寸直接用 UnoCSS 原子属性控制，例如 `un-text="[#f08b6a]"`、`un-w="5"`、`un-h="5"`
-- 仅当资源本身需要保留原始多色效果、渐变、位图展示时，才继续使用 `image` 标签
-- 可参考 `src/pages/product/Detail.vue` 的收藏按钮写法
-
-```vue
-<view
-  un-i="iconfont-favorite_service"
-  un-w="5"
-  un-h="5"
-  un-text="[#f08b6a]"
-></view>
-```
-
-## 富文本展示
-- 像 `detail` 这类富文本字段, 在当前仓库里通常保存的是 oss/tmpfile 附件 id, 不是 html 正文
-- 移动端展示时不要直接把字段值传给组件, 应先通过 `getDownloadUrl({ id, inline: "1" })` 拿到下载地址, 再用 `uni.request` 拉取 html 字符串
-- 模板中使用 `tm-html` 渲染拉取回来的 html 内容, 可参考 `src/pages/product/Detail.vue`
-
-```vue
-<view
-  v-if="detail_html"
->
-  <tm-html
-    :value="detail_html"
-  ></tm-html>
-</view>
-```
+- 用 `inited` 表示初始化完成，用 `is_form_hydrating` 表示数据回填。
+- 回填期间和初始化完成前，禁止 `watch` 自动回写持久化字段。
+- 输入类组件优先传 `:page-inited="inited"`，避免占位内容提前显示。
 
 ```ts
-async function loadDetailHtml(
-  detail?: string,
-) {
-  detail_html = "";
-  if (!detail) {
-    return;
-  }
-  const url = getDownloadUrl({
-    id: detail,
-    inline: "1",
-  });
-  const res = await uni.request({
-    url,
-    method: "GET",
-  });
-  detail_html = typeof res.data === "string"
-    ? res.data
-    : String(res.data || "");
-}
-```
-
-## 页面参数接收
-- 使用 `onLoad` 生命周期钩子接收页面跳转传递的参数，**禁止**使用 `getCurrentPages()` 方式获取参数
-- `onLoad` 的回调参数 `query` 包含页面 URL 中的查询参数
-- 所有页面级初始化逻辑（包括但不限于 `initFrame()`）都应放在 `onLoad` 内部调用，而非直接在 `setup` 中调用
-
-```typescript
-onLoad(async (query?: AnyObject) => {
-  const some_param = query?.some_param;
-  if (some_param) {
-    search.some_field = decodeURIComponent(some_param);
-  }
-  await initFrame();
-});
-```
-
-- 表单通常会有 `let inited = $ref(false);` 标记是否初始化完成, 避免在初始化前触发表单变更事件
-- `is_form_hydrating` 则表示表单是否正在数据回填
-- 如果表单存在由其他字段派生但最终仍会持久化的字段, `watch` 中必须区分初始化回填和用户编辑; 初始化阶段不要自动回写派生字段, 避免首屏展示值与数据库值不一致, 或用户未编辑就隐式改库
-- 异步初始化的表单/筛选页, 输入类组件优先透传 `:page-inited="inited"`; 在初始化完成前隐藏 placeholder, 避免先出现空提示再被默认值或缓存值覆盖
-
-```vue
 watch(
   () => dyn_page_field_input,
   () => {
-    
     if (!inited || is_form_hydrating) {
       return;
     }
-    
-    // 处理表单变更逻辑
+
+    // 只处理用户编辑后的变更
   },
   {
     deep: true,
@@ -133,28 +50,34 @@ watch(
 );
 ```
 
-## CustomInput 数值输入
-- `CustomInput` 的 `type="decimal"` / `type="number"` 主要控制键盘或原生输入类型, **不会**自动把 `v-model` 转成 `Decimal` / `number`
-- 需要 `Decimal` 实例时必须显式传 `:is-decimal="true"`; 需要数字时传 `:is-number="true"`
-- 金额、积分、数量这类字段, 只要后续要调用 `lte`、`gt`、`eq` 等 `Decimal` 方法, 状态就必须保持 `Decimal`, 不要只写 `type="decimal"`
-- `CustomInput` 默认 `isHideZero=true`, 如果 `0` 需要在输入框里真实展示出来, 要补上 `:is-hide-zero="false"`
+# CustomInput 数值输入
+
+- `type="decimal"` 会将输入值转换为 `Decimal`；`type="number"` / `type="digit"` 会转换为 `number`。
+- 不要再把 `type` 只理解为键盘类型，也不要同时额外传 `:is-decimal` / `:is-number`。
+- 金额或后续需要调用 `lte`、`gt`、`eq` 的状态使用 `type="decimal"`。
+- `isHideZero` 默认开启；需要真实显示 `0` 时传 `:is-hide-zero="false"`。
+- 默认保留 `precision=2`；只有业务需要时调整精度。
 
 ```vue
 <CustomInput
   v-model="recharge_amount"
   type="decimal"
-  :is-decimal="true"
-  inputmode="decimal"
   :is-hide-zero="false"
   placeholder="请输入充值金额"
 ></CustomInput>
 ```
 
-## 页面刷新与事件约定
-- 跨页面刷新优先用 `uni.$emit` / `uni.$on`, 事件名统一写成页面路径语义, 例如 `"/pages/order/List:refresh"`、`"/pages/product/List:category_id_selected"`
-- 绑定事件前先 `uni.$off` 一次同名监听, 销毁时再 `uni.$off`, 避免页面反复进入后重复注册
-- 真正通过路由打开的页面优先在 `onLoad` / `onUnload` 中完成初始化和解绑; 被 tab 页直接 `import` 复用的“页面型组件”可以使用 `onMounted` / `onUnmounted`
-- 详情页、弹窗页如果既可能被路由打开, 也可能被父组件拿 `ref` 触发刷新, 统一暴露 `refresh()` 方法给外部调用
+# 页面生命周期与刷新
+
+- 页面参数从 `onLoad(query)` 接收，禁止使用 `getCurrentPages()`。
+- 先解析参数，再执行 `initFrame()`。
+- 路由页面的初始化、事件绑定使用 `onLoad`；解绑使用 `onUnload`。
+- 页面也被父组件复用时，向外暴露 `refresh()`，父组件复用该入口，不重复初始化。
+- 跨页面刷新统一使用 `uni.$emit` / `uni.$on`。
+- 事件名使用目标页面路径，例如：
+  - `/pages/order/List:refresh`
+  - `/pages/order/Detail:refresh`
+- 绑定前先 `uni.$off` 同名监听，销毁时再次解绑。
 
 ```ts
 const refresh_event_name = "/pages/order/List:refresh";
@@ -169,148 +92,76 @@ onUnload(() => {
   uni.$off(refresh_event_name, onPageRefresh);
 });
 
-async function initOrRefresh() {
-  if (!inited) {
-    await initFrame();
-  } else {
-    await onRefresh();
-  }
-}
-
 defineExpose({
   refresh: initOrRefresh,
 });
 ```
 
-# 页面开发样式规范
+# 静态图标与富文本
 
-## 字体与颜色约定
+## 本地图标
 
-- 当前 uni 仓库默认字号基线来自 `src/assets/style/common.scss`:
-  - `--font-size: 32rpx`，约等于 `16px`
-  - `--font-size-sm: 28rpx`，约等于 `14px`
-- 使用 `un-text="数字"` 时，不要把数字直接当成移动端常规字号；在当前 UnoCSS 配置下可近似理解为 `数字 * 4 = px`，例如 `un-text="6"` 约等于 `24px`，对普通列表正文通常明显偏大
-- 移动端页面正文、列表项、说明文案优先贴近默认基线：
-  - 常规正文优先使用继承默认字号，或 `un-text="4"` 左右
-  - 次级说明文案优先使用 `un-text="3.5"` 或接近 `14px` 的大小
-  - 分组标题、卡片标题通常控制在 `un-text="4.5"` 到 `un-text="5"`，除非是页面主标题，不要轻易使用 `un-text="6"` 及以上
-- 先根据信息层级控制字号，再决定字重；不要靠过大的字号去撑出“重点感”
-- 颜色优先使用 UnoCSS 标准色阶，例如 `gray-200`、`dark:gray-700`、`gray-400`、`dark:gray-500`、`gray-700`、`dark:gray-200`、`red-500`、`dark:gray-400`，尽量避免随手写零散十六进制颜色
-- 灰色文案优先从标准灰阶中选择：
-  - 弱提示/分隔信息优先 `gray-400`
-  - 常规次级文案优先 `gray-500` 或 `gray-600`
-  - 重要正文优先 `gray-700`，不要用过浅灰色影响可读性
+- `uno_uni.config.ts` 已注册 `iconfont` collection，读取 `src/assets/iconfont/*.svg`。
+- 单色图标优先用 `un-i="iconfont-名称"`，不要使用 `image + src` 或 `new URL()`。
+- 尺寸、颜色使用 UnoCSS 属性控制；只有多色、渐变或位图资源才使用 `image`。
 
 ```vue
-<!-- ❌ 正文过大, 颜色也不够规范 -->
 <view
-  un-text="6 [#24324a]"
-  un-font="700"
->
-  今日食堂菜单
-</view>
-
-<!-- ✅ 更接近当前 uni 仓库的移动端字号基线 -->
-<view
-  un-text="5 gray-700 dark:gray-200"
-  un-font="bold"
->
-  今日食堂菜单
-</view>
-
-<view
-  un-text="4 gray-700 dark:gray-200"
->
-  午餐 A: 红烧排骨 + 清炒时蔬 + 紫菜蛋花汤
-</view>
-
-<view
-  un-text="3.5 gray-500 dark:gray-400"
->
-  限时供应, 售完即止
-</view>
+  un-i="iconfont-refresh"
+  un-w="4"
+  un-h="4"
+  un-text="gray-600"
+></view>
 ```
 
-## CSS - Attributify Mode
+## 富文本
 
-### 基础用法
-将冗长的 class 拆分为语义化属性：
+- 先确认字段存储的是 HTML 还是附件 id；不要把任意 `detail` 字段直接传给 `tm-html`。
+- 若字段是 OSS/tmpfile 附件 id：先用 `getDownloadUrl({ id, inline: "1" })` 获取地址，再请求正文，最后将 HTML 字符串交给 `tm-html`。
+- Uni 迁移此类字段时，以对应 PC 富文本实现为准。
 
-```html
-<!-- ❌ 传统方式 -->
-<tm-button class="bg-blue-400 hover:bg-blue-500 text-3.5 text-white py-2 px-4 rounded border-2">
-  Button
-</tm-button>
+# 样式规范
 
-<!-- ✅ Attributify -->
-<tm-button
-  un-bg="blue-400 hover:blue-500"
-  un-text="3.5 white"
-  un-p="y-2 x-4"
-  un-border="2 rounded"
->
-  Button
-</tm-button>
-```
+## 字体
 
-### 自引用前缀 `~`
-当属性名与值相同时使用：
+`src/assets/style/common.scss` 的基线为：
 
-```html
-<!-- border border-red → un-border="~ red" -->
-<tm-button
-  un-border="~ red"
->
-  Button
-</tm-button>
-<!-- flex flex-col → un-flex="~ col" -->
+- `--font-size: 32rpx`，约 `16px`
+- `--font-size-sm: 28rpx`，约 `14px`
+
+字号优先：
+
+- 常规正文：默认字号或 `un-text="4"`
+- 次级说明：`un-text="3.5"`
+- 卡片 / 分组标题：`un-text="4.5"` 至 `un-text="5"`
+- 不要用 `un-text="6"` 以上撑普通正文的视觉重点
+
+## 颜色
+
+- 优先使用 UnoCSS 标准色阶，避免业务页面随意添加十六进制颜色。
+- 弱提示：`gray-400`
+- 次级文案：`gray-500` / `gray-600`
+- 重要正文：`gray-700`
+- 暗色模式只补对应的 `dark:` 色阶，不另写平行色值。
+
+## Attributify
+
+- 同前缀合并到一个属性。
+- 属性名与值首段相同时使用 `~`。
+- 无参数工具类使用无值属性。
+- 单边边框同时设置颜色或 `solid` 时，先用 `0` 清空其它边框。
+
+```vue
 <view
   un-flex="~ col"
-></view>
-```
-
-### 无值属性
-无参数工具类直接作为属性：
-
-```html
-<view
+  un-items="center"
+  un-border="0 b-1 solid gray-200"
   un-rounded
-  un-truncate
-  un-italic
 ></view>
 ```
 
-### 原则
-1. 相同前缀合并：`text-sm text-white` → `un-text="sm white"`
-2. 自引用用 `~`：`flex flex-col` → `un-flex="~ col"`
-3. 无参数用无值属性：`rounded` → `un-rounded`
-4. 单边边框如果同时写 `solid`/颜色, 必须先用 `0` 清零其它边框: `un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
+# 自动导入
 
-## 自动引入的变量和组件
-由 `unplugin-auto-import` 自动生成，无需手动维护。配置在 `vite.config.mts` 的 `AutoImport({imports:[]})` 中
-
-### 全局变量
-`src/typings/auto-imports.d.ts` 中的变量可直接使用：
-
-```typescript
-// 如 dayjs、ref、computed 等
-const now = dayjs().format("YYYY-MM-DD");
-```
-
-### uni 中的 API 也可直接使用, 在 `src/typings/uni.d.ts` 中定义:
-
-```typescript
-const res = await uni.navigateTo({
-  url: "/pages/index/index",
-});
-```
-
-### 全局组件
-`src/typings/components2.d.ts` 中的组件可直接在模板中使用：
-
-```vue
-<tm-button>
-  Click Me
-</tm-button>
-```
-
+- `vite.config.mts` 的 `AutoImport` 已注册 Vue、uni-app、Pinia、`dayjs`、`Decimal`、`numeral` 及仓库公共函数。
+- `uni`、生命周期钩子、全局工具函数直接使用；新增全局项时修改配置，不要手改生成的 `src/typings/auto-imports.d.ts`。
+- 已声明在 `src/typings/components2.d.ts` 的组件可直接用于模板，不要手工导入或修改该声明文件。
