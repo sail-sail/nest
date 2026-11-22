@@ -68,7 +68,7 @@
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
     "pinia": "3.0.4",
-    "vue": "3.5.45",
+    "vue": "3.5.46",
     "vue-demi": "0.14.10"
   },
   "devDependencies": {
@@ -86,7 +86,7 @@
     "@vue/devtools-api": "8.2.1",
     "@vue/devtools-kit": "8.2.1",
     "@vue/devtools-shared": "8.2.1",
-    "@vue/runtime-core": "3.5.45",
+    "@vue/runtime-core": "3.5.46",
     "birpc": "4.2.0",
     "cross-env": "10.1.0",
     "eslint": "10.15.0",
@@ -94,7 +94,7 @@
     "globals": "17.14.0",
     "hookable": "6.1.2",
     "perfect-debounce": "2.1.0",
-    "rollup": "4.68.7",
+    "rollup": "4.68.8",
     "sass": "1.108.2",
     "svgo": "4.1.0",
     "tmui-cli": "5.3.3",

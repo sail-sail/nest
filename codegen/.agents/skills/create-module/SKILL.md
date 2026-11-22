@@ -1,72 +1,38 @@
 ---
 name: create-module
-description: 创建新业务模块时使用
+description: 创建新代码生成业务模块；串联建表、表配置、模块注册和菜单
 ---
 
 # 创建模块
 
-## 文件结构
+## 输出
 
 ```
-src/tables/{mod}/
-├── {mod}.sql    # 表结构
-└── {mod}.ts     # 表配置
+codegen/src/tables/{mod}/
+├── {mod}.sql
+├── {mod}.ts
+└── base_menu.{mod}.sql.csv  # 有页面入口时
 ```
 
-## 步骤
+## 流程
 
-1. 检查模块名
-
-- 确保 `{mod}` 在 `src/tables/` 下唯一，不与现有模块重名。
-
-2. 创建文件
-
-- 创建 `src/tables/{mod}/{mod}.sql`
-- 创建 `src/tables/{mod}/{mod}.ts`
-
-3. 注册模块
-
-- 在 `src/tables/tables.ts` 注册：
+1. 确认 `{mod}` 未出现在 `src/tables/` 和 `src/tables/tables.ts`。
+2. 按 [create-table/SKILL.md](../create-table/SKILL.md) 创建 `{mod}.sql`。
+3. 按 [table-config/SKILL.md](../table-config/SKILL.md) 创建 `{mod}.ts`。
+4. 在 `src/tables/tables.ts` 增量注册，保留现有模块：
 
 ```typescript
-import { defineConfig } from "../config.ts";
-import base from "./base/base.ts";
 import {mod} from "./{mod}/{mod}.ts";
 
 export default defineConfig({
-  ...base,
   ...{mod},
 });
 ```
 
-4. 配置菜单
+5. 有页面入口时，按 [create-menu/SKILL.md](../create-menu/SKILL.md) 创建菜单 CSV。
 
-- 创建菜单 CSV: `src/tables/{mod}/base_menu.{mod}.sql.csv`
-- 若菜单需要按业务语义分组（如“常用业务/记录/设置”），优先参考 [create-menu/SKILL.md](../create-menu/SKILL.md)
+## 约束
 
-```csv
-id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
-{uuid},,模块名称,,0,1,0,60000
-{uuid},{parent_uuid},子菜单,/{mod}/{table},0,1,0,60001
-```
-
-- `parent_id` 为空表示根菜单
-- `is_hidden=1, is_enabled=0` 表示隐藏菜单 (通常用于被其他页面内联查看的子表)
-- 不要手动创建 `base_tenant_menu` 和 `base_role_menu` 文件，它们会在 `npm run importCsv` 时自动生成
-- **无需创建 `base_menu_lang`**, 国际化菜单仅在启用 i18n 时需要, 大部分系统不需要
-
-## 示例
-
-模块名: `ec`（电商）
-
-```typescript
-// src/tables/ec/ec.ts
-import { defineConfig } from "../../config.ts";
-
-export default defineConfig({
-  // 订单
-  ec_order: { /* 订单表配置 */ },
-  // 订单明细
-  ec_order_detail: { /* 订单明细配置 */ },
-});
-```
+- 只生成或修改文件；不要执行数据库、`codegen`、`importCsv` 或 `permit` 命令。
+- 隐藏明细菜单只设置 `is_hidden=1`，`is_enabled` 仍为 `1`；禁用是独立语义。
+- 不手写 `base_role_menu`、`base_tenant_menu`；仅启用 i18n 时创建 `base_menu_lang`。
