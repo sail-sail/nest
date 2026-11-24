@@ -38,6 +38,8 @@ export async function getHomeUrls() {
   });
   
   const home_urls = [ ];
+  // 多个角色可能配置了相同的首页, 按首次出现顺序去重
+  const seen = new Set<string>();
   for (const roleModel of roleModels) {
     const home_url = roleModel.home_url;
     if (isEmpty(home_url)) {
@@ -45,7 +47,10 @@ export async function getHomeUrls() {
     }
     const strs = home_url
       .split(",")
-      .filter((str) => !isEmpty(str));
+      .filter((str) => !isEmpty(str) && !seen.has(str));
+    for (const str of strs) {
+      seen.add(str);
+    }
     home_urls.push(...strs);
   }
   return home_urls;
