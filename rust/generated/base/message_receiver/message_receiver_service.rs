@@ -26,6 +26,7 @@ use crate::base::usr::usr_dao::{
 
 use super::message_receiver_model::*;
 use super::message_receiver_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -247,6 +248,13 @@ pub async fn creates_message_receiver(
   options: Option<Options>,
 ) -> Result<Vec<MessageReceiverId>> {
   
+  for message_receiver_input in message_receiver_inputs.iter() {
+    message_receiver_dao::validate_message_receiver(
+      message_receiver_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let message_receiver_ids = message_receiver_dao::creates_message_receiver(
     message_receiver_inputs,
     options,
@@ -279,6 +287,11 @@ pub async fn update_by_id_message_receiver(
   mut message_receiver_input: MessageReceiverInput,
   options: Option<Options>,
 ) -> Result<MessageReceiverId> {
+  
+  message_receiver_dao::validate_message_receiver(
+    &message_receiver_input,
+    ValidateMode::Update,
+  )?;
   
   let message_receiver_id = message_receiver_dao::update_by_id_message_receiver(
     message_receiver_id,
@@ -322,7 +335,7 @@ pub async fn get_field_comments_message_receiver(
   
   let comments = message_receiver_dao::get_field_comments_message_receiver(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

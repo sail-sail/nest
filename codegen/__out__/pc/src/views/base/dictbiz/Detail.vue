@@ -187,7 +187,7 @@
               <el-table-column
                 prop="lbl"
                 label="名称"
-                width="250"
+                width="256"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -204,7 +204,7 @@
               <el-table-column
                 prop="val"
                 label="值"
-                width="250"
+                width="256"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -221,7 +221,7 @@
               <el-table-column
                 prop="rem"
                 label="备注"
-                width="230"
+                width="236"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -243,7 +243,7 @@
                 "
                 prop="_operation"
                 label="操作"
-                width="90"
+                width="140"
                 align="center"
                 fixed="right"
               >
@@ -260,7 +260,17 @@
                   </el-button>
                   
                   <el-button
-                    v-else-if="!row.is_sys"
+                    v-if="row._type !== 'add' && !row.is_sys"
+                    size="small"
+                    plain
+                    type="info"
+                    @click="dictbiz_detailCopy(row)"
+                  >
+                    复制
+                  </el-button>
+                  
+                  <el-button
+                    v-if="row._type !== 'add' && !row.is_sys"
                     size="small"
                     plain
                     type="danger"
@@ -951,6 +961,21 @@ async function dictbiz_detailAdd() {
   }
   const defaultModel = await getDefaultInputDictbizDetail();
   dialogModel.dictbiz_detail.push(defaultModel);
+  nextTick(() => {
+    dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
+}
+
+function dictbiz_detailCopy(row: DictbizDetailModel) {
+  if (!dialogModel.dictbiz_detail) {
+    dialogModel.dictbiz_detail = [ ];
+  }
+  const copy_row = {
+    ...row,
+    id: undefined,
+    order_by: undefined,
+  };
+  dialogModel.dictbiz_detail.push(copy_row);
   nextTick(() => {
     dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
   });

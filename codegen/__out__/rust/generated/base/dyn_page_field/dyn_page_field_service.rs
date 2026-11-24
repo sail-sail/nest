@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::dyn_page_field_model::*;
 use super::dyn_page_field_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldId>> {
   
+  for dyn_page_field_input in dyn_page_field_inputs.iter() {
+    dyn_page_field_dao::validate_dyn_page_field(
+      dyn_page_field_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dyn_page_field_ids = dyn_page_field_dao::creates_dyn_page_field(
     dyn_page_field_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_dyn_page_field(
   mut dyn_page_field_input: DynPageFieldInput,
   options: Option<Options>,
 ) -> Result<DynPageFieldId> {
+  
+  dyn_page_field_dao::validate_dyn_page_field(
+    &dyn_page_field_input,
+    ValidateMode::Update,
+  )?;
   
   let dyn_page_field_id = dyn_page_field_dao::update_by_id_dyn_page_field(
     dyn_page_field_id,
@@ -327,7 +340,7 @@ pub async fn get_field_comments_dyn_page_field(
   
   let comments = dyn_page_field_dao::get_field_comments_dyn_page_field(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

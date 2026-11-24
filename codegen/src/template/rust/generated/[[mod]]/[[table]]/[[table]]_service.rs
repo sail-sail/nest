@@ -185,7 +185,8 @@ use crate::base::message::message_model::MessageInput;<#
 #>
 
 use super::<#=table#>_model::*;
-use super::<#=table#>_dao;<#
+use super::<#=table#>_dao;
+use crate::common::validators::ValidateMode;<#
 if (hasAudit && auditTable_Up) {
 #>
 
@@ -708,7 +709,14 @@ pub async fn set_id_by_lbl_<#=table#>(
 pub async fn creates_<#=table#>(
   <#=table#>_inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
-) -> Result<Vec<<#=Table_Up#>Id>> {<#
+) -> Result<Vec<<#=Table_Up#>Id>> {
+  
+  for <#=table#>_input in <#=table#>_inputs.iter() {
+    <#=table#>_dao::validate_<#=table#>(
+      <#=table#>_input,
+      ValidateMode::Create,
+    )?;
+  }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -804,7 +812,12 @@ pub async fn update_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   mut <#=table#>_input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<<#=Table_Up#>Id> {<#
+) -> Result<<#=Table_Up#>Id> {
+  
+  <#=table#>_dao::validate_<#=table#>(
+    &<#=table#>_input,
+    ValidateMode::Update,
+  )?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -1095,8 +1108,8 @@ pub async fn audit_submit_<#=table#>(
   let receiver_usr_ids = receiver_usr_ids2;
   
   crate::base::message::message_dao2::send_message(
-    next_message.clone(),
-    receiver_usr_ids.clone(),
+    next_message,
+    receiver_usr_ids,
     options,
   ).await?;<#
   } 
@@ -1246,8 +1259,8 @@ pub async fn audit_pass_<#=table#>(
   let receiver_usr_ids = receiver_usr_ids2;
   
   crate::base::message::message_dao2::send_message(
-    next_message.clone(),
-    receiver_usr_ids.clone(),
+    next_message,
+    receiver_usr_ids,
     options,
   ).await?;<#
   } else if (opts.audit.sendAuditMessage && !hasReviewed) {
@@ -1267,8 +1280,8 @@ pub async fn audit_pass_<#=table#>(
   if !old_model.create_usr_id.is_empty() {
     
     crate::base::message::message_dao2::send_message(
-      next_message.clone(),
-      receiver_usr_ids.clone(),
+      next_message,
+      receiver_usr_ids,
       options,
     ).await?;
     
@@ -1395,8 +1408,8 @@ pub async fn audit_reject_<#=table#>(
   if !old_model.create_usr_id.is_empty() {
     
     crate::base::message::message_dao2::send_message(
-      next_message.clone(),
-      receiver_usr_ids.clone(),
+      next_message,
+      receiver_usr_ids,
       options,
     ).await?;
     
@@ -1529,8 +1542,8 @@ pub async fn audit_reverse_<#=table#>(
   let receiver_usr_ids = receiver_usr_ids2;
   
   crate::base::message::message_dao2::send_message(
-    next_message.clone(),
-    receiver_usr_ids.clone(),
+    next_message,
+    receiver_usr_ids,
     options,
   ).await?;<#
   }
@@ -1646,8 +1659,8 @@ pub async fn audit_review_<#=table#>(
   if !old_model.create_usr_id.is_empty() {
     
     crate::base::message::message_dao2::send_message(
-      next_message.clone(),
-      receiver_usr_ids.clone(),
+      next_message,
+      receiver_usr_ids,
       options,
     ).await?;
     
@@ -1961,7 +1974,7 @@ pub async fn get_field_comments_<#=table#>(
   
   let comments = <#=table#>_dao::get_field_comments_<#=table#>(
     options,
-  ).await?;
+  )<#=isUseI18n || !!opts?.isUseDynPageFields ? ".await" : ""#>?;
   
   Ok(comments)
 }<#

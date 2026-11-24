@@ -17,6 +17,7 @@ use crate::base::message_receiver::message_receiver_model::{
 use crate::common::context::{
   Options,
   get_auth_id_ok,
+  get_req_id,
 };
 use crate::common::websocket::websocket_dao::publish;
 use crate::base::usr::usr_model::UsrId;

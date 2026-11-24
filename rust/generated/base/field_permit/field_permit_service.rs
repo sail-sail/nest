@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::field_permit_model::*;
 use super::field_permit_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitId>> {
   
+  for field_permit_input in field_permit_inputs.iter() {
+    field_permit_dao::validate_field_permit(
+      field_permit_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let field_permit_ids = field_permit_dao::creates_field_permit(
     field_permit_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_field_permit(
   mut field_permit_input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
+  
+  field_permit_dao::validate_field_permit(
+    &field_permit_input,
+    ValidateMode::Update,
+  )?;
   
   let field_permit_id = field_permit_dao::update_by_id_field_permit(
     field_permit_id,
@@ -275,7 +288,7 @@ pub async fn get_field_comments_field_permit(
   
   let comments = field_permit_dao::get_field_comments_field_permit(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

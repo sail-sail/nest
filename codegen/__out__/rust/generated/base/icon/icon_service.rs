@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::icon_model::*;
 use super::icon_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_icon(
   options: Option<Options>,
 ) -> Result<Vec<IconId>> {
   
+  for icon_input in icon_inputs.iter() {
+    icon_dao::validate_icon(
+      icon_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let icon_ids = icon_dao::creates_icon(
     icon_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_icon(
   mut icon_input: IconInput,
   options: Option<Options>,
 ) -> Result<IconId> {
+  
+  icon_dao::validate_icon(
+    &icon_input,
+    ValidateMode::Update,
+  )?;
   
   let icon_id = icon_dao::update_by_id_icon(
     icon_id,
@@ -308,7 +321,7 @@ pub async fn get_field_comments_icon(
   
   let comments = icon_dao::get_field_comments_icon(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

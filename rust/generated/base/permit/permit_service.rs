@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::permit_model::*;
 use super::permit_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitId>> {
   
+  for permit_input in permit_inputs.iter() {
+    permit_dao::validate_permit(
+      permit_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let permit_ids = permit_dao::creates_permit(
     permit_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_permit(
   mut permit_input: PermitInput,
   options: Option<Options>,
 ) -> Result<PermitId> {
+  
+  permit_dao::validate_permit(
+    &permit_input,
+    ValidateMode::Update,
+  )?;
   
   let permit_id = permit_dao::update_by_id_permit(
     permit_id,
@@ -275,7 +288,7 @@ pub async fn get_field_comments_permit(
   
   let comments = permit_dao::get_field_comments_permit(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

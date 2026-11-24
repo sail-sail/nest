@@ -3,6 +3,8 @@ import {
   useTmConfig,
 } from "./uni_modules/tm-ui/libs/config";
 
+import { handleMessageReadFromQuery } from "./utils/message_read";
+
 const tm = useTmConfig()
 tm.config.mode = "light";
 
@@ -21,6 +23,11 @@ onLaunch((async(options?: App.LaunchShowOption) => {
   await checkLogin(options);
   
 }));
+
+onShow((options?: App.LaunchShowOption) => {
+  // 从后台切回时落地页可能换了, 同样处理一次
+  handleMessageReadFromQuery(options?.query);
+});
 
 </script>
 

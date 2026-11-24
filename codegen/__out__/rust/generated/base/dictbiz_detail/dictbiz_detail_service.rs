@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::dictbiz_detail_model::*;
 use super::dictbiz_detail_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_dictbiz_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailId>> {
   
+  for dictbiz_detail_input in dictbiz_detail_inputs.iter() {
+    dictbiz_detail_dao::validate_dictbiz_detail(
+      dictbiz_detail_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dictbiz_detail_ids = dictbiz_detail_dao::creates_dictbiz_detail(
     dictbiz_detail_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_dictbiz_detail(
   mut dictbiz_detail_input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<DictbizDetailId> {
+  
+  dictbiz_detail_dao::validate_dictbiz_detail(
+    &dictbiz_detail_input,
+    ValidateMode::Update,
+  )?;
   
   let dictbiz_detail_id = dictbiz_detail_dao::update_by_id_dictbiz_detail(
     dictbiz_detail_id,
@@ -327,7 +340,7 @@ pub async fn get_field_comments_dictbiz_detail(
   
   let comments = dictbiz_detail_dao::get_field_comments_dictbiz_detail(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

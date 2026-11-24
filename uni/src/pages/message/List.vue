@@ -386,6 +386,37 @@ const isCurrentTabAllSelected = $computed({
   },
 });
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<MessageSearch> | string;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+    _tab_name?: string;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+    _tab_name: undefined,
+  },
+);
+
+let builtInSearch: Partial<MessageSearch> | undefined = undefined;
+
+watch(() => props.builtInSearch, () => {
+  if (typeof props.builtInSearch === "string") {
+    builtInSearch = JSON.parse(props.builtInSearch);
+  } else {
+    builtInSearch = props.builtInSearch;
+  }
+}, { immediate: true });
+
+watch(() => props._tab_name, () => {
+  if (props._tab_name) {
+    uni.setNavigationBarTitle({
+      title: props._tab_name,
+    });
+  }
+}, { immediate: true });
+
 function isRead(receiver: MessageReceiverModelType) {
   return Number(receiver.is_read) === 1;
 }
@@ -812,14 +843,26 @@ async function markAsRead(item: MessageCenterItem) {
   }
 }
 
-function handleMessageTap(item: MessageCenterItem) {
+async function handleMessageTap(item: MessageCenterItem) {
   if (isEditing) {
     toggleItemSelection(item, !isItemSelected(item));
     return;
   }
-  selectedItem = item;
-  detailVisible = true;
-  void markAsRead(item);
+  await markAsRead(item);
+  const routePath = item.message?.route_path;
+  if (!routePath) {
+    await refreshMessages(false);
+    return;
+  }
+  const jumped = await navigateToMessageRoute(
+    routePath,
+    item.message?.route_query,
+    // 目标页落地后兜底再标记一次, 避免这里的请求失败导致消息仍是未读
+    item.receiver.message_id ? { _message_id: String(item.receiver.message_id) } : undefined,
+  );
+  if (!jumped) {
+    await refreshMessages(false);
+  }
 }
 
 async function markSelectedAsRead() {
@@ -926,11 +969,25 @@ onShow(() => {
   void refreshMessages();
 });
 
-initFrame();
-
 async function initFrame() {
   await refreshMessages();
   inited = true;
 }
+
+async function initOrRefresh() {
+  if (!inited) {
+    await initFrame();
+  } else {
+    await onRefresh();
+  }
+}
+
+onLoad(async function(query?: AnyObject) {
+  await initOrRefresh();
+});
+
+defineExpose({
+  refresh: initOrRefresh,
+});
 </script>
 

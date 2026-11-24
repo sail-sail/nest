@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::data_permit_model::*;
 use super::data_permit_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
   
+  for data_permit_input in data_permit_inputs.iter() {
+    data_permit_dao::validate_data_permit(
+      data_permit_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let data_permit_ids = data_permit_dao::creates_data_permit(
     data_permit_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_data_permit(
   mut data_permit_input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<DataPermitId> {
+  
+  data_permit_dao::validate_data_permit(
+    &data_permit_input,
+    ValidateMode::Update,
+  )?;
   
   let data_permit_id = data_permit_dao::update_by_id_data_permit(
     data_permit_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_data_permit(
   
   let comments = data_permit_dao::get_field_comments_data_permit(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

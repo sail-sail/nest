@@ -46,6 +46,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -65,7 +66,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&DictbizDetailSearch>,
   options: Option<&Options>,
@@ -449,7 +450,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&DictbizDetailSearch>,
   options: Option<&Options>,
@@ -559,8 +560,8 @@ pub async fn find_all_dictbiz_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -777,8 +778,8 @@ pub async fn find_count_dictbiz_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -852,7 +853,7 @@ pub async fn find_count_dictbiz_detail(
 // MARK: get_field_comments_dictbiz_detail
 /// 获取业务字典明细字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_dictbiz_detail(
+pub fn get_field_comments_dictbiz_detail(
   _options: Option<Options>,
 ) -> Result<DictbizDetailFieldComment> {
   
@@ -1312,8 +1313,8 @@ pub async fn exists_dictbiz_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -3074,8 +3075,8 @@ pub async fn find_last_order_by_dictbiz_detail(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select f.order_by from (select t.order_by
   from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
@@ -3182,4 +3183,63 @@ pub async fn validate_option_dictbiz_detail(
   };
   
   Ok(model)
+}
+
+// MARK: validate_dictbiz_detail
+/// 校验业务字典明细增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_dictbiz_detail(
+  input: &DictbizDetailInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 业务字典
+    required(
+      input.dictbiz_id.filter(|v| !v.is_empty()).is_none(),
+      "业务字典",
+    )?;
+  
+    // 名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "名称",
+    )?;
+  
+    // 值
+    required(
+      input.val.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "值",
+    )?;
+  }
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    100,
+    "名称",
+  )?;
+  
+  // 值
+  chars_max_length(
+    input.val.clone(),
+    100,
+    "值",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "备注",
+  )?;
+  
+  Ok(())
 }

@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::tenant_model::*;
 use super::tenant_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
   
+  for tenant_input in tenant_inputs.iter() {
+    tenant_dao::validate_tenant(
+      tenant_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let tenant_ids = tenant_dao::creates_tenant(
     tenant_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_tenant(
   mut tenant_input: TenantInput,
   options: Option<Options>,
 ) -> Result<TenantId> {
+  
+  tenant_dao::validate_tenant(
+    &tenant_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = tenant_dao::get_is_locked_by_id_tenant(
     tenant_id,
@@ -369,7 +382,7 @@ pub async fn get_field_comments_tenant(
   
   let comments = tenant_dao::get_field_comments_tenant(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

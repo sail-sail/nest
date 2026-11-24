@@ -212,7 +212,7 @@
               <el-table-column
                 prop="code"
                 label="编码"
-                width="150"
+                width="156"
                 header-align="center"
                 align="center"
               >
@@ -230,7 +230,7 @@
               <el-table-column
                 prop="lbl"
                 label="名称"
-                width="210"
+                width="216"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -247,7 +247,7 @@
               <el-table-column
                 prop="type"
                 label="类型"
-                width="130"
+                width="136"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -264,7 +264,7 @@
               <el-table-column
                 prop="attrs"
                 label="属性"
-                width="210"
+                width="216"
                 header-align="center"
                 align="center"
               >
@@ -282,7 +282,7 @@
               <el-table-column
                 prop="formula"
                 label="计算公式"
-                width="190"
+                width="196"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -299,7 +299,7 @@
               <el-table-column
                 prop="is_required"
                 label="必填"
-                width="95"
+                width="101"
                 header-align="center"
                 align="center"
               >
@@ -317,7 +317,7 @@
               <el-table-column
                 prop="is_search"
                 label="查询条件"
-                width="95"
+                width="101"
                 header-align="center"
                 align="center"
               >
@@ -335,7 +335,7 @@
               <el-table-column
                 prop="width"
                 label="宽度"
-                width="190"
+                width="196"
                 header-align="center"
                 align="center"
               >
@@ -356,7 +356,7 @@
               <el-table-column
                 prop="align"
                 label="对齐方式"
-                width="110"
+                width="116"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -376,7 +376,7 @@
               <el-table-column
                 prop="is_mobile_list"
                 label="手机列表显示"
-                width="110"
+                width="116"
                 header-align="center"
                 align="center"
               >
@@ -394,7 +394,7 @@
               <el-table-column
                 prop="is_mobile_search"
                 label="手机列表查询"
-                width="110"
+                width="116"
                 header-align="center"
                 align="center"
               >
@@ -417,7 +417,7 @@
                 "
                 prop="_operation"
                 label="操作"
-                width="90"
+                width="140"
                 align="center"
                 fixed="right"
               >
@@ -434,7 +434,17 @@
                   </el-button>
                   
                   <el-button
-                    v-else
+                    v-if="row._type !== 'add'"
+                    size="small"
+                    plain
+                    type="info"
+                    @click="dyn_page_fieldCopy(row)"
+                  >
+                    复制
+                  </el-button>
+                  
+                  <el-button
+                    v-if="row._type !== 'add'"
                     size="small"
                     plain
                     type="danger"
@@ -1124,6 +1134,21 @@ async function dyn_page_fieldAdd() {
   }
   const defaultModel = await getDefaultInputDynPageField();
   dialogModel.dyn_page_field.push(defaultModel);
+  nextTick(() => {
+    dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
+}
+
+function dyn_page_fieldCopy(row: DynPageFieldModel) {
+  if (!dialogModel.dyn_page_field) {
+    dialogModel.dyn_page_field = [ ];
+  }
+  const copy_row = {
+    ...row,
+    id: undefined,
+    order_by: undefined,
+  };
+  dialogModel.dyn_page_field.push(copy_row);
   nextTick(() => {
     dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
   });

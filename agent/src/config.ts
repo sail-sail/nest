@@ -129,6 +129,7 @@ export const TOOL_NAMES = [
   "schema_search",
   "schema_get",
   "graphql_execute",
+  "rest_call",
   "oss_upload",
   "oss_download_url",
   "oss_image_url",

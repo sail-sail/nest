@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::options_model::*;
 use super::options_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsId>> {
   
+  for options_input in options_inputs.iter() {
+    options_dao::validate_options(
+      options_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let options_ids = options_dao::creates_options(
     options_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_options(
   mut options_input: OptionsInput,
   options: Option<Options>,
 ) -> Result<OptionsId> {
+  
+  options_dao::validate_options(
+    &options_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = options_dao::get_is_locked_by_id_options(
     options_id,
@@ -369,7 +382,7 @@ pub async fn get_field_comments_options(
   
   let comments = options_dao::get_field_comments_options(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

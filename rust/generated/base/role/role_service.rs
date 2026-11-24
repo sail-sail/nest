@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::role_model::*;
 use super::role_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
+  for role_input in role_inputs.iter() {
+    role_dao::validate_role(
+      role_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let role_ids = role_dao::creates_role(
     role_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_role(
   mut role_input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleId> {
+  
+  role_dao::validate_role(
+    &role_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = role_dao::get_is_locked_by_id_role(
     role_id,
@@ -388,7 +401,7 @@ pub async fn get_field_comments_role(
   
   let comments = role_dao::get_field_comments_role(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

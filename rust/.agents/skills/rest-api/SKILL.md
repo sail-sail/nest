@@ -1,179 +1,98 @@
 ---
 name: rest-api
-description: REST 接口开发规范. 创建非 GraphQL 接口(如微信回调、登录、文件下载)时使用
+description: 原生 poem 系统接口开发规范。普通业务 JSON 走 oai-api；附件、长连接、外部协议和系统入口使用本规范
 ---
 
-# REST 接口开发
+# 原生 REST 接口
 
-## 何时使用
+## 先判定
 
-- 微信回调通知(支付、退款)等 Webhook 接口
-- 小程序登录 `code2Session` 等认证入口
-- 文件下载/导出等不走 GraphQL 的场景
-- 健康检查等运维接口
+**普通前端或 AI 业务 JSON 接口一律走 `oai-api`。**
 
-## 路由注册位置
+仅以下场景使用原生 poem:
 
-REST 路由在 `main.rs` 的 `app` 构建阶段汇总注册, 其中业务路由通过 `app/lib.rs` 的 `register_routes` 注入:
+- 附件上传 / 下载、multipart、二进制流
+- WebSocket / SSE
+- 第三方 webhook、OAuth/MCP 等路径或报文受外部协议约束的接口
+- 健康检查、重定向
 
-```rust
-// 在 main() 的 app 构建区域
-app = app.at(
-  "/api/wx_usr/code2Session",
-  post(app::wx::wx_usr::wx_usr_router::code2session),
-);
+不属于以上场景时，停止实现并改用 `oai-api`。
 
-// 业务路由通过 app::register_routes 注册
-app = app::register_routes(app);
-```
+## 路由注册
 
-新增业务路由请优先在 `app/lib.rs` 的 `register_routes` 函数中追加。
+- 系统级、公共协议入口按同类现有路由注册在 `main.rs` 或 `register_routes`
+- 附件、打印、导入等业务模块路由放 `app/lib.rs::register_routes`
+- OpenAPI 路由只放 `register_oai_routes`，不要混用
 
-## 标准四层结构
+## 目录与职责
 
-```text
-app/{mod}/{table}/
-├── {table}_model.rs    # 输入输出类型
-├── {table}_resful.rs   # 业务逻辑(注意拼写: resful, 不是 restful)
-├── {table}_router.rs   # poem handler, 构建 Ctx
-└── mod.rs              # pub mod 声明
-```
+复杂业务放 `app/{mod}/{table}/`:
 
-| 层 | 文件 | 职责 |
-|----|------|------|
-| Router | `*_router.rs` | `#[handler]` 构建 Ctx, 调用 resful |
-| Resful | `*_resful.rs` | 参数校验、业务逻辑、错误响应、返回 Response |
-| Resolver | `*_resolver.rs` | Resolver 层, 日志打印, 权限控制等 |
-| Service | `*_service.rs` | Service 层, 封装业务逻辑, 可被 Resolver 调用 |
-| Model | `*_model.rs` | 类型定义 |
+- Router: 提取 poem 参数、构建 Ctx、调用 resful
+- Resful: HTTP 状态码、响应头和响应体
+- Service / Resolver: 可复用业务逻辑
+- Model: 输入输出类型
+- 文件名是 `*_resful.rs`，不是 `*_restful.rs`
+
+简单系统入口可直接在 Router 返回 Response，不必强行增加 resful。
 
 ## Router 模板
 
 ```rust
-use color_eyre::eyre::Result;
-use poem::{Request, Response, handler, web::Json};
-use generated::common::context::Ctx;
-use super::wx_usr_model::Code2sessionInput;
-use super::wx_usr_resful;
-
 #[handler]
-pub async fn code2session(
+pub async fn action(
   req: &Request,
-  Json(input): Json<Code2sessionInput>,
+  Json(input): Json<ActionInput>,
 ) -> Result<Response> {
-  let ip = req.real_ip().unwrap_or_default().into();
-
   Ctx::resful_builder(Some(req))
-    .with_auth()?          // 需要认证时加
+    .with_auth()?
     .build()
     .resful_scope({
-      wx_usr_resful::code2session(input, ip, None)
-    }).await
+      action_resful::action(input, None)
+    })
+    .await
 }
 ```
 
-## Resful 模板
+参数提取使用 `Json<T>`、`Query<T>`、`Path<T>` 或 `Multipart`。
+
+## 鉴权、事务与 Ctx
+
+- 必须登录: `.with_auth()?`
+- 可匿名: 不调用 `.with_auth()`
+- 登录可选: `.with_auth_optional()?`
+- 多表、多步写入必须整体成功或失败: 再加 `.with_tran()`
+- 原生 poem 必须配对使用 `Ctx::resful_builder(Some(req))` 和 `resful_scope()`
+- `resful_scope()` 会自动回写续期后的 token，不要重复设置 `Authorization`
+- `Options` 和所有 id 类型都是 `Copy`，不要 `.clone()`
+
+是否匿名由安全要求决定，不要因为是回调或健康检查就自动放行；外部回调必须校验签名、密钥或防重放机制。
+
+## 响应
+
+- 业务校验要在写数据前完成；缺失、格式错误或非法状态返回 400
+- 内部异常返回明确的 5xx，并记录完整错误
+- 不要向调用方泄露数据库错误、密钥或内部路径
+- JSON 响应设置 `Content-Type: application/json`
+
+文件下载至少设置真实 `Content-Type` 和 `Content-Disposition`。中文文件名要同时提供 ASCII 兜底与 RFC 5987 编码，不要只做一次 `urlencoding::encode`:
 
 ```rust
-#[function_name::named]
-pub async fn code2session(
-  input: Code2sessionInput,
-  ip: String,
-  options: Option<Options>,
-) -> Result<Response> {
-
-  info!(
-    "{req_id} {function_name}: {input:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-
-  // 业务逻辑...
-
-  Ok(Response::builder()
-    .header("Content-Type", "application/json")
-    .body(serde_json::to_string(&result)?))
-}
+Response::builder()
+  .content_type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  .header(
+    header::CONTENT_DISPOSITION,
+    format!(
+      "attachment; filename=\"download.xlsx\"; filename*=UTF-8''{}",
+      urlencoding::encode(&filename),
+    ),
+  )
+  .body(buf)
 ```
 
-入参不合法时, 在 `*_resful.rs` 中尽早返回 `400 Bad Request`, 并给出可读的错误信息, 不要继续执行业务逻辑。
-例如:
+## 检查
 
-```rust
-return Ok(Response::builder()
-  .status(StatusCode::BAD_REQUEST)
-  .body("无效的入参"));
-```
-
-## 常用 poem 导入
-
-```rust
-use poem::{
-  Request, Response,
-  handler,
-  web::{Json, Query},
-};
-use poem::http::{StatusCode, header};
-```
-
-## 文件下载响应
-
-```rust
-Ok(Response::builder()
-  .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-  .header("Content-Disposition", format!("attachment; filename=\"{}\"", urlencoding::encode(&filename)))
-  .body(buf))
-```
-
-## 路径参数
-
-```rust
-// main.rs 注册:
-app = app.at(
-  "/api/oss/download/:filename",
-  get(oss_router::download_filename),
-);
-
-// router.rs 获取:
-#[handler]
-pub async fn download_filename(
-  req: &Request,
-  path: Path<String>,
-) -> Result<Response> {
-  let filename = path.0;
-  // ...
-}
-```
-
-## Query 参数
-
-```rust
-#[derive(Deserialize)]
-struct ExportRequest {
-  search: Option<String>,
-  page: Option<String>,
-}
-
-#[handler]
-pub async fn export(
-  req: &Request,
-  Query(params): Query<ExportRequest>,
-) -> Result<Response> {
-  // params.search, params.page
-}
-```
-
-## Ctx 构建器差异
-
-| 场景 | 方法 | 说明 |
-|------|------|------|
-| GraphQL | `Ctx::builder(ctx)` | 从 `async_graphql::Context` 构建 |
-| REST | `Ctx::resful_builder(Some(req))` | 从 `poem::Request` 构建 |
-| 测试 | `Ctx::test_builder()` | 测试上下文 |
-
-## 注意事项
-
-- 检查文件名: 使用 `*_resful.rs`, 不要写成 `*_restful.rs`
-- 检查路由注册: 不涉及具体数据表操作的接口(如健康检查、公开外链下载)放在 `main.rs`; 与特定数据表或认证相关的业务处理统一追加到 `app/lib.rs` 的 `register_routes`
-- 检查认证: 读取当前登录用户、访问用户私有数据、发起支付/退款等用户敏感操作时加 `.with_auth()?`; 健康检查、微信回调、公开下载等匿名入口直接 `.build()`
-- 检查入参: 请求体、路径参数、Query 参数解析后, 只要发现缺失、格式错误或业务前置条件不满足, 立即返回 `400 Bad Request`
+- 接口属于原生 poem 场景，路由只注册一次
+- 鉴权、签名、事务边界和错误状态码正确
+- 文件下载响应头正确
+- `cargo check` 通过

@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::dict_detail_model::*;
 use super::dict_detail_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailId>> {
   
+  for dict_detail_input in dict_detail_inputs.iter() {
+    dict_detail_dao::validate_dict_detail(
+      dict_detail_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let dict_detail_ids = dict_detail_dao::creates_dict_detail(
     dict_detail_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_dict_detail(
   mut dict_detail_input: DictDetailInput,
   options: Option<Options>,
 ) -> Result<DictDetailId> {
+  
+  dict_detail_dao::validate_dict_detail(
+    &dict_detail_input,
+    ValidateMode::Update,
+  )?;
   
   let dict_detail_id = dict_detail_dao::update_by_id_dict_detail(
     dict_detail_id,
@@ -308,7 +321,7 @@ pub async fn get_field_comments_dict_detail(
   
   let comments = dict_detail_dao::get_field_comments_dict_detail(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

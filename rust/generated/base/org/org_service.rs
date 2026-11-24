@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::org_model::*;
 use super::org_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -239,6 +240,13 @@ pub async fn creates_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgId>> {
   
+  for org_input in org_inputs.iter() {
+    org_dao::validate_org(
+      org_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let org_ids = org_dao::creates_org(
     org_inputs,
     options,
@@ -271,6 +279,11 @@ pub async fn update_by_id_org(
   mut org_input: OrgInput,
   options: Option<Options>,
 ) -> Result<OrgId> {
+  
+  org_dao::validate_org(
+    &org_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = org_dao::get_is_locked_by_id_org(
     org_id,
@@ -408,7 +421,7 @@ pub async fn get_field_comments_org(
   
   let comments = org_dao::get_field_comments_org(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

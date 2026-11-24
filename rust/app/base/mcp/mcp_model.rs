@@ -18,6 +18,9 @@ pub struct McpGraphqlInput {
 #[serde(rename_all = "camelCase")]
 pub struct McpSchemaSearchInput {
   pub keyword: String,
+  /// 接口来源: graphql / rest / all, 默认 all
+  #[serde(default)]
+  pub source: Option<String>,
   #[serde(default)]
   pub kind: Option<String>,
   #[serde(default)]
@@ -34,6 +37,23 @@ pub struct McpSchemaGetInput {
   pub name: String,
   #[serde(default)]
   pub kind: Option<String>,
+}
+
+/// 调用 openapi 接口的入参
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct McpRestCallInput {
+  /// 完整路径, 如 /api/oai/system/ping
+  pub path: String,
+  /// 请求方法, 默认 GET
+  #[serde(default)]
+  pub method: Option<String>,
+  /// query 参数
+  #[serde(default)]
+  pub query: Option<Value>,
+  /// JSON 请求体
+  #[serde(default)]
+  pub body: Option<Value>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]

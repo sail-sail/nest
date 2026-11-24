@@ -22,4 +22,4 @@ export type {
   ReplicationStatus,
   S3Object,
   StorageClass,
-} from "./types";
+} from "./types.ts";

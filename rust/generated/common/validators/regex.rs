@@ -1,10 +1,9 @@
 use color_eyre::eyre::{Result, eyre};
 use regex::Regex;
 
-use crate::common::i18n::i18n_dao::ns;
-
+/// 校验字符串匹配正则表达式
 #[allow(dead_code)]
-pub async fn regex(
+pub fn regex(
   value: Option<String>,
   regex_str: &'static str,
   label: &str,
@@ -19,16 +18,9 @@ pub async fn regex(
     return Ok(());
   }
   
-  let msg = ns(
-    "格式不正确".into(),
-    None,
-  ).await?;
-  
-  let mut err_msg = String::new();
-  err_msg.push_str(label);
-  err_msg.push(' ');
-  err_msg.push_str(&msg);
-  let err_msg = err_msg;
+  let err_msg = format!(
+    "{label} 格式不正确",
+  );
   
   Err(eyre!(err_msg))
 }

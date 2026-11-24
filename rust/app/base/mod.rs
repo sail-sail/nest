@@ -1,6 +1,7 @@
 pub mod mcp;
 pub mod menu;
 pub mod message;
+pub mod oai;
 
 use async_graphql::MergedObject;
 

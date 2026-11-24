@@ -48,6 +48,7 @@ const props = withDefaults(
     accept?: string;
     db?: string;
     isPublic?: boolean;
+    multiple?: boolean;
   }>(),
   {
     modelValue: "",
@@ -57,6 +58,7 @@ const props = withDefaults(
     accept: "",
     db: undefined,
     isPublic: false,
+    multiple: true,
   },
 );
 
@@ -98,6 +100,7 @@ async function linkClk(e?: MouseEvent) {
       accept: props.accept,
       db: props.db,
       isPublic: props.isPublic,
+      multiple: props.multiple,
     },
   });
 }

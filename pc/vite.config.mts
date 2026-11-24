@@ -33,6 +33,8 @@ import TurboConsole from "unplugin-turbo-console/vite";
 
 import VueDevtoolsJson from "vite-plugin-devtools-json";
 
+import { openInEditorPlugin, OPEN_EDITOR } from "./src/utils/open_in_editor.mts";
+
 const commonProxy = {
   target: "http://localhost:4001",
   changeOrigin: true,
@@ -72,8 +74,9 @@ export default defineConfig({
       toggleButtonPos: "top-left",
       lazyLoad: 500,
       disableInspectorOnEditorOpen: true,
-      launchEditor: "buddycn",
+      launchEditor: OPEN_EDITOR,
     }),
+    openInEditorPlugin(OPEN_EDITOR),
     // VueDevTools(),
     VueDevtoolsJson(),
     Vue(),
@@ -89,6 +92,9 @@ export default defineConfig({
     }),
     fileViewerRenderers({
       scan: false,
+      // 复制 PDF.js 的 worker / cMaps / standard fonts / CJK 回退字体等离线资源，
+      // 否则 PDF 中的中文（未嵌入字体的 CID 字体）无法解码，预览时文字整片空白
+      copyAssets: process.env.NODE_ENV === "production",
       preset: "office",
       formats: [
         "xls",

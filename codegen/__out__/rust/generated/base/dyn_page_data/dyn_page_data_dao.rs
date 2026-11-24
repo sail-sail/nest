@@ -61,6 +61,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -397,7 +398,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&DynPageDataSearch>,
   options: Option<&Options>,
@@ -574,7 +575,7 @@ pub async fn find_all_dyn_page_data(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let mut sort = sort.unwrap_or_default();
@@ -699,7 +700,7 @@ pub async fn find_count_dyn_page_data(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
@@ -1192,7 +1193,7 @@ pub async fn exists_dyn_page_data(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
@@ -2797,4 +2798,26 @@ pub async fn validate_option_dyn_page_data(
   };
   
   Ok(model)
+}
+
+// MARK: validate_dyn_page_data
+/// 校验动态页面数据增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_dyn_page_data(
+  input: &DynPageDataInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 关联页面路由
+  chars_max_length(
+    input.ref_code.clone(),
+    100,
+    "关联页面路由",
+  )?;
+  
+  Ok(())
 }

@@ -19,6 +19,7 @@ use generated::common::context::{
   get_server_tokentimeout,
   get_short_uuid,
   id_to_string,
+  naive_local_timestamp,
   normalize_page_query_values,
 };
 use generated::common::gql::model::Ip;
@@ -67,20 +68,34 @@ use super::mcp_model::{
   McpGraphqlInput,
   McpOssDownloadUrlInput,
   McpOssImageUrlInput,
+  McpRestCallInput,
   McpSchemaGetInput,
   McpSchemaSearchInput,
   McpOssUploadInput,
 };
 use super::mcp_service;
+use super::rest_search;
 use super::rmcp_session_store::RmcpSessionStore;
 use super::schema_search;
 
-const INSTRUCTIONS: &str = "这是内嵌在 rust 后端里的 MCP 调试入口。先调用 session_me 确认当前登录态；如果不清楚 GraphQL 的 Query、Mutation、Input 或返回类型，先用 schema_search 搜索 schema；如果已经定位到精确类型名，再用 schema_get 查看完整 SDL；过大的聚合类型不会直接返回；最后再用 graphql_execute 调试业务接口。对任何 findAll* 查询，都要显式传 page；缺 page 会被直接拒绝，pgSize 缺省按 20，超过 2000 自动降到 2000。附件上传走 oss_upload，下载和图片预览分别用 oss_download_url / oss_image_url。标准客户端可直接走 OAuth 授权码流程；手工调试也可以先调用 POST /mcp/login，得到 authorization 后放到 Authorization: Bearer <token> 请求头里。";
+const INSTRUCTIONS: &str = "这是内嵌在 rust 后端里的 MCP 调试入口。先调用 session_me 确认当前登录态；如果不清楚 GraphQL 的 Query、Mutation、Input 或返回类型，先用 schema_search 搜索 schema；如果已经定位到精确类型名，再用 schema_get 查看完整 SDL；过大的聚合类型不会直接返回；最后再用 graphql_execute 调试业务接口。非 GraphQL 的 HTTP 接口由 openapi 规范描述，先用 schema_search 且 source=rest 找到 method 和 path，再用 rest_call 调用。对任何 findAll* 查询，都要显式传 page；缺 page 会被直接拒绝，pgSize 缺省按 20，超过 2000 自动降到 2000。附件上传走 oss_upload，下载和图片预览分别用 oss_download_url / oss_image_url。标准客户端可直接走 OAuth 授权码流程；手工调试也可以先调用 POST /mcp/login，得到 authorization 后放到 Authorization: Bearer <token> 请求头里。";
 const SESSION_SWEEP_INTERVAL: Duration = Duration::from_secs(5);
+/// rest_call 自调用的超时时间
+const MCP_REST_CALL_TIMEOUT: Duration = Duration::from_secs(30);
+/// rest_call 非 JSON 响应的最大保留字符数
+const MCP_REST_CALL_MAX_CHARS: usize = 4000;
 
 type McpHttpService = StreamableHttpService<McpServer, McpSessionManager>;
 
 static MCP_HTTP_SERVICE: OnceLock<Arc<McpHttpService>> = OnceLock::new();
+
+/// 解析后的 openapi 索引, 规范不会变化, 只解析一次
+///
+/// 每次 schema_search / rest_call 都重新反序列化整份规范会随模块数量线性变慢
+static REST_INDEX: OnceLock<rest_search::RestIndex> = OnceLock::new();
+
+/// rest_call 自调用复用的 HTTP 客户端
+static REST_CLIENT: OnceLock<reqwest::Client> = OnceLock::new();
 
 #[derive(Clone)]
 struct McpAuthContext {
@@ -92,6 +107,8 @@ struct McpAuthContext {
 #[derive(Clone)]
 struct McpServer {
   schema: crate::QuerySchema,
+  /// 解析后的 openapi 索引, 供 rest 接口的搜索与调用使用
+  rest_index: &'static rest_search::RestIndex,
 }
 
 #[derive(Debug, Serialize)]
@@ -342,6 +359,7 @@ async fn _call_tool(
     "schema_search" => Ok(this.schema_search(request.arguments).await),
     "schema_get" => Ok(this.schema_get(request.arguments).await),
     "graphql_execute" => Ok(this.graphql_execute(auth, request.arguments).await),
+    "rest_call" => Ok(this.rest_call(auth, request.arguments).await),
     "oss_upload" => Ok(this.oss_upload(auth, request.arguments).await),
     "oss_download_url" => Ok(this.oss_download_url(auth, request.arguments).await),
     "oss_image_url" => Ok(this.oss_image_url(auth, request.arguments).await),
@@ -461,10 +479,73 @@ impl McpServer {
       Err(err) => return tool_error_response(err.to_string(), None),
     };
 
-    match schema_search::search_schema(&self.schema, input) {
-      Ok(payload) => tool_success_response(payload),
-      Err(err) => tool_error_response(err.to_string(), None),
+    let source = input.source.as_deref().unwrap_or("all").trim().to_lowercase();
+    match source.as_str() {
+      "rest" => match self.rest_index.search(input) {
+        Ok(payload) => tool_success_response(payload),
+        Err(err) => tool_error_response(err.to_string(), None),
+      },
+      "graphql" => match schema_search::search_schema(&self.schema, input) {
+        Ok(payload) => tool_success_response(payload),
+        Err(err) => tool_error_response(err.to_string(), None),
+      },
+      _ => self.search_all(input),
     }
+  }
+
+  /// 同时搜索 GraphQL 与 REST 接口
+  fn search_all(
+    &self,
+    input: McpSchemaSearchInput,
+  ) -> CallToolResponse {
+    let limit = input.limit.unwrap_or(8).clamp(1, 20);
+    let keyword = input.keyword.clone();
+
+    // REST 接口数量少、命名规范, 命中时优先占位;
+    // 否则 GraphQL 的模糊匹配很容易把 REST 结果挤掉, AI 就再也搜不到 HTTP 接口
+    let rest_items = if self.rest_index.is_empty() {
+      Vec::new()
+    } else {
+      let mut rest_input = input.clone();
+      rest_input.limit = Some(limit.div_ceil(2));
+      self.rest_index.search(rest_input)
+        .ok()
+        .and_then(|result| result.get("items").and_then(Value::as_array).cloned())
+        .unwrap_or_default()
+    };
+
+    let graphql_limit = limit.saturating_sub(rest_items.len()).max(1);
+    let mut graphql_input = input;
+    graphql_input.limit = Some(graphql_limit);
+
+    let mut items = rest_items;
+    let mut query_tips = Vec::new();
+    if let Ok(result) = schema_search::search_schema(&self.schema, graphql_input) {
+      if let Some(result_items) = result.get("items").and_then(Value::as_array) {
+        items.extend(result_items.iter().map(|item| {
+          let mut item = item.clone();
+          if let Value::Object(map) = &mut item {
+            map.entry("source").or_insert_with(|| json!("graphql"));
+          }
+          item
+        }));
+      }
+      if let Some(result_tips) = result.get("queryTips").and_then(Value::as_array) {
+        query_tips.extend(result_tips.iter().cloned());
+      }
+    }
+    items.truncate(limit);
+
+    let mut payload = json!({
+      "query": keyword,
+      "source": "all",
+      "items": items,
+    });
+    if !query_tips.is_empty() {
+      payload["queryTips"] = Value::Array(query_tips);
+    }
+
+    tool_success_response(payload)
   }
 
   async fn schema_get(
@@ -476,9 +557,109 @@ impl McpServer {
       Err(err) => return tool_error_response(err.to_string(), None),
     };
 
-    match schema_search::get_schema(&self.schema, input) {
+    let kind = input.kind.as_deref().unwrap_or("").trim().to_lowercase();
+    let is_endpoint = kind == "endpoint" || kind == "rest" || input.name.contains('/');
+
+    if is_endpoint && !self.rest_index.is_empty() {
+      return match self.rest_index.get(&input.name) {
+        Ok(payload) => tool_success_response(payload),
+        Err(err) => tool_error_response(err.to_string(), None),
+      };
+    }
+
+    match schema_search::get_schema(&self.schema, input.clone()) {
       Ok(payload) => tool_success_response(payload),
-      Err(err) => tool_error_response(err.to_string(), None),
+      Err(err) => {
+        if !self.rest_index.is_empty()
+          && let Ok(payload) = self.rest_index.get(&input.name)
+        {
+          return tool_success_response(payload);
+        }
+        tool_error_response(err.to_string(), None)
+      },
+    }
+  }
+
+  /// 调用 openapi 规范里的 HTTP 接口
+  async fn rest_call(
+    &self,
+    auth: &McpAuthContext,
+    arguments: Option<JsonObject>,
+  ) -> CallToolResponse {
+    let input = match parse_arguments::<McpRestCallInput>(arguments) {
+      Ok(input) => input,
+      Err(err) => return tool_error_response(err.to_string(), None),
+    };
+
+    let path = input.path.trim().to_owned();
+    if !path.starts_with('/') || path.starts_with("//") {
+      return tool_error_response(
+        "path 必须以 / 开头, 例如 /api/oai/system/ping".to_owned(),
+        None,
+      );
+    }
+
+    let method = input.method.as_deref().unwrap_or("GET").trim().to_ascii_uppercase();
+    let method = match reqwest::Method::from_bytes(method.as_bytes()) {
+      Ok(method) => method,
+      Err(_) => return tool_error_response(format!("不支持的 method: {method}"), None),
+    };
+
+    if !self.rest_index.has_endpoint(method.as_str(), &path) {
+      return tool_error_response(
+        format!("{} {} 不在 openapi 规范里", method.as_str(), path),
+        Some(json!({
+          "action": "先用 schema_search 且 source=rest 搜到准确 path 再调用",
+        })),
+      );
+    }
+
+    let token = match current_authorization_token(&auth.auth_model) {
+      Ok(token) => token,
+      Err(err) => return tool_error_response(err.to_string(), None),
+    };
+
+    let server_port = env::var("server_port").unwrap_or_else(|_| "4001".to_owned());
+    let query = input.query.and_then(|value| value.as_object().cloned());
+
+    let mut last_error = String::new();
+    let mut response = None;
+    for base in rest_call_base_urls(&server_port) {
+      let url = format!("{base}{path}");
+      match send_rest_request(
+        method.clone(),
+        url,
+        token.clone(),
+        query.clone(),
+        input.body.clone(),
+      ).await {
+        Ok(item) => {
+          response = Some(item);
+          break;
+        },
+        Err(err) => last_error = err,
+      }
+    }
+
+    let response = match response {
+      Some(response) => response,
+      None => return tool_error_response(format!("请求失败: {last_error}"), None),
+    };
+
+    if !response.content_type.contains("json") {
+      return tool_success_response(json!({
+        "status": response.status,
+        "contentType": response.content_type,
+        "body": truncate_text(response.body, MCP_REST_CALL_MAX_CHARS),
+      }));
+    }
+
+    match serde_json::from_str::<Value>(&response.body) {
+      Ok(body) => tool_success_response(json!({
+        "status": response.status,
+        "body": body,
+      })),
+      Err(err) => tool_error_response(format!("响应解析失败: {err}"), None),
     }
   }
 
@@ -676,9 +857,24 @@ fn build_mcp_http_service(
   let session_store_trait: Arc<dyn SessionStore + Send + Sync + 'static> = session_store.clone();
   config.session_store = Some(session_store_trait);
 
+  let rest_index = REST_INDEX.get_or_init(|| {
+    let spec = crate::oai_spec().unwrap_or_default();
+    if spec.is_empty() {
+      return rest_search::RestIndex::empty();
+    }
+    match rest_search::RestIndex::parse(spec) {
+      Ok(index) => index,
+      Err(err) => {
+        tracing::error!(error = %err, "openapi 规范解析失败, rest 接口工具不可用");
+        rest_search::RestIndex::empty()
+      },
+    }
+  });
+  
   StreamableHttpService::new(
     move || Ok(McpServer {
       schema: schema.clone(),
+      rest_index,
     }),
     session_manager,
     config,
@@ -745,7 +941,7 @@ fn current_authorization_token(
   auth_model: &AuthModel,
 ) -> Result<String> {
   let mut auth_model = auth_model.clone();
-  let now_sec = get_now().and_utc().timestamp_millis() / 1000;
+  let now_sec = naive_local_timestamp(get_now());
   auth_model.exp = now_sec + get_server_tokentimeout();
   get_token_by_auth_model(&auth_model)
 }
@@ -760,6 +956,169 @@ where
     .map_err(|err| eyre!(format!("参数解析失败: {err}")))
 }
 
+struct RestCallResponse {
+  status: u16,
+  content_type: String,
+  body: String,
+}
+
+/// rest_call 的自调用基地址
+///
+/// 服务的监听地址来自 `server_host`, 解析结果可能只落在 IPv4 或 IPv6 回环上,
+/// 所以这里给出候选地址, 由调用方依次尝试, 避免只连一种协议导致连接失败
+fn rest_call_base_urls(server_port: &str) -> Vec<String> {
+  let host = env::var("server_host").unwrap_or_else(|_| "localhost".to_owned());
+  let host = host.trim().trim_matches('"').to_owned();
+
+  let mut hosts = Vec::new();
+  match host.as_str() {
+    "" | "localhost" => {
+      hosts.push("localhost".to_owned());
+      hosts.push("127.0.0.1".to_owned());
+      hosts.push("[::1]".to_owned());
+    },
+    "0.0.0.0" => {
+      hosts.push("127.0.0.1".to_owned());
+      hosts.push("[::1]".to_owned());
+    },
+    "::" | "[::]" => {
+      hosts.push("[::1]".to_owned());
+      hosts.push("127.0.0.1".to_owned());
+    },
+    other => {
+      if other.contains(':') && !other.starts_with('[') {
+        hosts.push(format!("[{other}]"));
+      } else {
+        hosts.push(other.to_owned());
+      }
+    },
+  }
+
+  hosts.into_iter()
+    .map(|host| format!("http://{host}:{server_port}"))
+    .collect()
+}
+
+/// 复用的 HTTP 客户端
+///
+/// 每次 rest_call 都新建 Client 会反复建连接池, 这里只建一次
+fn rest_client() -> &'static reqwest::Client {
+  REST_CLIENT.get_or_init(reqwest::Client::new)
+}
+
+/// 发送 rest_call 请求
+///
+/// 服务本身跑在 current_thread runtime 上, 直接在同一个 runtime 里自发自收
+/// 依赖协作式调度的时序假设; 放到 blocking 线程的独立 runtime 里发送, 行为是确定的
+async fn send_rest_request(
+  method: reqwest::Method,
+  url: String,
+  token: String,
+  query: Option<Map<String, Value>>,
+  body: Option<Value>,
+) -> std::result::Result<RestCallResponse, String> {
+  let client = rest_client().clone();
+  tokio::task::spawn_blocking(move || {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+      .enable_all()
+      .build()
+      .map_err(|err| err.to_string())?;
+    runtime.block_on(async move {
+      let mut request = client
+        .request(method, &url)
+        .header(AUTHORIZATION, &token)
+        .timeout(MCP_REST_CALL_TIMEOUT);
+
+      if let Some(query) = query {
+        let pairs = query.iter()
+          .filter_map(|(key, value)| {
+            let value = match value {
+              Value::String(value) => value.clone(),
+              Value::Null => return None,
+              other => other.to_string(),
+            };
+            Some((key.clone(), value))
+          })
+          .collect::<Vec<_>>();
+        if !pairs.is_empty() {
+          request = request.query(&pairs);
+        }
+      }
+
+      if let Some(body) = body {
+        request = request.json(&body);
+      }
+
+      let response = request.send().await.map_err(|err| err.to_string())?;
+      let status = response.status().as_u16();
+      let content_type = response.headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("")
+        .to_owned();
+      let body = response.text().await.map_err(|err| err.to_string())?;
+
+      Ok(RestCallResponse {
+        status,
+        content_type,
+        body,
+      })
+    })
+  }).await.map_err(|err| err.to_string())?
+}
+
+#[cfg(test)]
+mod tests {
+  use std::time::Duration;
+
+  use super::*;
+
+  #[poem::handler]
+  async fn ping() -> &'static str {
+    "pong"
+  }
+
+  /// 服务跑在 current_thread runtime 上, 这里固化自调用不会死锁的行为
+  #[tokio::test(flavor = "current_thread")]
+  async fn rest_call_self_request_on_current_thread_runtime() {
+    // 先占一个空闲端口, 再交给 poem 绑定
+    let port = {
+      let temp = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+      temp.local_addr().unwrap().port()
+    };
+    let listener = poem::listener::TcpListener::bind(("127.0.0.1", port));
+
+    let app = poem::Route::new().at("/ping", poem::get(ping));
+    tokio::spawn(async move {
+      poem::Server::new(listener).run(app).await.ok();
+    });
+    tokio::time::sleep(Duration::from_millis(200)).await;
+
+    let response = send_rest_request(
+      reqwest::Method::GET,
+      format!("http://127.0.0.1:{port}/ping"),
+      "test-token".to_owned(),
+      None,
+      None,
+    ).await.unwrap();
+
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body, "pong");
+  }
+}
+
+fn truncate_text(
+  text: String,
+  max_chars: usize,
+) -> String {
+  if text.chars().count() <= max_chars {
+    return text;
+  }
+  let mut truncated = text.chars().take(max_chars).collect::<String>();
+  truncated.push_str("...(已截断)");
+  truncated
+}
+
 fn tool_definitions() -> Vec<Tool> {
   vec![
     Tool::new(
@@ -772,18 +1131,23 @@ fn tool_definitions() -> Vec<Tool> {
     ),
     Tool::new(
       "schema_search",
-      "搜索当前服务的 GraphQL schema，优先用于定位 Query、Mutation、Input、返回类型和字段签名，避免先拉整份 introspection；搜索结果会过滤 AI 无用的 Ok 冗余接口与字段注释接口。遇到 findAll* 时务必显式传 page，最好先查 findCount*。",
+      "搜索当前服务的接口。默认同时搜索 GraphQL schema 和 openapi 描述的 HTTP 接口：GraphQL 用于定位 Query、Mutation、Input、返回类型和字段签名；HTTP 接口用于定位 method 和 path。搜索结果会过滤 AI 无用的 Ok 冗余接口与字段注释接口。遇到 findAll* 时务必显式传 page，最好先查 findCount*。",
       schema_object(json!({
         "type": "object",
         "properties": {
           "keyword": {
             "type": "string",
-            "description": "关键字，可按中文注释、字段名、类型名、Query、Mutation 搜索"
+            "description": "关键字，可按中文注释、字段名、类型名、Query、Mutation、接口路径搜索"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["all", "graphql", "rest"],
+            "description": "接口来源；rest 表示 openapi 里的 HTTP 接口，默认 all 同时搜索两边"
           },
           "kind": {
             "type": "string",
-            "enum": ["type", "input", "enum", "scalar", "interface", "union", "directive", "schema", "object"],
-            "description": "可选类型过滤；object 会映射为 type"
+            "enum": ["type", "input", "enum", "scalar", "interface", "union", "directive", "schema", "object", "endpoint"],
+            "description": "可选类型过滤；object 会映射为 type，endpoint 表示 HTTP 接口"
           },
           "scope": {
             "type": "string",
@@ -804,18 +1168,18 @@ fn tool_definitions() -> Vec<Tool> {
     ),
     Tool::new(
       "schema_get",
-      "按类型名精确返回完整 SDL，适合在 schema_search 定位到类型名后查看具体 Input、Model 等定义；过大的聚合类型会直接拒绝返回。",
+      "按名字精确返回完整定义。GraphQL 类型返回完整 SDL；HTTP 接口传 `GET /path` 或 path 本身，返回参数与响应 schema；过大的聚合类型会直接拒绝返回。",
       schema_object(json!({
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "精确类型名，例如 Query、Mutation、PageInput、ClientCheckinModel"
+            "description": "精确类型名（Query、PageInput）或接口标识（GET /api/oai/system/ping）"
           },
           "kind": {
             "type": "string",
-            "enum": ["type", "input", "enum", "scalar", "interface", "union", "directive", "schema", "object"],
-            "description": "可选类型过滤；object 会映射为 type"
+            "enum": ["type", "input", "enum", "scalar", "interface", "union", "directive", "schema", "object", "endpoint"],
+            "description": "可选类型过滤；object 会映射为 type，endpoint 表示 HTTP 接口"
           }
         },
         "required": ["name"],
@@ -845,6 +1209,33 @@ fn tool_definitions() -> Vec<Tool> {
           // }
         },
         "required": ["query"],
+      })),
+    ),
+    Tool::new(
+      "rest_call",
+      "调用 openapi 规范里的 HTTP 接口（非 GraphQL）。path 必须来自 schema_search(source=rest) 的结果，返回状态码和 JSON 响应体。附件上传下载请继续用 oss_* 工具。",
+      schema_object(json!({
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "完整路径，例如 /api/oai/system/ping"
+          },
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+            "description": "请求方法，默认 GET"
+          },
+          "query": {
+            "type": "object",
+            "description": "query 参数，值会被转成字符串"
+          },
+          "body": {
+            "type": "object",
+            "description": "JSON 请求体"
+          }
+        },
+        "required": ["path"],
       })),
     ),
     Tool::new(

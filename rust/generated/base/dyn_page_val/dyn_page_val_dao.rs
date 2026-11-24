@@ -43,6 +43,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -58,7 +59,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&DynPageValSearch>,
   options: Option<&Options>,
@@ -375,7 +376,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&DynPageValSearch>,
   options: Option<&Options>,
@@ -474,8 +475,8 @@ pub async fn find_all_dyn_page_val(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -607,8 +608,8 @@ pub async fn find_count_dyn_page_val(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -638,7 +639,7 @@ pub async fn find_count_dyn_page_val(
 // MARK: get_field_comments_dyn_page_val
 /// 获取动态页面值字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_dyn_page_val(
+pub fn get_field_comments_dyn_page_val(
   _options: Option<Options>,
 ) -> Result<DynPageValFieldComment> {
   
@@ -1084,8 +1085,8 @@ pub async fn exists_dyn_page_val(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -2527,4 +2528,64 @@ pub async fn validate_option_dyn_page_val(
   };
   
   Ok(model)
+}
+
+// MARK: validate_dyn_page_val
+/// 校验动态页面值增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_dyn_page_val(
+  input: &DynPageValInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 字段编码
+    required(
+      input.code.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "字段编码",
+    )?;
+  
+    // 值
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "值",
+    )?;
+  }
+  
+  // 关联页面路由
+  chars_max_length(
+    input.ref_code.clone(),
+    100,
+    "关联页面路由",
+  )?;
+  
+  // 关联数据ID
+  chars_max_length(
+    input.ref_id.clone(),
+    22,
+    "关联数据ID",
+  )?;
+  
+  // 字段编码
+  chars_max_length(
+    input.code.clone(),
+    20,
+    "字段编码",
+  )?;
+  
+  // 值
+  chars_max_length(
+    input.lbl.clone(),
+    200,
+    "值",
+  )?;
+  
+  Ok(())
 }
