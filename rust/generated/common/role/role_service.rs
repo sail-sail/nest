@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use color_eyre::eyre::Result;
 use crate::common::context::{get_auth_id_ok, Options};
 
@@ -43,20 +45,20 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
     options,
   ).await?;
   
+  // 多个角色可能配置了相同的首页, 按首次出现顺序去重
+  let mut seen = HashSet::new();
   let home_urls = role_models
     .into_iter()
-    .map(|role_model| {
+    .flat_map(|role_model| {
       role_model.home_url
-    })
-    .filter(|home_url| {
-      !home_url.is_empty()
-    })
-    .flat_map(|home_url| {
-      home_url.split(',')
+        .split(',')
         .map(|home_url| {
           home_url.to_string()
         })
         .collect::<Vec<String>>()
+    })
+    .filter(|home_url| {
+      !home_url.is_empty() && seen.insert(home_url.clone())
     })
     .collect::<Vec<String>>();
   Ok(home_urls)
