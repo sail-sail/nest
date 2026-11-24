@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wx_refund_notice_model::*;
 use super::wx_refund_notice_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wx_refund_notice(
   options: Option<Options>,
 ) -> Result<Vec<WxRefundNoticeId>> {
   
+  for wx_refund_notice_input in wx_refund_notice_inputs.iter() {
+    wx_refund_notice_dao::validate_wx_refund_notice(
+      wx_refund_notice_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wx_refund_notice_ids = wx_refund_notice_dao::creates_wx_refund_notice(
     wx_refund_notice_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wx_refund_notice(
   mut wx_refund_notice_input: WxRefundNoticeInput,
   options: Option<Options>,
 ) -> Result<WxRefundNoticeId> {
+  
+  wx_refund_notice_dao::validate_wx_refund_notice(
+    &wx_refund_notice_input,
+    ValidateMode::Update,
+  )?;
   
   let wx_refund_notice_id = wx_refund_notice_dao::update_by_id_wx_refund_notice(
     wx_refund_notice_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_wx_refund_notice(
   
   let comments = wx_refund_notice_dao::get_field_comments_wx_refund_notice(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

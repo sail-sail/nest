@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wxo_usr_model::*;
 use super::wxo_usr_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wxo_usr(
   options: Option<Options>,
 ) -> Result<Vec<WxoUsrId>> {
   
+  for wxo_usr_input in wxo_usr_inputs.iter() {
+    wxo_usr_dao::validate_wxo_usr(
+      wxo_usr_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxo_usr_ids = wxo_usr_dao::creates_wxo_usr(
     wxo_usr_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wxo_usr(
   mut wxo_usr_input: WxoUsrInput,
   options: Option<Options>,
 ) -> Result<WxoUsrId> {
+  
+  wxo_usr_dao::validate_wxo_usr(
+    &wxo_usr_input,
+    ValidateMode::Update,
+  )?;
   
   let wxo_usr_id = wxo_usr_dao::update_by_id_wxo_usr(
     wxo_usr_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_wxo_usr(
   
   let comments = wxo_usr_dao::get_field_comments_wxo_usr(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

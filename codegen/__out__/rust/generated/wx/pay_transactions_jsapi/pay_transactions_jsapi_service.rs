@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::pay_transactions_jsapi_model::*;
 use super::pay_transactions_jsapi_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiId>> {
   
+  for pay_transactions_jsapi_input in pay_transactions_jsapi_inputs.iter() {
+    pay_transactions_jsapi_dao::validate_pay_transactions_jsapi(
+      pay_transactions_jsapi_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let pay_transactions_jsapi_ids = pay_transactions_jsapi_dao::creates_pay_transactions_jsapi(
     pay_transactions_jsapi_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_pay_transactions_jsapi(
   mut pay_transactions_jsapi_input: PayTransactionsJsapiInput,
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiId> {
+  
+  pay_transactions_jsapi_dao::validate_pay_transactions_jsapi(
+    &pay_transactions_jsapi_input,
+    ValidateMode::Update,
+  )?;
   
   let pay_transactions_jsapi_id = pay_transactions_jsapi_dao::update_by_id_pay_transactions_jsapi(
     pay_transactions_jsapi_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_pay_transactions_jsapi(
   
   let comments = pay_transactions_jsapi_dao::get_field_comments_pay_transactions_jsapi(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

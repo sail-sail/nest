@@ -18,6 +18,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use super::wx_app_token_model::*;
 use super::wx_app_token_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -217,6 +218,13 @@ pub async fn creates_wx_app_token(
   options: Option<Options>,
 ) -> Result<Vec<WxAppTokenId>> {
   
+  for wx_app_token_input in wx_app_token_inputs.iter() {
+    wx_app_token_dao::validate_wx_app_token(
+      wx_app_token_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wx_app_token_ids = wx_app_token_dao::creates_wx_app_token(
     wx_app_token_inputs,
     options,
@@ -232,6 +240,11 @@ pub async fn update_by_id_wx_app_token(
   mut wx_app_token_input: WxAppTokenInput,
   options: Option<Options>,
 ) -> Result<WxAppTokenId> {
+  
+  wx_app_token_dao::validate_wx_app_token(
+    &wx_app_token_input,
+    ValidateMode::Update,
+  )?;
   
   let wx_app_token_id = wx_app_token_dao::update_by_id_wx_app_token(
     wx_app_token_id,
@@ -275,7 +288,7 @@ pub async fn get_field_comments_wx_app_token(
   
   let comments = wx_app_token_dao::get_field_comments_wx_app_token(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

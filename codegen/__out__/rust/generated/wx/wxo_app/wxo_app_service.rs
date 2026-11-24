@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wxo_app_model::*;
 use super::wxo_app_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppId>> {
   
+  for wxo_app_input in wxo_app_inputs.iter() {
+    wxo_app_dao::validate_wxo_app(
+      wxo_app_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wxo_app_ids = wxo_app_dao::creates_wxo_app(
     wxo_app_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wxo_app(
   mut wxo_app_input: WxoAppInput,
   options: Option<Options>,
 ) -> Result<WxoAppId> {
+  
+  wxo_app_dao::validate_wxo_app(
+    &wxo_app_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = wxo_app_dao::get_is_locked_by_id_wxo_app(
     wxo_app_id,
@@ -388,7 +401,7 @@ pub async fn get_field_comments_wxo_app(
   
   let comments = wxo_app_dao::get_field_comments_wxo_app(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

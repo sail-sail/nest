@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wx_pay_notice_model::*;
 use super::wx_pay_notice_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wx_pay_notice(
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeId>> {
   
+  for wx_pay_notice_input in wx_pay_notice_inputs.iter() {
+    wx_pay_notice_dao::validate_wx_pay_notice(
+      wx_pay_notice_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wx_pay_notice_ids = wx_pay_notice_dao::creates_wx_pay_notice(
     wx_pay_notice_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wx_pay_notice(
   mut wx_pay_notice_input: WxPayNoticeInput,
   options: Option<Options>,
 ) -> Result<WxPayNoticeId> {
+  
+  wx_pay_notice_dao::validate_wx_pay_notice(
+    &wx_pay_notice_input,
+    ValidateMode::Update,
+  )?;
   
   let wx_pay_notice_id = wx_pay_notice_dao::update_by_id_wx_pay_notice(
     wx_pay_notice_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_wx_pay_notice(
   
   let comments = wx_pay_notice_dao::get_field_comments_wx_pay_notice(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

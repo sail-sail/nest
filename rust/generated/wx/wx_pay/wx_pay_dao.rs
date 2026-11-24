@@ -46,6 +46,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -63,7 +64,7 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&WxPaySearch>,
   options: Option<&Options>,
@@ -561,7 +562,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&WxPaySearch>,
   options: Option<&Options>,
@@ -670,8 +671,8 @@ pub async fn find_all_wx_pay(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -898,8 +899,8 @@ pub async fn find_count_wx_pay(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -973,7 +974,7 @@ pub async fn find_count_wx_pay(
 // MARK: get_field_comments_wx_pay
 /// 获取微信支付设置字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_wx_pay(
+pub fn get_field_comments_wx_pay(
   _options: Option<Options>,
 ) -> Result<WxPayFieldComment> {
   
@@ -1441,8 +1442,8 @@ pub async fn exists_wx_pay(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -3426,8 +3427,8 @@ pub async fn find_last_order_by_wx_pay(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select f.order_by from (select t.order_by
   from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
@@ -3534,4 +3535,113 @@ pub async fn validate_option_wx_pay(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wx_pay
+/// 校验微信支付设置增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wx_pay(
+  input: &WxPayInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 名称
+    required(
+      input.lbl.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "名称",
+    )?;
+  
+    // 开发者ID
+    required(
+      input.appid.as_ref().filter(|s| !s.is_empty()).is_none(),
+      "开发者ID",
+    )?;
+  }
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    22,
+    "名称",
+  )?;
+  
+  // 开发者ID
+  chars_max_length(
+    input.appid.clone(),
+    22,
+    "开发者ID",
+  )?;
+  
+  // 商户号
+  chars_max_length(
+    input.mchid.clone(),
+    32,
+    "商户号",
+  )?;
+  
+  // 证书序列号
+  chars_max_length(
+    input.serial_no.clone(),
+    50,
+    "证书序列号",
+  )?;
+  
+  // 公钥
+  chars_max_length(
+    input.public_key.clone(),
+    22,
+    "公钥",
+  )?;
+  
+  // 私钥
+  chars_max_length(
+    input.private_key.clone(),
+    22,
+    "私钥",
+  )?;
+  
+  // APIv3密钥
+  chars_max_length(
+    input.v3_key.clone(),
+    32,
+    "APIv3密钥",
+  )?;
+  
+  // 支付终端IP
+  chars_max_length(
+    input.payer_client_ip.clone(),
+    45,
+    "支付终端IP",
+  )?;
+  
+  // 通知地址
+  chars_max_length(
+    input.notify_url.clone(),
+    256,
+    "通知地址",
+  )?;
+  
+  // 退款通知地址
+  chars_max_length(
+    input.refund_notify_url.clone(),
+    256,
+    "退款通知地址",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    255,
+    "备注",
+  )?;
+  
+  Ok(())
 }

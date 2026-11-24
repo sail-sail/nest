@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wx_pay_model::*;
 use super::wx_pay_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayId>> {
   
+  for wx_pay_input in wx_pay_inputs.iter() {
+    wx_pay_dao::validate_wx_pay(
+      wx_pay_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wx_pay_ids = wx_pay_dao::creates_wx_pay(
     wx_pay_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wx_pay(
   mut wx_pay_input: WxPayInput,
   options: Option<Options>,
 ) -> Result<WxPayId> {
+  
+  wx_pay_dao::validate_wx_pay(
+    &wx_pay_input,
+    ValidateMode::Update,
+  )?;
   
   let is_locked = wx_pay_dao::get_is_locked_by_id_wx_pay(
     wx_pay_id,
@@ -388,7 +401,7 @@ pub async fn get_field_comments_wx_pay(
   
   let comments = wx_pay_dao::get_field_comments_wx_pay(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }

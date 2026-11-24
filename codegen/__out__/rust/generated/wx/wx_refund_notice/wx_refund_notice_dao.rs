@@ -43,6 +43,7 @@ use crate::common::context::{
   get_is_creating,
 };
 use crate::common::exceptions::service_exception::ServiceException;
+use crate::common::validators::ValidateMode;
 
 use crate::common::gql::model::{
   PageInput,
@@ -56,7 +57,7 @@ use super::wx_refund_notice_model::*;
 use crate::base::tenant::tenant_model::TenantId;
 
 #[allow(unused_variables)]
-async fn get_where_query(
+fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&WxRefundNoticeSearch>,
   options: Option<&Options>,
@@ -372,7 +373,7 @@ async fn get_where_query(
 }
 
 #[allow(unused_variables)]
-async fn get_from_query(
+fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&WxRefundNoticeSearch>,
   options: Option<&Options>,
@@ -447,8 +448,8 @@ pub async fn find_all_wx_refund_notice(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let mut sort = sort.unwrap_or_default();
   
@@ -570,8 +571,8 @@ pub async fn find_count_wx_refund_notice(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
@@ -601,7 +602,7 @@ pub async fn find_count_wx_refund_notice(
 // MARK: get_field_comments_wx_refund_notice
 /// 获取微信退款通知字段注释
 #[allow(unused_mut)]
-pub async fn get_field_comments_wx_refund_notice(
+pub fn get_field_comments_wx_refund_notice(
   _options: Option<Options>,
 ) -> Result<WxRefundNoticeFieldComment> {
   
@@ -1028,8 +1029,8 @@ pub async fn exists_wx_refund_notice(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref())?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref())?;
   
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
@@ -1232,7 +1233,7 @@ pub async fn set_id_by_lbl_wx_refund_notice(
     if input.success_time.is_none() {
       let field_comments = get_field_comments_wx_refund_notice(
         None,
-      ).await?;
+      )?;
       let column_comment = field_comments.success_time;
       
       let err_msg = "日期格式错误";
@@ -2152,4 +2153,79 @@ pub async fn validate_option_wx_refund_notice(
   };
   
   Ok(model)
+}
+
+// MARK: validate_wx_refund_notice
+/// 校验微信退款通知增加和修改时的输入
+/// 注意: 必须保持同步函数(不要加 async), 函数体内不允许出现 .await
+/// 需要异步资源的提示文案(i18n 翻译/动态页面字段)请在 service 层处理
+#[allow(unused_variables, unused_imports, dead_code)]
+pub fn validate_wx_refund_notice(
+  input: &WxRefundNoticeInput,
+  mode: ValidateMode,
+) -> Result<()> {
+  
+  use crate::common::validators::required::required;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  
+  // 新增时校验必填
+  if mode == ValidateMode::Create {
+  
+    // 退款状态
+    required(
+      input.refund_status.is_none(),
+      "退款状态",
+    )?;
+  }
+  
+  // 开发者ID
+  chars_max_length(
+    input.appid.clone(),
+    32,
+    "开发者ID",
+  )?;
+  
+  // 商户号
+  chars_max_length(
+    input.mchid.clone(),
+    32,
+    "商户号",
+  )?;
+  
+  // 商户订单号
+  chars_max_length(
+    input.out_trade_no.clone(),
+    32,
+    "商户订单号",
+  )?;
+  
+  // 微信支付订单号
+  chars_max_length(
+    input.transaction_id.clone(),
+    32,
+    "微信支付订单号",
+  )?;
+  
+  // 商户退款单号
+  chars_max_length(
+    input.out_refund_no.clone(),
+    64,
+    "商户退款单号",
+  )?;
+  
+  // 微信退款单号
+  chars_max_length(
+    input.refund_id.clone(),
+    32,
+    "微信退款单号",
+  )?;
+  
+  // 退款入账账户
+  chars_max_length(
+    input.user_received_account.clone(),
+    64,
+    "退款入账账户",
+  )?;
+  
+  Ok(())
 }

@@ -20,6 +20,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 use super::wx_refund_model::*;
 use super::wx_refund_dao;
+use crate::common::validators::ValidateMode;
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -219,6 +220,13 @@ pub async fn creates_wx_refund(
   options: Option<Options>,
 ) -> Result<Vec<WxRefundId>> {
   
+  for wx_refund_input in wx_refund_inputs.iter() {
+    wx_refund_dao::validate_wx_refund(
+      wx_refund_input,
+      ValidateMode::Create,
+    )?;
+  }
+  
   let wx_refund_ids = wx_refund_dao::creates_wx_refund(
     wx_refund_inputs,
     options,
@@ -251,6 +259,11 @@ pub async fn update_by_id_wx_refund(
   mut wx_refund_input: WxRefundInput,
   options: Option<Options>,
 ) -> Result<WxRefundId> {
+  
+  wx_refund_dao::validate_wx_refund(
+    &wx_refund_input,
+    ValidateMode::Update,
+  )?;
   
   let wx_refund_id = wx_refund_dao::update_by_id_wx_refund(
     wx_refund_id,
@@ -294,7 +307,7 @@ pub async fn get_field_comments_wx_refund(
   
   let comments = wx_refund_dao::get_field_comments_wx_refund(
     options,
-  ).await?;
+  )?;
   
   Ok(comments)
 }
